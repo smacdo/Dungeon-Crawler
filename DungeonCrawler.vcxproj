@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AE32F8FC-A38D-4F3A-A4DA-486FEDDD8E2D}</ProjectGuid>
-    <RootNamespace>Dungeon</RootNamespace>
+    <RootNamespace>DungeonCrawler</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -41,8 +41,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)-debug</TargetName>
-    <IncludePath>$(API_DIR)\boost;$(ProjectDir)\thirdparty\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(API_DIR)\boost\libs;$(ProjectDir)\thirdparty\SDL\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(API_DIR)\boost;$(BOOST_ROOT);$(ProjectDir)\thirdparty\SDL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(API_DIR)\boost\libs;$(BOOST_ROOT)\libs;$(ProjectDir)\thirdparty\SDL\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -71,7 +71,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="sdlclient.cpp" />
+    <ClCompile Include="src/sdlclient.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

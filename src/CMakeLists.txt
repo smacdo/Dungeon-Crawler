@@ -2,14 +2,17 @@
 ### Dungeon CMake buildscript for crossplatform Linux/POSIX systems      ##
 ###########################################################################
 # Project source code files
-set(srcs bsplevelgen.cpp 
-         level.cpp       
-         room.cpp        
-         utils.cpp       
-         dungeon.cpp     
-         rect.cpp        
-         roomgenerator.cpp
-)
+set(core_srcs     core/rect.cpp)
+
+set(worldgen_srcs worldgen/bsplevelgen.cpp
+                  worldgen/roomgenerator.cpp)
+
+set(game_srcs     level.cpp
+                  room.cpp
+				  utils.cpp
+				  dungeon.cpp)
+				  
+set(srcs ${core_srcs} ${worldgen_srcs} ${game_srcs})
 
 # Compiler definitions
 ADD_DEFINITIONS(-g -W -Wall -Wextra -Werror)

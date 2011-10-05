@@ -4,6 +4,7 @@ game/DungeonCrawler-debug.*
 DungeonCrawler.sdf
 DungeonCrawler.suo
 DungeonCrawler.vcxproj.user
+DungeonCrawler.opensdf
 *.swp
 Debug/
 ipch/
