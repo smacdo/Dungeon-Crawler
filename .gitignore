@@ -1,3 +1,9 @@
 build
 game/dungeon
+game/DungeonCrawler-debug.*
+DungeonCrawler.sdf
+DungeonCrawler.suo
+DungeonCrawler.vcxproj.user
 *.swp
+Debug/
+ipch/
