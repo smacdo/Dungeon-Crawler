@@ -1,0 +1,3 @@
+Game content, including data files, maps, art and sound are stored here
+
+(required by git to keep directory in version control)
