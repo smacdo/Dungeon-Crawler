@@ -1,0 +1,6 @@
+Additional credits and contributions to Dungeon Crawler.
+
+Thanks to:
+    No one yet
+
+See also the AUTHORS and ChangeLog files.

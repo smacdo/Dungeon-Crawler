@@ -1,0 +1,3 @@
+# See the git history for minor, non-release worthy notes
+2011-09-05 Scott MacDonald <scott@whitespaceconsideredharmful.com>
+    * Project's initial commit to version control
