@@ -42,7 +42,8 @@ public:
 
     bool isNull() const
     {
-        return ( mTop == mLeft == mRight == mBottom == 0 );
+        return ( mTop   == 0 && mLeft   == 0 &&
+                 mRight == 0 && mBottom == 0 );
     }
 
     int x() const
@@ -93,13 +94,13 @@ public:
 
     bool touches( const Rect& rect ) const
     {
-        return ( intersects( rect ) || contains( rect ) );
+        return ( /*intersects( rect ) ||*/ contains( rect ) );
     }
 
-    bool intersects( const Rect& rect ) const
-    {
-        assert(! isNull() );
-    }
+    //bool intersects( const Rect& rect ) const
+    //{
+    //    assert(! isNull() );
+    //}
 
     bool contains( const Rect& rect ) const
     {
