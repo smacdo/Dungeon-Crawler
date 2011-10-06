@@ -31,39 +31,6 @@ Room::~Room()
 {
 }
 
-
-/**
- * Adds a random door to the room
- */
-void Room::addRandomDoor()
-{
-    size_t numWalls = numTilesOf( TILE_WALL );
-    assert( numWalls > 0 );
-    
-    // Now randomly determine which of these wall tiles will turn into
-    // a door.
-    size_t theWall = Utils::random( 0, numWalls );
-
-    // Transform it
-    size_t wallsFound = 0;
-
-    for ( size_t r = 0; r < mHeight; ++r )
-    {
-        for ( size_t c = 0; c < mWidth; ++c )
-        {
-            Tile * tile = mLevel->tileAt( r + mTopY, c + mTopX );
-            
-            if ( tile->type == TILE_WALL )
-            {
-                if ( wallsFound++ == theWall )
-                {
-                    tile->type = TILE_DOOR;
-                }
-            }
-        }
-    }
-}
-
 /**
  * Count the number of the given tile type that exist in this room
  */

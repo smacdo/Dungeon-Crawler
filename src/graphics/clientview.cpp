@@ -81,7 +81,7 @@ void ClientView::load()
     mTileSprites[ TILE_UNALLOCATED ] = mSpriteManager.createSprite( "unallocated" );
     mTileSprites[ TILE_VOID ]        = mSpriteManager.createSprite( "void" );
     mTileSprites[ TILE_WALL ]        = mSpriteManager.createSprite( "dungeontiles", 0 * 32, 0 * 32, 32, 32 );
-    mTileSprites[ TILE_FLOOR ]       = mSpriteManager.createSprite( "terraintiles", 3 * 32, 1 * 32, 32, 32 );
+    mTileSprites[ TILE_FLOOR ]       = mSpriteManager.createSprite( "dungeontiles", 3 * 32, 6 * 32, 32, 32 );
     mTileSprites[ TILE_DOOR  ]       = mSpriteManager.createSprite( "dungeontiles", 1 * 32, 1 * 32, 32, 32 );
 
         /*

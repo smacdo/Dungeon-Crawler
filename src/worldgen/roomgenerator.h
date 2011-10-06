@@ -27,6 +27,9 @@ public:
      */
     Room* generate( const Rect& area );
 
+protected:
+    void addRandomDoor( Room& pRoom ) const;
+
 private:
     Level * mLevel;
 };

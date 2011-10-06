@@ -15,8 +15,8 @@ DungeonGenerator::DungeonGenerator( size_t width, size_t height )
     : mLevelGenerator( NULL ),
       mLevelWidth( width ),
       mLevelHeight( height ),
-      mMinRoomSize( 3 ),
-      mMaxRoomSize( 16 )
+      mMinRoomSize( 8 ),
+      mMaxRoomSize( 32 )
 {
     mLevelGenerator = new BspLevelGenerator( new RoomGenerator,
                                              mLevelWidth,
