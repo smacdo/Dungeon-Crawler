@@ -6,7 +6,8 @@ enum ETileType { TILE_BLOCKED,      // nothing can be placed here,
                  TILE_VOID,         // there is literally nothing here
                  TILE_WALL,         // its a wall
                  TILE_FLOOR,        // floor
-                 TILE_DOOR          // door
+                 TILE_DOOR,         // door
+                 ETileType_Count
 };
 
 #endif

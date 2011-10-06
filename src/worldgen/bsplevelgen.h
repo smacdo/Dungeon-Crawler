@@ -1,8 +1,8 @@
 #ifndef SCOTT_DUNGEON_BSPLEVELGEN_H
 #define SCOTT_DUNGEON_BSPLEVELGEN_H
 
-#include "rect.h"
-#include "point.h"
+#include "core/rect.h"
+#include "core/point.h"
 
 class Level;
 class RoomGenerator;

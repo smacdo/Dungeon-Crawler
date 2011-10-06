@@ -86,6 +86,36 @@ public:
         return mBottom - mTop;
     }
 
+    void translate( int x, int y )
+    {
+        mTop    += y;
+        mLeft   += x;
+        mBottom += y;
+        mRight  += x;
+    }
+
+    void moveTo( int x, int y )
+    {
+        moveToX( x );
+        moveToY( y );
+    }
+
+    void moveToX( int x )
+    {
+        int w = width();
+
+        mLeft  = x;
+        mRight = x + w; 
+    }
+
+    void moveToY( int y )
+    {
+        int h = height();
+
+        mTop    = y;
+        mBottom = y + h; 
+    }
+
     size_t area() const
     {
         assert(! isNull() );

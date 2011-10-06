@@ -1,5 +1,5 @@
-#include "roomgenerator.h"
-#include "rect.h"
+#include "worldgen/roomgenerator.h"
+#include "core/rect.h"
 #include "room.h"
 #include "level.h"
 #include "tile.h"

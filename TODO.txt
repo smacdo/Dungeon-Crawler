@@ -1,1 +1,8 @@
- 
+Things to do in the future, once we get a basic framework going
+	- Game polls input manager and directly acts on that. Instead,
+	  the input manager should create command objects and return those
+	  to the game for execution.
+	- Refactor the game to stop using (int x, int y) and instead use the
+	  Point class
+	- Refactor the older code still sing row/col notation and just use
+	  x/y

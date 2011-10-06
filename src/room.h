@@ -1,8 +1,8 @@
 #ifndef SCOTT_DUNGEON_ROOM_H
 #define SCOTT_DUNGEON_ROOM_H
 
-#include "point.h"
-#include "rect.h"
+#include "core/point.h"
+#include "core/rect.h"
 #include "tiletype.h"
 
 #include <cstddef>

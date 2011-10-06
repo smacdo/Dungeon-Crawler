@@ -5,9 +5,12 @@
 #include <boost/noncopyable.hpp>
 
 #include "graphics/spritemanager.h"
+#include "core/rect.h"
 
 struct SDL_Surface;
+struct SDL_Rect;
 class Sprite;
+class Level;
 
 /**
  * Displays the game graphically
@@ -19,7 +22,8 @@ public:
     ~ClientView();
 
     void start();
-    void draw();
+    void draw( Level& level );
+    void moveCamera( int x, int y );
 
 protected:
     void load();
@@ -29,12 +33,15 @@ protected:
     void drawSprite( int x, int y, const Sprite& sprite );
     void createMainWindow();
 
+    bool isInCameraBounds( const SDL_Rect& camera, int x, int y, int w, int h ) const;
+
 private:
     bool mWasStarted;
     SDL_Surface *mpBackbuffer;
     SDL_Surface *mpAppIcon;
     SpriteManager mSpriteManager;
-    Sprite *mpSprite;
+    std::vector<Sprite*> mTileSprites;
+    Rect mCamera;
 };
 
 #endif

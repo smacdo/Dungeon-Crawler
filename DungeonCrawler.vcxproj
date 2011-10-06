@@ -41,7 +41,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)-debug</TargetName>
-    <IncludePath>$(API_DIR)\boost;$(BOOST_ROOT);$(ProjectDir)\thirdparty\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(API_DIR)\boost;$(BOOST_ROOT);$(ProjectDir)\thirdparty\SDL\include;$(ProjectDir)\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(API_DIR)\boost\libs;$(BOOST_ROOT)\libs;$(ProjectDir)\thirdparty\SDL\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -72,6 +72,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src/sdlclient.cpp" />
+    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\core\rect.cpp" />
+    <ClCompile Include="src\dungeon.cpp" />
+    <ClCompile Include="src\graphics\clientview.cpp" />
+    <ClCompile Include="src\graphics\sprite.cpp" />
+    <ClCompile Include="src\graphics\spritemanager.cpp" />
+    <ClCompile Include="src\inputmanager.cpp" />
+    <ClCompile Include="src\level.cpp" />
+    <ClCompile Include="src\room.cpp" />
+    <ClCompile Include="src\utils.cpp" />
+    <ClCompile Include="src\worldgen\bsplevelgen.cpp" />
+    <ClCompile Include="src\worldgen\dungeongenerator.cpp" />
+    <ClCompile Include="src\worldgen\roomgenerator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\core\fixedgrid.h" />
+    <ClInclude Include="src\core\point.h" />
+    <ClInclude Include="src\core\rect.h" />
+    <ClInclude Include="src\defs\tilematerial.h" />
+    <ClInclude Include="src\door.h" />
+    <ClInclude Include="src\graphics\clientview.h" />
+    <ClInclude Include="src\graphics\sprite.h" />
+    <ClInclude Include="src\graphics\spritemanager.h" />
+    <ClInclude Include="src\inputmanager.h" />
+    <ClInclude Include="src\level.h" />
+    <ClInclude Include="src\room.h" />
+    <ClInclude Include="src\tile.h" />
+    <ClInclude Include="src\tiletype.h" />
+    <ClInclude Include="src\utils.h" />
+    <ClInclude Include="src\worldgen\bsplevelgen.h" />
+    <ClInclude Include="src\worldgen\dungeongenerator.h" />
+    <ClInclude Include="src\worldgen\roomgenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,10 @@
 #include "graphics/clientview.h"
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
+#include "core/rect.h"
+
+#include "tiletype.h"
+#include "level.h"
 #include "utils.h"
 
 #include <SDL.h>
@@ -14,9 +18,11 @@
 
 namespace Config
 {
-    const int DefaultScreenWidth  = 640;
-    const int DefaultScreenHeight = 480;
+    const int DefaultScreenWidth  = 1280;
+    const int DefaultScreenHeight = 1024;
     const int DefaultScreenDepth  = 32;
+    const int TileWidth = 32;
+    const int TileHeight = 32;
 }
 
 /**
@@ -29,7 +35,7 @@ ClientView::ClientView()
       mpBackbuffer( NULL ),
       mpAppIcon( NULL ),
       mSpriteManager(),
-      mpSprite( NULL )
+      mCamera( 0, 0, Config::DefaultScreenWidth, Config::DefaultScreenHeight )
 {
 }
 
@@ -40,8 +46,6 @@ ClientView::~ClientView()
 {
 //    SDL_FreeSurface( mpAppIcon );
     SDL_FreeSurface( mpBackbuffer );
-    
-    boost::checked_delete( mpSprite );
 }
 
 /**
@@ -56,14 +60,39 @@ void ClientView::start()
     createMainWindow();
     load();
     mWasStarted = true;
-
-    mpSprite = mSpriteManager.createSprite( "tiles" );
 }
 
 void ClientView::load()
 {
     SDL_Init( SDL_INIT_EVERYTHING );
-    mSpriteManager.preloadImage( "tiles", "dg_dungeon32.png" );
+
+    // preload all of our images
+    mSpriteManager.preloadImage( "blocked",      "tile_blocked.png" );
+    mSpriteManager.preloadImage( "unallocated",  "tile_unallocated.png" );
+    mSpriteManager.preloadImage( "void",         "tile_void.png" );
+    mSpriteManager.preloadImage( "dungeontiles", "dg_dungeon32.png" );
+    mSpriteManager.preloadImage( "terraintiles", "dg_grounds32.png" );
+    mSpriteManager.preloadImage( "humans",       "dg_humans32.png" );
+    mSpriteManager.preloadImage( "monsters",     "dg_monster132.png" );
+
+    // load all of our tile sprites
+    mTileSprites.resize( ETileType_Count );
+    mTileSprites[ TILE_BLOCKED ]     = mSpriteManager.createSprite( "blocked" );
+    mTileSprites[ TILE_UNALLOCATED ] = mSpriteManager.createSprite( "unallocated" );
+    mTileSprites[ TILE_VOID ]        = mSpriteManager.createSprite( "void" );
+    mTileSprites[ TILE_WALL ]        = mSpriteManager.createSprite( "dungeontiles", 0 * 32, 0 * 32, 32, 32 );
+    mTileSprites[ TILE_FLOOR ]       = mSpriteManager.createSprite( "terraintiles", 3 * 32, 1 * 32, 32, 32 );
+    mTileSprites[ TILE_DOOR  ]       = mSpriteManager.createSprite( "dungeontiles", 1 * 32, 1 * 32, 32, 32 );
+
+        /*
+        TILE_BLOCKED,      // nothing can be placed here,
+                 TILE_UNALLOCATED,  // this tile has not been allocated to anyone
+                 TILE_VOID,         // there is literally nothing here
+                 TILE_WALL,         // its a wall
+                 TILE_FLOOR,        // floor
+                 TILE_DOOR,         // door
+                 ETileType_Count
+        */
 }
 
 
@@ -96,13 +125,38 @@ void ClientView::createMainWindow()
     SDL_WM_SetIcon( loadImage( "data/gameicon.png" ), NULL );
 }
 
-void ClientView::draw()
+void ClientView::draw( Level& level )
 {
     assert( mWasStarted );
 
-    drawSprite( 300, 150, deref(mpSprite) );
-    SDL_Flip( mpBackbuffer );
+    //
+    // This is a pretty terrible way of rendering the level's tiles,
+    // but I'm hungry, the hour is late and I would really like to see
+    // this work before i finish for the day
+    //
+    for ( size_t row = 0; row < level.height(); ++row )
+    {
+        for ( size_t col = 0; col < level.width(); ++col )
+        {
+            Rect bounds( col * 32, row * 32, 32, 32 );
 
+            // Is it visible? Sigh, I know its a bad hack
+            if (! mCamera.contains( bounds ) )
+            {
+                continue;
+            }
+
+            // Get information on that tile
+            Tile      tile = level.getTileAt( row, col );
+            Sprite *pTileSprite = mTileSprites[ tile.type ];
+
+            drawSprite( bounds.x() - mCamera.x(),
+                        bounds.y() - mCamera.y(),
+                        deref( pTileSprite) );
+        }
+    }
+
+    SDL_Flip( mpBackbuffer );
     SDL_Delay( 30 );
 }
 
@@ -157,4 +211,10 @@ void ClientView::drawSprite( int x, int y, const Sprite& sprite )
                      &clip,
                      mpBackbuffer,
                      &offset );
+}
+
+void ClientView::moveCamera( int x, int y )
+{
+    // Move the camera
+    mCamera.translate( x * 32 , y * 32 );
 }

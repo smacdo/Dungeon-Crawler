@@ -1,6 +1,6 @@
-#include "bsplevelgen.h"
-#include "roomgenerator.h"
-#include "rect.h"
+#include "worldgen/bsplevelgen.h"
+#include "worldgen/roomgenerator.h"
+#include "core/rect.h"
 
 #include "level.h"
 #include "room.h"
@@ -25,7 +25,7 @@ BspLevelGenerator::BspLevelGenerator( RoomGenerator *roomGenerator,
       mLevelBounds( 0, 0, levelWidth, levelHeight ),
       mMinSplitSize( minRoomSize ),
       mMaxSplitSize( maxRoomSize ),
-      mRoomDensity( 0.95 ),
+      mRoomDensity( 0.95f ),
       mLevel( NULL )
 {
 }

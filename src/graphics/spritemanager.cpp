@@ -152,10 +152,14 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
  */
 void SpriteManager::unload()
 {
+    size_t freedCount = 0;
     std::vector<SDL_Surface*>::iterator itr;
 
     for ( itr = mSurfaces.begin(); itr != mSurfaces.end(); ++itr )
     {
         SDL_FreeSurface( *itr );
+        freedCount++;
     }
+
+    std::cout << "Unloaded " << freedCount << " images" << std::endl;
 }
