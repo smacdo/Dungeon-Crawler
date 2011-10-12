@@ -5,7 +5,7 @@
 #include <boost/noncopyable.hpp>
 
 class Level;
-class BspLevelGenerator;
+class LevelGenerator;
 
 /**
  * This class takes configurable parameters to the dungeon generation proess,
@@ -22,7 +22,7 @@ public:
     Level* generateLevel();
 
 private:
-    BspLevelGenerator * mLevelGenerator;
+    LevelGenerator * mLevelGenerator;
     size_t mLevelWidth;
     size_t mLevelHeight;
     size_t mMinRoomSize;

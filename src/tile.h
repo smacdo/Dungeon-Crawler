@@ -19,7 +19,7 @@ struct Tile
     {
         switch ( type )
         {
-            case TILE_BLOCKED:
+            case TILE_IMPASSABLE:
                 return '*';
             case TILE_UNALLOCATED:
                 return ' ';
@@ -34,6 +34,11 @@ struct Tile
             default:
                 return '?';
         }
+    }
+
+    void makeImpassable()
+    {
+        type = TILE_IMPASSABLE;
     }
 
     // The type of tile

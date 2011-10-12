@@ -1,5 +1,5 @@
 #include "worldgen/dungeongenerator.h"
-#include "worldgen/bsplevelgen.h"
+#include "worldgen/levelgenerator.h"
 #include "worldgen/roomgenerator.h"
 
 #include <cstddef>
@@ -18,11 +18,14 @@ DungeonGenerator::DungeonGenerator( size_t width, size_t height )
       mMinRoomSize( 8 ),
       mMaxRoomSize( 32 )
 {
-    mLevelGenerator = new BspLevelGenerator( new RoomGenerator,
+/*    mLevelGenerator = new BspLevelGenerator( new RoomGenerator,
                                              mLevelWidth,
                                              mLevelHeight,
                                              mMinRoomSize,
-                                             mMaxRoomSize );
+                                             mMaxRoomSize );*/
+    mLevelGenerator = new LevelGenerator( new RoomGenerator,
+                                          mLevelWidth,
+                                          mLevelHeight );
 }
 
 /**

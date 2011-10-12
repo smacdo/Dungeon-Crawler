@@ -77,7 +77,7 @@ void ClientView::load()
 
     // load all of our tile sprites
     mTileSprites.resize( ETileType_Count );
-    mTileSprites[ TILE_BLOCKED ]     = mSpriteManager.createSprite( "blocked" );
+    mTileSprites[ TILE_IMPASSABLE ]  = mSpriteManager.createSprite( "blocked" );
     mTileSprites[ TILE_UNALLOCATED ] = mSpriteManager.createSprite( "unallocated" );
     mTileSprites[ TILE_VOID ]        = mSpriteManager.createSprite( "void" );
     mTileSprites[ TILE_WALL ]        = mSpriteManager.createSprite( "dungeontiles", 0 * 32, 0 * 32, 32, 32 );

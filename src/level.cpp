@@ -58,6 +58,11 @@ Tile* Level::tileAt( size_t row, size_t col )
     return &mTiles[ offset(row,col) ];
 }
 
+Tile* Level::tileAt( const Point& p )
+{
+    return tileAt( p.y(), p.x() );
+}
+
 bool Level::hasAllocatedTiles( size_t x, size_t y,
                                size_t width, size_t height ) const
 {
@@ -71,7 +76,7 @@ bool Level::hasAllocatedTiles( size_t x, size_t y,
 
             // Make sure the tile is eithe rblocked or unallocated for it
             // to have no owner
-            hasOwner = ( mTiles[i].type != TILE_BLOCKED &&
+            hasOwner = ( mTiles[i].type != TILE_IMPASSABLE &&
                          mTiles[i].type != TILE_UNALLOCATED );
 
             // just for sanity, it can't have a room

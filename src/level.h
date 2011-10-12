@@ -7,6 +7,7 @@
 
 class Level;
 class Room;
+class Point;
 struct Tile;
 
 class Level
@@ -28,7 +29,9 @@ public:
 
     // Returns the tile at the requested position
     Tile getTileAt( size_t r, size_t c ) const;
+
     Tile* tileAt( size_t r, size_t c );
+    Tile* tileAt( const Point& p );
 
     void print() const;
 
