@@ -11,6 +11,9 @@
 #include <time.h>
 #include <stdlib.h>
 
+#define USE_SDL_MAIN_MAGIC 1
+#include "common/platform.h"        // let SDL redefine our main function
+
 int main( int argc, char* argv[] )
 {
     srand( time(NULL) );

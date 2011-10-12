@@ -10,6 +10,10 @@
 #include <iostream>
 #include <cassert>
 
+typedef std::map<std::string, Sprite*>::iterator SpriteCacheItr;
+typedef std::map<std::string, Sprite*>::const_iterator SpriteCacheConstItr;
+typedef std::pair<std::string, Sprite*> SpriteCacheEntry;
+
 /**
  * Constructor
  */
@@ -53,63 +57,94 @@ void SpriteManager::preloadImage( const std::string& imagename,
 }
 
 /**
- * Creates a new standalone sprite
+ * Instructs the sprite manager to create a new sprite using the given
+ * image as a source and caching it for further use.
  * 
- * \param  imagename  Name of the image to use for the sprite
- * \return            Pointer to the generated sprite
+ * \param  spriteName  Name to give to the newly created sprite
+ * \param  filepath    Path to the image that this sprite will use
  */
-Sprite* SpriteManager::createSprite( const std::string& imagename ) const
+void SpriteManager::addSprite( const std::string& spriteName,
+                               const std::string& filepath ) const
 {
-    Sprite *pSprite = NULL;
 
-    // Make sure the requested image has been loaded
-    if ( mImageMap.find( imagename ) == mImageMap.end() )
+    // Has this sprite already been loaded once before? If so, don't
+    // load anything
+    SpriteCacheItr itr = mSpriteCache.find( spriteName );
+ 
+    if ( itr == mSpriteCache.end() )
     {
-        std::cerr << "Cannot create sprite because image '" << imagename
-                  << "' was not loaded" << std::endl;
-        assert( false );
+        // This sprite needs to be loaded and then cached
+        SDL_Surface *pSurface = loadImage( filepath );
+        Sprite      *pSprite  = new Sprite( pSurface );
+
+        mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
     else
     {
-        pSprite = new Sprite( mImageMap.find(imagename)->second );
+        std::cerr << "Sprite '" << spriteName << "' loaded twice" << std::endl;
     }
-
-    return pSprite;
 }
 
 /**
- * Creates a new sprite cut from a spritesheet image
- * 
- * \param  imagename  Name of the image to use for the sprite
+ * Instructs the sprite manager to create a new sprite using the given
+ * image as a source and caching it for further use.
+ *
+ * \param  spriteName Name to give to the sprite
+ * \param  imagepath  Path to the sprite image
  * \param  xOffset    Sprite's upper left x coordinate in the spritesheet
  * \param  yOffset    Sprite's upper left y coordinate in the spritesheet
  * \param  width      Width of the sprite
  * \parma  height     Height of the sprite
  * \return            Pointer to the generated sprite
  */
-Sprite* SpriteManager::createSprite( const std::string& imagename,
-                        int xOffset,
-                        int yOffset,
-                        int width,
-                        int height ) const
+void SpriteManager::addSprite( const std::string& spriteName,
+                               const std::string& imagepath,
+                               int xOffset,
+                               int yOffset,
+                               int width,
+                               int height ) const
 {
-    Sprite *pSprite = NULL;
-
-    // Make sure the requested image has been loaded
-    if ( mImageMap.find( imagename ) == mImageMap.end() )
+    // Has this sprite already been loaded once before? If so, don't
+    // load anything
+    SpriteCacheItr itr = mSpriteCache.find( spriteName );
+ 
+    if ( itr == mSpriteCache.end() )
     {
-        std::cerr << "Cannot create sprite because image '" << imagename
-                  << "' was not loaded" << std::endl;
-        assert( false );
+        // This sprite needs to be loaded and then cached
+        SDL_Surface *pSurface = loadImage( filepath );
+        Sprite      *pSprite  = new Sprite( pSurface,
+                                            xOffset, yOffset,
+                                            width, height );
+
+        mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
     else
     {
-        pSprite = new Sprite( mImageMap.find(imagename)->second,
-                              xOffset, yOffset,
-                              width, height );
+        std::cerr << "Sprite '" << spriteName << "' loaded twice" << std::endl;
+    }
+}
+
+/**
+ * Generates a copy of a load sprite template and returns a pointer to
+ * the sprite.
+ *
+ * \param  spriteName  Name of the sprite to instantiate
+ * \return             Pointer to a sprite object
+ */
+Sprite* SpriteManager::findSprite( const std::string& spriteName ) const
+{
+    // Look the sprite up. Hopefully it has been loaded, otherwise
+    // we're going to be in trouble...
+    SpriteCacheItr itr = mSpriteCache.find( spriteName );
+ 
+    if ( itr == mSpriteCache.end() )
+    {
+        std::cerr << "Sprite '" << spriteName << "' does not exist"
+                  << std::endl;
+        assert( false );
     }
 
-    return pSprite;
+    return itr->second;
 }
 
 /**
@@ -152,14 +187,49 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
  */
 void SpriteManager::unload()
 {
-    size_t freedCount = 0;
+    size_t freedSurfaces = 0, freedSprites = 0;
+
+    // Destroy all sprites
+    SpriteCacheItr itr;
+
+    for ( itr = mSpriteCache.begin(); itr != mSpriteCache.end(); ++itr )
+    {
+        delete itr->second;
+        freedSprites++;
+    }
+
+    // Kill all surfaces
     std::vector<SDL_Surface*>::iterator itr;
 
     for ( itr = mSurfaces.begin(); itr != mSurfaces.end(); ++itr )
     {
         SDL_FreeSurface( *itr );
-        freedCount++;
+        freedSurfaces++;
     }
 
-    std::cout << "Unloaded " << freedCount << " images" << std::endl;
+    // Let 'em know how many things were unloaded
+    std::cout << "Unloaded " << freedSprites << " sprites and "
+              << freedSurfaces << " images " << std::endl;
+}
+
+/**
+ * Returns the number of sprites that have been loaded into the sprite
+ * manager
+ *
+ * \return  Number of loaded spites
+ */
+size_t SpriteManager::spriteCount()
+{
+    return mSpriteCache.size();
+}
+
+/**
+ * Returns the number of images (surfaces) that have been loaded into the
+ * sprite manager
+ *
+ * \return  Number of loaded images
+ */
+size_t SpriteManager::imageCount()
+{
+    return mSurfaces.size();
 }

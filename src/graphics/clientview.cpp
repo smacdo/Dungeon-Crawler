@@ -218,3 +218,39 @@ void ClientView::moveCamera( int x, int y )
     // Move the camera
     mCamera.translate( x * 32 , y * 32 );
 }
+
+std::string ClientView::dumpInfo() const
+{
+    // Get the name of the video driver
+    char driverName[32];
+
+    if ( SDL_VideoDriverName( &driverName[0], 32 ) == NULL )
+    {
+        return std::string("[NO VIDEO INFORMATION AVAILABLE]");
+    }
+
+    // Get video caps
+    const SDL_VideoInfo* pVideo = SDL_GetVideoInfo();
+    assert( pVideo != NULL );
+
+    const SDL_PixelFormat *pFM  = pVideo->vfmt;
+
+    // generate the info dump
+    std::stringstream ss;
+
+    ss << "Video Driver       : " <<   driverName             << std::endl
+       << "Hardware Surfaces  : " << ( pVideo->hw_available ) << std::endl
+       << "Window Manager     : " << ( pVideo->wm_available ) << std::endl
+       << "Hardware Blit   Xcl: " << ( pVideo->blit_hw )      << std::endl
+       << "Alpha Hrdw Blit Xcl: " << ( pVideo->blit_hwA )     << std::endl
+       << "Sftw Blit       Xcl: " << ( pVideo->blit_sw_CC )   << std::endl
+       << "Alpha Sftw Blit Xcl: " << ( pVideo->blit_sw_A  )   << std::endl
+       << "Blit fill Xcl      : " << ( pVideo->blit_fill )    << std::endl
+       << "Video Memory (kB)  : " << ( pVideo->video_mem )    << std::endl
+       << "Screen width       : " << ( pVideo->current_w )    << std::endl
+       << "Screen height      : " << ( pVideo->current_h )    << std::endl
+       << "Screen pixel bits  : " << ( pFM->BitsPerPixel )    << std::endl
+       << "Screen pixel bytes : " << ( pFM->BytesPerPixel )   << std::endl;
+
+    return ss.str();
+}
