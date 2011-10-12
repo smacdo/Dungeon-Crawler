@@ -25,9 +25,6 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{e65410bb-2659-450f-a6a2-60ef3320758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{3c09e393-03b7-4bc9-b950-4a780d008c33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{df48795b-feca-4c9d-95b0-3a425681e7db}</UniqueIdentifier>
     </Filter>
@@ -36,6 +33,9 @@
     </Filter>
     <Filter Include="Header Files\WorldGen">
       <UniqueIdentifier>{a1287ce7-94b3-43c1-a9e3-6133a4519a29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common">
+      <UniqueIdentifier>{3c09e393-03b7-4bc9-b950-4a780d008c33}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -111,16 +111,16 @@
       <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\core\fixedgrid.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="src\level.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\core\point.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rect.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="src\room.h">
       <Filter>Header Files\Game</Filter>
@@ -148,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="src\common\platform.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\utils.h">
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

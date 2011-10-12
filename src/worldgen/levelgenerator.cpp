@@ -1,9 +1,9 @@
 #include "worldgen/levelgenerator.h"
 #include "worldgen/roomgenerator.h"
+#include "common/utils.h"
 
 #include "level.h"
 #include "room.h"
-#include "utils.h"
 
 #include <cassert>
 

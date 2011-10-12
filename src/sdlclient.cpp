@@ -1,6 +1,6 @@
 #include "worldgen/dungeongenerator.h"
+#include "common/utils.h"
 #include "level.h"
-#include "utils.h"
 
 #include "graphics/clientview.h"
 #include "inputmanager.h"
@@ -16,12 +16,13 @@
 
 int main( int argc, char* argv[] )
 {
+    putenv("SDL_VideoDriver=directx");
     srand( time(NULL) );
     
     // Create the world
     DungeonGenerator generator( 76, 50 );
     Level *level = generator.generateLevel();
-    level->print();
+//    level->print();
 
     //
     // Game components

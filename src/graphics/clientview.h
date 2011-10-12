@@ -25,6 +25,10 @@ public:
     void draw( Level& level );
     void moveCamera( int x, int y );
 
+    // Return a string containing information about the client's
+    // video settings and capabilities
+    std::string dumpInfo() const;
+
 protected:
     void load();
     void unload();

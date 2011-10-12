@@ -23,7 +23,7 @@ public:
     // Creates a new sprite object and store it in the sprite manager
     void addSprite( const std::string& spriteName,
                     const std::string& filename,
-                    int xOFfset,
+                    int xOffset,
                     int yOffset,
                     int width,
                     int height );
@@ -32,10 +32,10 @@ public:
     Sprite* findSprite( const std::string& spriteName ) const;
 
     // Returns the number of sprites loaded
-    size_t spritesLoaded() const;
+    size_t spriteCount() const;
 
     // Returns the number of images loaded
-    size_t imagesLoaded() const;
+    size_t imageCount() const;
 
 protected:
     // Loads an image file and returns a SDL surface
@@ -49,10 +49,7 @@ private:
     std::string mImageRoot;
 
     // Association of image names to loaded texture files
-    std::map<std::string, SDL_Surface*> mImageMap;
-
-    // List of loaded sdl surfaces
-    std::vector<SDL_Surface*> mSurfaces;
+    std::map<std::string, SDL_Surface*> mLoadedSurfaces;
 
     // List of loaded sprite definitions
     std::map<std::string, Sprite*> mSpriteCache;

@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\common\platform.h" />
+    <ClInclude Include="src\common\utils.h" />
     <ClInclude Include="src\core\fixedgrid.h" />
     <ClInclude Include="src\core\point.h" />
     <ClInclude Include="src\core\rect.h" />

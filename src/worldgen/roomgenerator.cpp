@@ -3,7 +3,7 @@
 #include "room.h"
 #include "level.h"
 #include "tile.h"
-#include "utils.h"
+#include "common/utils.h"
 #include "tiletype.h"
 
 #include <cassert>
@@ -96,7 +96,7 @@ void RoomGenerator::addRandomDoor( Room& room ) const
             {
                 if ( wallsFound++ == theWall )
                 {
-                    tile->type = TILE_DOOR;
+//                    tile->type = TILE_DOOR;
                 }
             }
         }

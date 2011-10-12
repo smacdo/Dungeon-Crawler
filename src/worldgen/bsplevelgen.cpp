@@ -1,5 +1,6 @@
 #include "worldgen/bsplevelgen.h"
 #include "worldgen/roomgenerator.h"
+#include "common/utils.h"
 #include "core/rect.h"
 
 #include "level.h"

@@ -2,16 +2,17 @@
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
 #include "core/rect.h"
+#include "common/utils.h"
 
 #include "tiletype.h"
 #include "level.h"
-#include "utils.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
 #include <boost/checked_delete.hpp>
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <cassert>
 
@@ -64,35 +65,22 @@ void ClientView::start()
 
 void ClientView::load()
 {
+    
+
     SDL_Init( SDL_INIT_EVERYTHING );
 
     // preload all of our images
-    mSpriteManager.preloadImage( "blocked",      "tile_blocked.png" );
-    mSpriteManager.preloadImage( "unallocated",  "tile_unallocated.png" );
-    mSpriteManager.preloadImage( "void",         "tile_void.png" );
-    mSpriteManager.preloadImage( "dungeontiles", "dg_dungeon32.png" );
-    mSpriteManager.preloadImage( "terraintiles", "dg_grounds32.png" );
-    mSpriteManager.preloadImage( "humans",       "dg_humans32.png" );
-    mSpriteManager.preloadImage( "monsters",     "dg_monster132.png" );
+    mSpriteManager.addSprite( "tile_impassable", "tile_blocked.png" );
+    mSpriteManager.addSprite( "tile_empty",      "tile_unallocated.png" );
+    mSpriteManager.addSprite( "tile_wall",       "dg_dungeon32.png", 0 * 32, 0 * 32, 32, 32 );
+    mSpriteManager.addSprite( "tile_floor",      "dg_dungeon32.png", 3 * 32, 6 * 32, 32, 32 );
 
     // load all of our tile sprites
     mTileSprites.resize( ETileType_Count );
-    mTileSprites[ TILE_IMPASSABLE ]  = mSpriteManager.createSprite( "blocked" );
-    mTileSprites[ TILE_UNALLOCATED ] = mSpriteManager.createSprite( "unallocated" );
-    mTileSprites[ TILE_VOID ]        = mSpriteManager.createSprite( "void" );
-    mTileSprites[ TILE_WALL ]        = mSpriteManager.createSprite( "dungeontiles", 0 * 32, 0 * 32, 32, 32 );
-    mTileSprites[ TILE_FLOOR ]       = mSpriteManager.createSprite( "dungeontiles", 3 * 32, 6 * 32, 32, 32 );
-    mTileSprites[ TILE_DOOR  ]       = mSpriteManager.createSprite( "dungeontiles", 1 * 32, 1 * 32, 32, 32 );
-
-        /*
-        TILE_BLOCKED,      // nothing can be placed here,
-                 TILE_UNALLOCATED,  // this tile has not been allocated to anyone
-                 TILE_VOID,         // there is literally nothing here
-                 TILE_WALL,         // its a wall
-                 TILE_FLOOR,        // floor
-                 TILE_DOOR,         // door
-                 ETileType_Count
-        */
+    mTileSprites[ TILE_IMPASSABLE ] = mSpriteManager.findSprite( "tile_impassable" );
+    mTileSprites[ TILE_EMPTY ]      = mSpriteManager.findSprite( "tile_empty" );
+    mTileSprites[ TILE_WALL ]       = mSpriteManager.findSprite( "tile_wall"  );
+    mTileSprites[ TILE_FLOOR ]      = mSpriteManager.findSprite( "tile_floor" );
 }
 
 
@@ -114,6 +102,10 @@ void ClientView::createMainWindow()
         std::cerr << "Failed to set video mode: " << SDL_GetError() << std::endl;
         assert( false );
     }
+
+    // Output video caps
+    std::cout << " ----- Video Settings ----- " << std::endl
+              << dumpInfo() << std::endl;
 
     // Make ourselves look pretty by setting a caption and then a window icon
     SDL_WM_SetCaption( "The Dungeon Demo", "Dungeon Demo" );
@@ -242,15 +234,15 @@ std::string ClientView::dumpInfo() const
        << "Hardware Surfaces  : " << ( pVideo->hw_available ) << std::endl
        << "Window Manager     : " << ( pVideo->wm_available ) << std::endl
        << "Hardware Blit   Xcl: " << ( pVideo->blit_hw )      << std::endl
-       << "Alpha Hrdw Blit Xcl: " << ( pVideo->blit_hwA )     << std::endl
+       << "Alpha Hrdw Blit Xcl: " << ( pVideo->blit_hw_A )    << std::endl
        << "Sftw Blit       Xcl: " << ( pVideo->blit_sw_CC )   << std::endl
        << "Alpha Sftw Blit Xcl: " << ( pVideo->blit_sw_A  )   << std::endl
        << "Blit fill Xcl      : " << ( pVideo->blit_fill )    << std::endl
        << "Video Memory (kB)  : " << ( pVideo->video_mem )    << std::endl
        << "Screen width       : " << ( pVideo->current_w )    << std::endl
        << "Screen height      : " << ( pVideo->current_h )    << std::endl
-       << "Screen pixel bits  : " << ( pFM->BitsPerPixel )    << std::endl
-       << "Screen pixel bytes : " << ( pFM->BytesPerPixel )   << std::endl;
+       << "Screen pixel bits  : " << ( (int) pFM->BitsPerPixel )  << std::endl
+       << "Screen pixel bytes : " << ( (int) pFM->BytesPerPixel ) << std::endl;
 
     return ss.str();
 }

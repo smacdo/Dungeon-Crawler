@@ -77,7 +77,7 @@ bool Level::hasAllocatedTiles( size_t x, size_t y,
             // Make sure the tile is eithe rblocked or unallocated for it
             // to have no owner
             hasOwner = ( mTiles[i].type != TILE_IMPASSABLE &&
-                         mTiles[i].type != TILE_UNALLOCATED );
+                         mTiles[i].type != TILE_EMPTY );
 
             // just for sanity, it can't have a room
             assert( hasOwner || mTiles[i].room == NULL );

@@ -1,8 +1,10 @@
-#include "spritemanager.h"
-#include "sprite.h"
+#include "graphics/spritemanager.h"
+#include "graphics/sprite.h"
+#include "common/utils.h"
 
 #include <string>
 #include <map>
+#include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <boost/checked_delete.hpp>
@@ -13,6 +15,10 @@
 typedef std::map<std::string, Sprite*>::iterator SpriteCacheItr;
 typedef std::map<std::string, Sprite*>::const_iterator SpriteCacheConstItr;
 typedef std::pair<std::string, Sprite*> SpriteCacheEntry;
+
+typedef std::map<std::string, SDL_Surface*>::iterator SurfaceListItr;
+typedef std::map<std::string, SDL_Surface*>::const_iterator SurfaceListConstItr;
+typedef std::pair<std::string, SDL_Surface*> SurfaceListEntry;
 
 /**
  * Constructor
@@ -30,30 +36,15 @@ SpriteManager::~SpriteManager()
     unload();
 }
 
-
 /**
  * Instructs the sprite manager to preload an image. Right now all images
  * must be preloaded before being used in a sprite, but in the future
  * the sprite manager class will gain the ability to manually load sprite
  * definitions
  */
-void SpriteManager::preloadImage( const std::string& imagename,
-                                  const std::string& filepath )
+void SpriteManager::preloadImage( const std::string& filepath )
 {
-    // Make sure the image hasn't already been loaded
-    if ( mImageMap.find( imagename ) != mImageMap.end() )
-    {
-        std::cerr << "Preloaded image '" << imagename
-                  << "' already exists in image cache" << std::endl;
-        assert( false );
-    }
-    else
-    {
-        std::string fullpath   = mImageRoot + filepath;
-        mImageMap[ imagename ] = loadImage( fullpath );
-    }
 
-    std::cout << "Preloaded image: " << imagename << std::endl;
 }
 
 /**
@@ -64,7 +55,7 @@ void SpriteManager::preloadImage( const std::string& imagename,
  * \param  filepath    Path to the image that this sprite will use
  */
 void SpriteManager::addSprite( const std::string& spriteName,
-                               const std::string& filepath ) const
+                               const std::string& filepath )
 {
 
     // Has this sprite already been loaded once before? If so, don't
@@ -102,7 +93,7 @@ void SpriteManager::addSprite( const std::string& spriteName,
                                int xOffset,
                                int yOffset,
                                int width,
-                               int height ) const
+                               int height )
 {
     // Has this sprite already been loaded once before? If so, don't
     // load anything
@@ -111,7 +102,7 @@ void SpriteManager::addSprite( const std::string& spriteName,
     if ( itr == mSpriteCache.end() )
     {
         // This sprite needs to be loaded and then cached
-        SDL_Surface *pSurface = loadImage( filepath );
+        SDL_Surface *pSurface = loadImage( imagepath );
         Sprite      *pSprite  = new Sprite( pSurface,
                                             xOffset, yOffset,
                                             width, height );
@@ -135,7 +126,7 @@ Sprite* SpriteManager::findSprite( const std::string& spriteName ) const
 {
     // Look the sprite up. Hopefully it has been loaded, otherwise
     // we're going to be in trouble...
-    SpriteCacheItr itr = mSpriteCache.find( spriteName );
+    SpriteCacheConstItr itr = mSpriteCache.find( spriteName );
  
     if ( itr == mSpriteCache.end() )
     {
@@ -161,12 +152,25 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
 {
     SDL_Surface *rawSurface = NULL, *optimizedSurface = NULL;
 
+    // Tack the content prefix on
+    std::string imagepath = mImageRoot + filename;
+
+    // Do not load the image if it has already been loaded
+    SurfaceListItr itr = mLoadedSurfaces.find( imagepath );
+
+    if ( itr != mLoadedSurfaces.end() )
+    {
+        std::cerr << "Image was already preloaded: '" << imagepath << std::endl;
+        return itr->second;
+    }
+
     // First load the image into a potentially unoptimized surface
-    rawSurface = IMG_Load( filename.c_str() );
+    rawSurface = IMG_Load( imagepath.c_str() );
 
     if ( rawSurface == NULL )
     {
-        std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
+        std::cerr << "Failed while attempting to load image: " << imagepath << std::endl
+                  << SDL_GetError() << std::endl;
         assert( false );
     }
 
@@ -174,11 +178,11 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
     optimizedSurface = SDL_DisplayFormat( rawSurface );
     assert( optimizedSurface != NULL );
 
-    // Add the surface to our list of loaded surfaces
-    mSurfaces.push_back( optimizedSurface );
-
-    // Release the older surface, and return the optimized version
+    // Release the older surface, and cache the optimized version
     SDL_FreeSurface( rawSurface );
+    mLoadedSurfaces.insert( SurfaceListEntry( imagepath, optimizedSurface ) );
+
+    // Now return the loaded sprite
     return optimizedSurface;
 }
 
@@ -190,20 +194,14 @@ void SpriteManager::unload()
     size_t freedSurfaces = 0, freedSprites = 0;
 
     // Destroy all sprites
-    SpriteCacheItr itr;
-
-    for ( itr = mSpriteCache.begin(); itr != mSpriteCache.end(); ++itr )
-    {
-        delete itr->second;
-        freedSprites++;
-    }
+    DeleteMapPointers( mSpriteCache );
 
     // Kill all surfaces
-    std::vector<SDL_Surface*>::iterator itr;
+    SurfaceListItr itr;
 
-    for ( itr = mSurfaces.begin(); itr != mSurfaces.end(); ++itr )
+    for ( itr = mLoadedSurfaces.begin(); itr != mLoadedSurfaces.end(); ++itr )
     {
-        SDL_FreeSurface( *itr );
+        SDL_FreeSurface( itr->second );
         freedSurfaces++;
     }
 
@@ -218,7 +216,7 @@ void SpriteManager::unload()
  *
  * \return  Number of loaded spites
  */
-size_t SpriteManager::spriteCount()
+size_t SpriteManager::spriteCount() const
 {
     return mSpriteCache.size();
 }
@@ -229,7 +227,7 @@ size_t SpriteManager::spriteCount()
  *
  * \return  Number of loaded images
  */
-size_t SpriteManager::imageCount()
+size_t SpriteManager::imageCount() const
 {
-    return mSurfaces.size();
+    return mLoadedSurfaces.size();
 }

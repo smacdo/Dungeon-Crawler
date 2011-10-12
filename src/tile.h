@@ -10,7 +10,7 @@ class Room;
 struct Tile
 {
     Tile()
-        : type( TILE_UNALLOCATED ),
+        : type( TILE_EMPTY ),
           room( NULL )
     {
     }
@@ -21,16 +21,12 @@ struct Tile
         {
             case TILE_IMPASSABLE:
                 return '*';
-            case TILE_UNALLOCATED:
+            case TILE_EMPTY:
                 return ' ';
-            case TILE_VOID:
-                return '0';
             case TILE_WALL:
                 return '#';
             case TILE_FLOOR:
                 return '.';
-            case TILE_DOOR:
-                return '~';
             default:
                 return '?';
         }
