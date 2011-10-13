@@ -11,6 +11,8 @@
 #include <time.h>
 #include <stdlib.h>
 
+#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 #define USE_SDL_MAIN_MAGIC 1
 #include "common/platform.h"        // let SDL redefine our main function
 

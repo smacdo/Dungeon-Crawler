@@ -54,7 +54,9 @@
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL.lib;SDLmain.lib;SDL_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL.lib;SDLmain.lib;SDL_image.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalManifestDependencies>"  type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'  "</AdditionalManifestDependencies>
+      <ManifestFile>$(OutDir)$(TargetName)$(TargetExt).manifest</ManifestFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,6 +84,7 @@
     <ClCompile Include="src\inputmanager.cpp" />
     <ClCompile Include="src\level.cpp" />
     <ClCompile Include="src\room.cpp" />
+    <ClCompile Include="src\tilegrid.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\worldgen\bsplevelgen.cpp" />
     <ClCompile Include="src\worldgen\dungeongenerator.cpp" />
@@ -104,6 +107,7 @@
     <ClInclude Include="src\level.h" />
     <ClInclude Include="src\room.h" />
     <ClInclude Include="src\tile.h" />
+    <ClInclude Include="src\tilegrid.h" />
     <ClInclude Include="src\tiletype.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\worldgen\bsplevelgen.h" />

@@ -3,6 +3,7 @@
 #include "graphics/sprite.h"
 #include "core/rect.h"
 #include "common/utils.h"
+#include "common/platform.h"
 
 #include "tiletype.h"
 #include "level.h"
@@ -65,8 +66,6 @@ void ClientView::start()
 
 void ClientView::load()
 {
-    
-
     SDL_Init( SDL_INIT_EVERYTHING );
 
     // preload all of our images

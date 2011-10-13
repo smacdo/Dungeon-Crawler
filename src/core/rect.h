@@ -89,12 +89,14 @@ public:
     /**
      * Assignment operator
      */
-    Rect& operator = ( const Rect& rhs ) const
+    Rect& operator = ( const Rect& rhs )
     {
         mTop    = rhs.mTop;
         mLeft   = rhs.mLeft;
         mBottom = rhs.mBottom;
         mRight  = rhs.mRight;
+
+        return *this;
     }
 
     /**

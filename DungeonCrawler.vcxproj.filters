@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{58835c99-1153-4da6-998b-4b69b6f51db8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\WorldGen">
       <UniqueIdentifier>{42107778-8c76-4a65-b6b9-4d709eb547fe}</UniqueIdentifier>
     </Filter>
@@ -36,6 +33,9 @@
     </Filter>
     <Filter Include="Header Files\Common">
       <UniqueIdentifier>{3c09e393-03b7-4bc9-b950-4a780d008c33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{58835c99-1153-4da6-998b-4b69b6f51db8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -67,7 +67,7 @@
       <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\core\rect.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="src\room.cpp">
       <Filter>Source Files\Game</Filter>
@@ -85,6 +85,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\common\platform.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tilegrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -151,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="src\common\utils.h">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tilegrid.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

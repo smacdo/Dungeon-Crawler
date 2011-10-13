@@ -15,6 +15,12 @@ struct Tile
     {
     }
 
+    Tile( ETileType type_ )
+        : type( type_ ),
+          room( NULL )
+    {
+    }
+
     char display() const
     {
         switch ( type )

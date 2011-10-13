@@ -1,7 +1,8 @@
 #ifndef SCOTT_DUNGEON_FIXEDGRID_H
 #define SCOTT_DUNGEON_FIXEDGRID_H
 
-#include "point.h"
+#include "core/point.h"
+#include <boost/checked_delete.hpp>
 
 template<typename T>
 class FixedGrid
@@ -26,7 +27,7 @@ public:
 
     }
 
-    ~FixedGrid()
+    virtual ~FixedGrid()
     {
         boost::checked_array_delete( mTiles );
     }
