@@ -3,6 +3,7 @@
 
 #include "core/point.h"
 #include <boost/checked_delete.hpp>
+#include <cassert>
 
 template<typename T>
 class FixedGrid
@@ -14,17 +15,14 @@ public:
     {
     }
 
-    FixedGrid( FixedGrid& grid )
-        : mWidth( grid.width ),
-          mHeight( grid.height ),
+    FixedGrid( const FixedGrid& grid )
+        : mWidth( grid.mWidth ),
+          mHeight( grid.mHeight ),
           mTiles( new T[ mWidth * mHeight ] )
     {
-        assert( grid.mTiles != NULL );
-
         std::copy( &grid.mTiles[0],
                    &grid.mTiles[mWidth*mHeight],
                    &mTiles[0] );
-
     }
 
     virtual ~FixedGrid()
@@ -88,7 +86,7 @@ public:
     void set( size_t x, size_t y, const T& value )
     {
         assert( x < mWidth && y < mHeight );
-        return mTiles[ offset( x, y ) ] = value;
+        mTiles[ offset( x, y ) ] = value;
     }
 
     size_t width() const
@@ -106,7 +104,7 @@ public:
         return mWidth * mHeight;
     }
 
-private:
+protected:
     size_t offset( size_t x, size_t y ) const
     {
         return y * mWidth + x;

@@ -8,27 +8,29 @@
 #include <cassert>
 
 LevelGenerator::LevelGenerator( RoomGenerator *pRoomGen,
-                                size_t width,
-                                size_t height )
+                                int width,
+                                int height )
     : mRoomGenerator( pRoomGen ),
-      mLevel( NULL ),
       mLevelWidth( width ),
-      mLevelHeight( height )
+      mLevelHeight( height ),
+      mTileGrid( width, height )
 {
-    assert( width > 2 );
-    assert( height > 2 );
+    assert( width > 5 );
+    assert( height > 5 );
 }
 
-LevelGenerator::~LevelGenerator(void)
+LevelGenerator::~LevelGenerator()
 {
+    boost::checked_delete( mRoomGenerator );
 }
 
 Level* LevelGenerator::generate()
 {
-    mLevel = new Level( mLevelWidth, mLevelHeight );
-
-    // Pre-generate the level borders
-    emplaceLevelBorders( deref(mLevel) );
+    // Turn the level border tiles into impassable bedrock tiles to prevent
+    // the player (or anyone really) from escaping into the void
+    mTileGrid.carveTiles( Rect( 0, 0, mLevelWidth, mLevelHeight ),
+                          Tile( TILE_IMPASSABLE ),
+                          Tile( TILE_EMPTY ) );
 
     // Generate the requested number of rooms
 
@@ -37,25 +39,5 @@ Level* LevelGenerator::generate()
     // Hook everything up
 
     // Return the generated level
-    return mLevel;
+    return new Level( mTileGrid );
 }
-
-void LevelGenerator::emplaceLevelBorders( Level& level ) const
-{
-    // Place impassable tiles along the borders of the level
-    size_t maxX = level.width()  - 1;
-    size_t maxY = level.height() - 1;
-
-    for ( size_t x = 0; x < level.width(); ++x )
-    {
-        level.tileAt( Point(x, 0) )->makeImpassable();
-        level.tileAt( Point(x, maxY))->makeImpassable();
-    }
-
-    for ( size_t y = 0; y < level.height(); ++y )
-    {
-        level.tileAt( Point(0, y) )->makeImpassable();
-        level.tileAt( Point(maxX,y) )->makeImpassable();
-    }
-}
-

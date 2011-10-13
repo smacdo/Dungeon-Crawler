@@ -4,27 +4,26 @@
 #include <cstddef>
 #include <boost/noncopyable.hpp>
 
+#include "tilegrid.h"
+
 class RoomGenerator;
 class Level;
 
 class LevelGenerator : boost::noncopyable
 {
 public:
-    LevelGenerator( RoomGenerator *pRoomGen,
-                    size_t width,
-                    size_t height );
+    LevelGenerator( RoomGenerator *pRoomGen, int width, int height );
     ~LevelGenerator();
 
     Level * generate();
 
 protected:
-    void emplaceLevelBorders( Level& level ) const;
 
 private:
     RoomGenerator *mRoomGenerator;
-    Level *mLevel;
     size_t mLevelWidth;
     size_t mLevelHeight;
+    TileGrid mTileGrid;
 };
 
 #endif

@@ -2,113 +2,88 @@
 #include "tile.h"
 #include "tiletype.h"
 #include "utils.h"
-#include "room.h"
+#include "tilegrid.h"
 
 #include <iostream>
 #include <vector>
-
+#include <string>
+#include <sstream>
 #include <cassert>
 
-Level::Level( size_t width, size_t height )
-    : mWidth( width ), mHeight( height )
+Level::Level( const TileGrid& grid )
+    : mTileGrid( grid )
 {
-    init();
 }
 
 Level::~Level()
 {
-    delete[] mTiles;
 }
 
-Room* Level::addRectangleRoom( size_t x, size_t y,
-                               size_t width, size_t height,
-                               ETileType wall,
-                               ETileType floor )
+/**
+ * Return a reference to the tile stored at the requested position
+ *
+ * \param  p  The position to look up
+ * \return    Reference to the tile
+ */
+Tile& Level::tileAt( const Point& p )
 {
-    // make sure the room fits in the borders
-    assert( x + width  <= mWidth  && mWidth  > 0 );
-    assert( y + height <= mHeight && mHeight > 0 );
-
-    // make sure the area is clean
-    assert( hasAllocatedTiles( x, y, width, height ) == false );
-
-    // Allocate a room to hold this new rectangle room
-    Room * pRoom = new Room( x, y, width, height, this );
-    mRooms.push_back( pRoom );
-
-    // Now carve the room out
-    pRoom->carveRect( x, y, width, height, wall, floor );
-
-    return pRoom;
-}
-    
-Tile Level::getTileAt( size_t row, size_t col ) const
-{
-    assert( col < mWidth  );
-    assert( row < mHeight );
-    
-    return mTiles[ offset(row,col) ];
+    return mTileGrid.get( p );
 }
 
-Tile* Level::tileAt( size_t row, size_t col )
+/**
+ * Return a constant reference to the tile stored at the requested
+ * position
+ *
+ * \param  p  The position to look up
+ * \return    Constant reference to the tile
+ */
+const Tile& Level::tileAt( const Point& p ) const
 {
-    assert( col < mWidth );
-    assert( row < mHeight );
-
-    return &mTiles[ offset(row,col) ];
+    return mTileGrid.get( p );
 }
 
-Tile* Level::tileAt( const Point& p )
+/**
+ * Returns the contents of the level in string form
+ *
+ * \return String representing the level
+ */
+std::string Level::dump() const
 {
-    return tileAt( p.y(), p.x() );
-}
+    std::stringstream ss;
 
-bool Level::hasAllocatedTiles( size_t x, size_t y,
-                               size_t width, size_t height ) const
-{
-    bool hasOwner = false;
-
-    for ( size_t row = 0; row < height && (!hasOwner); ++row )
+    for ( size_t y = 0; y < mTileGrid.height(); ++y )
     {
-        for ( size_t col = 0; col < width && (!hasOwner); ++col )
+        for ( size_t x = 0; x < mTileGrid.width(); ++x )
         {
-            size_t i = offset( row + y, col + x );
+            const Tile& tile = mTileGrid.get( x, y );
 
-            // Make sure the tile is eithe rblocked or unallocated for it
-            // to have no owner
-            hasOwner = ( mTiles[i].type != TILE_IMPASSABLE &&
-                         mTiles[i].type != TILE_EMPTY );
-
-            // just for sanity, it can't have a room
-            assert( hasOwner || mTiles[i].room == NULL );
-        }
-    }
-
-    return hasOwner;
-}
-
-void Level::print() const
-{
-    for ( size_t row = 0; row < mHeight; ++row )
-    {
-        for ( size_t col = 0; col < mWidth; ++col )
-        {
-            std::cout << mTiles[offset(row,col)].display();
+            switch ( tile.type )
+            {
+                case TILE_IMPASSABLE:
+                    ss << 'x';
+                case TILE_EMPTY:
+                    ss << ' ';
+                case TILE_WALL:
+                    ss << '#';
+                case TILE_FLOOR:
+                    ss << '.';
+                default:
+                    ss << '?';
+            }
         }
 
-        std::cout << std::endl;
+        ss << '\n';
     }
+
+    return ss.str();
 }
 
-void Level::init()
+int Level::width() const
 {
-    mTiles = new Tile[ mHeight * mWidth ];
+    return mTileGrid.width();
 }
 
-size_t Level::offset( size_t row, size_t col ) const
+int Level::height() const
 {
-    assert( row < mHeight );
-    assert( col < mWidth );
-    return row * mWidth + col;
+    return mTileGrid.height();
 }
-

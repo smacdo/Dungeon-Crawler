@@ -22,7 +22,7 @@ public:
     ~ClientView();
 
     void start();
-    void draw( Level& level );
+    void draw( const Level& level );
     void moveCamera( int x, int y );
 
     // Return a string containing information about the client's

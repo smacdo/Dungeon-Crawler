@@ -90,7 +90,7 @@ void ClientView::unload()
 
 void ClientView::createMainWindow()
 {
-    // Init the backbuffer surface
+    // Init the back buffer surface
     mpBackbuffer = SDL_SetVideoMode( Config::DefaultScreenWidth,
                                      Config::DefaultScreenHeight,
                                      Config::DefaultScreenDepth,
@@ -116,7 +116,7 @@ void ClientView::createMainWindow()
     SDL_WM_SetIcon( loadImage( "data/gameicon.png" ), NULL );
 }
 
-void ClientView::draw( Level& level )
+void ClientView::draw( const Level& level )
 {
     assert( mWasStarted );
 
@@ -125,11 +125,11 @@ void ClientView::draw( Level& level )
     // but I'm hungry, the hour is late and I would really like to see
     // this work before i finish for the day
     //
-    for ( size_t row = 0; row < level.height(); ++row )
+    for ( int y = 0; y < level.height(); ++y )
     {
-        for ( size_t col = 0; col < level.width(); ++col )
+        for ( int x = 0; x < level.width(); ++x )
         {
-            Rect bounds( col * 32, row * 32, 32, 32 );
+            Rect bounds( x * 32, y * 32, 32, 32 );
 
             // Is it visible? Sigh, I know its a bad hack
             if (! mCamera.contains( bounds ) )
@@ -138,7 +138,7 @@ void ClientView::draw( Level& level )
             }
 
             // Get information on that tile
-            Tile      tile = level.getTileAt( row, col );
+            const Tile& tile    = level.tileAt( Point( x, y ) );
             Sprite *pTileSprite = mTileSprites[ tile.type ];
 
             drawSprite( bounds.x() - mCamera.x(),

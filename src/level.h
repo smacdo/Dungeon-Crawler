@@ -1,61 +1,28 @@
 #ifndef SCOTT_DUNGEON_LEVEL_H
 #define SCOTT_DUNGEON_LEVEL_H
 #include "tile.h"
+#include "tilegrid.h"
 
 #include <vector>
 #include <cassert>
-
-class Level;
-class Room;
-class Point;
-struct Tile;
+#include <string>
 
 class Level
 {
 public:
-    Level( size_t width, size_t height );
+    Level( const TileGrid& tileGrid );
     ~Level();
+    
+    Tile& tileAt( const Point& p );
+    const Tile& tileAt( const Point& p ) const;
 
-    // Adds a room
-    Room* addRectangleRoom( size_t x, size_t y,
-                            size_t width, size_t height,
-                            ETileType wall,
-                            ETileType floor );
+    std::string dump() const;
 
-    // Checks if any of the tiles in the given rect have been allocated
-    // to a room or corridor
-    bool hasAllocatedTiles( size_t topX, size_t topY,
-                            size_t width, size_t height ) const;
-
-    // Returns the tile at the requested position
-    Tile getTileAt( size_t r, size_t c ) const;
-
-    Tile* tileAt( size_t r, size_t c );
-    Tile* tileAt( const Point& p );
-
-    void print() const;
-
-    size_t width() const { return mWidth; }
-    size_t height() const{  return mHeight; }
-
-protected:
-    void init();
-    size_t offset( size_t x, size_t y ) const;
-
-    // Tries to carve out a chunk of the map with the given
-    // dimensions, and assigns the tiles to their proper wall/floor
-    // type.
-    void carveRoom( size_t x, size_t y,
-                    size_t width,
-                    size_t height,
-                    ETileType wall,
-                    ETileType floor,
-                    Room* pRoom );
+    int width() const;
+    int height() const;
 
 private:
-    size_t mWidth, mHeight;
-    Tile * mTiles;
-    std::vector<Room*> mRooms;
+    TileGrid mTileGrid;
 };
 
 #endif

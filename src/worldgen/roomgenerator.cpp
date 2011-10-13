@@ -1,6 +1,6 @@
 #include "worldgen/roomgenerator.h"
 #include "core/rect.h"
-#include "room.h"
+#include "tilegrid.h"
 #include "level.h"
 #include "tile.h"
 #include "common/utils.h"
@@ -19,12 +19,6 @@ RoomGenerator::~RoomGenerator()
 
 }
 
-void RoomGenerator::setLevel( Level* level )
-{
-    assert( level != NULL );
-    mLevel = level;
-}
-
 /**
  * Requests that the room generator generates a new random room in the
  * specified area. This method will return a pointer if the creation
@@ -33,11 +27,12 @@ void RoomGenerator::setLevel( Level* level )
  * \param area The area to construct the room in. The room could be smaller
  * \return Pointer to the newly constructed room, or NULL if refused
  */
-Room* RoomGenerator::generate( const Rect& area )
+TileGrid RoomGenerator::generate( const Rect& area )
 {
+    TileGrid room( area.width(), area.height() );
+
     assert( area.width() > MinRoomSize );
     assert( area.height() > MinRoomSize );
-    assert( mLevel != NULL );
 
     // Randomly determine the sizes of the new room
     int width  = Utils::random( MinRoomSize, area.width() - 1 );
@@ -54,51 +49,9 @@ Room* RoomGenerator::generate( const Rect& area )
     int x = Utils::random( 0, bufferWidth+1 );
     int y = Utils::random( 0, bufferHeight+1 );
 
-    Room *pRoom = mLevel->addRectangleRoom( area.x() + x, area.y() + y,
-                                            width,
-                                            height,
-                                            TILE_WALL,
-                                            TILE_FLOOR );
-
-    // Add some doors to the room
-    int numDoors = Utils::random( 1, 5 );
-
-    for ( int i = 0; i < numDoors; ++i )
-    {
-        addRandomDoor( deref(pRoom) );
-    }
-
-    return pRoom;
-}
-
-/**
- * Adds a random door to the room
- */
-void RoomGenerator::addRandomDoor( Room& room ) const
-{
-    size_t numWalls = room.numTilesOf( TILE_WALL );
-    assert( numWalls > 0 );
-    
-    // Now randomly determine which of these wall tiles will turn into
-    // a door.
-    size_t theWall = Utils::random( 0, numWalls );
-
-    // Transform it
-    size_t wallsFound = 0;
-
-    for ( size_t r = 0; r < room.height(); ++r )
-    {
-        for ( size_t c = 0; c < room.width(); ++c )
-        {
-            Tile * tile = mLevel->tileAt( r + room.topY(), c + room.topX() );
-            
-            if ( tile->type == TILE_WALL )
-            {
-                if ( wallsFound++ == theWall )
-                {
-//                    tile->type = TILE_DOOR;
-                }
-            }
-        }
-    }
+    // Carve out the room, and return the tile grid
+    room.carveTiles( Rect( x, y, width, height),
+                     Tile( TILE_WALL ),
+                     Tile( TILE_FLOOR ) );
+    return room;
 }
