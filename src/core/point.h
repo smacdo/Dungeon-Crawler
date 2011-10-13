@@ -30,6 +30,11 @@ public:
         return ( mX >= 0 && mY >= 0 );
     }
 
+    bool isZero()
+    {
+        return mX == 0 && mY == 0;
+    }
+
     int x() const
     {
         return mX;
