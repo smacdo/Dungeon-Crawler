@@ -2,6 +2,7 @@
 #define SCOTT_DUNGEON_ROOM_GENERATOR_H
 
 #include "tilegrid.h"
+#include "dungeoncrawler.h"
 
 class Rect;
 
@@ -23,7 +24,7 @@ public:
      * can potentially refuse to place a level, in which case the returned
      * pointer will be null
      */
-    TileGrid generate( const Rect& area );
+    TileGrid generate( ERoomSize roomSize );
 };
 
 #endif
