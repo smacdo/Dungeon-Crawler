@@ -1,18 +1,27 @@
+/*
+ * Copyright (C) 2011 Scott MacDonald. All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+#include "common/logging.h"
+
 #include <iostream>
 #include <ostream>
 #include <fstream>
 #include <string>
 
-enum ELogLevel
-{
-    ELOG_TRACE,
-    ELOG_DEBUG,
-    ELOG_INFO,
-    ELOG_NOTICE,
-    ELOG_WARN,
-    ELOG_ERROR,
-    ELogLevel_Count
-};
+Log GlobalLog::mLog;
 
 const char* LOG_LEVEL_NAMES[ELogLevel_Count] =
 {
@@ -22,43 +31,6 @@ const char* LOG_LEVEL_NAMES[ELogLevel_Count] =
     "NOTICE",
     "WARN",
     "ERROR"
-};
-
-class NullStreamBuf : public std::streambuf
-{
-public:
-    NullStreamBuf()
-    {
-    }
-
-private:
-    virtual int overflow( int c )
-    {
-        return std::char_traits<char>::not_eof(c);
-    }
-};
-
-class LogEntry
-{
-public:
-    LogEntry( std::ostream& consoleInput,
-              std::ostream& fileInput,
-              ELogLevel logLevel,
-              const std::string& system );
-    LogEntry( std::ostream& singleInput );
-    ~LogEntry();
-
-    template<typename T>
-    LogEntry& operator << ( const T& obj )
-    {
-        mConsoleStream << obj;
-        mFileStream    << obj;
-        return *this;
-    }
-
-private:
-    std::ostream& mConsoleStream;
-    std::ostream& mFileStream;
 };
 
 /**
@@ -106,30 +78,7 @@ LogEntry::~LogEntry()
     mConsoleStream << std::endl;
 }
 
-class Logger
-{
-public:
-    Logger();
-    ~Logger();
-
-    static std::string findAcceptableLogName( const std::string& path );
-
-    LogEntry trace( const std::string& system ) const;
-    LogEntry debug( const std::string& system ) const;
-    LogEntry info( const std::string& system ) const;
-    LogEntry notice( const std::string& system ) const;
-    LogEntry warn( const std::string& system ) const;
-    LogEntry error( const std::string& system ) const;
-
-private:
-    std::ofstream mOutputFile;
-    mutable std::ostream  mNullStream;
-    std::ostream& mConsoleStream;
-    std::ostream& mFileStream;
-    ELogLevel mMinimumLogLevel;
-};
-
-Logger::Logger()
+Log::Log()
     : mOutputFile(),
       mNullStream( new NullStreamBuf ),
       mConsoleStream( std::cout ),
@@ -138,33 +87,7 @@ Logger::Logger()
 {
 }
 
-std::string findNewLogFileName( const std::string& directory )
-{
-    DIR *dir;
-    dirent *pDir;
-
-    // Open the directory
-    dir = opendir( directory.c_str() );
-
-    if ( dir == NULL )
-    {
-        // oops
-        return std::string("");
-    }
-
-    // Iterate through the list of directories
-    while ( ( pDir = readdir(dir) ) != NULL )
-    {
-        // Examine the filename
-        char * filename = pDir->d_name;
-        std::cout << filename << std::endl;
-    }
-
-    closedir(dir);
-    return std::string("ohhai");
-}
-
-Logger::~Logger()
+Log::~Log()
 {
     if ( mOutputFile.is_open() )
     {
@@ -180,7 +103,7 @@ Logger::~Logger()
  * \return A LogEntry object that can be used to append additional
  *         information to the log entry
  */
-LogEntry Logger::trace( const std::string& system ) const
+LogEntry Log::trace( const std::string& system ) const
 {
     if ( mMinimumLogLevel <= ELOG_TRACE )
     {
@@ -200,7 +123,7 @@ LogEntry Logger::trace( const std::string& system ) const
  * \return A LogEntry object that can be used to append additional
  *         information to the log entry
  */
-LogEntry Logger::debug( const std::string& system ) const
+LogEntry Log::debug( const std::string& system ) const
 {
     if ( mMinimumLogLevel <= ELOG_DEBUG )
     {
@@ -220,7 +143,7 @@ LogEntry Logger::debug( const std::string& system ) const
  * \return A LogEntry object that can be used to append additional
  *         information to the log entry
  */
-LogEntry Logger::info( const std::string& system ) const
+LogEntry Log::info( const std::string& system ) const
 {
     if ( mMinimumLogLevel <= ELOG_INFO )
     {
@@ -240,7 +163,7 @@ LogEntry Logger::info( const std::string& system ) const
  * \return A LogEntry object that can be used to append additional
  *         information to the log entry
  */
-LogEntry Logger::notice( const std::string& system ) const
+LogEntry Log::notice( const std::string& system ) const
 {
     if ( mMinimumLogLevel <= ELOG_NOTICE )
     {
@@ -260,7 +183,7 @@ LogEntry Logger::notice( const std::string& system ) const
  * \return A LogEntry object that can be used to append additional
  *         information to the log entry
  */
-LogEntry Logger::warn( const std::string& system ) const
+LogEntry Log::warn( const std::string& system ) const
 {
     if ( mMinimumLogLevel <= ELOG_WARN )
     {
@@ -280,7 +203,7 @@ LogEntry Logger::warn( const std::string& system ) const
  * \return A LogEntry object that can be used to append additional
  *         information to the log entry
  */
-LogEntry Logger::error( const std::string& system ) const
+LogEntry Log::error( const std::string& system ) const
 {
     if ( mMinimumLogLevel <= ELOG_ERROR )
     {
@@ -292,8 +215,18 @@ LogEntry Logger::error( const std::string& system ) const
     }
 }
 
-int main( int argc, char* argv[] )
+/**
+ * Initializes the global log
+ */
+void GlobalLog::start()
 {
-    Logger logger;
-    logger.info("core") << "Hello World";
+
+}
+
+/**
+ * Return a reference to the global log
+ */
+Log& GlobalLog::getInstance()
+{
+    return mLog;
 }

@@ -75,6 +75,7 @@
   <ItemGroup>
     <ClCompile Include="src/sdlclient.cpp" />
     <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\common\logging.cpp" />
     <ClCompile Include="src\common\platform.cpp" />
     <ClCompile Include="src\common\rect.cpp" />
     <ClCompile Include="src\dungeon.cpp" />
@@ -93,6 +94,7 @@
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\common\fixedgrid.h" />
+    <ClInclude Include="src\common\logging.h" />
     <ClInclude Include="src\common\platform.h" />
     <ClInclude Include="src\common\point.h" />
     <ClInclude Include="src\common\rect.h" />

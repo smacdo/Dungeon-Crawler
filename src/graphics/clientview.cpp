@@ -98,8 +98,8 @@ void ClientView::createMainWindow()
 
     if ( mpBackbuffer == NULL )
     {
-        std::cerr << "Failed to set video mode: " << SDL_GetError() << std::endl;
-        assert( false );
+        App::raiseFatalError( "Failed to set video mode when creating window",
+                              SDL_GetError() );
     }
 
     // Output video caps
@@ -155,9 +155,6 @@ void ClientView::draw( const Level& level )
  * Internal helper method that will load an image from disk, convert it
  * into an optimized format and then return its SDL_Surface pointer.
  *
- * Calling this method will cause the SDL_Surface* to be placed in the
- * list of loaded surfaces which will be unloaded at destruction time
- *
  * \param  filename  Path to the image
  * \return Pointer to the loaded image's SDL surface
  */
@@ -170,8 +167,8 @@ SDL_Surface* ClientView::loadImage( const std::string& filename )
 
     if ( rawSurface == NULL )
     {
-        std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
-        assert( false );
+        App::raiseFatalError("Failed to load an image from the disk",
+                              SDL_GetError() );
     }
 
     // Now convert it to be the same format as the back buffers
@@ -190,7 +187,7 @@ void ClientView::drawSprite( int x, int y, const Sprite& sprite )
     assert( y >= 0 );
 
     // Construct a rectangle that encompasses only the area of the image
-    // that the sprite wants to pull from (for spritesheet sprites)
+    // that the sprite wants to pull from (for sprite sheet sprites)
     SDL_Rect clip   = { static_cast<int16_t>(sprite.x()),
                         static_cast<int16_t>(sprite.y()),
                         static_cast<int16_t>(sprite.width()),

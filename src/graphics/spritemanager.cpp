@@ -1,6 +1,8 @@
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
 #include "common/utils.h"
+#include "common/platform.h"
+#include "common/logging.h"
 
 #include <string>
 #include <map>
@@ -74,7 +76,8 @@ void SpriteManager::addSprite( const std::string& spriteName,
     }
     else
     {
-        std::cerr << "Sprite '" << spriteName << "' loaded twice" << std::endl;
+        LOG_WARN("Graphics")
+            << "Sprite '" << spriteName << "' loaded twice";
     }
 }
 
@@ -84,8 +87,8 @@ void SpriteManager::addSprite( const std::string& spriteName,
  *
  * \param  spriteName Name to give to the sprite
  * \param  imagepath  Path to the sprite image
- * \param  xOffset    Sprite's upper left x coordinate in the spritesheet
- * \param  yOffset    Sprite's upper left y coordinate in the spritesheet
+ * \param  xOffset    Sprite's upper left x coordinate in the sprite sheet
+ * \param  yOffset    Sprite's upper left y coordinate in the sprite sheet
  * \param  width      Width of the sprite
  * \parma  height     Height of the sprite
  * \return            Pointer to the generated sprite
@@ -113,7 +116,8 @@ void SpriteManager::addSprite( const std::string& spriteName,
     }
     else
     {
-        std::cerr << "Sprite '" << spriteName << "' loaded twice" << std::endl;
+        LOG_WARN("Graphics")
+            << "Sprite '" << spriteName << "' loaded twice";
     }
 }
 
@@ -132,9 +136,8 @@ Sprite* SpriteManager::findSprite( const std::string& spriteName ) const
  
     if ( itr == mSpriteCache.end() )
     {
-        std::cerr << "Sprite '" << spriteName << "' does not exist"
-                  << std::endl;
-        assert( false );
+        App::raiseFatalError( "The requested sprite name does not exist",
+                              spriteName );
     }
 
     return itr->second;
@@ -162,7 +165,10 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
 
     if ( itr != mLoadedSurfaces.end() )
     {
-        std::cerr << "Image was already preloaded: '" << imagepath << std::endl;
+        LOG_WARN("Graphics")
+            << "Image was already loaded when attempting to preload: "
+            << imagepath;
+
         return itr->second;
     }
 
@@ -171,9 +177,11 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
 
     if ( rawSurface == NULL )
     {
-        std::cerr << "Failed while attempting to load image: " << imagepath << std::endl
-                  << SDL_GetError() << std::endl;
-        assert( false );
+        std::string error = std::string("IMAGE: ") + imagepath + "\n" +
+                            "SDL: " + SDL_GetError();
+
+        App::raiseFatalError( "Could not load the requested image from disk",
+                               error );
     }
 
     // Now convert it to be the same format as the back buffers
@@ -208,8 +216,8 @@ void SpriteManager::unload()
     }
 
     // Let 'em know how many things were unloaded
-    std::cout << "Unloaded " << freedSprites << " sprites and "
-              << freedSurfaces << " images " << std::endl;
+    LOG_INFO("Graphics") << "Unloaded " << freedSprites << " sprites";
+    LOG_INFO("Graphics") << "Unloaded " << freedSurfaces << " images";
 }
 
 /**

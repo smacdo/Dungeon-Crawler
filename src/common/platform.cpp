@@ -18,6 +18,7 @@
 #define _UNICODE
 
 #include "common/platform.h"
+#include "common/logging.h"
 #include "common/utils.h"
 #include "config.h"
 #include <SDL.h>
@@ -39,30 +40,6 @@
 #if defined(_WIN32)
 namespace
 {
-    /**
-     * Return the SDL main window's HWND handle.
-     *
-     * \return HWND value of the SDL main window
-     */
-    HWND appGetWindowHandle()
-    {
-        SDL_SysWMinfo sysInfo;
-        HWND hwnd;
-
-        // Get the window handle out of SDL
-        int result = SDL_GetWMInfo( &sysInfo );
-        hwnd       = sysInfo.window;
-
-        // Make sure the retrieval worked
-        if ( result != 1 )
-        {
-            std::cerr << "[ERROR] Failed to retrieve window handle" << std::endl;
-            hwnd = 0;
-        }
-
-        return hwnd;
-    }
-
     /**
      * Converts an STL string into a WindowsNT wchar* wrapped inside of a
      * pretty wstring
@@ -126,8 +103,13 @@ EAssertionStatus raiseAssertion( const char *message,
     if ( message == NULL )
     {
         message = "Unlucky for you, an internal assertion check has failed. Please "
-            "contact the maintainer to let him know the game broke. ";
+                  "contact the maintainer to let him know the game broke. ";
     }
+
+    // Spit the assertion information out to the log
+    LOG_ERROR("SYSTEM") << "ASSERTION FAILED in file "
+                        << filename << ":" << lineNumber << "; "
+                        << "assert( " << expression << " )";
 
     // Properly format the assertion message, and also convert the expression
     // and filename into wstring for display with windows
@@ -308,8 +290,6 @@ void raiseFatalError( const std::string& message,
                       const std::string& details )
 {
 #if defined(_WIN32)
-    HWND window = appGetWindowHandle();
-
     // Convert STL strings into wstrings for windows
     std::wstring wMessage     = WinNTStringToWideString( message );
     std::wstring wDetails     = WinNTStringToWideString( details );
