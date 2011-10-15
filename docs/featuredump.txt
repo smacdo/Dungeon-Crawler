@@ -1,0 +1,371 @@
+Braindump of features and whatnot
+==================================
+
+
+
+Time
+----
+The game should keep track of time, including how long a turn lasts
+(i'd say 10 seconds), how long a day/night is, what minute, hour, day,
+month and year the game is. There should be holidays and other special
+events. Game should recogonize sunrise, sunset, middway, midnight, dawn,
+dust, night, day, etc.
+
+Traps
+-----
+We need traps! Lots of traps! Both natural (rock slides, bottomless hole)
+and unnatural (spiked bear trap)
+
+Noise
+-----
+Players and monsters all make noise, which can be heard by the player after
+making a hearing check. They flow a certain distance, and will alert monsters
+who are idle. Monsters could possibly move in the direction of the sound,
+searching for who ever made it
+
+Smell
+-----
+Monsters and players leave occasionally (or maybe often) leave smells
+on tiles which can be picked up by the appropriate check. Passive checks
+will pick this up a lot less than an active check. A smell will dissipate
+over time, depending on its original strength
+
+
+Hunger
+------
+Monsters and players will get hungry. The majority of the time (80%) the
+player is either fully satisified, or barely hungry. After this point, there
+will be increasingly powerful side effects as he/she gets more hungry. Note
+that as each state gets worse, the time it takes to progress is much longer.
+Also, the majority of food will quickly fill up the food bar. This is in an
+attempt to make hunger not annoying, but still interesting especially if the
+player is caught out in the wilderness trying to scavenge for food.
+
+An idea for hunger: 
+    100:        Food Coma                       -speed, int
+    95:         Stuffed        
+    60:         Full            
+    40:         Not hungry       
+    30:         Slightly hungry   
+    20:         Hungry             
+    15:         Hunger pangs      
+    10:         Empty Stomach
+    0:          Ravenous
+    -10:        Famished                        - more suscp. to crit hit
+    -20:        Starving                        - randomly lose a turn
+    -30:        Extreme starvation              - magic casts fail
+    -40:        Near death starvation
+    -50:        Death
+
+
+Something like:
+    Turkey, gravey and bread meal:   +80 food
+    
+
+Restfulness
+---------------------
+    100: Max
+    75:  Recovered
+    25:  Drowsy
+    15:  Sleepy
+    5:   Fainting
+    0:   Seeing things
+   -100: Death
+
+Interesting variables
+---------------------
+    * % chance to "inflate" an object with a requested object level
+    * % chance to "inflate" a monster's level
+    * % chance every turn to spawn a new monster
+    * % chance a room will spawn an encounter
+        * % chance for number of sub groups in an encounter
+        * N number of mobs in encounter, with maximum
+    * Monsters can reproduce
+    * Inventory size
+
+Room Adjectives
+---------------
+These things should be influences on the room is designed:
+    * sizes: tiny, small, medium, large, huge, gigantic
+    * several (10-25%) of rooms should be "interesting", rest should
+      be filler or maybe one/two small visual/feature things. We want the
+      game to be consistenly novel, but not so much that each room is
+      different! Otherwise player gets bored... make them work for it
+    * room types: normal, vault (lesser, greater), star burst,
+                  fractal, lair, burrow, monster pit, monster town,
+                  concave, lake, tower
+
+Interesting Features
+--------------------
+    * Portal: it summons unworldly creatures in, player could enter it
+      to see what is on the other side. Could be nothing, super monsters,
+      with legendary loot, could be huge and empty, etc.
+    * 
+
+Interactions
+----------------
+    * eat, quaff
+    * read
+    * use
+    * aim
+    * assemble
+    * activate
+    * apply: command, rune, coating
+    * wield
+    * take off
+    * drop
+    * destroy
+    * examine
+    * inscribe
+    * fill: fuel lamp/torch
+    * fire weapon
+    * attack
+    * study
+    * browser
+    * search
+    * listen
+    * smell
+    * offer
+    * trade
+    * steal
+    * handle
+    * take
+    * dig
+    * mine
+    * tunnel
+    * construct
+    * disenchant
+    * make
+        * wall, door, trap, bridge
+
+Monster Behaviors
+-----------------
+    * Wander: They just randomly wander around
+    * Sleep: Sleeping
+    * Flee: Running away from whatever target
+    * Panic: Panicked monsters do whatever they can do stay far, far away
+    * Idle: Standing around, moves a little bit
+    * Alert: Quickly sees and responds to enemy
+    * Searching: Trying to track down the target
+    * Patrol: Walks through rooms looking for enemies
+    * Reinforcement: Fleeing back to friends to call for reinforcements
+    * Hungry: Look for food to eat or kill
+    * Stalk: Trying to stay hidden behind the player's vision
+    * Attack: Attacking the player, or moving to attack
+    * Guard: Guarding a target, will respond to that target's hostiles
+
+Skills
+--------------------
+    * disarm
+    * save
+    * stealth
+    * searching
+    * digging
+    * mining
+    * melee weapon
+    * bow
+
+Stats
+-------------------
+    * strength
+    * intelligence
+    * wisdom
+    * dexterity
+    * constitution
+    * charisma
+    * agility
+    * luck
+
+Status Effects
+--------------------
+    * Modify stat
+    * Slow
+    * Blind
+    * Paralyzed
+    * Confused
+    * Afraid
+    * Posioned
+    * Stunned
+    * Prone
+    * Dazed
+    * Terrorized
+    * Soaked
+    * Aggravated
+    * Stench
+    * Petrify
+    * Cursed
+    * Amnesia
+    * Sleep
+    * Beerk
+    * Poisoned
+    * Burned
+    * Cold
+    * Hot
+    * Hungry
+    * Thirsty
+    * Haste
+    * Hallucinating
+    * Drunk // Inebraited
+    * Diseased
+        * Custom effect for buff
+
+Races
+----------------
+    * Dwarf
+    * Human
+    * Elemental
+        * Fire elemental, frost, earth
+    * Werewolf
+    * High Elf
+    * Shadow Fairy
+    * Vampire
+    * Goblin
+    * Orc
+    * Troll
+    * Kobold
+    * Gnome
+    * Wood Elf
+    * Beast
+    * Draconic
+    
+Creatures
+--------------
+    * Beast
+        * Goat, bear, mousem hound, cheetah, lion, wolf, bat, serpent, cat
+    * Undead
+        * Ghost, skeleton, wraith, vampire
+
+Other Spells
+-----------------
+    * Recall and return
+    * Raise dead
+    * Animate dead
+    * Animate item
+    * Summon
+        * Other worldy creature
+        * demon
+        * undead
+        * plant
+        * animal
+        * of a race
+        * friernd
+    * Animate tree
+    * Summon storm or rain
+    * Meteor storm
+    * Map area
+    * Identify
+    * Enchant
+    * Teleport
+    * Flood
+    * Shards
+    * Chaos
+    * Turn
+    * Banish
+    * Dispell
+    * Clone
+    * Polymorth
+    * Shielded
+    * Blindness
+    * Heroism
+    * Heal
+    * Drain life/mana/stamina
+    * Sleep
+    * Detect
+        * Doors, traps, stairs, water, gold, object, magic
+        * Curse, power, monster, evil, life, lair, secret
+
+
+Magic and Projectiles
+----------------
+    * Types
+        * Beam      beam, affect every grid passed through
+        * Star      starburst
+        * Explode
+    * Attributes
+        * does go through walls?
+        * continue through a target?
+        * targeted, projectile or touch cast?
+        * light up walls? with color?
+        * does_not_effect_caster
+        * does_not_effect_allies
+        * does_not_effect_enemies
+        * does_not_effect_neutral
+        * does it fork? how many forks? how many times? power reduction?
+
+    * wind, hellfire, holy orb, plasma, meteor, ice, mana, gravity,
+      force, time, acid, electricity, fire, poison
+
+Wall Types
+-------------------------------------
+    * Wall
+    * Stone: Limestone, Sandstone, Shale, Coal
+    * Earth
+    * Ice, Ice Falls
+    * Water Fall
+    * Acid Falls
+
+Floor Types
+-----------
+    * Chasm: standard, ice
+    * Bridge: standard, ice, stone, wood
+    * Ice
+    * Water
+    * Acid
+    * Lava
+    * Sand: quicksand
+    * Mud
+    * Vent: Gas, Steam, Lava
+    * Oil
+    * Minerals: coal
+    * Blood
+    * Slime
+    * Fire
+    * Web
+    * Rock
+    * Grass
+    * Tree
+    * Bush
+    * Water Spout
+    * Erupting lava
+    * Crumbling floor
+
+Consumable
+---------
+
+    * Potion
+    * Food
+        * Trail Ration
+        * Biscuit
+        * Jerky
+        * Cooked
+        * Waybread
+        * Apple
+        * Slime Mold
+    * Drinks
+        * Ale
+        * Wine
+        * Spirits
+        * Water
+
+    * Modifiers
+        * Fresh
+        * Delicious
+        * Old
+        * Aged
+        * Stale
+        * Rotten
+
+Feature Attributes
+------------------
+    * los           Blocks line of sight
+    * move          Can be moved
+
+Item Effects
+---------------------------------------
+    * Terrible
+    * Unbrekable
+    * Ungettable
+    * Nonmagical
+    * Magical
+    * Artifact
+    * Runed
