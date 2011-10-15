@@ -44,8 +44,7 @@ int main( int , char*[] )
     // Seed the random number generator
     srand( time(0) );
 
-    int width = 500;
-    assert( width < 0 || width > 1000 );
+    App::raiseFatalError( "Could not load model mesh", "mesh: content/meshes/reptar.x" );
 
     // Print out information
     std::cout << App::getBuildString() << std::endl;

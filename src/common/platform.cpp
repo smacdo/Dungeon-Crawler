@@ -120,7 +120,6 @@ EAssertionStatus raiseAssertion( const char *message,
                                  unsigned int lineNumber )
 {
 #if defined(_WIN32)
-    int result  = 0;
     HWND window = GetActiveWindow();
 
     // Write out an error message if none was given
@@ -221,42 +220,114 @@ EAssertionStatus raiseAssertion( const char *message,
 }
 
 /**
- * Generates an informative error message that is displayed to the user. Note
- * that calling this method will (by default) cause the application to
- * terminate once the user clicked 'ok'
+ * Generates a non-fatal error message that is displayed to the player, and
+ * the player is allowed to choose whether to continue or quit.
  *
- * \param  message    The message to display to the player
- * \param  filename   (optional) Name of the file that generated the error
- * \param  lineNumber (optional) Line number that generated the error
+ * \param  message  The main error message
+ * \param  details  (optional) Details about the problem
  */
 void raiseError( const std::string& message,
-                 const char * filename,
-                 unsigned int lineNumber )
+                 const std::string& details )
+{
+#if defined(_WIN32)
+    // Convert STL strings into wstrings for windows
+    std::wstring wMessage     = WinNTStringToWideString( message );
+    std::wstring wDetails     = WinNTStringToWideString( details );
+
+    /////////////////////////////////////////////////////////////////////////
+    // Windows Vista and Windows 7 Task Dialog                             //
+    /////////////////////////////////////////////////////////////////////////
+    TASKDIALOGCONFIG tc = { 0 };
+
+    const TASKDIALOG_BUTTON cb[] =
+    {
+        { 0, L"Keep going\nContinue playing, but please be aware the game could become instable"    },
+        { 1, L"Quit the game\nRather than continuing onward, quit and fix the problem" }
+    };
+
+    tc.cbSize = sizeof( tc );
+    tc.hwndParent = GetActiveWindow();
+    tc.hInstance  = (HINSTANCE) GetModuleHandle(NULL);
+    tc.dwFlags    = TDF_USE_HICON_MAIN | TDF_USE_COMMAND_LINKS |
+                    TDF_EXPAND_FOOTER_AREA ;
+
+    tc.cButtons       = ARRAYSIZE(cb);
+    tc.pButtons       = cb;
+    tc.nDefaultButton = 1;
+
+    LoadIconWithScaleDown( NULL, IDI_ERROR,
+        GetSystemMetrics(SM_CXICON),
+        GetSystemMetrics(SM_CYICON),
+        &tc.hMainIcon );
+
+    tc.pszWindowTitle      = L"Dungeon Crawler Game Error";
+    tc.pszMainInstruction  = L"The game has encountered a problem";
+    tc.pszContent          = wMessage.c_str();
+
+    if ( wDetails.size() > 0 )
+    {
+        tc.pszExpandedInformation  = wDetails.c_str();
+        tc.pszExpandedControlText  = L"Hide error details";
+        tc.pszCollapsedControlText = L"Show error details";
+    }
+
+    // Display the task dialog
+    int buttonPressed        = 0;
+    int commandPressed       = 0;
+    BOOL verificationChecked = false;
+
+    HRESULT hResult = TaskDialogIndirect( &tc,
+        &buttonPressed, &commandPressed, 
+        &verificationChecked );
+
+    // Now interpret the results of the task dialog
+    switch ( buttonPressed )
+    {
+    case 1:     // view bug information
+        quit( EPROGRAM_USER_ERROR, "User chose to quit after error" );
+        break;
+
+    default:
+        break;
+    }
+
+#else
+    std::cerr << "[FATAL ERROR]: " << message << std::endl;
+//    exit( 1 );
+#endif
+}
+
+/**
+ * Displays a fatal error message to the player before he/she is forced to
+ * quit playing.
+ *
+ * \param  message  The main error message
+ * \param  details  (optional) Details about the problem
+ */
+void raiseFatalError( const std::string& message,
+                      const std::string& details )
 {
 #if defined(_WIN32)
     HWND window = appGetWindowHandle();
 
-    //
-    // Windows XP error dialog
-    //
-//    MessageBox( window,
-//                message.c_str(),
-//                "A fatal error has occurred",
-//                MB_OK | MB_ICONSTOP | MB_TASKMODAL | MB_TOPMOST );
+    // Convert STL strings into wstrings for windows
+    std::wstring wMessage     = WinNTStringToWideString( message );
+    std::wstring wDetails     = WinNTStringToWideString( details );
 
-    //
-    // Windows Vista and Windows 7 Task Dialog
-    //
-    int buttonResult = 0;
-
-    TaskDialog( window, NULL,
-                L"Dungeon Crawler",
-                L"This game has encountered a fatal error",
-                L"(error details generally go here)",
+    /////////////////////////////////////////////////////////////////////////
+    // Windows Vista and Windows 7 Task Dialog                             //
+    /////////////////////////////////////////////////////////////////////////
+    TaskDialog( GetActiveWindow(),
+                GetModuleHandle(NULL),
+                L"Dungeon Crawler Fatal Error",
+                wMessage.c_str(),
+                wDetails.c_str(),
                 TDCBF_OK_BUTTON,
-                TD_ERROR_ICON ,
-                &buttonResult );
+                TD_ERROR_ICON,
+                NULL
+    );
 
+    quit( EPROGRAM_FATAL_ERROR, message );
 #else
     std::cerr << "[FATAL ERROR]: " << message << std::endl;
 //    exit( 1 );

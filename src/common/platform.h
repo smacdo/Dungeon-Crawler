@@ -86,18 +86,14 @@ namespace App
                                      unsigned int linenumber );
 
     void raiseError( const std::string& message,
-                     const char* filename = NULL,
-                     unsigned int linenumber = 0 );
+                     const std::string& details = "" );
 
     void raiseFatalError( const std::string& message,
-                          const char* filename = NULL,
-                          unsigned int linenumber = 0 );
+                          const std::string& details = "" );
 
     // Returns a "build string", which is a long string containing information
     // about the settings under which the game was built
     std::string getBuildString();
 }
-
-void appRaiseError( const std::string& message );
 
 #endif
