@@ -1,6 +1,7 @@
 #ifndef SCOTT_DUNGEON_COMMON_PLATFORM_H
 #define SCOTT_DUNGEON_COMMON_PLATFORM_H
 
+#include "dungeoncrawler.h"
 #include <string>
 #define ASSERTS_ENABLED 1
 
@@ -77,7 +78,7 @@ namespace App
         EAssertion_Continue = 1
     };
 
-    void exit( unsigned int code = 1 );
+    void quit( EProgramStatus quitStatus, const std::string& message );
 
     EAssertionStatus raiseAssertion( const char* message,
                                      const char* expression,

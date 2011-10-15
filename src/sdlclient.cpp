@@ -44,7 +44,8 @@ int main( int , char*[] )
     // Seed the random number generator
     srand( time(0) );
 
-    assert( false );
+    int width = 500;
+    assert( width < 0 || width > 1000 );
 
     // Print out information
     std::cout << App::getBuildString() << std::endl;

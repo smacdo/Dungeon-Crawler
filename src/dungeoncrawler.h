@@ -7,6 +7,13 @@
 // Standard enumerations
 /////////////////////////////////////////////////////////////////////////////
 
+enum EProgramStatus
+{
+    EPROGRAM_OK = 0,
+    EPROGRAM_ASSERT_FAILED = 1,
+    EPROGRAM_FATAL_ERROR   = 2
+};
+
 /**
  * Sizes of the room
  */

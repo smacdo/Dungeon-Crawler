@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#define UNICODE
+#define _UNICODE
 
 #include "common/platform.h"
 #include "common/utils.h"
@@ -119,7 +121,7 @@ EAssertionStatus raiseAssertion( const char *message,
 {
 #if defined(_WIN32)
     int result  = 0;
-    HWND window = appGetWindowHandle();
+    HWND window = GetActiveWindow();
 
     // Write out an error message if none was given
     if ( message == NULL )
@@ -132,23 +134,82 @@ EAssertionStatus raiseAssertion( const char *message,
     // and filename into wstring for display with windows
     std::ostringstream ss;
 
-    ss << "EXPRESSION: " << expression << "\n"
-       << "FILE: "       << filename 
-       << ":"            << lineNumber;
+    ss << "ASSERTION DETAILS: \n"
+       << "assert( " << expression << " )\n"
+       << filename   << ":"        << lineNumber;
 
     // Convert the error message and assertion expression into Windows friendly
     // unicode wstring objects
     std::wstring wExpression = WinNTStringToWideString( ss.str() );
     std::wstring wMessage    = WinNTStringToWideString( message );
 
-    // Show the task dialog containing details on the failed assertion
-    TaskDialog( window, NULL,
-        L"Dungeon Crawler",
-        wMessage.c_str(),
-        wExpression.c_str(),
-        TDCBF_OK_BUTTON,
-        TD_ERROR_ICON ,
-        &result );
+    // Set up variables required to display the task dialog
+    TASKDIALOGCONFIG tc = { 0 };
+
+    const TASKDIALOG_BUTTON cb[] =
+    {
+        { 0, L"View crash information\nThat way the developers can try to fix your bug"    },
+        { 1, L"Fire up the debugger\nThis won't do anything unless you're a developer, sorry!" },
+        { 2, L"Quit the game\nOh no! We promise not to crash again..."        }
+    };
+
+    tc.cbSize = sizeof( tc );
+    tc.hwndParent = window;
+    tc.hInstance  = (HINSTANCE) GetModuleHandle(NULL); //GetWindowLong( window, GWL_HINSTANCE );
+    tc.dwFlags    = TDF_USE_HICON_MAIN | TDF_USE_HICON_FOOTER | TDF_EXPAND_FOOTER_AREA |
+                    TDF_EXPANDED_BY_DEFAULT | TDF_USE_COMMAND_LINKS;
+
+    LoadIconWithScaleDown( NULL, IDI_ERROR,
+                           GetSystemMetrics(SM_CXICON),
+                           GetSystemMetrics(SM_CYICON),
+                           &tc.hMainIcon );
+    LoadIconWithScaleDown( NULL, IDI_INFORMATION,
+                           GetSystemMetrics(SM_CXSMICON),
+                           GetSystemMetrics(SM_CYSMICON),
+                           &tc.hFooterIcon);
+
+    tc.pszWindowTitle      = L"Dungeon Crawler Internal Error";
+    tc.pszMainInstruction  = L"An internal assertion check failed!";
+    tc.pszContent          = L"Sorry to ruin your fun, but it looks like you found a bug in our code. Aren't you the lucky one?";
+    tc.pszFooter           = wExpression.c_str();
+
+
+    tc.cButtons       = ARRAYSIZE(cb);
+    tc.pButtons       = cb;
+    tc.nDefaultButton = 0;
+
+    // Display the task dialog
+    int buttonPressed        = 0;
+    int commandPressed       = 0;
+    BOOL verificationChecked = false;
+
+    HRESULT hResult = TaskDialogIndirect( &tc,
+                                          &buttonPressed, &commandPressed, 
+                                          &verificationChecked );
+
+    if (! SUCCEEDED(hResult) )
+    {
+        // huh?
+        quit( EPROGRAM_ASSERT_FAILED, "Task dialog failed to display" );
+    }
+
+    // Now interpret the results of the task dialog
+    switch ( buttonPressed )
+    {
+        case 0:     // view bug information
+            quit( EPROGRAM_ASSERT_FAILED, "Assertion failed" );
+            break;
+
+        case 1:     // fire up debugger
+            return EAssertion_Halt;
+            
+        case 2:     // quit
+            quit( EPROGRAM_ASSERT_FAILED, "Assertion failed" );
+            break;
+
+        default:
+            break;
+    }
 
 #else
     std::cerr << "[FATAL ERROR]: " << message << std::endl;
@@ -202,6 +263,13 @@ void raiseError( const std::string& message,
 #endif
 }
 
+/**
+ * Quit the program with the requested status and reason
+ */
+void quit( EProgramStatus programStatus, const std::string& message )
+{
+    exit( programStatus );
+}
 
 /**
  * Returns a string describing the conditions under which the game was
