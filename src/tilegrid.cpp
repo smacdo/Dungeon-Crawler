@@ -1,6 +1,6 @@
 #include "tilegrid.h"
 #include "tile.h"
-#include "core/rect.h"
+#include "common/rect.h"
 
 #include <cassert>
 

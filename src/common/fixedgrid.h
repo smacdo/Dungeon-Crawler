@@ -1,10 +1,10 @@
 #ifndef SCOTT_DUNGEON_FIXEDGRID_H
 #define SCOTT_DUNGEON_FIXEDGRID_H
 
-#include "core/point.h"
-#include "core/rect.h"
+#include "common/point.h"
+#include "common/rect.h"
+#include "common/platform.h"
 #include <boost/checked_delete.hpp>
-#include <cassert>
 #include <algorithm>
 
 template<typename T>

@@ -2,9 +2,9 @@
 #define SCOTT_COMMON_MATH_RECT_H
 
 #include <cstddef>
-#include <cassert>
 #include <ostream>
-#include "point.h"
+#include "common/point.h"
+#include "common/platform.h"
 
 /**
  * A class that represents a 2d rectangle object. Rect assumes that the

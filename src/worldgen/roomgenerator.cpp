@@ -1,5 +1,5 @@
 #include "worldgen/roomgenerator.h"
-#include "core/rect.h"
+#include "common/rect.h"
 #include "tilegrid.h"
 #include "level.h"
 #include "tile.h"
