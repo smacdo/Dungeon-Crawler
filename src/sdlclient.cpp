@@ -11,14 +11,20 @@
 #include <time.h>
 #include <stdlib.h>
 
+#if defined(_WIN32)
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
 
 #define USE_SDL_MAIN_MAGIC 1
 #include "common/platform.h"        // let SDL redefine our main function
 
-int main( int argc, char* argv[] )
+int main( int , char*[] )
 {
+#if defined(_WIN32)
     putenv("SDL_VideoDriver=directx");
+#endif
+
+    // Seed the random number generator
     srand( time(NULL) );
     
     // Create the world

@@ -51,9 +51,9 @@ std::string Level::dump() const
 {
     std::stringstream ss;
 
-    for ( size_t y = 0; y < mTileGrid.height(); ++y )
+    for ( int y = 0; y < mTileGrid.height(); ++y )
     {
-        for ( size_t x = 0; x < mTileGrid.width(); ++x )
+        for ( int x = 0; x < mTileGrid.width(); ++x )
         {
             const Tile& tile = mTileGrid.get( x, y );
 

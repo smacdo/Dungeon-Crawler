@@ -10,11 +10,3 @@
 #include <cassert>
 #include <time.h>
 #include <stdlib.h>
-
-Room::Room( Rect& area, const TileGrid& tileGrid )
-{
-}
-
-Room::~Room()
-{
-}

@@ -5,7 +5,9 @@
 
 class Rect;
 
-/**
+
+
+/*
  * Makes and builds rooms. Can be subclassed to generate thematic levels
  * with similar (or different!) room types and whatnot.
  *

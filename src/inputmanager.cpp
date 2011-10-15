@@ -42,6 +42,9 @@ void InputManager::processInput()
             case SDL_KEYUP:
                 processKeypress( event );
                 break;
+
+            default:
+                break;
         }
     }
 }
@@ -89,6 +92,9 @@ void InputManager::processKeypress( const SDL_Event& event )
         case SDLK_d:
             mDidUserMove = true;
             mUserMoveX   = 1;
+            break;
+
+        default:
             break;
     }
 }

@@ -4,8 +4,7 @@
 # Project source code files
 set(core_srcs     core/rect.cpp)
 
-set(worldgen_srcs worldgen/bsplevelgen.cpp
-                  worldgen/levelgenerator.cpp
+set(worldgen_srcs worldgen/levelgenerator.cpp
                   worldgen/dungeongenerator.cpp
                   worldgen/roomgenerator.cpp)
 
@@ -25,7 +24,7 @@ set(game_srcs     camera.cpp
 set(srcs ${core_srcs} ${worldgen_srcs} ${game_srcs} ${graphics_srcs})
 
 # Compiler definitions
-ADD_DEFINITIONS(-g -W -Wall -Wextra -Werror)
+ADD_DEFINITIONS(-g -W -Wall -Wextra -Werror -std=c++0x)
 
 #
 # required packages
@@ -47,7 +46,8 @@ endif()
 #
 # Generate the executable and link required libraries
 #
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src 
+                    ${CMAKE_SOURCE_DIR}/thirdparty/sdl/include)
 add_executable(dungeon MACOSX_BUNDLE ${srcs})
 target_link_libraries(dungeon
     ${Boost_FILESYSTEM_LIBRARY}

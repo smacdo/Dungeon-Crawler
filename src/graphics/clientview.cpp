@@ -191,9 +191,14 @@ void ClientView::drawSprite( int x, int y, const Sprite& sprite )
 
     // Construct a rectangle that encompasses only the area of the image
     // that the sprite wants to pull from (for spritesheet sprites)
-    SDL_Rect clip   = { sprite.x(), sprite.y(),
-                        sprite.width(), sprite.height() };
-    SDL_Rect offset = { x, y, 0, 0 };
+    SDL_Rect clip   = { static_cast<int16_t>(sprite.x()),
+                        static_cast<int16_t>(sprite.y()),
+                        static_cast<int16_t>(sprite.width()),
+                        static_cast<int16_t>(sprite.height()) };
+
+    SDL_Rect offset = { static_cast<int16_t>(x),
+                        static_cast<int16_t>(y),
+                        0, 0 };
 
     // Now blit the sprite image onto the backbuffer
     const SDL_Surface *pSurface = sprite.surface();

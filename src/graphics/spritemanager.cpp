@@ -44,7 +44,9 @@ SpriteManager::~SpriteManager()
  */
 void SpriteManager::preloadImage( const std::string& filepath )
 {
-
+    // Forward the call to loadImage, which will take care of caching
+    // and whatnot
+    loadImage( filepath );
 }
 
 /**
