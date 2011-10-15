@@ -33,6 +33,7 @@ Level* LevelGenerator::generate()
                           Tile( TILE_EMPTY ) );
 
     // Generate the requested number of rooms
+    TileGrid roomTileGrid = mRoomGenerator->generate( ROOM_SIZE_LARGE );
 
     // Try to fit those rooms into the level
 

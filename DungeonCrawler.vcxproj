@@ -92,6 +92,7 @@
     <ClCompile Include="src\worldgen\roomgenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dungeoncrawler.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\common\platform.h" />
     <ClInclude Include="src\common\utils.h" />

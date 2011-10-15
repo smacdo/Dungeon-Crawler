@@ -5,10 +5,23 @@
 #include "tile.h"
 #include "common/utils.h"
 #include "tiletype.h"
+#include "dungeoncrawler.h"
 
 #include <cassert>
 
-const int MinRoomSize = 5;
+/////////////////////////////////////////////////////////////////////////////
+// Room generation constants
+/////////////////////////////////////////////////////////////////////////////
+// The floor size of the room. This does not include walls!!!
+const int ROOM_SIZES[ERoomSize_COUNT][2] =
+{
+    { 3,  2 },   /* EROOM_TINY */
+    { 5,  2 },   /* EROOM_SMALL */
+    { 9,  4 },   /* EROOM_MEDIUM */
+    { 15, 8 },   /* EROOM_LARGE */
+    { 25, 12 },  /* EROOM_HUGE */
+    { 50, 25 }   /* ERROM_GIGANTIC */
+};
 
 RoomGenerator::RoomGenerator()
 {
@@ -24,33 +37,25 @@ RoomGenerator::~RoomGenerator()
  * specified area. This method will return a pointer if the creation
  * succeeded, and NULL if the generator decided not to create a room here.
  *
- * \param area The area to construct the room in. The room could be smaller
- * \return Pointer to the newly constructed room, or NULL if refused
+ * \param  roomSize  The size of the room to construct
+ * \return A TileGrid containing the room
  */
-TileGrid RoomGenerator::generate( const Rect& area )
+TileGrid RoomGenerator::generate( ERoomSize roomSize )
 {
-    TileGrid room( area.width(), area.height() );
+    assert( roomSize < ERoomSize_COUNT );
 
-    assert( area.width() > MinRoomSize );
-    assert( area.height() > MinRoomSize );
+    // Randomly determine the size of the new room
+    int minSize = ROOM_SIZES[ roomSize ][1];
+    int maxSize = ROOM_SIZES[ roomSize ][0];
 
-    // Randomly determine the sizes of the new room
-    int width  = Utils::random( MinRoomSize, area.width() - 1 );
-    int height = Utils::random( MinRoomSize, area.height() - 1 );
-
-    // Figure out how much "buffer" room we have from the end of the room to the walls
-    int bufferWidth  = area.width() - width;
-    int bufferHeight = area.height() - height;
-
-    assert( bufferWidth > 0 );
-    assert( bufferHeight > 0 );
-
-    // Now randomly determine where in the quadrant we should place this room
-    int x = Utils::random( 0, bufferWidth+1 );
-    int y = Utils::random( 0, bufferHeight+1 );
+    int width   = Utils::random( minSize, maxSize+1 );
+    int height  = Utils::random( minSize, maxSize+1 );
 
     // Carve out the room, and return the tile grid
-    room.carveTiles( Rect( x, y, width, height),
+    //  We need to add two to both dimensions to account for the walls
+    TileGrid room( width + 2, height + 2 );
+
+    room.carveTiles( Rect( 0, 0, width + 2, height  + 2 ),
                      Tile( TILE_WALL ),
                      Tile( TILE_FLOOR ) );
     return room;
