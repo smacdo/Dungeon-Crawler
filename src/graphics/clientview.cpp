@@ -1,7 +1,7 @@
 #include "graphics/clientview.h"
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
-#include "core/rect.h"
+#include "common/rect.h"
 #include "common/utils.h"
 #include "common/platform.h"
 

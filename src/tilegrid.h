@@ -1,7 +1,7 @@
 #ifndef SCOTT_DUNGEON_TILEGRID_H
 #define SCOTT_DUNGEON_TILEGRID_H
 
-#include "core/fixedgrid.h"
+#include "common/fixedgrid.h"
 #include "tile.h"
 
 class Rect;

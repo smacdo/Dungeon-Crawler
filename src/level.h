@@ -4,7 +4,6 @@
 #include "tilegrid.h"
 
 #include <vector>
-#include <cassert>
 #include <string>
 
 class Level

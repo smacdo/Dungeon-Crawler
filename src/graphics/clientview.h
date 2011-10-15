@@ -5,7 +5,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "graphics/spritemanager.h"
-#include "core/rect.h"
+#include "common/rect.h"
 
 struct SDL_Surface;
 struct SDL_Rect;

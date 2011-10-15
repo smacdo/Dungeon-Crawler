@@ -1,23 +1,40 @@
+/*
+ * Copyright (C) 2011 Scott MacDonald. All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "worldgen/dungeongenerator.h"
+#include "graphics/clientview.h"
 #include "common/utils.h"
 #include "level.h"
-
-#include "graphics/clientview.h"
 #include "inputmanager.h"
+#include "dungeoncrawler.h"
 
 #include <string>
 #include <iostream>
-#include <cassert>
+
 #include <time.h>
 #include <stdlib.h>
+#include <SDL.h>
 
 #if defined(_WIN32)
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
-#define USE_SDL_MAIN_MAGIC 1
-#include "common/platform.h"        // let SDL redefine our main function
-
+///////////////////////////////////////////////////////////////////////////////
+// Dungeon Crawler Application entry point
+///////////////////////////////////////////////////////////////////////////////
 int main( int , char*[] )
 {
 #if defined(_WIN32)
@@ -25,16 +42,18 @@ int main( int , char*[] )
 #endif
 
     // Seed the random number generator
-    srand( time(NULL) );
+    srand( time(0) );
+
+    App::raiseFatalError( "Could not load model mesh", "mesh: content/meshes/reptar.x" );
+
+    // Print out information
+    std::cout << App::getBuildString() << std::endl;
     
     // Create the world
     DungeonGenerator generator( 76, 50 );
     Level *level = generator.generateLevel();
-//    level->print();
 
-    //
     // Game components
-    //
     ClientView   clientView;
     InputManager input;
 

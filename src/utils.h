@@ -1,4 +1,0 @@
-#ifndef SCOTT_DUNGEON_UTILS_H
-#define SCOTT_DUNGEON_UTILS_H
-
-#endif
