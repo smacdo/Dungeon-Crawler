@@ -32,9 +32,13 @@ public:
     TileGrid( const TileGrid& grid );
     ~TileGrid();
 
-    void carveTiles( const Rect& area,
-                     const Tile& wallTemplate,
-                     const Tile& floorTemplate );
+    void carveRoom( const Rect& area,
+                    const Tile& wallTemplate,
+                    const Tile& floorTemplate );
+
+    void carveOverlappingRoom( const Rect& area,
+                               const Tile& wallTemplate,
+                               const Tile& floorTemplate );
 
     /**
      * Adds a non-overlapping room into the tile grid. If the insertion would

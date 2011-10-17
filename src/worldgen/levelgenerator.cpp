@@ -42,12 +42,12 @@ Level* LevelGenerator::generate()
 {
     // Turn the level border tiles into impassable bedrock tiles to prevent
     // the player (or anyone really) from escaping into the void
-    mTileGrid.carveTiles( Rect( 0, 0, mLevelWidth, mLevelHeight ),
-                          Tile( TILE_IMPASSABLE ),
-                          Tile( TILE_EMPTY ) );
+    mTileGrid.carveRoom( Rect( 0, 0, mLevelWidth, mLevelHeight ),
+                         Tile( TILE_IMPASSABLE ),
+                         Tile( TILE_EMPTY ) );
 
     // Generate the requested number of rooms
-    TileGrid roomTileGrid = mRoomGenerator->generate( ROOM_SIZE_LARGE );
+    TileGrid roomTileGrid = mRoomGenerator->generate( ROOM_SIZE_HUGE );
 
     // Try to fit those rooms into the level
     mTileGrid.insert( Point(1,1), roomTileGrid );

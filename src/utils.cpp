@@ -15,8 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "common/utils.h"
+#include "common/platform.h"
 
-#include <cassert>
 #include <time.h>
 #include <stdlib.h>
 

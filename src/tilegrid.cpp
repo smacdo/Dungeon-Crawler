@@ -17,8 +17,7 @@
 #include "tilegrid.h"
 #include "tile.h"
 #include "common/rect.h"
-
-#include <cassert>
+#include "common/platform.h"
 
 
 TileGrid::TileGrid( size_t width, size_t height )
@@ -35,7 +34,7 @@ TileGrid::~TileGrid(void)
 {
 }
 
-void TileGrid::carveTiles( const Rect& area,
+void TileGrid::carveRoom( const Rect& area,
                            const Tile& wallTemplate,
                            const Tile& floorTemplate )
 {
@@ -61,6 +60,58 @@ void TileGrid::carveTiles( const Rect& area,
             else
             {
                 set( ix + area.x(), iy + area.y(), floorTemplate );
+            }
+        }
+    }
+}
+
+/**
+ * Adds an overlapping room into the tile grid. What this does is insert the
+ * room's tiles into our tile grid. However, if the insertion would insert a
+ * tile where a floor tile already exists, then the previous floor tile will 
+ * be kept. That way we don't build walls into pre-existing rooms
+ * 
+ * TODO: Maybe we want to do this as well? Add it as a flag and perhaps
+ *       merge behaviors?
+ */
+void TileGrid::carveOverlappingRoom( const Rect& sourceBounds,
+                                     const Tile& wallTemplate,
+                                     const Tile& floorTemplate )
+{
+    Rect destBounds( 0, 0, mWidth, mHeight );
+
+    // Verify that the source grid will fit in us
+    assert( destBounds.contains( sourceBounds ) );
+
+    // Now copy the tiles over
+    for ( int sy = 0; sy < sourceBounds.height(); ++sy )
+    {
+        for ( int sx = 0; sx < sourceBounds.width(); ++sx )
+        {
+            // Calculate array index offsets
+            size_t si = ( sy * sourceBounds.width() + sx ); 
+            size_t di = this->offset( sx + sourceBounds.x(),
+                                      sy + sourceBounds.y() );
+
+            // Should we be placing a wall here, or floor?
+            bool placeWall = ( sy == 0 || sy == ( sourceBounds.height()-1 ) ||
+                               sx == 0 || sx == ( sourceBounds.width() -1 ) );
+
+            // Attempt to place the correct tile down (either wall or floor
+            // depending on position), but make sure that we are not putting
+            // a wall where there is already a floor tile in place
+            if ( placeWall )
+            {
+                if ( mTiles[di].isFloor() )
+                {
+                    continue;       // refuse
+                }
+                
+                mTiles[di] = wallTemplate;
+            }
+            else
+            {
+                mTiles[di] = floorTemplate;
             }
         }
     }

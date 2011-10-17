@@ -125,6 +125,34 @@ public:
     }
 
     /**
+     * "Inserts" a fixed grid into this grid. What this means is that the
+     * source grid will be copied into us at the requested position
+     *
+     * The source grid must fit within the bounds of the destination grid
+     */
+    void insert( const Point& upperLeft, FixedGrid& source ) const
+    {
+        Rect destBounds( 0, 0, mWidth, mHeight );
+        Rect sourceBounds( upperLeft, source.mWidth, source.mHeight );
+
+        // Verify that the source grid will fit in us
+        assert( destBounds.contains( sourceBounds ) );
+
+        // Now copy the tiles over
+        for ( int sy = 0; sy < source.mWidth; ++sy )
+        {
+            for ( int sx = 0; sx < source.mHeight; ++sx )
+            {
+                size_t si = source.offset( sx, sy );
+                size_t di = this->offset( sx + upperLeft.x(),
+                    sy + upperLeft.y() );
+
+                mTiles[di] = source.mTiles[si];
+            }
+        }
+    }
+
+    /**
      * Clears the fixed grid by setting every tile to the requested 'base'
      *
      * \param  base  The value to assign to each tile
@@ -189,34 +217,6 @@ public:
         assert( x >= 0 && x < mWidth );
         assert( y >= 0 && y < mHeight );
         mTiles[ offset( x, y ) ] = value;
-    }
-
-    /**
-     * "Inserts" a fixed grid into this grid. What this means is that the
-     * source grid will be copied into us at the requested position
-     *
-     * The source grid must fit within the bounds of the destination grid
-     */
-    void insert( const Point& upperLeft, FixedGrid& source ) const
-    {
-        Rect destBounds( 0, 0, mWidth, mHeight );
-        Rect sourceBounds( upperLeft, source.mWidth, source.mHeight );
-
-        // Verify that the source grid will fit in us
-        assert( destBounds.contains( sourceBounds ) );
-
-        // Now copy the tiles over
-        for ( int sy = 0; sy < source.mHeight; ++sy )
-        {
-            for ( int sx = 0; sx < source.mWidth; ++sx )
-            {
-                size_t si = source.offset( sx, sy );
-                size_t di = this->offset( sx + upperLeft.x(),
-                                          sy + upperLeft.y() );
-
-                mTiles[di] = source.mTiles[si];
-            }
-        }
     }
 
     int width() const

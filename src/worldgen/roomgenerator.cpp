@@ -84,12 +84,35 @@ TileGrid RoomGenerator::generate( ERoomSize roomSize )
         << "width="   << rA_width << ", height="  << rA_height << ", "
         << "x="       << rA_x     << ", y="       << rA_y;
 
+    // Attempt a second rectangle carving to make the room more interesting.
+    // It should be at least as large as the "buffer" area (which is the amount
+    // of empty space between the carved room and the top left corner), and
+    // randomly placed somewhere inside the room area we are given.
+    int rB_width  = Utils::random( rA_x, maxSize );
+    int rB_height = Utils::random( rA_y, maxSize );
+    int rB_x      = 0;
+    int rB_y      = 0;
+
+    if ( rB_width < maxSize )
+    {
+        rB_x = Utils::random( 0, ( maxSize - rB_width ) );
+    }
+
+    if ( rB_height < maxSize )
+    {
+        rB_y = Utils::random( 0, ( maxSize - rB_height ) );
+    }
+
     // Carve out the room, and return the tile grid
     //  We need to add two to both dimensions to account for the walls
     TileGrid room( maxSize + 2, maxSize + 2 );
 
-    room.carveTiles( Rect( rA_x, rA_y, rA_width + 2, rA_height  + 2 ),
-                     Tile( TILE_WALL ),
-                     Tile( TILE_FLOOR ) );
+    room.carveRoom( Rect( rA_x, rA_y, rA_width + 2, rA_height  + 2 ),
+                    Tile( TILE_WALL ),
+                    Tile( TILE_FLOOR ) );
+    room.carveOverlappingRoom( Rect( rB_x, rB_y, rB_width + 2, rB_height+2),
+                               Tile( TILE_WALL ),
+                               Tile( TILE_FLOOR ) );
+
     return room;
 }
