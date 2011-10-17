@@ -34,9 +34,37 @@ TileGrid::~TileGrid(void)
 {
 }
 
+/**
+ * Checks if all the tiles in the requested area are empty
+ */
+bool TileGrid::isAreaEmpty( const Rect& area ) const
+{
+    Rect gridBounds( 0, 0, mWidth, mHeight );
+    bool isEmpty = true;
+
+    // Make sure the search area fits inside of the tile grid
+    assert( gridBounds.contains( area ) );
+
+    // Search each tile to see if it fits
+    for ( int iy = 0; iy < area.height() && isEmpty; ++iy )
+    {
+        for ( int ix = 0; ix < area.width() && isEmpty; ++ix )
+        {
+            // Find actual coordinates
+            int x = ix + area.x();
+            int y = iy + area.y();
+
+            // Is there anything here?
+            isEmpty = (mTiles[ offset(x, y) ].wasPlaced() == false);
+        }
+    }
+
+    return isEmpty;
+}
+
 void TileGrid::carveRoom( const Rect& area,
-                           const Tile& wallTemplate,
-                           const Tile& floorTemplate )
+                          const Tile& wallTemplate,
+                          const Tile& floorTemplate )
 {
     Rect gridBounds( 0, 0, mWidth, mHeight );
 

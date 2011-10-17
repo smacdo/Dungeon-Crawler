@@ -47,13 +47,54 @@ Level* LevelGenerator::generate()
                          Tile( TILE_EMPTY ) );
 
     // Generate the requested number of rooms
-    TileGrid roomTileGrid = mRoomGenerator->generate( ROOM_SIZE_HUGE );
+    for ( int i = 0; i < 150; ++i )
+    {
+        // Generate a random room
+        TileGrid roomTileGrid = mRoomGenerator->generate(
+            generateRandomRoomSize( ROOM_SIZE_HUGE ) );
 
-    // Try to fit those rooms into the level
-    mTileGrid.insert( Point(1,1), roomTileGrid );
+        // Generate a random position to place it in
+        int roomWidth  = roomTileGrid.width();
+        int roomHeight = roomTileGrid.height();
+
+        Point upperLeft( Utils::random( 1, mLevelWidth - roomWidth - 2 ),
+                         Utils::random( 1, mLevelHeight - roomHeight - 2 ) );
+
+        // Try to place it
+        if ( mTileGrid.isAreaEmpty( Rect( upperLeft, roomWidth, roomHeight ) ) )
+        {
+            mTileGrid.insert( upperLeft, roomTileGrid );
+        }
+    }
+
+    // Show debug stats about rooms generated and whatnot
+
 
     // Hook everything up
 
     // Return the generated level
     return new Level( mTileGrid );
+}
+
+ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize ) const
+{
+    // This needs to be improved
+    int whichOne = Utils::random( 0, 100 );
+
+    if ( whichOne < 10 )
+    {
+        return ROOM_SIZE_TINY;
+    }
+    else if ( whichOne < 30 )
+    {
+        return ROOM_SIZE_SMALL;
+    }
+    else if ( whichOne < 90 )
+    {
+        return ROOM_SIZE_MEDIUM;
+    }
+    else
+    {
+        return ROOM_SIZE_HUGE;
+    }
 }

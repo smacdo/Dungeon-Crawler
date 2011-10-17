@@ -32,6 +32,8 @@ public:
     TileGrid( const TileGrid& grid );
     ~TileGrid();
 
+    bool isAreaEmpty( const Rect& area ) const;
+
     void carveRoom( const Rect& area,
                     const Tile& wallTemplate,
                     const Tile& floorTemplate );

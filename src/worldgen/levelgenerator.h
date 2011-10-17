@@ -18,6 +18,7 @@ public:
     Level * generate();
 
 protected:
+    ERoomSize generateRandomRoomSize( ERoomSize maxRoomSize ) const;
 
 private:
     RoomGenerator *mRoomGenerator;
