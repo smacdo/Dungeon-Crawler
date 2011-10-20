@@ -5,7 +5,7 @@
 #include "dungeoncrawler.h"
 
 class Rect;
-
+class Random;
 
 
 /*
@@ -26,7 +26,7 @@ public:
      * can potentially refuse to place a level, in which case the returned
      * pointer will be null
      */
-    TileGrid generate( ERoomSize roomSize );
+    TileGrid generate( ERoomSize roomSize, Random& random );
 };
 
 #endif

@@ -8,6 +8,7 @@
 
 class RoomGenerator;
 class Level;
+class Random;
 
 class LevelGenerator : boost::noncopyable
 {
@@ -15,10 +16,11 @@ public:
     LevelGenerator( RoomGenerator *pRoomGen, int width, int height );
     ~LevelGenerator();
 
-    Level * generate();
+    Level * generate( Random& random );
 
 protected:
-    ERoomSize generateRandomRoomSize( ERoomSize maxRoomSize ) const;
+    ERoomSize generateRandomRoomSize( ERoomSize maxRoomSize,
+                                      Random& random ) const;
 
 private:
     RoomGenerator *mRoomGenerator;

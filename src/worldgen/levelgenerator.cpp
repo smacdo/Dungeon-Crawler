@@ -17,6 +17,7 @@
 #include "worldgen/levelgenerator.h"
 #include "worldgen/roomgenerator.h"
 #include "common/utils.h"
+#include "common/random.h"
 
 #include "level.h"
 #include "room.h"
@@ -38,7 +39,7 @@ LevelGenerator::~LevelGenerator()
     boost::checked_delete( mRoomGenerator );
 }
 
-Level* LevelGenerator::generate()
+Level* LevelGenerator::generate( Random& random )
 {
     // Turn the level border tiles into impassable bedrock tiles to prevent
     // the player (or anyone really) from escaping into the void
@@ -50,15 +51,15 @@ Level* LevelGenerator::generate()
     for ( int i = 0; i < 150; ++i )
     {
         // Generate a random room
-        TileGrid roomTileGrid = mRoomGenerator->generate(
-            generateRandomRoomSize( ROOM_SIZE_HUGE ) );
+        ERoomSize roomSize    = generateRandomRoomSize( ROOM_SIZE_HUGE, random );
+        TileGrid roomTileGrid = mRoomGenerator->generate( roomSize, random );
 
         // Generate a random position to place it in
         int roomWidth  = roomTileGrid.width();
         int roomHeight = roomTileGrid.height();
 
-        Point upperLeft( Utils::random( 1, mLevelWidth - roomWidth - 2 ),
-                         Utils::random( 1, mLevelHeight - roomHeight - 2 ) );
+        Point upperLeft( random.randInt( 1, mLevelWidth - roomWidth - 2   ),
+                         random.randInt( 1, mLevelHeight - roomHeight - 2 ) );
 
         // Try to place it
         if ( mTileGrid.isAreaEmpty( Rect( upperLeft, roomWidth, roomHeight ) ) )
@@ -76,10 +77,11 @@ Level* LevelGenerator::generate()
     return new Level( mTileGrid );
 }
 
-ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize ) const
+ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize,
+                                                  Random& random ) const
 {
     // This needs to be improved
-    int whichOne = Utils::random( 0, 100 );
+    int whichOne = random.randInt( 0, 100 );
 
     if ( whichOne < 10 )
     {

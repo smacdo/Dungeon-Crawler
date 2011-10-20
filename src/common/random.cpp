@@ -15,8 +15,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "random.h"
-#include "common/platform.h"
-
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/uniform_smallint.hpp>
@@ -25,6 +23,8 @@
 #include <boost/functional/hash.hpp>
 #include <string>
 #include <ctime>        // std::time
+
+#include "common/platform.h"
 
 /**
  * Initializes the random number generator with a random seed
@@ -92,7 +92,7 @@ int Random::randInt( int min, int max )
 {
     assert( min >= 0 && min < max );
 
-    boost::uniform_smallint<> dist( 0, max );
+    boost::uniform_smallint<> dist( min, max );
     return dist( mGenerator );
 }
 

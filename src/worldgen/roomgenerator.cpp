@@ -17,6 +17,7 @@
 #include "worldgen/roomgenerator.h"
 #include "common/rect.h"
 #include "common/logging.h"
+#include "common/random.h"
 #include "tilegrid.h"
 #include "level.h"
 #include "tile.h"
@@ -30,11 +31,11 @@
 // The floor size of the room. This does not include walls!!!
 const int ROOM_SIZES[ERoomSize_COUNT][2] =
 {
-    { 3,  2 },   /* EROOM_TINY */
-    { 5,  2 },   /* EROOM_SMALL */
-    { 9,  4 },   /* EROOM_MEDIUM */
-    { 15, 8 },   /* EROOM_LARGE */
-    { 25, 12 },  /* EROOM_HUGE */
+    { 6,  3 },   /* EROOM_TINY */
+    { 10, 5 },   /* EROOM_SMALL */
+    { 15, 8 },   /* EROOM_MEDIUM */
+    { 20, 13 },   /* EROOM_LARGE */
+    { 30, 18 },  /* EROOM_HUGE */
     { 50, 25 }   /* ERROM_GIGANTIC */
 };
 
@@ -55,7 +56,7 @@ RoomGenerator::~RoomGenerator()
  * \param  roomSize  The size of the room to construct
  * \return A TileGrid containing the room
  */
-TileGrid RoomGenerator::generate( ERoomSize roomSize )
+TileGrid RoomGenerator::generate( ERoomSize roomSize, Random& random )
 {
     assert( roomSize < ERoomSize_COUNT );
 
@@ -64,19 +65,19 @@ TileGrid RoomGenerator::generate( ERoomSize roomSize )
     int maxSize  = ROOM_SIZES[ roomSize ][0];
 
     // Now first generate random dimensions for the first room
-    int rA_width  = Utils::random( minSize, maxSize );
-    int rA_height = Utils::random( minSize, maxSize );
+    int rA_width  = random.randInt( minSize, maxSize );
+    int rA_height = random.randInt( minSize, maxSize );
     int rA_x      = 0;
     int rA_y      = 0;
 
     if ( rA_width < maxSize )
     {
-        rA_x = Utils::random( 0, ( maxSize - rA_width ) );
+        rA_x = random.randInt( 0, ( maxSize - rA_width ) );
     }
 
     if ( rA_height < maxSize )
     {
-        rA_y = Utils::random( 0, ( maxSize - rA_height ) );
+        rA_y = random.randInt( 0, ( maxSize - rA_height ) );
     }
 
     LOG_DEBUG("WorldGen") << "Generating room A, "
@@ -84,35 +85,44 @@ TileGrid RoomGenerator::generate( ERoomSize roomSize )
         << "width="   << rA_width << ", height="  << rA_height << ", "
         << "x="       << rA_x     << ", y="       << rA_y;
 
-    // Attempt a second rectangle carving to make the room more interesting.
-    // It should be at least as large as the "buffer" area (which is the amount
-    // of empty space between the carved room and the top left corner), and
-    // randomly placed somewhere inside the room area we are given.
-    int rB_width  = Utils::random( rA_x, maxSize );
-    int rB_height = Utils::random( rA_y, maxSize );
-    int rB_x      = 0;
-    int rB_y      = 0;
-
-    if ( rB_width < maxSize )
-    {
-        rB_x = Utils::random( 0, ( maxSize - rB_width ) );
-    }
-
-    if ( rB_height < maxSize )
-    {
-        rB_y = Utils::random( 0, ( maxSize - rB_height ) );
-    }
-
-    // Carve out the room, and return the tile grid
-    //  We need to add two to both dimensions to account for the walls
+    // Carve the initial room in tile grid
     TileGrid room( maxSize + 2, maxSize + 2 );
 
     room.carveRoom( Rect( rA_x, rA_y, rA_width + 2, rA_height  + 2 ),
                     Tile( TILE_WALL ),
                     Tile( TILE_FLOOR ) );
-    room.carveOverlappingRoom( Rect( rB_x, rB_y, rB_width + 2, rB_height+2),
-                               Tile( TILE_WALL ),
-                               Tile( TILE_FLOOR ) );
+
+    // Attempt a second rectangle carving to make the room more interesting.
+    // It should be at least as large as the "buffer" area (which is the amount
+    // of empty space between the carved room and the top left corner), and
+    // randomly placed somewhere inside the room area we are given.
+    if ( true )
+    {
+        // Calculate the width of a second rectangle
+        int rB_width  = random.randInt( rA_x, maxSize );
+        int rB_height = random.randInt( rA_y, maxSize );
+
+        // Now generate a random upper left position to place this extra
+        // rect at
+        int rB_x      = 0;
+        int rB_y      = 0;
+
+        if ( rB_width < maxSize )
+        {
+            rB_x = random.randInt( 0, ( maxSize - rB_width ) );
+        }
+
+        if ( rB_height < maxSize )
+        {
+            rB_y = random.randInt( 0, ( maxSize - rB_height ) );
+        }
+   
+        // Now card an overlap into the room, taking care not to add
+        // walls
+        room.carveOverlappingRoom( Rect( rB_x, rB_y, rB_width + 2, rB_height+2),
+                                   Tile( TILE_WALL ),
+                                   Tile( TILE_FLOOR ) );
+    }
 
     return room;
 }
