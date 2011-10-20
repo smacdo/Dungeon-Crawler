@@ -38,11 +38,8 @@
 int main( int , char*[] )
 {
 #if defined(_WIN32)
-    putenv("SDL_VideoDriver=directx");
+    _putenv("SDL_VideoDriver=directx");
 #endif
-
-    // Seed the random number generator
-    srand( time(0) );
 
     // Print out information
     std::cout << App::getBuildString() << std::endl;
