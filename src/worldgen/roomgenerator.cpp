@@ -39,7 +39,8 @@ const int ROOM_SIZES[ERoomSize_COUNT][2] =
     { 50, 25 }   /* ERROM_GIGANTIC */
 };
 
-RoomGenerator::RoomGenerator()
+RoomGenerator::RoomGenerator( Random& random )
+    : mRandom( random )
 {
 }
 
@@ -56,6 +57,7 @@ RoomGenerator::~RoomGenerator()
  * \param  roomSize  The size of the room to construct
  * \return A TileGrid containing the room
  */
+//RoomData* RoomGenerator::generate( ERoomSize roomSize, Random& random )
 TileGrid RoomGenerator::generate( ERoomSize roomSize, Random& random )
 {
     assert( roomSize < ERoomSize_COUNT );
@@ -64,65 +66,78 @@ TileGrid RoomGenerator::generate( ERoomSize roomSize, Random& random )
     int minSize  = ROOM_SIZES[ roomSize ][1];
     int maxSize  = ROOM_SIZES[ roomSize ][0];
 
-    // Now first generate random dimensions for the first room
-    int rA_width  = random.randInt( minSize, maxSize );
-    int rA_height = random.randInt( minSize, maxSize );
-    int rA_x      = 0;
-    int rA_y      = 0;
+    // Generate a room, and an overlapping room to layer on top (this is an
+    // easy way to make the rooms appear more complex)
+    Rect mainRoomRect = generateRoomRect( minSize, maxSize );
+    Rect overlapRect  = generateRoomRect( 1, maxSize );
 
-    if ( rA_width < maxSize )
-    {
-        rA_x = random.randInt( 0, ( maxSize - rA_width ) );
-    }
+    // Calculate a rectangle that is a tight bounds for the two generated
+    // room rects
 
-    if ( rA_height < maxSize )
-    {
-        rA_y = random.randInt( 0, ( maxSize - rA_height ) );
-    }
-
-    LOG_DEBUG("WorldGen") << "Generating room A, "
-        << "minSize=" << minSize  << ", maxSize=" << maxSize   << ", "
-        << "width="   << rA_width << ", height="  << rA_height << ", "
-        << "x="       << rA_x     << ", y="       << rA_y;
-
-    // Carve the initial room in tile grid
+   
+    //
+    // Create a new room data struct to hold all of our room data's informaton.
+    // Then carve the room out
+    //
     TileGrid room( maxSize + 2, maxSize + 2 );
 
-    room.carveRoom( Rect( rA_x, rA_y, rA_width + 2, rA_height  + 2 ),
+    room.carveRoom( mainRoomRect,
+                    1,
                     Tile( TILE_WALL ),
                     Tile( TILE_FLOOR ) );
 
+    room.carveOverlappingRoom( overlapRect,
+                               1,
+                               Tile( TILE_WALL ),
+                               Tile( TILE_FLOOR ) );
+
+    // All done, return information to the level generator about our newly
+    // created room
+    return room;
+//    return new RoomData( )
+}
+
+Rect RoomGenerator::generateRoomRect( int minSize, int maxSize ) const
+{
+    // Randomly generate room dimensions, using the minSize/maxSize metrics
+    // given to determine the minimum and maximum size of our room
+    int width  = mRandom.randInt( minSize, maxSize );
+    int height = mRandom.randInt( minSize, maxSize );
+
+    return Rect( 1, 1, width, height );
+}
+
+Rect RoomGenerator::generateOverlapRect( int minSize,
+                                         int maxSize,
+                                         const Rect& mainRoom ) const
+{
     // Attempt a second rectangle carving to make the room more interesting.
     // It should be at least as large as the "buffer" area (which is the amount
     // of empty space between the carved room and the top left corner), and
     // randomly placed somewhere inside the room area we are given.
-    if ( true )
-    {
-        // Calculate the width of a second rectangle
-        int rB_width  = random.randInt( rA_x, maxSize );
-        int rB_height = random.randInt( rA_y, maxSize );
 
-        // Now generate a random upper left position to place this extra
-        // rect at
-        int rB_x      = 0;
-        int rB_y      = 0;
+    // Calculate the width of a second rectangle
+    int width  = mRandom.randInt( mainRoom.x(), maxSize );
+    int height = mRandom.randInt( mainRoom.y(), maxSize );
 
-        if ( rB_width < maxSize )
-        {
-            rB_x = random.randInt( 0, ( maxSize - rB_width ) );
-        }
+    return Rect( 1, 1, width, height );
+}
 
-        if ( rB_height < maxSize )
-        {
-            rB_y = random.randInt( 0, ( maxSize - rB_height ) );
-        }
-   
-        // Now card an overlap into the room, taking care not to add
-        // walls
-        room.carveOverlappingRoom( Rect( rB_x, rB_y, rB_width + 2, rB_height+2),
-                                   Tile( TILE_WALL ),
-                                   Tile( TILE_FLOOR ) );
-    }
+/**
+ * "Coalesces" two overlapping rectangles together. It returns the tightest
+ * fitting rectangle for the two provided rectangles.
+ */
+Rect RoomGenerator::coalesceRects( const Rect& a, const Rect& b ) const
+{
+    assert( a.intersects(b) );
+    int minX = 0, minY = 0, maxX = 0, maxY = 0;
 
-    return room;
+    // find tight boundaries
+    minX = std::min( a.left(), b.left() );
+    minY = std::min( a.top(), b.top() );
+
+    maxX = std::max( a.right(), b.right() );
+    maxY = std::max( a.bottom(), b.bottom() );
+
+    return Rect( Point( minX, minY ), Point( maxX, maxY ) );
 }

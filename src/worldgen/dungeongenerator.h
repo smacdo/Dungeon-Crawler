@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <boost/noncopyable.hpp>
 
+#include "common/random.h"
+
 class Level;
 class LevelGenerator;
 
@@ -23,10 +25,9 @@ public:
 
 private:
     LevelGenerator * mLevelGenerator;
+    Random mRandom;
     size_t mLevelWidth;
     size_t mLevelHeight;
-    size_t mMinRoomSize;
-    size_t mMaxRoomSize;
 };
 
 #endif

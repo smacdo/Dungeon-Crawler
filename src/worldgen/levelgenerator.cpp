@@ -43,7 +43,8 @@ Level* LevelGenerator::generate( Random& random )
 {
     // Turn the level border tiles into impassable bedrock tiles to prevent
     // the player (or anyone really) from escaping into the void
-    mTileGrid.carveRoom( Rect( 0, 0, mLevelWidth, mLevelHeight ),
+    mTileGrid.carveRoom( Rect( 1, 1, mLevelWidth-2, mLevelHeight-2 ),
+                         1,
                          Tile( TILE_IMPASSABLE ),
                          Tile( TILE_EMPTY ) );
 

@@ -167,5 +167,8 @@
     <ClInclude Include="src\common\random.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
+    <ClInclude Include="src\worldgen\roomdata.h">
+      <Filter>Source Files\WorldGen</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

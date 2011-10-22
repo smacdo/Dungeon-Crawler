@@ -64,6 +64,23 @@ public:
     }
 
     /**
+     * Creates a rectangle that encompasses the upperLeft point and the
+     * bottomRight point
+     *
+     * \param  upperLeft    Upper left point of the rectangle
+     * \param  bottomRight  Lower right point of the rectangle
+     */
+    Rect( const Point& upperLeft, const Point& bottomRight )
+        : mTop( upperLeft.y() ),
+          mLeft( upperLeft.x() ),
+          mBottom( bottomRight.y() ),
+          mRight( bottomRight.x() )
+    {
+        assert( mTop > mBottom );
+        assert( mRight > mLeft );
+    }
+
+    /**
      * Rectangle copy constructor
      */
     Rect( const Rect& r )
@@ -190,6 +207,19 @@ public:
     int height() const
     {
         return mBottom - mTop;
+    }
+
+    /**
+     * Returns an approximate center of the rectangle. If a boundary is even,
+     * then the result will be rounded down the nearest whole number
+     */
+    Point approximateCenter() const
+    {
+        assert(! isNull() );
+        int midX = width() / 2;
+        int midY = width() / 2;
+
+        return Point( midX + mLeft, midY + mTop );
     }
 
     /**
