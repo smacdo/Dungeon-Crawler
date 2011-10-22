@@ -69,7 +69,7 @@ TileGrid RoomGenerator::generate( ERoomSize roomSize, Random& random )
     // Generate a room, and an overlapping room to layer on top (this is an
     // easy way to make the rooms appear more complex)
     Rect mainRoomRect = generateRoomRect( minSize, maxSize );
-    Rect overlapRect  = generateRoomRect( 1, maxSize );
+    Rect overlapRect  = generateOverlapRect( minSize, maxSize, mainRoomRect );
 
     // Calculate a rectangle that is a tight bounds for the two generated
     // room rects
@@ -117,10 +117,35 @@ Rect RoomGenerator::generateOverlapRect( int minSize,
     // randomly placed somewhere inside the room area we are given.
 
     // Calculate the width of a second rectangle
-    int width  = mRandom.randInt( mainRoom.x(), maxSize );
-    int height = mRandom.randInt( mainRoom.y(), maxSize );
+    int width  = mRandom.randInt( 1, maxSize );
+    int height = mRandom.randInt( 1, maxSize );
+    int x      = 1;
+    int y      = 1;
 
-    return Rect( 1, 1, width, height );
+    if ( width < maxSize-1 )
+    {
+        x = mRandom.randInt( 1, maxSize - width );
+    }
+     
+    if ( height < maxSize-1 )
+    {
+        y = mRandom.randInt( 1, maxSize - height );
+    }
+
+    // We need to make sure that the overlapping rect actually, you know,
+    // overlaps the main room
+    int left   = x;
+    int top    = y;
+    int right  = width + left;
+    int bottom = height + top;
+
+    left   = std::min( left,   mainRoom.right() );
+    right  = std::max( right,  mainRoom.left() );
+    top    = std::min( top,    mainRoom.bottom() );
+    bottom = std::max( bottom, mainRoom.top() );
+
+    // Return dat rect
+    return Rect( left, top, right - left, bottom - top );
 }
 
 /**
