@@ -1,0 +1,4 @@
+
+Requirements
+    - SDL framework
+    - SDL_image framework

@@ -2,7 +2,10 @@
 ### Dungeon CMake buildscript for crossplatform Linux/POSIX systems      ##
 ###########################################################################
 # Project source code files
-set(core_srcs     core/rect.cpp)
+set(common_srcs   common/logging.cpp
+                  common/platform.cpp
+                  common/rect.cpp
+)
 
 set(worldgen_srcs worldgen/levelgenerator.cpp
                   worldgen/dungeongenerator.cpp
@@ -14,14 +17,15 @@ set(graphics_srcs graphics/spritemanager.cpp
 )
 
 set(game_srcs     camera.cpp
+                  dungeon.cpp
                   inputmanager.cpp
                   level.cpp
                   room.cpp
                   sdlclient.cpp
-                  utils.cpp
+                  tilegrid.cpp
 )
 				  
-set(srcs ${core_srcs} ${worldgen_srcs} ${game_srcs} ${graphics_srcs})
+set(srcs ${common_srcs} ${worldgen_srcs} ${game_srcs} ${graphics_srcs})
 
 # Compiler definitions
 ADD_DEFINITIONS(-g -W -Wall -Wextra -Werror -std=c++0x)

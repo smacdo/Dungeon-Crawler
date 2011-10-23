@@ -1,5 +1,6 @@
 build
 game/dungeon
+game/dungeon.app
 game/DungeonCrawler-debug.*
 DungeonCrawler.sdf
 DungeonCrawler.suo
