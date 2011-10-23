@@ -139,9 +139,9 @@ public:
         assert( destBounds.contains( sourceBounds ) );
 
         // Now copy the tiles over
-        for ( int sy = 0; sy < source.mWidth; ++sy )
+        for ( int sy = 0; sy < source.mHeight; ++sy )
         {
-            for ( int sx = 0; sx < source.mHeight; ++sx )
+            for ( int sx = 0; sx < source.mWidth; ++sx )
             {
                 size_t si = source.offset( sx, sy );
                 size_t di = this->offset( sx + upperLeft.x(),
@@ -237,6 +237,8 @@ public:
 protected:
     size_t offset( int x, int y ) const
     {
+        assert( x >= 0 && x < mWidth );
+        assert( y >= 0 && y < mHeight );
         return y * mWidth + x;
     }
 

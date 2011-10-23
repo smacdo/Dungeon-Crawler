@@ -76,7 +76,7 @@ public:
           mBottom( bottomRight.y() ),
           mRight( bottomRight.x() )
     {
-        assert( mTop > mBottom );
+        assert( mTop < mBottom );
         assert( mRight > mLeft );
     }
 
@@ -210,6 +210,22 @@ public:
     }
 
     /**
+     * Returns the top left point of the rectangle
+     */
+    Point topLeft() const
+    {
+        return Point( mLeft, mTop );
+    }
+
+    /**
+     * Returns the bottom right point of the rectangle
+     */
+    Point bottomRight() const
+    {
+        return Point( mRight, mBottom );
+    }
+
+    /**
      * Returns an approximate center of the rectangle. If a boundary is even,
      * then the result will be rounded down the nearest whole number
      */
@@ -222,18 +238,20 @@ public:
         return Point( midX + mLeft, midY + mTop );
     }
 
+
     /**
-     * Moves the top left corner of the rect by the requested amount
+     * Returns a copy of this rectangle moved by the requested distance
      *
-     * \param  x  Amount to move the rectangle left by
-     * \param  y  Amount to move the rectangle down by
+     * \param  distance  Distance to move this rectangle by
+     * \return Translated rectangle
      */
-    void translate( int x, int y )
+    Rect translate( const Point& distance ) const
     {
-        mTop    += y;
-        mLeft   += x;
-        mBottom += y;
-        mRight  += x;
+        return Rect( mLeft + distance.x(),
+                     mTop  + distance.y(),
+                     width(),
+                     height()
+        );
     }
 
     /**
@@ -286,14 +304,12 @@ public:
 
     bool intersects( const Rect& rect ) const
     {
-        assert(! isNull() );
-        return ( mLeft < rect.mRight  && mRight  > rect.mLeft &&
-                 mTop  < rect.mBottom && mBottom < rect.mTop );
+        return ( mLeft <= rect.mRight  && mRight  >= rect.mLeft &&
+                 mTop  <= rect.mBottom && mBottom >= rect.mTop );
     }
 
     bool contains( const Rect& rect ) const
     {
-        assert(! isNull() );
         return ( rect.mLeft >= mLeft && rect.mRight  <= mRight &&
                  rect.mTop  >= mTop  && rect.mBottom <= mBottom );
     }

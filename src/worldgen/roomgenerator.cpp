@@ -15,6 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "worldgen/roomgenerator.h"
+#include "worldgen/roomdata.h"
 #include "common/rect.h"
 #include "common/logging.h"
 #include "common/random.h"
@@ -25,18 +26,20 @@
 #include "tiletype.h"
 #include "dungeoncrawler.h"
 
+#include "common/platform.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // Room generation constants
 /////////////////////////////////////////////////////////////////////////////
 // The floor size of the room. This does not include walls!!!
 const int ROOM_SIZES[ERoomSize_COUNT][2] =
 {
-    { 6,  3 },   /* EROOM_TINY */
-    { 10, 5 },   /* EROOM_SMALL */
-    { 15, 8 },   /* EROOM_MEDIUM */
-    { 20, 13 },   /* EROOM_LARGE */
-    { 30, 18 },  /* EROOM_HUGE */
-    { 50, 25 }   /* ERROM_GIGANTIC */
+    { 3,  5 },   /* EROOM_TINY */
+    { 4,  8 },   /* EROOM_SMALL */
+    { 6,  12 },   /* EROOM_MEDIUM */
+    { 10, 15 },   /* EROOM_LARGE */
+    { 13, 22 },  /* EROOM_HUGE */
+    { 20, 30 }   /* ERROM_GIGANTIC */
 };
 
 RoomGenerator::RoomGenerator( Random& random )
@@ -57,14 +60,11 @@ RoomGenerator::~RoomGenerator()
  * \param  roomSize  The size of the room to construct
  * \return A TileGrid containing the room
  */
-//RoomData* RoomGenerator::generate( ERoomSize roomSize, Random& random )
-TileGrid RoomGenerator::generate( ERoomSize roomSize, Random& random )
+RoomData* RoomGenerator::generate( ERoomSize roomSize )
 {
     assert( roomSize < ERoomSize_COUNT );
-
-    // Randomly determine the size of the new room
-    int minSize  = ROOM_SIZES[ roomSize ][1];
-    int maxSize  = ROOM_SIZES[ roomSize ][0];
+    int minSize  = ROOM_SIZES[ roomSize ][0];
+    int maxSize  = ROOM_SIZES[ roomSize ][1];
 
     // Generate a room, and an overlapping room to layer on top (this is an
     // easy way to make the rooms appear more complex)
@@ -73,30 +73,31 @@ TileGrid RoomGenerator::generate( ERoomSize roomSize, Random& random )
 
     // Calculate a rectangle that is a tight bounds for the two generated
     // room rects
-
+    Rect floorRect = findBounds( mainRoomRect, overlapRect );
    
-    //
-    // Create a new room data struct to hold all of our room data's informaton.
-    // Then carve the room out
-    //
-    TileGrid room( maxSize + 2, maxSize + 2 );
+    // Create the structure that will hold data about our room. Need to do this
+    // before we start carving
+    RoomData * pRoomData = new RoomData( floorRect );
 
-    room.carveRoom( mainRoomRect,
-                    1,
-                    Tile( TILE_WALL ),
-                    Tile( TILE_FLOOR ) );
-
-    room.carveOverlappingRoom( overlapRect,
-                               1,
-                               Tile( TILE_WALL ),
-                               Tile( TILE_FLOOR ) );
+    // Finally we can carve our room out!
+    Tile wallTile  = Tile( TILE_WALL );
+    Tile floorTile = Tile( TILE_FLOOR );
+    
+    pRoomData->tiles.carveRoom( mainRoomRect, 1, wallTile, floorTile );
+    pRoomData->tiles.carveOverlappingRoom( overlapRect, 1, wallTile, floorTile );
 
     // All done, return information to the level generator about our newly
     // created room
-    return room;
-//    return new RoomData( )
+    return pRoomData;
 }
 
+/**
+ * Generates a random rectangle describing the floor layout for a room.
+ *
+ * \param  minSize  Minimum width and height for the room
+ * \param  maxSize  Maximum width and height for the room
+ * \return Rectangle describing the dimensions of the room
+ */
 Rect RoomGenerator::generateRoomRect( int minSize, int maxSize ) const
 {
     // Randomly generate room dimensions, using the minSize/maxSize metrics
@@ -107,6 +108,14 @@ Rect RoomGenerator::generateRoomRect( int minSize, int maxSize ) const
     return Rect( 1, 1, width, height );
 }
 
+/**
+ * Generates a secondary rectangle that overlaps the primary room rectangle
+ *
+ * \param  minSize   Minimum width and height for the room
+ * \param  maxSize   Maximum width and height for the room
+ * \param  mainRoom  Rectangle contaning the dimensions of the primary room
+ * \return Rectangle describing the dimensions of the overlapping room
+ */
 Rect RoomGenerator::generateOverlapRect( int minSize,
                                          int maxSize,
                                          const Rect& mainRoom ) const
@@ -149,12 +158,17 @@ Rect RoomGenerator::generateOverlapRect( int minSize,
 }
 
 /**
- * "Coalesces" two overlapping rectangles together. It returns the tightest
- * fitting rectangle for the two provided rectangles.
+ * Returns a bounding rectangle that tightly bounds both rectangles "a" and "b"
+ *
+ * \param  a  The first rectangle to include in the boundaries
+ * \param  b  The second rectangle to include in the boundaries
+ * \return The bounding rectangle
  */
-Rect RoomGenerator::coalesceRects( const Rect& a, const Rect& b ) const
+Rect RoomGenerator::findBounds( const Rect& a, const Rect& b ) const
 {
-    assert( a.intersects(b) );
+    bool contained = a.contains(b);
+    bool intersected = a.intersects(b);
+    assert( a.contains(b) || a.intersects(b) );
     int minX = 0, minY = 0, maxX = 0, maxY = 0;
 
     // find tight boundaries

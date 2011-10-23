@@ -6,7 +6,7 @@
 
 class Rect;
 class Random;
-class RoomData;
+struct RoomData;
 
 
 /*
@@ -27,15 +27,14 @@ public:
      * can potentially refuse to place a level, in which case the returned
      * pointer will be null
      */
-//    RoomData* generate( ERoomSize roomSize, Random& random );
-    TileGrid generate( ERoomSize roomSize, Random& random );
+    RoomData* generate( ERoomSize roomSize );
 
 private:
     Rect generateRoomRect( int minSize, int maxSize ) const;
     Rect generateOverlapRect( int minSize,
                               int maxSize,
                               const Rect& mainRoom ) const;
-    Rect coalesceRects( const Rect& a, const Rect& b ) const;
+    Rect findBounds( const Rect& a, const Rect& b ) const;
 
 private:
     // Reference to the random instance used by the dungeon generator

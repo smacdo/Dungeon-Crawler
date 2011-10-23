@@ -18,7 +18,7 @@ DungeonGenerator::DungeonGenerator( size_t width, size_t height )
       mLevelWidth( width ),
       mLevelHeight( height )
 {
-    mLevelGenerator = new LevelGenerator( new RoomGenerator( mRandom ),
+    mLevelGenerator = new LevelGenerator( mRandom,
                                           mLevelWidth,
                                           mLevelHeight );
 }
@@ -33,5 +33,5 @@ DungeonGenerator::~DungeonGenerator()
 
 Level* DungeonGenerator::generateLevel()
 {
-    return mLevelGenerator->generate( mRandom );
+    return mLevelGenerator->generate();
 }

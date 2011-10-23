@@ -16,16 +16,26 @@
  */
 #include "worldgen/levelgenerator.h"
 #include "worldgen/roomgenerator.h"
+#include "worldgen/roomdata.h"
 #include "common/utils.h"
 #include "common/random.h"
 
 #include "level.h"
+
 #include "room.h"
 
-LevelGenerator::LevelGenerator( RoomGenerator *pRoomGen,
+/**
+ * Level generator constructor. Creates a new level generator that is ready
+ * to construct as many random levels as you wish.
+ *
+ * \param  random  Reference to the dungeon generator's random
+ * \param  width   Width of the level
+ * \param  height  Height of the level
+ */
+LevelGenerator::LevelGenerator( Random& random,
                                 int width,
                                 int height )
-    : mRoomGenerator( pRoomGen ),
+    : mRandom( random ),
       mLevelWidth( width ),
       mLevelHeight( height ),
       mTileGrid( width, height )
@@ -34,13 +44,21 @@ LevelGenerator::LevelGenerator( RoomGenerator *pRoomGen,
     assert( height > 5 );
 }
 
+/**
+ * Destructor
+ */
 LevelGenerator::~LevelGenerator()
 {
-    boost::checked_delete( mRoomGenerator );
 }
 
-Level* LevelGenerator::generate( Random& random )
+/**
+ * Generates and returns a random level
+ */
+Level* LevelGenerator::generate()
 {
+    RoomGenerator roomGenerator( mRandom );
+    std::vector<RoomData*> levelRooms;
+
     // Turn the level border tiles into impassable bedrock tiles to prevent
     // the player (or anyone really) from escaping into the void
     mTileGrid.carveRoom( Rect( 1, 1, mLevelWidth-2, mLevelHeight-2 ),
@@ -52,20 +70,23 @@ Level* LevelGenerator::generate( Random& random )
     for ( int i = 0; i < 150; ++i )
     {
         // Generate a random room
-        ERoomSize roomSize    = generateRandomRoomSize( ROOM_SIZE_HUGE, random );
-        TileGrid roomTileGrid = mRoomGenerator->generate( roomSize, random );
+        ERoomSize roomSize  = generateRandomRoomSize( ROOM_SIZE_LARGE );
+        RoomData *pRoomData = roomGenerator.generate( roomSize );
 
         // Generate a random position to place it in
-        int roomWidth  = roomTileGrid.width();
-        int roomHeight = roomTileGrid.height();
+        Point placeAt = findRandomPointFor( deref(pRoomData) );
 
-        Point upperLeft( random.randInt( 1, mLevelWidth - roomWidth - 2   ),
-                         random.randInt( 1, mLevelHeight - roomHeight - 2 ) );
-
-        // Try to place it
-        if ( mTileGrid.isAreaEmpty( Rect( upperLeft, roomWidth, roomHeight ) ) )
+        // Try to place the room's tile grid into our level's tile grid. If it
+        // doesn't succeed, make sure to delete the room data before trying
+        // another room
+        if ( canPlaceRoomAt( deref(pRoomData), placeAt ) )
         {
-            mTileGrid.insert( upperLeft, roomTileGrid );
+            mTileGrid.insert( placeAt, pRoomData->tiles );
+            levelRooms.push_back( pRoomData );
+        }
+        else
+        {
+            Delete( pRoomData );
         }
     }
 
@@ -78,11 +99,10 @@ Level* LevelGenerator::generate( Random& random )
     return new Level( mTileGrid );
 }
 
-ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize,
-                                                  Random& random ) const
+ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize ) const
 {
     // This needs to be improved
-    int whichOne = random.randInt( 0, 100 );
+    int whichOne = mRandom.randInt( 0, 100 );
 
     if ( whichOne < 10 )
     {
@@ -98,6 +118,34 @@ ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize,
     }
     else
     {
-        return ROOM_SIZE_HUGE;
+        return ROOM_SIZE_LARGE;
     }
+}
+
+/**
+ * Finds a random position to attempt to place a room at
+ *
+ * \param  roomData  The room you are trying to place
+ * \return A randomly determined position
+ */
+Point LevelGenerator::findRandomPointFor( const RoomData& roomData ) const
+{
+    int maxX = mLevelWidth  - roomData.totalArea.width() - 2;
+    int maxY = mLevelHeight - roomData.totalArea.height() - 2;
+
+    return Point( mRandom.randInt( 1, maxX ),
+                  mRandom.randInt( 1, maxY ) );
+}
+
+/**
+ * Checks if the given room can be placed at the requested location
+ *
+ * \param  roomData  Data for the room you are trying to place
+ * \param  pos       Position you are trying to place the room at
+ * \return True if the room can be positioned there, false otherwise
+ */
+bool LevelGenerator::canPlaceRoomAt( const RoomData& roomData,
+                                     const Point& pos ) const
+{
+    return mTileGrid.isAreaEmpty( roomData.totalArea.translate( pos ) );
 }

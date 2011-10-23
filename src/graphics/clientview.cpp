@@ -209,7 +209,7 @@ void ClientView::drawSprite( int x, int y, const Sprite& sprite )
 void ClientView::moveCamera( int x, int y )
 {
     // Move the camera
-    mCamera.translate( x * 32 , y * 32 );
+    mCamera = mCamera.translate( Point( x * 32 , y * 32 ) );
 }
 
 std::string ClientView::dumpInfo() const
