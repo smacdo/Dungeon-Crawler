@@ -24,6 +24,15 @@ ConnectionGenerator::~ConnectionGenerator()
 void ConnectionGenerator::connect( const std::vector<RoomData*>& rooms )
 {
     // connect each room to its next room to ensure they are connected
+    for ( size_t index = 0; index < rooms.size(); ++index )
+    {
+        size_t nextIndex ( index + 1 ) % rooms.size();
+
+        // Connect this room to the next room
+        rooms[index].connectedRooms.push_back( rooms[nextIndex] );
+
+        // Also register the connection in the other room
+    }
 }
 
 /**
