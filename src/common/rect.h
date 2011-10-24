@@ -64,6 +64,23 @@ public:
     }
 
     /**
+     * Creates a rectangle that encompasses the upperLeft point and the
+     * bottomRight point
+     *
+     * \param  upperLeft    Upper left point of the rectangle
+     * \param  bottomRight  Lower right point of the rectangle
+     */
+    Rect( const Point& upperLeft, const Point& bottomRight )
+        : mTop( upperLeft.y() ),
+          mLeft( upperLeft.x() ),
+          mBottom( bottomRight.y() ),
+          mRight( bottomRight.x() )
+    {
+        assert( mTop < mBottom );
+        assert( mRight > mLeft );
+    }
+
+    /**
      * Rectangle copy constructor
      */
     Rect( const Rect& r )
@@ -193,17 +210,48 @@ public:
     }
 
     /**
-     * Moves the top left corner of the rect by the requested amount
-     *
-     * \param  x  Amount to move the rectangle left by
-     * \param  y  Amount to move the rectangle down by
+     * Returns the top left point of the rectangle
      */
-    void translate( int x, int y )
+    Point topLeft() const
     {
-        mTop    += y;
-        mLeft   += x;
-        mBottom += y;
-        mRight  += x;
+        return Point( mLeft, mTop );
+    }
+
+    /**
+     * Returns the bottom right point of the rectangle
+     */
+    Point bottomRight() const
+    {
+        return Point( mRight, mBottom );
+    }
+
+    /**
+     * Returns an approximate center of the rectangle. If a boundary is even,
+     * then the result will be rounded down the nearest whole number
+     */
+    Point approximateCenter() const
+    {
+        assert(! isNull() );
+        int midX = width() / 2;
+        int midY = width() / 2;
+
+        return Point( midX + mLeft, midY + mTop );
+    }
+
+
+    /**
+     * Returns a copy of this rectangle moved by the requested distance
+     *
+     * \param  distance  Distance to move this rectangle by
+     * \return Translated rectangle
+     */
+    Rect translate( const Point& distance ) const
+    {
+        return Rect( mLeft + distance.x(),
+                     mTop  + distance.y(),
+                     width(),
+                     height()
+        );
     }
 
     /**
@@ -256,14 +304,12 @@ public:
 
     bool intersects( const Rect& rect ) const
     {
-        assert(! isNull() );
-        return ( mLeft < rect.mRight  && mRight  > rect.mLeft &&
-                 mTop  < rect.mBottom && mBottom < rect.mTop );
+        return ( mLeft <= rect.mRight  && mRight  >= rect.mLeft &&
+                 mTop  <= rect.mBottom && mBottom >= rect.mTop );
     }
 
     bool contains( const Rect& rect ) const
     {
-        assert(! isNull() );
         return ( rect.mLeft >= mLeft && rect.mRight  <= mRight &&
                  rect.mTop  >= mTop  && rect.mBottom <= mBottom );
     }

@@ -34,11 +34,13 @@ public:
 
     bool isAreaEmpty( const Rect& area ) const;
 
-    void carveRoom( const Rect& area,
+    void carveRoom( const Rect& floorArea,
+                    int wallWidth,
                     const Tile& wallTemplate,
                     const Tile& floorTemplate );
 
-    void carveOverlappingRoom( const Rect& area,
+    void carveOverlappingRoom( const Rect& floorArea,
+                               int wallWidth,
                                const Tile& wallTemplate,
                                const Tile& floorTemplate );
 

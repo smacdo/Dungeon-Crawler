@@ -62,33 +62,49 @@ bool TileGrid::isAreaEmpty( const Rect& area ) const
     return isEmpty;
 }
 
-void TileGrid::carveRoom( const Rect& area,
+/**
+ * Carves a rectangular room into the tilegrid, consisting of a solid area
+ * of floor surrounded on all four sides with wall.
+ *
+ * \param  area           Area to transform into floor
+ * \param  wallWidth      Width of the walls to surround the floor with
+ * \param  wallTemplate   Each wall should be a copy of this tile data
+ * \param  floorTemplate  Each floor should be a copy of this tile data
+ */
+void TileGrid::carveRoom( const Rect& floorArea,
+                          int wallWidth,
                           const Tile& wallTemplate,
                           const Tile& floorTemplate )
 {
     Rect gridBounds( 0, 0, mWidth, mHeight );
+    Rect carveBounds( floorArea.x() - wallWidth, floorArea.y() - wallWidth,
+                      floorArea.width() + 2 * wallWidth,
+                      floorArea.height() + 2 * wallWidth );
 
     // Make sure the carving is within the room's boundaries
-    assert( area.isNull() == false );
-    assert( gridBounds.contains( area ) );
+    assert( floorArea.isNull() == false );
+    assert( wallWidth == 1 );       // need to update method to support > 1
+    assert( gridBounds.contains( carveBounds ) );
 
-    // Now carve out the wall and floor tiles
-    for ( int iy = 0; iy < area.height(); ++iy )
+    // First step is to carve the walls out
+    for ( int x = carveBounds.x(); x < carveBounds.right(); ++x )
     {
-        for ( int ix = 0; ix < area.width(); ++ix )
-        {
-            // We cannot in a restricted tile
+        set( x, carveBounds.top(), wallTemplate );
+        set( x, carveBounds.bottom()-1, wallTemplate );
+    }
 
-            // Is this the border or the inner portion?
-            if ( iy == 0 || iy == (area.height()-1) ||
-                 ix == 0 || ix == (area.width()-1) )
-            {
-                set( ix + area.x(), iy + area.y(), wallTemplate );
-            }
-            else
-            {
-                set( ix + area.x(), iy + area.y(), floorTemplate );
-            }
+    for ( int y = carveBounds.y(); y < carveBounds.bottom(); ++y )
+    {
+        set( carveBounds.left(), y, wallTemplate );
+        set( carveBounds.right()-1, y, wallTemplate );
+    }
+
+    // Second step is to carve the floor tiles out
+    for ( int y = floorArea.y(); y < floorArea.bottom(); ++y )
+    {
+        for ( int x = floorArea.x(); x < floorArea.right(); ++x )
+        {
+            set( x, y, floorTemplate );
         }
     }
 }
@@ -102,88 +118,58 @@ void TileGrid::carveRoom( const Rect& area,
  * TODO: Maybe we want to do this as well? Add it as a flag and perhaps
  *       merge behaviors?
  */
-void TileGrid::carveOverlappingRoom( const Rect& sourceBounds,
+void TileGrid::carveOverlappingRoom( const Rect& floorArea,
+                                     int wallWidth,
                                      const Tile& wallTemplate,
                                      const Tile& floorTemplate )
 {
     Rect destBounds( 0, 0, mWidth, mHeight );
+    Rect carveBounds( floorArea.x() - 1, floorArea.y() - 1,
+                      floorArea.width() + 2, floorArea.height() + 2 );
 
     // Verify that the source grid will fit in us
-    assert( destBounds.contains( sourceBounds ) );
+    assert( destBounds.contains( carveBounds ) );
 
-    // Now copy the tiles over
-    for ( int sy = 0; sy < sourceBounds.height(); ++sy )
+    // First step is to carve the walls out and take care not to place a wall
+    // where there is already a floor in place
+    for ( int x = carveBounds.x(); x < carveBounds.right(); ++x )
     {
-        for ( int sx = 0; sx < sourceBounds.width(); ++sx )
+        Tile& t = get( x, carveBounds.top() );
+        Tile& b = get( x, carveBounds.bottom() - 1 );
+
+        if ( t.isFloor() == false )
         {
-            // Calculate array index offsets
-            size_t si = ( sy * sourceBounds.width() + sx ); 
-            size_t di = this->offset( sx + sourceBounds.x(),
-                                      sy + sourceBounds.y() );
+            set( x, carveBounds.top(), wallTemplate );
+        }
 
-            // Should we be placing a wall here, or floor?
-            bool placeWall = ( sy == 0 || sy == ( sourceBounds.height()-1 ) ||
-                               sx == 0 || sx == ( sourceBounds.width() -1 ) );
-
-            // Attempt to place the correct tile down (either wall or floor
-            // depending on position), but make sure that we are not putting
-            // a wall where there is already a floor tile in place
-            if ( placeWall )
-            {
-                if ( mTiles[di].isFloor() )
-                {
-                    continue;       // refuse
-                }
-                
-                mTiles[di] = wallTemplate;
-            }
-            else
-            {
-                mTiles[di] = floorTemplate;
-            }
+        if ( b.isFloor() == false )
+        {
+            set( x, carveBounds.bottom()-1, wallTemplate );
         }
     }
-}
 
-/**
-    * Adds an overlapping room into the tile grid. What this does is insert the
-    * room's tiles into our tile grid. However, if the insertion would insert a
-    * tile where a floor tile already exists, then the previous floor tile will 
-    * be kept. That way we don't build walls into pre-existing rooms
-    * 
-    * TODO: Maybe we want to do this as well? Add it as a flag and perhaps
-    *       merge behaviors?
-    */
-void TileGrid::addOverlappingRoom( const Point& upperLeft,
-                                   const TileGrid& roomGrid )
-{
-    Rect destBounds( 0, 0, mWidth, mHeight );
-    Rect sourceBounds( upperLeft, roomGrid.mWidth, roomGrid.mHeight );
-
-    // Verify that the source grid will fit in us
-    assert( destBounds.contains( sourceBounds ) );
-
-    // Now copy the tiles over
-    for ( int sy = 0; sy < roomGrid.mHeight; ++sy )
+    for ( int y = carveBounds.y(); y < carveBounds.bottom(); ++y )
     {
-        for ( int sx = 0; sx < roomGrid.mWidth; ++sx )
+        Tile& l = get( carveBounds.left(), y );
+        Tile& r = get( carveBounds.right()-1, y );
+
+        if (! l.isFloor() )
         {
-            size_t si = roomGrid.offset( sx, sy );
-            size_t di = this->offset( sx + upperLeft.x(),
-                                      sy + upperLeft.y() );
+            set( carveBounds.left(), y, wallTemplate );
+        }
 
-            // Do not copy if the source tile is a wall, and the destination
-            // already has a tile
-            Tile& sourceTile = roomGrid.mTiles[si];
+        if (! r.isFloor() )
+        {
+            set( carveBounds.right()-1, y, wallTemplate );
+        }
+    }
 
-            if ( sourceTile.isWall() && mTiles[di].wasPlaced() )
-            {
-                continue;
-            }
-            else
-            {
-                mTiles[di] = roomGrid.mTiles[si];
-            }
+    // Second step is to carve the floor tiles out
+    for ( int y = floorArea.y(); y < floorArea.bottom(); ++y )
+    {
+        for ( int x = floorArea.x(); x < floorArea.right(); ++x )
+        {
+            set( x, y, floorTemplate );
         }
     }
 }
