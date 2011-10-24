@@ -92,13 +92,15 @@ Level* LevelGenerator::generate()
 
     // Show debug stats about rooms generated and whatnot
 
-
-    // Hook everything up
+    // Connect rooms together
 
     // Return the generated level
     return new Level( mTileGrid );
 }
 
+/**
+ * Creates a random room size, depending on the maximum room size passed
+ */
 ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize ) const
 {
     // This needs to be improved
