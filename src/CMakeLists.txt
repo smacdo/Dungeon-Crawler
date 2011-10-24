@@ -4,6 +4,7 @@
 # Project source code files
 set(common_srcs   common/logging.cpp
                   common/platform.cpp
+                  common/random.cpp
                   common/rect.cpp
 )
 
