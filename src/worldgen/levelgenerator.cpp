@@ -92,7 +92,14 @@ Level* LevelGenerator::generate()
 
     // Show debug stats about rooms generated and whatnot
 
-    // Connect rooms together
+    // Really stupid tunneling. Connect each room to the next one
+    HallGenerator hallGenerator( mRandom );
+
+    for ( size_t index = 0; index < levelRooms.size(); ++index )
+    {
+        size_t nextIndex = (index+1) % levelRooms.size();
+        hallGenerator.connect( levelRooms[index], levelRooms[nextIndex] );   
+    }
 
     // Return the generated level
     return new Level( mTileGrid );
