@@ -1,0 +1,36 @@
+;;; terrain.info: Data for the game's terrain tiles
+terraindata
+{
+    terrain
+    {
+        name: "bedrock"
+        type: "bedrock"
+    }
+
+    terrain
+    {
+        name: "void"
+        type: "void"
+    }
+
+    terrain
+    {
+        name: "granite"
+        type: "wall"
+        can_tunnel: "false"
+    }
+
+    terrain
+    {
+        name: "stone_floor"
+        type: "floor"
+        sprite: "stone_floor"
+    }
+
+    terrain
+    {
+        name: "stone_wall"
+        type: "wall"
+        sprite: "wall_stone"
+    }
+}
