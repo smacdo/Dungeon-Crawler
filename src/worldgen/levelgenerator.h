@@ -6,24 +6,30 @@
 
 #include "tilegrid.h"
 
-class RoomGenerator;
+class Random;
 class Level;
+class Point;
+struct RoomData;
 
 class LevelGenerator : boost::noncopyable
 {
 public:
-    LevelGenerator( RoomGenerator *pRoomGen, int width, int height );
+    LevelGenerator( Random& random,
+                    int levelWidth,
+                    int levelHeight );
     ~LevelGenerator();
 
     Level * generate();
 
 protected:
     ERoomSize generateRandomRoomSize( ERoomSize maxRoomSize ) const;
+    Point findRandomPointFor( const RoomData& roomData ) const;
+    bool canPlaceRoomAt( const RoomData& roomData, const Point& pos ) const;
 
 private:
-    RoomGenerator *mRoomGenerator;
-    size_t mLevelWidth;
-    size_t mLevelHeight;
+    Random& mRandom;
+    int mLevelWidth;
+    int mLevelHeight;
     TileGrid mTileGrid;
 };
 

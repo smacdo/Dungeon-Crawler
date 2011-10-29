@@ -1,6 +1,7 @@
 #include "worldgen/dungeongenerator.h"
 #include "worldgen/levelgenerator.h"
 #include "worldgen/roomgenerator.h"
+#include "common/random.h"
 
 #include <cstddef>
 #include <boost/checked_delete.hpp>
@@ -13,17 +14,11 @@
  */
 DungeonGenerator::DungeonGenerator( size_t width, size_t height )
     : mLevelGenerator( NULL ),
+      mRandom( Random() ),
       mLevelWidth( width ),
-      mLevelHeight( height ),
-      mMinRoomSize( 8 ),
-      mMaxRoomSize( 32 )
+      mLevelHeight( height )
 {
-/*    mLevelGenerator = new BspLevelGenerator( new RoomGenerator,
-                                             mLevelWidth,
-                                             mLevelHeight,
-                                             mMinRoomSize,
-                                             mMaxRoomSize );*/
-    mLevelGenerator = new LevelGenerator( new RoomGenerator,
+    mLevelGenerator = new LevelGenerator( mRandom,
                                           mLevelWidth,
                                           mLevelHeight );
 }
