@@ -5,6 +5,8 @@
 #include "common/rect.h"
 #include "tilegrid.h"
 
+#include <vector>
+
 /**
  * Contains information on a generated room, including the TileGrid used and
  * useful coordinates.

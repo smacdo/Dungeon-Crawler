@@ -166,8 +166,6 @@ Rect RoomGenerator::generateOverlapRect( int minSize,
  */
 Rect RoomGenerator::findBounds( const Rect& a, const Rect& b ) const
 {
-    bool contained = a.contains(b);
-    bool intersected = a.intersects(b);
     assert( a.contains(b) || a.intersects(b) );
     int minX = 0, minY = 0, maxX = 0, maxY = 0;
 

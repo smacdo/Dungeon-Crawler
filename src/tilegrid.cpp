@@ -19,14 +19,13 @@
 #include "common/rect.h"
 #include "common/platform.h"
 
-
 TileGrid::TileGrid( size_t width, size_t height )
-    : FixedGrid( width, height, Tile( TILE_EMPTY ) )
+    : FixedGrid<Tile>( width, height, Tile( TILE_EMPTY ) )
 {
 }
 
 TileGrid::TileGrid( const TileGrid& tileGrid )
-    : FixedGrid( tileGrid )
+    : FixedGrid<Tile>( tileGrid )
 {
 }
 

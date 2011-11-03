@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-class Random : boost::noncopyable
+class Random 
 {
 public:
     // Initialize the random number generator with a random seed

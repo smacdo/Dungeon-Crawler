@@ -101,7 +101,7 @@ Level* LevelGenerator::generate()
 /**
  * Creates a random room size, depending on the maximum room size passed
  */
-ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize maxRoomSize ) const
+ERoomSize LevelGenerator::generateRandomRoomSize( ERoomSize ) const
 {
     // This needs to be improved
     int whichOne = mRandom.randInt( 0, 100 );
