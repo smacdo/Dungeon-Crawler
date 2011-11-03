@@ -1,6 +1,8 @@
 build
 game/dungeon
 game/DungeonCrawler-debug.*
+game/libgtest.a
+game/test-dungeoncrawler
 DungeonCrawler.sdf
 DungeonCrawler.suo
 DungeonCrawler.vcxproj.user
