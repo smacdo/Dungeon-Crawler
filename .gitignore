@@ -4,6 +4,7 @@ game/dungeon.app
 game/DungeonCrawler-debug.*
 game/libgtest.a
 game/test-dungeoncrawler
+game/libSDLmain.a
 DungeonCrawler.sdf
 DungeonCrawler.suo
 DungeonCrawler.vcxproj.user

@@ -25,3 +25,5 @@ private:
     RoomData *mpStartRoom;
     RoomData *mpDestRoom;
 };
+
+#endif

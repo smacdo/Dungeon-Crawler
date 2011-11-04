@@ -17,6 +17,7 @@
 #include "worldgen/levelgenerator.h"
 #include "worldgen/roomgenerator.h"
 #include "worldgen/roomdata.h"
+#include "worldgen/hallgenerator.h"
 #include "common/utils.h"
 #include "common/random.h"
 

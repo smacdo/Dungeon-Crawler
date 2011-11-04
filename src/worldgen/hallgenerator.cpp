@@ -1,4 +1,5 @@
 #include "worldgen/hallgenerator.h"
+#include "worldgen/roomdata.h"
 
 HallGenerator::HallGenerator( Random& random )
     : mRandom( random ),
@@ -18,7 +19,7 @@ HallGenerator::~HallGenerator()
 void HallGenerator::connect( RoomData *pStartRoom, RoomData *pEndRoom )
 {
     assert( pStartRoom != NULL );
-    assert( pEnRoom    != NULL );
+    assert( pEndRoom   != NULL );
 
     // Reset our generator before beginning
     reset( pStartRoom, pEndRoom );
@@ -33,5 +34,5 @@ void HallGenerator::reset( RoomData *pStartRoom, RoomData *pEndRoom )
     assert( pEndRoom   != NULL );
 
     mpStartRoom = pStartRoom;
-    mpEndRoom   = pEndRoom;
+    mpDestRoom  = pEndRoom;
 }
