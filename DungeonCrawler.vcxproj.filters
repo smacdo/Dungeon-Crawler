@@ -60,9 +60,6 @@
     <ClCompile Include="src\level.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\room.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\worldgen\roomgenerator.cpp">
       <Filter>Source Files\WorldGen</Filter>
     </ClCompile>
@@ -81,17 +78,20 @@
     <ClCompile Include="src\common\rect.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="src\tilegrid.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="src\common\logging.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\random.cpp">
+    <ClCompile Include="src\appconfig.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\worldgen\hallgenerator.cpp">
+      <Filter>Source Files\WorldGen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\random.cpp">
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,9 +111,6 @@
       <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\level.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\room.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\worldgen\roomgenerator.h">
@@ -169,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="src\worldgen\roomdata.h">
       <Filter>Header Files\WorldGen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\appconfig.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

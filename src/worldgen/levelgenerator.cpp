@@ -23,8 +23,6 @@
 
 #include "level.h"
 
-#include "room.h"
-
 /**
  * Level generator constructor. Creates a new level generator that is ready
  * to construct as many random levels as you wish.

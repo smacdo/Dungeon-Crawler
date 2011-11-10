@@ -41,8 +41,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)-debug</TargetName>
-    <IncludePath>$(API_DIR)\boost;$(BOOST_ROOT);$(ProjectDir)\thirdparty\SDL\include;$(ProjectDir)\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(API_DIR)\boost\libs;$(BOOST_ROOT)\libs;$(ProjectDir)\thirdparty\SDL\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(BOOST_ROOT);$(ProjectDir)\thirdparty\SDL\include;$(ProjectDir)\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(BOOST_ROOT)\lib;$(ProjectDir)\thirdparty\SDL\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,6 +78,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src/sdlclient.cpp" />
+    <ClCompile Include="src\appconfig.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\common\logging.cpp" />
     <ClCompile Include="src\common\platform.cpp" />
@@ -89,14 +90,14 @@
     <ClCompile Include="src\graphics\spritemanager.cpp" />
     <ClCompile Include="src\inputmanager.cpp" />
     <ClCompile Include="src\level.cpp" />
-    <ClCompile Include="src\room.cpp" />
     <ClCompile Include="src\tilegrid.cpp" />
-    <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\worldgen\dungeongenerator.cpp" />
+    <ClCompile Include="src\worldgen\hallgenerator.cpp" />
     <ClCompile Include="src\worldgen\levelgenerator.cpp" />
     <ClCompile Include="src\worldgen\roomgenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\appconfig.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\common\fixedgrid.h" />
     <ClInclude Include="src\common\logging.h" />
@@ -114,7 +115,6 @@
     <ClInclude Include="src\graphics\spritemanager.h" />
     <ClInclude Include="src\inputmanager.h" />
     <ClInclude Include="src\level.h" />
-    <ClInclude Include="src\room.h" />
     <ClInclude Include="src\tile.h" />
     <ClInclude Include="src\tilegrid.h" />
     <ClInclude Include="src\tiletype.h" />
