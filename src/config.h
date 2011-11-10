@@ -31,4 +31,8 @@
 #define GAME_VERSION_RELEASE "a"        // a=alpha, b=beta, r=release/rtm
 #define GAME_VERSION_STRING "v"##GAME_VERSION_MAJOR##"."##GAME_VERSION_MINOR##"."##GAME_VERSION_PATCH##" "##GAME_VERSION_RELEASE
 
+const int DEFAULT_RENDER_WIDTH  = 800;
+const int DEFAULT_RENDER_HEIGHT = 600;
+const bool DEFAULT_FULLSCREEN   = false;
+
 #endif

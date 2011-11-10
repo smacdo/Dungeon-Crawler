@@ -19,17 +19,3 @@
 
 #include <time.h>
 #include <stdlib.h>
-
-namespace Utils
-{
-
-/**
- * Generates a random number between (min, max)
- */
-int random( int min, int max )
-{
-    assert( min < max );
-    return min + ( rand() % ( min-(max+1) ) );
-}
-
-}

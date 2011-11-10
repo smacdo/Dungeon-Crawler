@@ -26,6 +26,7 @@ set(graphics_srcs
 )
 
 set(game_srcs
+        appconfig.cpp
         camera.cpp
         dungeon.cpp
         inputmanager.cpp
@@ -57,7 +58,7 @@ endif()
 ###
 ### Required packages
 ###
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(SDL REQUIRED)
 find_package(SDL_image REQUIRED)
 # find_package(OpenGL REQUIRED)
@@ -77,8 +78,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/thirdparty/sdl/include)
 add_executable(dungeon MACOSX_BUNDLE ${srcs})
 target_link_libraries(dungeon
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_LIBRARIES}
     ${SDL_LIBRARY}
     ${SDLIMAGE_LIBRARY}
     ${OPENGL_LIBRARIES}
