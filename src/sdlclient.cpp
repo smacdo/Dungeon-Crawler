@@ -34,31 +34,26 @@ AppConfig parseCommandLineArgs( int argc, char** args );
 
 namespace po = boost::program_options;
 
-#if defined(_WIN32)
-#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 // Dungeon Crawler Application entry point
 ///////////////////////////////////////////////////////////////////////////////
 int main( int argc , char* argv[] )
 {
-    // Parse command line options first
+    // Game start up. Parse any requested command line arguments and initialize
+    // the platform before starting the game up
     AppConfig config = parseCommandLineArgs( argc, argv );
 
-#if defined(_WIN32)
-    _putenv("SDL_VideoDriver=directx");
-#endif
+    App::startup();
 
-    // Create the world
-    DungeonGenerator generator( 76, 50 );
-    Level *level = generator.generateLevel();
-
-    // Game components
+    // Start the game up
     ClientView   clientView;
     InputManager input;
 
     clientView.start();
+
+    // Create the world
+    DungeonGenerator generator( 76, 50 );
+    Level *level = generator.generateLevel();
 
     //
     // Main game loop

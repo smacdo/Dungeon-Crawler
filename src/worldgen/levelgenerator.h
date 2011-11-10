@@ -5,6 +5,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "tilegrid.h"
+#include "dungeoncrawler.h"
 
 class Random;
 class Level;

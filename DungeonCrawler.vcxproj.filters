@@ -69,9 +69,6 @@
     <ClCompile Include="src\graphics\spritemanager.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\platform.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="src\worldgen\levelgenerator.cpp">
       <Filter>Source Files\WorldGen</Filter>
     </ClCompile>
@@ -91,6 +88,9 @@
       <Filter>Source Files\WorldGen</Filter>
     </ClCompile>
     <ClCompile Include="src\common\random.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\platform_vista.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>

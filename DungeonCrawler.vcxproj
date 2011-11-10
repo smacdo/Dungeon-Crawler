@@ -81,7 +81,7 @@
     <ClCompile Include="src\appconfig.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\common\logging.cpp" />
-    <ClCompile Include="src\common\platform.cpp" />
+    <ClCompile Include="src\common\platform_vista.cpp" />
     <ClCompile Include="src\common\random.cpp" />
     <ClCompile Include="src\common\rect.cpp" />
     <ClCompile Include="src\dungeon.cpp" />

@@ -21,65 +21,52 @@
 #include "common/logging.h"
 #include "common/utils.h"
 #include "config.h"
-#include <SDL.h>
-#include <SDL_syswm.h>
 #include <string>
 #include <sstream>
-#include <iostream>
 
-#if defined(_WIN32)
-#   define WIN32_LEAN_AND_MEAN
-#   define NOMINMAX
-#   include <Windows.h>
-#   include <Commctrl.h>
-#endif
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
+#include <Commctrl.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// Internal methods for the windows platform
-/////////////////////////////////////////////////////////////////////////////
-#if defined(_WIN32)
-namespace
+#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+namespace {
+/**
+ * Converts an STL string into a WindowsNT wchar* wrapped inside of a
+ * pretty wstring
+ *
+ * \param  str  The stl string you want to convert
+ * \return A wstring representing the input
+ */
+std::wstring WinNTStringToWideString( const std::string& str )
 {
-    /**
-     * Converts an STL string into a WindowsNT wchar* wrapped inside of a
-     * pretty wstring
-     *
-     * \param  str  The stl string you want to convert
-     * \return A wstring representing the input
-     */
-    std::wstring WinNTStringToWideString( const std::string& str )
-    {
-        // Find the length of the soon to be allocated wstring
-        size_t slen = str.length();
-        int len     = MultiByteToWideChar( CP_ACP, 0,
-                                           str.c_str(),
-                                           static_cast<int>(slen) + 1,
-                                           0,
-                                           0 );
+    // Find the length of the soon to be allocated wstring
+    size_t slen = str.length();
+    int len     = MultiByteToWideChar( CP_ACP, 0,
+                                        str.c_str(),
+                                        static_cast<int>(slen) + 1,
+                                        0,
+                                        0 );
 
-        // Allocate space for the new wstring, and then convert the input
-        wchar_t *buffer = new wchar_t[len];
+    // Allocate space for the new wstring, and then convert the input
+    wchar_t *buffer = new wchar_t[len];
 
-        MultiByteToWideChar( CP_ACP, 0,
-                             str.c_str(),
-                             static_cast<int>(slen) + 1,
-                             buffer,
-                             len );
+    MultiByteToWideChar( CP_ACP, 0,
+                            str.c_str(),
+                            static_cast<int>(slen) + 1,
+                            buffer,
+                            len );
 
-        // Now create the wstring, copy the temporary wchar* buffer into it and
-        // then destroy the buffer before returning
-        std::wstring result( buffer );
-        DeleteArray( buffer );
+    // Now create the wstring, copy the temporary wchar* buffer into it and
+    // then destroy the buffer before returning
+    std::wstring result( buffer );
+    DeleteArray( buffer );
 
-        return result;
-    }
+    return result;
+}
 }
 
-#endif
-
-/////////////////////////////////////////////////////////////////////////////
-// Application utility functions
-/////////////////////////////////////////////////////////////////////////////
 namespace App {
 
 /**
@@ -96,7 +83,6 @@ EAssertionStatus raiseAssertion( const char *message,
                                  const char *filename,
                                  unsigned int lineNumber )
 {
-#if defined(_WIN32)
     HWND window = GetActiveWindow();
 
     // Write out an error message if none was given
@@ -192,11 +178,6 @@ EAssertionStatus raiseAssertion( const char *message,
             break;
     }
 
-#else
-    std::cerr << "[FATAL ERROR]: " << message << std::endl;
-    //    exit( 1 );
-#endif
-
     // Now return and let the caller know that they should abort
     return EAssertion_Halt;
 }
@@ -211,14 +192,10 @@ EAssertionStatus raiseAssertion( const char *message,
 void raiseError( const std::string& message,
                  const std::string& details )
 {
-#if defined(_WIN32)
     // Convert STL strings into wstrings for windows
     std::wstring wMessage     = WinNTStringToWideString( message );
     std::wstring wDetails     = WinNTStringToWideString( details );
 
-    /////////////////////////////////////////////////////////////////////////
-    // Windows Vista and Windows 7 Task Dialog                             //
-    /////////////////////////////////////////////////////////////////////////
     TASKDIALOGCONFIG tc = { 0 };
 
     const TASKDIALOG_BUTTON cb[] =
@@ -272,11 +249,6 @@ void raiseError( const std::string& message,
     default:
         break;
     }
-
-#else
-    std::cerr << "[FATAL ERROR]: " << message << std::endl;
-//    exit( 1 );
-#endif
 }
 
 /**
@@ -289,14 +261,10 @@ void raiseError( const std::string& message,
 void raiseFatalError( const std::string& message,
                       const std::string& details )
 {
-#if defined(_WIN32)
     // Convert STL strings into wstrings for windows
     std::wstring wMessage     = WinNTStringToWideString( message );
     std::wstring wDetails     = WinNTStringToWideString( details );
 
-    /////////////////////////////////////////////////////////////////////////
-    // Windows Vista and Windows 7 Task Dialog                             //
-    /////////////////////////////////////////////////////////////////////////
     TaskDialog( GetActiveWindow(),
                 GetModuleHandle(NULL),
                 L"Dungeon Crawler Fatal Error",
@@ -308,10 +276,16 @@ void raiseFatalError( const std::string& message,
     );
 
     quit( EPROGRAM_FATAL_ERROR, message );
-#else
-    std::cerr << "[FATAL ERROR]: " << message << std::endl;
-//    exit( 1 );
-#endif
+}
+
+/**
+ * Performs windows specific tasks that need to happen before the game
+ * starts up
+ */
+void startup()
+{
+    // Force SDL to use the direct driver
+    _putenv("SDL_VideoDriver=directx");
 }
 
 /**
@@ -337,8 +311,6 @@ std::string getBuildString()
     std::string sse         = "_?sse?_";
     std::string compiler    = "_?compiler?_";
 
-    // Retrieval of settings is compiler specific
-#if defined(OS_WINDOWS)
     // Compiler
     compiler = std::string("MSVC") + STRINGIFY(_MSC_VER);
 
@@ -367,21 +339,18 @@ std::string getBuildString()
 #   elif _M_IX86_FP == 2
         sse = "sse2";
 #   endif
-#else
-    // need to implement
-#endif
 
     // Properly format the build string according to the compiler
     ss << GAME_ID << " "
-        << GAME_VERSION_MAJOR << "."
-        << GAME_VERSION_MINOR << "."
-        << GAME_VERSION_PATCH << GAME_VERSION_RELEASE << "-"
-        << releaseMode << " "
-        << sse         << " "
-        << platform    << " "
-        << __DATE__    << " "
-        << __TIME__    << " "
-        ;
+       << GAME_VERSION_MAJOR << "."
+       << GAME_VERSION_MINOR << "."
+       << GAME_VERSION_PATCH << GAME_VERSION_RELEASE << "-"
+       << releaseMode << " "
+       << sse         << " "
+       << platform    << " "
+       << __DATE__    << " "
+       << __TIME__    << " "
+    ;
 
     // Return the build string
     return ss.str();
