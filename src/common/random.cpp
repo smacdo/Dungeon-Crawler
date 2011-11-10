@@ -60,7 +60,7 @@ Random::Random( const std::string& seed )
       mSeed( 0 )
 {
     // We needs a hasher
-    std::hash<std::string> hasher;
+    boost::hash<std::string> hasher;
 
     // Hash the seed string to get an unsigned int for use in seeding
     // the generator

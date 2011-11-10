@@ -12,7 +12,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     EXEC_PROGRAM(/usr/bin/sw_vers ARGS -productVersion OUTPUT_VARIABLE MACOSX_VERSION_RAW)
     STRING(REGEX REPLACE "10\\.([0-9]).*" "\\1" MACOSX_VERSION "${MACOSX_VERSION_RAW}")
 
-    if (${MAXOSX_VERSION} LESS 6)
+    if (${MACOSX_VERSION} LESS 6)
         message(WARNING "Unsupported version of OS X: ${MACOSX_VERSION_RAW}")
         return()
     endif()
@@ -24,7 +24,7 @@ endif()
 ###
 ### Detect the operating system
 ###
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(COMPILER_GCC 1)
     execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "-dumpversion" OUTPUT_VARIABLE GCC_VERSION_OUTPUT)
     string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" GCC_VERSION "${GCC_VERSION_OUTPUT}")
@@ -37,7 +37,7 @@ elseif(MSVC_VERSION EQUAL 1500)
 elseif(MSVC_VERSION EQUAL 1600)
     set(COMPILER_MSVC 1)
 else()
-    message(WARNING "Unknown compiler")
-    return()
+    set(COMPILER_GCC 1)
+    message(WARNING "Unknown compiler - assuming that it is GCC compatible")
 endif()
 

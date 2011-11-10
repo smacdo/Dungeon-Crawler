@@ -17,6 +17,7 @@ set(worldgen_srcs
         worldgen/levelgenerator.cpp
         worldgen/dungeongenerator.cpp
         worldgen/roomgenerator.cpp
+        worldgen/hallgenerator.cpp
 )
 
 set(graphics_srcs 
@@ -41,13 +42,14 @@ set(game_srcs
 # Main build script
 ###########################################################################
 set(srcs ${common_srcs} ${worldgen_srcs} ${game_srcs} ${graphics_srcs})
+set(cxx_flags "")
 
 ###
 ### Additional compiler settings and definitions
 ###
 if(COMPILER_GCC)
-    add_definitions(-g -W -Wall -Werror -Wextra -std=c++0x
-        -Wno-unused-parameter)
+    set(cxx_flags "${cxx_flags} -g -W -Wall -Werror -Wextra -std=c++0x")
+    set(cxx_flags "${cxx_flags} -Wno-unused-parameter")
 endif()
 
 if(MSVC)
@@ -61,13 +63,19 @@ endif()
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(SDL REQUIRED)
 find_package(SDL_image REQUIRED)
+
+include_directories(${Boost_INCLUDE_DIRS})
 # find_package(OpenGL REQUIRED)
 
 # on OS X we also have to add '-framework Cocoa' as library.  This is
 # # actually a bit of an hack but it's easy enough and reliable.
 set(EXTRA_LIBS "")
 if (APPLE)
-    set(EXTRA_LIBS ${EXTRA_LIBS} "-framework Cocoa")
+    set(EXTRA_LIBS ${EXTRA_LIBS} "-framework Cocoa -framework SDL")
+
+    # I really do not like building on the mac
+    add_library( SDLmain SDLMain.m)
+    set_target_properties( SDLmain PROPERTIES COMPILE_FLAGS "" )
 endif()
 
 
@@ -79,12 +87,14 @@ include_directories(${CMAKE_SOURCE_DIR}/src
 add_executable(dungeon MACOSX_BUNDLE ${srcs})
 target_link_libraries(dungeon
     ${Boost_LIBRARIES}
+    ${EXTRA_LIBS}
     ${SDL_LIBRARY}
     ${SDLIMAGE_LIBRARY}
     ${OPENGL_LIBRARIES}
-    ${EXTRA_LIBS}
     SDLmain                 # apparently not included on some systems?
 )
+
+set_target_properties( dungeon PROPERTIES COMPILE_FLAG ${cxx_flags} )
 
 ###
 ### Useful targets
