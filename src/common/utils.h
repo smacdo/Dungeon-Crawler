@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <boost/checked_delete.hpp>
+#include <algorithm>
 
 #include "common/platform.h"
 
@@ -48,12 +49,12 @@ void DeletePointerContainer( T& container )
 {
     typename T::iterator itr;
 
-    for ( itr = container.begin(); itr != container.end(); ++itr )
+    for ( itr = container.begin(); itr != container.end(); std::advance(itr,1) )
     {
-        boost::checked_delete( *itr );
+        Delete<typename T::value_type>( *itr );
     }
 
-    itr.clear();
+    container.clear();
 }
 
 /**
@@ -64,13 +65,7 @@ void DeletePointerContainer( T& container )
 template<typename T>
 void DeleteVectorPointers( std::vector<T>& container )
 {
-    typename std::vector<T>::iterator itr;
-
-    for ( itr = container.begin(); itr != container.end(); ++itr )
-    {
-        boost::checked_delete( *itr );
-    }
-
+    std::for_each( container.begin(), container.end(), Delete<T> );
     container.clear();
 }
 
@@ -91,7 +86,6 @@ void DeleteMapPointers( std::map<T,U>& container )
 
     container.clear();
 }
-
 
 /**
  * Returns a reference to the pointer's address, after performing a check
@@ -119,15 +113,6 @@ inline T& deref( T* ptr )
 {
     assert( ptr != NULL );
     return *ptr;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Utility functions that don't belong anywhere else go in here
-/////////////////////////////////////////////////////////////////////////////
-namespace Utils
-{
-    // Generate a random number in the range [min, max).
-    int random( int min, int max );
 }
 
 #endif
