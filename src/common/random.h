@@ -19,11 +19,12 @@
 
 #include <boost/utility.hpp>
 #include <boost/random/mersenne_twister.hpp>
-
 #include <string>
 #include <vector>
 
-class Random 
+#include "common/types.h"
+
+class Random : boost::noncopyable
 {
 public:
     // Initialize the random number generator with a random seed
@@ -58,6 +59,22 @@ public:
 
     // Returns the seed used to initialize the random number generator
     unsigned int seed() const;
+
+    /**
+     * Serialization
+     */
+    friend class boost::serialization::access;
+
+    template<typename Archive>
+    void serialize( Archive& ar, const unsigned int version )
+    {
+        ar & mSeed;
+
+        if ( Archive::is_loading::value )
+        {
+            init();
+        }
+    }
 
 private:
     // Init the generator with the given seed value
