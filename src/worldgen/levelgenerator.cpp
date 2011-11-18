@@ -101,7 +101,7 @@ Level* LevelGenerator::generate()
     }
 
     // Return the generated level
-    return new Level( mTileGrid );
+    return new Level( "Default Level", mTileGrid );
 }
 
 /**

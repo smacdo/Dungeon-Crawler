@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 
-message( "WHAT IS ${CMAKE_CURRENT_BINARY_DIR}" )
-
 ###
 ### Set a default build type if there was none provided
 ###  - this has to be done before project()

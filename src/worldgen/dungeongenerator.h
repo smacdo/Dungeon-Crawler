@@ -6,6 +6,7 @@
 
 #include "common/random.h"
 
+class Dungeon;
 class Level;
 class LevelGenerator;
 
@@ -16,9 +17,13 @@ class LevelGenerator;
 class DungeonGenerator : boost::noncopyable
 {
 public:
-    DungeonGenerator( size_t width, size_t height );
+    DungeonGenerator( size_t width, size_t height, unsigned int randomSeed );
     ~DungeonGenerator();
 
+    // Creates a new dungeon object
+    Dungeon* generate();
+
+protected:
     // Right now this is publically exposed since we don't have a dungeon
     // model class
     Level* generateLevel();

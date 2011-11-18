@@ -5,10 +5,16 @@
 ### List of unit test files
 set(test_srcs
         test_alwaystrue.cpp
+        test_point.cpp
+        test_rect.cpp
+        test_utils.cpp
 )
 
 ### List of required files from the game
 set(test_req_srcs
+        ${GAME_SRC_PATH}/common/rect.cpp
+        ${GAME_SRC_PATH}/common/point.cpp
+        ${GAME_SRC_PATH}/common/platform_unix.cpp
 )
 
 ###########################################################################
@@ -17,7 +23,7 @@ set(test_req_srcs
 project(DungeonCrawler-Tests)
 
 include_directories(
-    ${PROJECT_SOURCE_DIR}/src
+    ${GAME_SRC_PATH}
     ${GTEST_ROOT}/include
 )
 
