@@ -6,10 +6,12 @@
 
 #include "graphics/spritemanager.h"
 #include "common/rect.h"
+#include "inputmanager.h"
 
 struct SDL_Surface;
 struct SDL_Rect;
 class Sprite;
+class World;
 class Level;
 
 /**
@@ -22,8 +24,14 @@ public:
     ~ClientView();
 
     void start();
-    void draw( const Level& level );
+
+    // todo make this const
+    void draw( World& world );
     void moveCamera( int x, int y );
+
+    // remove
+    bool didUserPressQuit();
+    void processInput();
 
     // Return a string containing information about the client's
     // video settings and capabilities
@@ -32,6 +40,8 @@ public:
 protected:
     void load();
     void unload();
+
+    void drawGameLevel( const Level& level );
 
     SDL_Surface* loadImage( const std::string& filename );
     void drawSprite( int x, int y, const Sprite& sprite );
@@ -46,6 +56,7 @@ private:
     SpriteManager mSpriteManager;
     std::vector<Sprite*> mTileSprites;
     Rect mCamera;
+    InputManager mInput;
 };
 
 #endif

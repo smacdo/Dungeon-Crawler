@@ -8,9 +8,21 @@ project(DungeonCrawler)
 #==========================================================================
 set(common_srcs
         common/logging.cpp
-        common/platform.cpp
+        common/platform_unix.cpp
+        common/point.cpp
         common/random.cpp
         common/rect.cpp
+)
+
+set(common_headers
+        common/fixedgrid.h
+        common/logging.h
+        common/platform.h
+        common/point.h
+        common/random.h
+        common/rect.h
+        common/sdlinclude.h
+        common/utils.h
 )
 
 set(worldgen_srcs
@@ -20,30 +32,68 @@ set(worldgen_srcs
         worldgen/hallgenerator.cpp
 )
 
+set(worldgen_headers
+        worldgen/dungeongenerator.h
+        worldgen/hallgenerator.h
+        worldgen/levelgenerator.h
+        worldgen/roomgenerator.h
+)
+
 set(graphics_srcs 
         graphics/spritemanager.cpp
         graphics/sprite.cpp
         graphics/clientview.cpp
 )
 
+set(graphics_headers
+        graphics/clientview.h
+        graphics/sprite.h
+        graphics/spritemanager.h
+)
+
 set(game_srcs
         appconfig.cpp
         camera.cpp
         dungeon.cpp
+        dungeoncrawler.cpp
         inputmanager.cpp
         level.cpp
-        room.cpp
-        sdlclient.cpp
         tilegrid.cpp
-        utils.cpp
+        world.cpp
 )
-				  
+
+set(game_headers
+        appconfig.h
+        camera.h
+        config.h
+        door.h
+        dungeon.h
+        dungeoncrawler.h
+        inputmanager.h
+        level.h
+        tilegrid.h
+        tile.h
+        tiletype.h
+        world.h
+)
+
 ###########################################################################
 # Main build script
 ###########################################################################
 set(srcs ${common_srcs} ${worldgen_srcs} ${game_srcs} ${graphics_srcs})
 set(cxx_flags "")
 
+###
+### Visual Studio (or other IDEs) file groupings
+###
+source_group( common\\src       FILES ${common_srcs}      )
+source_group( common\\headers   FILES ${common_headers}   )
+source_group( gameplay\\src     FILES ${game_srcs}        )
+source_group( gameplay\\headers FILES ${game_headers}     )
+source_group( graphics\\src     FILES ${graphics_srcs}    )
+source_group( graphics\\headers FILES ${graphics_headers} )
+source_group( worldgen\\src     FILES ${worldgen_srcs}    )
+source_group( worldgen\\headers FILES ${worldgen_headers} )
 ###
 ### Additional compiler settings and definitions
 ###
@@ -53,6 +103,7 @@ if(COMPILER_GCC)
 endif()
 
 if(MSVC)
+    set(cxx_flags "${cxx_flags} /Wp64")
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-DWIN32_LEAN_AND_MEAN)
 endif()
@@ -80,6 +131,14 @@ endif()
 
 
 ###
+### Make sure compile flags are applied to the source code files
+###
+set_source_files_properties( ${srcs}
+    PROPERTIES
+    COMPILE_FLAGS "${cxx_flags}"
+)
+
+###
 ### Generate the executable and link required libraries
 ###
 include_directories(${CMAKE_SOURCE_DIR}/src 
@@ -94,7 +153,10 @@ target_link_libraries(dungeon
     SDLmain                 # apparently not included on some systems?
 )
 
-set_target_properties( dungeon PROPERTIES COMPILE_FLAG ${cxx_flags} )
+set_target_properties( dungeon
+    PROPERTIES
+    PROJECT_LABEL "DungeonCrawler-Client"
+)
 
 ###
 ### Useful targets

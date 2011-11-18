@@ -10,13 +10,22 @@
 #include <sstream>
 #include <cassert>
 
-Level::Level( const TileGrid& grid )
-    : mTileGrid( grid )
+/**
+ * Level constructor. Creates a new level
+ */
+Level::Level( const std::string& levelName, const TileGrid& grid )
+    : mName( levelName ),
+      mTileGrid( grid )
 {
+    // empty
 }
 
+/**
+ * Destructor
+ */
 Level::~Level()
 {
+    // empty
 }
 
 /**
@@ -78,12 +87,26 @@ std::string Level::dump() const
     return ss.str();
 }
 
-int Level::width() const
+/**
+ * Returns the name of the level
+ */
+std::string Level::name() const
+{
+    return mName;
+}
+
+/**
+ * Returns the width of the level
+ */
+size_t Level::width() const
 {
     return mTileGrid.width();
 }
 
-int Level::height() const
+/**
+ * Returns the height of the level
+ */
+size_t Level::height() const
 {
     return mTileGrid.height();
 }

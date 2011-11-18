@@ -7,6 +7,8 @@
 
 #include "tiletype.h"
 #include "level.h"
+#include "world.h"
+#include "dungeon.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -82,12 +84,17 @@ void ClientView::load()
     mTileSprites[ TILE_FLOOR ]      = mSpriteManager.findSprite( "tile_floor" );
 }
 
-
+/**
+ * Unloads the client view. Called before the application quits
+ */
 void ClientView::unload()
 {
     SDL_Quit();
 }
 
+/**
+ * Called to create the main viewing window
+ */
 void ClientView::createMainWindow()
 {
     // Init the back buffer surface
@@ -108,26 +115,61 @@ void ClientView::createMainWindow()
 
     // Make ourselves look pretty by setting a caption and then a window icon
     SDL_WM_SetCaption( "The Dungeon Demo", "Dungeon Demo" );
-
-    SDL_Surface *pIcon    = loadImage( "data/gameicon.png" );
-    Uint32       colorkey = SDL_MapRGB( pIcon->format, 255, 0, 255 );
-
-    SDL_SetColorKey( pIcon, SDL_SRCCOLORKEY, colorkey );
-    SDL_WM_SetIcon( loadImage( "data/gameicon.png" ), NULL );
 }
 
-void ClientView::draw( const Level& level )
+/**
+ * Processes input, and returns a list of commands to be executed
+ */
+void ClientView::processInput()
+{
+    mInput.processInput();
+
+    // If the user moved, make sure to move the camera
+    //  (move this into a command!)
+    if ( mInput.didUserMove() )
+    {
+        moveCamera( mInput.userMoveXAxis(),
+                    mInput.userMoveYAxis() );
+    }
+}
+
+/**
+ * This needs to be removed! User quitting should be a command that is
+ * executed by the world engine, not us
+ */
+bool ClientView::didUserPressQuit()
+{
+    return mInput.didUserPressQuit();
+}
+
+/**
+ * Draws the game world
+ *   todo make this const
+ */
+void ClientView::draw( World& world )
 {
     assert( mWasStarted );
 
+    // Draw the main game level
+    std::shared_ptr<Dungeon> dungeon = world.mainDungeon();
+    std::shared_ptr<Level>   level   = dungeon->getLevel( 0 );
+    
+    drawGameLevel( deref(level.get()) );
+}
+
+/**
+ * Draws a game level
+ */
+void ClientView::drawGameLevel( const Level& level )
+{
     //
     // This is a pretty terrible way of rendering the level's tiles,
     // but I'm hungry, the hour is late and I would really like to see
     // this work before i finish for the day
     //
-    for ( int y = 0; y < level.height(); ++y )
+    for ( int y = 0; y < static_cast<int>(level.height()); ++y )
     {
-        for ( int x = 0; x < level.width(); ++x )
+        for ( int x = 0; x < static_cast<int>(level.width()); ++x )
         {
             Rect bounds( x * 32, y * 32, 32, 32 );
 
@@ -149,35 +191,6 @@ void ClientView::draw( const Level& level )
 
     SDL_Flip( mpBackbuffer );
     SDL_Delay( 30 );
-}
-
-/**
- * Internal helper method that will load an image from disk, convert it
- * into an optimized format and then return its SDL_Surface pointer.
- *
- * \param  filename  Path to the image
- * \return Pointer to the loaded image's SDL surface
- */
-SDL_Surface* ClientView::loadImage( const std::string& filename )
-{
-    SDL_Surface *rawSurface = NULL, *optimizedSurface = NULL;
-
-    // First load the image into a potentially unoptimized surface
-    rawSurface = IMG_Load( filename.c_str() );
-
-    if ( rawSurface == NULL )
-    {
-        App::raiseFatalError("Failed to load an image from the disk",
-                              SDL_GetError() );
-    }
-
-    // Now convert it to be the same format as the back buffers
-    optimizedSurface = SDL_DisplayFormat( rawSurface );
-    assert( optimizedSurface != NULL );
-
-    // Release the older surface, and return the optimized version
-    SDL_FreeSurface( rawSurface );
-    return optimizedSurface;
 }
 
 void ClientView::drawSprite( int x, int y, const Sprite& sprite )

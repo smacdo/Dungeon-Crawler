@@ -14,20 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#include "worldgen/dungeongenerator.h"
-#include "graphics/clientview.h"
-#include "common/utils.h"
-#include "common/platform.h"
-#include "level.h"
-#include "inputmanager.h"
 #include "dungeoncrawler.h"
 #include "dungeon.h"
 #include "appconfig.h"
+#include "world.h"
+
+#include "worldgen/dungeongenerator.h"
+#include "graphics/clientview.h"
+#include "common/platform.h"
 
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <SDL.h>
 
 #include <boost/program_options.hpp>
 
@@ -43,39 +41,34 @@ int main( int argc , char* argv[] )
     // Game start up. Parse any requested command line arguments and initialize
     // the platform before starting the game up
     AppConfig config = parseCommandLineArgs( argc, argv );
-
     App::startup();
 
-    // Start the game up
-    ClientView   clientView;
-    InputManager input;
+    // Construct a world to play in
+    const size_t levelWidth  = 76;
+    const size_t levelHeight = 50;
+    const size_t levelSeed   = 42;
 
-    clientView.start();
-
-    // Create the world
-    DungeonGenerator generator( 76, 50, 42 );
+    DungeonGenerator generator( levelWidth, levelHeight, levelSeed );
     Dungeon *pDungeon = generator.generate();
+
+    World  world( pDungeon );
 
     //
     // Main game loop
     //
-    while (! input.didUserPressQuit() )
+    ClientView clientView;
+
+    while (! clientView.didUserPressQuit() )
     {
         // make sure all user input is taken into account before simulation
         // and rendering
-        input.processInput();
-
-        // move the character
-        if ( input.didUserMove() )
-        {
-            clientView.moveCamera( input.userMoveXAxis(),
-                                   input.userMoveYAxis() );
-        }
+        clientView.processInput();
 
         // simulate the world for a tiny timeslice
+        world.simulate( 1 );
 
         // and now draw the world
-        clientView.draw( pDungeon->getLevel( 0 ) );
+        clientView.draw( world );
     }
 
     // all done. it worked!
