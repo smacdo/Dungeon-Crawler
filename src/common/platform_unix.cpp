@@ -15,14 +15,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "common/platform.h"
-#include "common/logging.h"
 #include "common/utils.h"
 #include "config.h"
-#include <SDL.h>
-#include <SDL_syswm.h>
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <stdlib.h>
 
 namespace App {
 
@@ -88,6 +86,10 @@ void raiseFatalError( const std::string& message,
         << std::endl;
 
     App::quit( EPROGRAM_FATAL_ERROR, message );
+}
+
+void startup()
+{
 }
 
 /**
