@@ -17,103 +17,80 @@
 #ifndef SCOTT_COMMON_MATH_POINT_H
 #define SCOTT_COMMON_MATH_POINT_H
 
+#include <iosfwd>
+#include "common/types.h"
+
 /**
- * Represents a 2d cartesian point using integer values. Values are
- * constrained to the range [0, INT_MAX]
+ * Represents a 2d cartesian point using integer values.
  */
 class Point
 {
 public:
-    /**
-     * Default constructor. Sets the point to (0,0)
-     */
-    Point()
-        : mX( 0 ),
-          mY( 0 )
-    {
-    }
+    // Default constructor. Sets the point to (0,0)
+    Point();
+
+    // Constructor that takes an intial x/y point
+    Point( int x, int y );
+
+    // Copy constructor
+    Point( const Point& p );
+
+    // Assignment operator
+    Point& operator = ( const Point& rhs  );
+
+    // Equality operator
+    bool operator == ( const Point& rhs ) const;
+
+    // Inequality operator
+    bool operator != ( const Point& rhs ) const;
+
+    // Addition operator
+    Point operator + ( const Point& rhs ) const;
+
+    // Subtraction operator
+    Point operator - ( const Point& rhs ) const;
+
+    // Negation operator
+    Point operator - () const;
+
+    // Self addition operator
+    Point& operator += ( const Point& rhs );
+
+    // Self subtraction operator
+    Point& operator -= ( const Point& rhs );
+
+    // Return a translated point
+    Point translate( int dx, int dy ) const;
+
+    // Check if point is zero
+    bool isZero() const;
+
+    // Get x component
+    int x() const;
+
+    // Get y component
+    int y() const;
+
+    // Set the x and y component of the point class
+    void set( int x, int y );
 
     /**
-     * Initialize point to be (x,y).
-     *
-     * \param  x  The x coordinate
-     * \param  y  The y coordinate
+     * Serialization
      */
-    Point( int x, int y )
-        : mX( x ),
-          mY( y )
-    {
-    }
+    friend class boost::serialization::access;
 
-    /**
-     * Copy constructor
-     *
-     * \param  p  The point to copy values from
-     */
-    Point( const Point& p )
-        : mX( p.mX ),
-          mY( p.mY )
+    template<typename Archive>
+    void serialize( Archive& ar, const unsigned int version )
     {
-    }
-
-    /**
-     * Assignment operator
-     *
-     * \param  rhs  The point to copy values from
-     */
-    Point& operator = ( const Point& rhs  )
-    {
-        mX = rhs.mX;
-        mY = rhs.mY;
-
-        return *this;
-    }
-
-    /**
-     * Equality operator
-     */
-    bool operator == ( const Point& rhs ) const
-    {
-        return mX == rhs.mX && mY == rhs.mY;
-    }
-
-    /**
-     * Inequality operator
-     */
-    bool operator != ( const Point& rhs ) const
-    {
-        return ( mX != rhs.mX || mY != rhs.mY );
-    }
-
-    /**
-     * Checks if the point is at the origin (0,0)
-     *
-     * \return True if the point is located at (0,0)
-     */
-    bool isZero()
-    {
-        return mX == 0 && mY == 0;
-    }
-
-    /**
-     * Return the x component of the point
-     */
-    int x() const
-    {
-        return mX;
-    }
-
-    /**
-     * Return the y component of the point
-     */
-    int y() const
-    {
-        return mY;
+        ar & mX;
+        ar & mY;
     }
 
 private:
     int mX;
     int mY;
 };
+
+std::ostream& operator << ( std::ostream& stream, const Point& point );
 
 #endif
