@@ -58,6 +58,7 @@ set(game_srcs
         dungeoncrawler.cpp
         inputmanager.cpp
         level.cpp
+        tile.cpp
         tilegrid.cpp
         world.cpp
 )

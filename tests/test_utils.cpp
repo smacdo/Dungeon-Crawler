@@ -33,24 +33,24 @@ TEST(Common,Utils_InternalTest_VerifyTestDummy)
     size_t b     = 0;
 
     TestDummy *pA = new TestDummy( total, a );
-    EXPECT_EQ( 1, total );
-    EXPECT_EQ( 1, a );
-    EXPECT_EQ( 0, b );
+    EXPECT_EQ( 1u, total );
+    EXPECT_EQ( 1u, a );
+    EXPECT_EQ( 0u, b );
 
     TestDummy *pB = new TestDummy( total, b );
-    EXPECT_EQ( 2, total );
-    EXPECT_EQ( 1, a );
-    EXPECT_EQ( 1, b );
+    EXPECT_EQ( 2u, total );
+    EXPECT_EQ( 1u, a );
+    EXPECT_EQ( 1u, b );
 
     delete pA;
-    EXPECT_EQ( 1, total );
-    EXPECT_EQ( 0, a );
-    EXPECT_EQ( 1, b );
+    EXPECT_EQ( 1u, total );
+    EXPECT_EQ( 0u, a );
+    EXPECT_EQ( 1u, b );
 
     delete pB;
-    EXPECT_EQ( 0, total );
-    EXPECT_EQ( 0, a );
-    EXPECT_EQ( 0, b );
+    EXPECT_EQ( 0u, total );
+    EXPECT_EQ( 0u, a );
+    EXPECT_EQ( 0u, b );
 
 }
 
@@ -62,8 +62,8 @@ TEST(Common,Utils_Delete_Pointer)
     TestDummy *pA = new TestDummy( total, a );
     Delete( pA );
 
-    EXPECT_EQ( 0, total );
-    EXPECT_EQ( 0, a );
+    EXPECT_EQ( 0u, total );
+    EXPECT_EQ( 0u, a );
 
     EXPECT_TRUE( pA == NULL );
 }
@@ -80,16 +80,16 @@ TEST(Common,Utils_DeletePointerContainer)
     v.push_back( new TestDummy( total, b ) );
     v.push_back( new TestDummy( total, c ) );
 
-    EXPECT_EQ( 3, total );
-    EXPECT_EQ( 1, a );
-    EXPECT_EQ( 1, b );
-    EXPECT_EQ( 1, c );
+    EXPECT_EQ( 3u, total );
+    EXPECT_EQ( 1u, a );
+    EXPECT_EQ( 1u, b );
+    EXPECT_EQ( 1u, c );
 
     DeletePointerContainer( v );
-    EXPECT_EQ( 0, total );
-    EXPECT_EQ( 0, a );
-    EXPECT_EQ( 0, b );
-    EXPECT_EQ( 0, c );
+    EXPECT_EQ( 0u, total );
+    EXPECT_EQ( 0u, a );
+    EXPECT_EQ( 0u, b );
+    EXPECT_EQ( 0u, c );
 }
 
 TEST(Common,Utils_DeleteVectorPointers)
@@ -104,16 +104,16 @@ TEST(Common,Utils_DeleteVectorPointers)
     v.push_back( new TestDummy( total, b ) );
     v.push_back( new TestDummy( total, c ) );
 
-    EXPECT_EQ( 3, total );
-    EXPECT_EQ( 1, a );
-    EXPECT_EQ( 1, b );
-    EXPECT_EQ( 1, c );
+    EXPECT_EQ( 3u, total );
+    EXPECT_EQ( 1u, a );
+    EXPECT_EQ( 1u, b );
+    EXPECT_EQ( 1u, c );
 
     DeleteVectorPointers( v );
-    EXPECT_EQ( 0, total );
-    EXPECT_EQ( 0, a );
-    EXPECT_EQ( 0, b );
-    EXPECT_EQ( 0, c );
+    EXPECT_EQ( 0u, total );
+    EXPECT_EQ( 0u, a );
+    EXPECT_EQ( 0u, b );
+    EXPECT_EQ( 0u, c );
 }
 
 TEST(Common,Utils_DeleteMapPointers)
@@ -128,16 +128,16 @@ TEST(Common,Utils_DeleteMapPointers)
     v.insert( std::pair<int, TestDummy*>( 1, new TestDummy( total, b ) ) );
     v.insert( std::pair<int, TestDummy*>( 2, new TestDummy( total, c ) ) );
 
-    EXPECT_EQ( 3, total );
-    EXPECT_EQ( 1, a );
-    EXPECT_EQ( 1, b );
-    EXPECT_EQ( 1, c );
+    EXPECT_EQ( 3u, total );
+    EXPECT_EQ( 1u, a );
+    EXPECT_EQ( 1u, b );
+    EXPECT_EQ( 1u, c );
 
     DeleteMapPointers( v );
-    EXPECT_EQ( 0, total );
-    EXPECT_EQ( 0, a );
-    EXPECT_EQ( 0, b );
-    EXPECT_EQ( 0, c );
+    EXPECT_EQ( 0u, total );
+    EXPECT_EQ( 0u, a );
+    EXPECT_EQ( 0u, b );
+    EXPECT_EQ( 0u, c );
 }
 
 TEST(Common,Utils_Deref_Valid)
@@ -161,13 +161,12 @@ TEST(Common,Utils_Deref_Const_Valid)
     EXPECT_EQ( 42, deref( pV ) );
 }
 
-/*
 TEST(Common,Utils_Deref_Null_Death)
 {
     const int *pV = NULL;
-    EXPECT_EQ( 42, deref( pV ) );
+    EXPECT_DEATH( deref( pV ), "ASSERTION FAILED: ptr != __null" );
 }
-*/
+
 
 
 

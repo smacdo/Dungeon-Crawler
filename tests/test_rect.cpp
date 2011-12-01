@@ -1,6 +1,7 @@
 #include "common/rect.h"
 #include <ostream>
 #include <gtest.h>
+#include <stdint.h>
 
 TEST(Common,Rect_Constructor_Default)
 {
@@ -170,7 +171,106 @@ TEST(Common,Rect_MoveTo)
 
 }
 
+TEST(Common,Rect_Area)
+{
+    Rect a( 0, 0, 6, 4 );   // 6*4 => 24
+    Rect b( 2, 3, 6, 4 );   // 4*6 => 24
+    Rect c( 9, 1, 8, 3 );   // 8*3 => 24
 
+    EXPECT_EQ( static_cast<size_t>(24), a.area() );
+    EXPECT_EQ( static_cast<size_t>(24), b.area() );
+    EXPECT_EQ( static_cast<size_t>(24), c.area() );
+}
+
+TEST(Common,Rect_Touches_AlwaysTouchesSelf)
+{
+    // This does not mean that the rectangle touches itself, it means
+    // that a rectangle will always be touching another rectangle that
+    // occupies the exact same space
+    Rect a( 2, 3, 2, 3 );
+    EXPECT_TRUE( a.touches(a) );
+}
+
+TEST(Common,Rect_Touches_TouchOnly)
+{
+    Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
+    Rect b( 2, 6, 2, 4 );       // touching [2,6 and 4,10]
+    Rect c( 4, 3, 3, 3 );       // touching [4,3 and 7,6]
+
+    EXPECT_TRUE( a.touches( b ) );
+    EXPECT_TRUE( a.touches( c ) );
+}
+
+TEST(Common,Rect_Touches_Intersections)
+{
+    Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
+    Rect b( 3, 2, 2, 2 );       // intersects a, c [3,2 and 5,4]
+
+    EXPECT_TRUE( a.touches( b ) );
+}
+
+TEST(Common,Rect_Touches_NoTouchNoIntersect)
+{
+    Rect a(  2, 3, 2, 3 );      // center [2,3 and 4,6]
+    Rect b( -2, 3, 3, 2 );      // no touch/intersect [-2,3 and 1,5]
+
+    EXPECT_FALSE( a.touches( b ) );
+}
+
+TEST(Common,Rect_Touches_FullyContained)
+{
+    // A rectangle that is fully within the bounds of a larger rectangle
+    // and has no borders that overlap should always test true
+
+    Rect a( 4, 5, 6, 7 );      // outer rectangle
+    Rect b( 5, 6, 4, 4 );      // rectangle contained entirely in ia
+
+    EXPECT_TRUE( a.touches( b ) );
+}
+
+TEST(Common,Rect_Intersects_AlwaysIntersectsSelf)
+{   
+    // This does not mean that the rectangle intersects itself, it means
+    // that a rectangle will always be intersecting another rectangle that
+    // occupies the exact same space
+    Rect a( 2, 3, 2, 3 );
+    EXPECT_TRUE( a.intersects( a ) );
+}
+
+TEST(Common,Rect_Intersects_TouchOnly)
+{
+    Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
+    Rect b( 2, 6, 2, 4 );       // touching [2,6 and 4,10]
+    Rect c( 4, 3, 3, 3 );       // touching [4,3 and 7,6]
+
+    EXPECT_TRUE( a.intersects( b ) );
+    EXPECT_TRUE( a.intersects( c ) );
+}
+
+/*
+TEST(Common,Rect_Touches_Intersections)
+{
+    Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
+    Rect b( 3, 2, 2, 2 );       // intersects a, c [3,2 and 5,4]
+
+    EXPECT_TRUE( a.touches( b ) );
+}
+
+TEST(Common,Rect_Touches_NoTouchNoIntersect)
+{
+    Rect a(  2, 3, 2, 3 );      // center [2,3 and 4,6]
+    Rect b( -2, 3, 3, 2 );      // no touch/intersect [-2,3 and 1,5]
+
+    EXPECT_FALSE( a.touches( b ) );
+}
+
+TEST(Common,Rect_Touches_FullyContained)
+{
+    Rect a( 4, 5, 6, 7 );      // outer rectangle
+    Rect b( 5, 6, 4, 4 );      // rectangle contained entirely in ia
+
+    EXPECT_TRUE( a.touches( b ) );
+}*/
 TEST(Common,Rect_Cout)
 {
     Rect r( 1, 5, 3, 6 );
