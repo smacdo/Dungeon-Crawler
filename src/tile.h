@@ -2,59 +2,41 @@
 #define SCOTT_DUNGEON_TILE_H
 
 #include "tiletype.h"
-#include "common/platform.h"
-#include <cstddef>
-
+#include <iosfwd>
 
 struct Tile
 {
-    Tile()
-        : type( TILE_EMPTY )
-    {
-    }
+    // Creates an tile of type TILE_EMPTY
+    Tile();
 
-    Tile( ETileType type_ )
-        : type( type_ )
-    {
-        assert( type_ < ETileType_Count );
-    }
+    // Create a tile
+    Tile( ETileType type_ );
 
-    Tile( const Tile& other )
-        : type( other.type )
-    {
-        assert( type < ETileType_Count );
-    }
+    // Copy constructor
+    Tile( const Tile& other );
 
-    Tile& operator = ( const Tile& rhs )
-    {
-        assert( rhs.type < ETileType_Count );
-        type = rhs.type;
-        return *this;
-    }
+    // Assignment operator
+    Tile& operator = ( const Tile& rhs );
 
-    bool isImpassable() const
-    {
-        return type == TILE_IMPASSABLE;
-    }
+    // Comparison operator
+    bool operator == ( const Tile& rhs ) const;
 
-    bool isWall() const
-    {
-        return type == TILE_WALL;
-    }
+    // Check if tile is impassable
+    bool isImpassable() const;
 
-    bool isFloor() const
-    {
-        return type == TILE_FLOOR;
-    }
+    // Check if tile is wall
+    bool isWall() const;
 
-    bool wasPlaced() const
-    {
-        return ( type != TILE_EMPTY );
-    }
+    // Check if tile is floor
+    bool isFloor() const;
+
+    // Check if tile has been placed, or is it empty
+    bool wasPlaced() const;
+
+    friend std::ostream& operator << ( std::ostream& ss, const Tile& t );
 
     // The type of tile
     ETileType type;
 };
-
 
 #endif
