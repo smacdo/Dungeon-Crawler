@@ -13,3 +13,5 @@ libboost-dev
 libboost-filesystem-dev
 libboost-program-options-dev
 libboost-serialization-dev
+
+libxml2-utils

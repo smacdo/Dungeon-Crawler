@@ -17,3 +17,48 @@ Item Decomposition
 ==================
 Items can be decomposed into materials, and then used to build, fix
 or enhance other items.
+Ascension starts at level 25 and caps out 30. At level 25, the player
+is considered to be an unkillable mortal, and can begin the ascension
+process at any time. The process involves completing a long and brutually
+difficult dungeon, however he is allowed to die and pick himself back up
+and keep on going. (The heroic legend who dusts himself off and keeps trying)
+
+For every level that you wait until ascending, the player will receive a
+large score increase AND significant reconognition. The big catch is that
+when killed, the player will revert back to the start of the 25th level
+regardless of how far he has levelled. Thus, there is a lot of risk for our
+player to continue beyond 25... and thus a lot of bragging rights for
+ascending at level 30. (The final dungeon is still VERY dangerous, and will
+continue as the final guardians recogonize the threat)
+
+
+At level 20 or so, the planes open up. The player is first allowed to venture
+to the main extra-planar capital, where he can see amazingly powerful items,
+recipes and magic for the first tmie. For the next three to four levels, he
+can complete minor dungeons in the capital, or continue to finish the very
+difficult home dungeons
+
+Once the player reaches level 25, he can no longer continue to level in his
+home plane. He must explore the deadly planes in an attempt to further 
+level. these planes should be places of fantastic and deadly new mechanics,
+encounters and everything else. They will have fantastic powers, but be
+extrodinarily deadly to the player. If he has not prepared properly, the
+player WILL die a painful and horrible death. Additionally, these planes
+will have legendary artifacts that can be brought back to the planar capital
+for a big point bonus.
+
+The idea is that these planar sites are not required for the player to
+complete (They can already ascend at 25), but instead give an extra challenge
+to any player who is interested. Also on repeat plays the player can try
+traversing these planes... maybe not all classes can easily explore these
+planes.
+
+-----------------------
+
+Interesting game mechanics:
+
+1. One time vaults / towers
+    A one time vault or tower is a minor dungeon (several rooms and or floors)
+    that potentially contain lots of treasure, powerful weapons and or
+    very powerful monsters. These players get one shot at completing the
+    area before it forever locks and dissapears
