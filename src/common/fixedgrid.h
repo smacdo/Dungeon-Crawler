@@ -22,25 +22,52 @@
 #include "common/platform.h"
 #include <boost/checked_delete.hpp>
 #include <algorithm>
+#include <ostream>
 
+/**
+ * FixedGrid is a useful utility class that represents a 2d rectangular
+ * "grid" of values. This class hides the work that goes into using a 2d
+ * c array, or the work of mapping 2d points into a one dimensional array.
+ *
+ * This class has built to be as efficient as possible, but since it is
+ * dealing with dynamically sized grids, it has to allocate memory each time
+ * it creates or resizes the fixed grid. FixedGrid does attempt to alleviate
+ * this problem with support for move constructors.
+ *
+ * The fixed grid uses a standard upper-left hand corner origin, with x
+ * increasing in value to the right and y increasing in value as you move down.
+ * All positions are zero indexed.
+ */
 template<typename T>
 class FixedGrid
 {
 public:
     /**
-     * Create a fixed grid of dimensions width and height and fill it in
-     * with copies of base.
+     * Fixed grid constructor. Creates a new fixed grid with a width of
+     * 'width' and a height of 'height'. Additionally, this constructor will
+     * initialize all cells in the fixed grid to the provided default value.
+     *
+     * \param  width   The width of the fixed grid. This cannot be negative
+     * \param  height  The height of the fixed grid. This cannot be negative
+     * \param  value   The default value for values in the fixed grid
      */
-    FixedGrid( int width, int height, const T& base )
-        : mWidth( width ), mHeight( height ),
+    FixedGrid( int width, int height, const T& value )
+        : mWidth( width ),
+          mHeight( height ),
           mTiles( new T[ mWidth * mHeight ] )
     {
-        assert( width > 0 );
-        assert( height > 0 );
+        assert( width > 0 && height > 0 );
+        clear( value );
     }
 
     /**
-     * Copy constructor
+     * Fixed grid copy constructor. Allocates a new fixed grid array, and
+     * copies the dimensions and values from the provided fixed grid.
+     *
+     * (NOTE: The inner array itself is deep copied, however the values
+     *        stored in the array are only shallow copied)
+     *
+     * \param  grid  The fixed grid to copy from
      */
     FixedGrid( const FixedGrid& grid )
         : mWidth( grid.mWidth ),
@@ -53,20 +80,23 @@ public:
     }
 
     /**
-     * Move constructor
+     * Fixed grid move constructor. Allows a fixed grid to be returned
+     * and constructed in place
+     *
+     * \param  other  The grid to take values from
      */
     FixedGrid( FixedGrid&& other )
         : mWidth( other.mWidth ),
           mHeight( other.mHeight ),
           mTiles( other.mTiles )
     {
-        // reset other.mTiles to NULL so it the destructor will safely
-        // not delete the tile array
+        // reset other.mTiles to NULL so it the destructor of the 'other'
+        // fixed grid will not delete our new tile array
         other.mTiles = NULL;
     }
 
     /**
-     * Destructor
+     * Fixed grid destructor. Properly unallocates the inner array storage
      */
     virtual ~FixedGrid()
     {
@@ -74,33 +104,43 @@ public:
     }
 
     /**
-     * Assignment operator
+     * Assignment operator. Destroys the current fixed grid, allocates a
+     * new one and then copies values over from the rhs fixed grid.
+     *
+     * \param  rhs  The fixed grid to copy from
+     * \return      Reference to this fixed grid
      */
     FixedGrid<T>& operator = ( const FixedGrid<T>& rhs )
     {
-        assert( this != &rhs );
-        assert( rhs.mTiles != NULL );
+        if ( this != &rhs )
+        {
+            assert( rhs.mTiles != NULL );
+            assert( rhs.mWidth > 0 && rhs.mHeight > 0 );
 
-        // Destroy our current tile array, since we're getting rid of it
-        // in the assignment
-        boost::checked_array_delete( mTiles );
+            // Destroy our current tile array, since we will be losing the
+            // pointer in the assignment
+            boost::checked_array_delete( mTiles );
 
-        // Initialize our fixed grid
-        mWidth  = rhs.mWidth;
-        mHeight = rhs.mHeight;
-        mTiles  = new T[ mWidth * mHeight ];
+            // Initialize our fixed grid
+            mWidth  = rhs.mWidth;
+            mHeight = rhs.mHeight;
+            mTiles  = new T[ mWidth * mHeight ];
 
-        // Now copy all of the elements over
-        std::copy( &rhs.mTiles[0],
-                   &rhs.mTiles[mWidth * mHeight],
-                   &mTiles[0] );
+            // Now copy all of the elements over
+            std::copy( &rhs.mTiles[0],
+                       &rhs.mTiles[mWidth * mHeight],
+                       &mTiles[0] );
+        }
+
+        return *this;
     }
 
     /**
-     * Move assignment operator
+     * Move assignment operator. Destroys the current fixed grid, allocates a
+     * new one and then copies values over from the rhs fixed grid.
      *
-     * \param  other  The source fixed grid that we are copying
-     * \return Reference to this class after it has copied the other grid
+     * \param  other  The fixed grid to copy from
+     * \return        Reference to this fixed grid
      */
     FixedGrid& operator = ( FixedGrid&& other )
     {
@@ -125,10 +165,59 @@ public:
     }
 
     /**
+     * Fixed grid equality operator. Checks if the two fixed grids have
+     * identical dimensions and values.
+     *
+     * \param  rhs  The fixed grid to compare outself against
+     * \return      True if the two fixed grids have identical width, height
+     *              and values. False otherwise
+     */
+    bool operator == ( const FixedGrid<T>& rhs ) const
+    {
+        bool isEqual = false;
+
+        if ( rhs.mWidth == mWidth && rhs.mHeight == mHeight )
+        {
+            isEqual = std::equal( &mTiles[0],
+                                  &mTiles[mWidth * mHeight],
+                                  &(rhs.mTiles[0]) );
+        }
+
+        return isEqual;
+    }
+
+    /**
+     * Fixed grid inequality operator. Checks if two fixed grids do not have
+     * similiar width, height or values.
+     *
+     * \param  rhs  The fixed grid to compare outself against
+     * \return      True if the two fixed grids do not have identical width,
+     *              height or values. False otherwise
+     */
+    bool operator != ( const FixedGrid<T>& rhs ) const
+    {
+        bool isEqual = false;
+
+        if ( rhs.mWidth == mWidth && rhs.mHeight == mHeight )
+        {
+            isEqual = std::equal( &mTiles[0],
+                                  &mTiles[mWidth * mHeight],
+                                  &(rhs.mTiles[0]) );
+        }
+
+        return (!isEqual);
+    }
+
+    /**
      * "Inserts" a fixed grid into this grid. What this means is that the
      * source grid will be copied into us at the requested position
      *
      * The source grid must fit within the bounds of the destination grid
+     * otherwise this method will raise an assertion failure
+     *
+     * \param  uperLeft  Position to insert the upper left corner of the
+     *                   source fixed grid at
+     * \param  source    The fixed grid that should be inserted
      */
     void insert( const Point& upperLeft, FixedGrid& source ) const
     {
@@ -145,12 +234,19 @@ public:
             {
                 size_t si = source.offset( sx, sy );
                 size_t di = this->offset( sx + upperLeft.x(),
-                    sy + upperLeft.y() );
+                                          sy + upperLeft.y() );
 
                 mTiles[di] = source.mTiles[si];
             }
         }
     }
+
+    /**
+     * Stream output operator.
+     */
+    template<typename U>
+    friend std::ostream& operator << ( std::ostream& os,
+                                       const FixedGrid<U>& fg );
 
     /**
      * Clears the fixed grid by setting every tile to the requested 'base'
@@ -159,15 +255,14 @@ public:
      */
     void clear( const T& base )
     {
-        assert( mTiles != NULL );
         std::fill( &mTiles[0], &mTiles[mWidth*mHeight], base );
     }
 
     /**
      * Returns a reference to the value stored at the requested position
      *
-     * \param  point  The fixed grid position to retrieve
-     * \return A reference to the value stored at that position
+     * \param  point  The position in the fixed grid to retrieve
+     * \return        A reference to the value stored at that position
      */
     T& get( const Point& point )
     {
@@ -179,7 +274,7 @@ public:
      *
      * \param  x  The x offset to look up
      * \param  y  The y offset to look up
-     * \return A const reference to the value at that position
+     * \return    A const reference to the value at that position
      */
     T& get( int x, int y )
     {
@@ -192,14 +287,22 @@ public:
      * Returns a const reference to the value stored at the requested
      * position.
      *
-     * \param  point  The fixed grid position to retrieve
-     * \return A const reference to the value at that position
+     * \param  point  The position in the fixed grid to retrieve
+     * \return        A const reference to the value at that position
      */
     const T& get( const Point& point ) const
     {
         return get( point.x(), point.y() );
     }
 
+    /**
+     * Returns a const reference to the value stored at the requested
+     * position.
+     *
+     * \param  x  The x offset to look up
+     * \param  y  The y offset to look up
+     * \return    A const reference to the value at that position
+     */
     const T& get( int x, int y ) const
     {
         assert( x >= 0 && x < mWidth  );
@@ -207,11 +310,24 @@ public:
         return mTiles[ offset( x, y ) ];
     }
 
+    /**
+     * Sets a value in the fixed grid at the requested position
+     *
+     * \param  point  The point in the fixed grid to set a value
+     * \param  value  The value to set
+     */
     void set( const Point& point, const T& value )
     {
         set( point.x(), point.y(), value );
     }
 
+    /**
+     * Sets a value in the fixed grid at the requested position
+     *
+     * \param  x      The x offset
+     * \param  y      The y offset
+     * \param  value  The value to set
+     */
     void set( int x, int y, const T& value )
     {
         assert( x >= 0 && x < mWidth );
@@ -219,22 +335,45 @@ public:
         mTiles[ offset( x, y ) ] = value;
     }
 
+    /**
+     * Returns the width of the fixed grid
+     *
+     * \return  Fixed grid width
+     */
     int width() const
     {
         return mWidth;
     }
 
+    /**
+     * Returns the height of the fixed grid
+     *
+     * \return  Fixed grid height
+     */
     int height() const
     {
         return mHeight;
     }
 
+    /**
+     * Returns the number of elements in the fixed grid
+     *
+     * \return  Number of elements in the fixed grid
+     */
     size_t size() const
     {
         return mWidth * mHeight;
     }
 
 protected:
+    /**
+     * Converts a fixed grid 2d point into a one dimensional array offset.
+     * Used to look up and store values
+     *
+     * \param  x  The x offset
+     * \param  y  The y offset
+     * \return    Offset of the (x,y) pair in the mTiles array
+     */
     size_t offset( int x, int y ) const
     {
         assert( x >= 0 && x < mWidth );
@@ -246,5 +385,47 @@ protected:
     int mHeight;
     T * mTiles;
 };
+
+/**
+ * Fixed grid output operator
+ */
+template<typename T>
+std::ostream& operator << ( std::ostream& os, const FixedGrid<T>& fg )
+{
+    os << "\n";
+
+    for ( int y = 0; y < fg.mHeight; ++y )
+    {
+        if ( y == 0 )
+        {
+            os << "{ { ";
+        }
+        else
+        {
+            os << "  { ";
+        }
+
+        for ( int x = 0; x < fg.mWidth; ++x )
+        {
+            if ( x > 0 )
+            {
+                os << ", ";
+            }
+
+            os << fg.mTiles[ fg.offset(x,y) ];
+        }
+
+        if ( y == (fg.mHeight-1) )
+        {
+            os << " } }\n";
+        }
+        else
+        {
+            os << " }, ";
+        }
+    }
+
+    return os;
+}
 
 #endif
