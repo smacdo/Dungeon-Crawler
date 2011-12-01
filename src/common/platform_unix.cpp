@@ -23,6 +23,16 @@
 #include <stdlib.h>
 
 namespace App {
+    bool GAppTestingMode = false;
+
+/**
+ * Configures assertion handling for either normal application mode or
+ * unit testing mode
+ */
+void setTestingMode( bool inTestingMode )
+{
+    GAppTestingMode = inTestingMode;
+}
 
 /**
  * Generates a assertion reporting dialog (or console output) to show to the
@@ -38,8 +48,20 @@ EAssertionStatus raiseAssertion( const char *message,
                                  const char *filename,
                                  unsigned int lineNumber )
 {
+    if ( message == NULL )
+    {
+        message = "Assertion failed";
+    }
+
+    if ( GAppTestingMode )
+    {
+        std::cerr << "ASSERTION FAILED: " << expression << std::endl;
+        quit( EPROGRAM_ASSERT_FAILED, "ASSERTION FAILED" );      
+    }
+
     std::cerr
         << "---------- ASSERTION FAILED! ---------- " << std::endl
+        << "MESSAGE   : "  << message                 << std::endl
         << "EXPRESSION: "  << expression              << std::endl
         << "FILENAME  : "  << filename                << std::endl
         << "LINE      : "  << lineNumber              << std::endl
@@ -95,7 +117,7 @@ void startup()
 /**
  * Quit the program with the requested status and reason
  */
-void quit( EProgramStatus programStatus, const std::string& message )
+void quit( EProgramStatus programStatus, const std::string& )
 {
     exit( programStatus );
 }

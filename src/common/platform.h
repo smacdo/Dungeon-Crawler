@@ -28,9 +28,9 @@
 enum EProgramStatus
 {
     EPROGRAM_OK = 0,
-    EPROGRAM_ASSERT_FAILED = 1,
-    EPROGRAM_FATAL_ERROR   = 2,
-    EPROGRAM_USER_ERROR    = 3
+    EPROGRAM_ASSERT_FAILED = 2,
+    EPROGRAM_FATAL_ERROR   = 5,
+    EPROGRAM_USER_ERROR    = 6
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -103,6 +103,8 @@ namespace App
         EAssertion_Halt = 0,
         EAssertion_Continue = 1
     };
+
+    void setTestingMode( bool inTestingMode );
 
     // Performs any needed platform specific work before starting the game
     void startup();
