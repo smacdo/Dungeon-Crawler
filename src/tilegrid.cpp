@@ -19,22 +19,39 @@
 #include "common/rect.h"
 #include "common/platform.h"
 
+#include <ostream>
+
+/**
+ * Constructor
+ *
+ * \param  width   Width of the tile grid
+ * \param  height  Height of the tile grid
+ */
 TileGrid::TileGrid( size_t width, size_t height )
     : FixedGrid<Tile>( width, height, Tile( TILE_EMPTY ) )
 {
 }
 
+/**
+ * Copy constructor
+ */
 TileGrid::TileGrid( const TileGrid& tileGrid )
     : FixedGrid<Tile>( tileGrid )
 {
 }
 
-TileGrid::~TileGrid(void)
+/**
+ * Destructor
+ */
+TileGrid::~TileGrid()
 {
 }
 
 /**
- * Checks if all the tiles in the requested area are empty
+ * Checks if all the tiles inside of the provided rectangle are empty
+ *
+ * \param  area  The area inside the tile grid to check
+ * \return True if all tiles inside of the rectangle are empty
  */
 bool TileGrid::isAreaEmpty( const Rect& area ) const
 {
@@ -171,4 +188,24 @@ void TileGrid::carveOverlappingRoom( const Rect& floorArea,
             set( x, y, floorTemplate );
         }
     }
+}
+
+/**
+ * Stream output operator
+ */
+std::ostream& operator << ( std::ostream& ss, const TileGrid& grid )
+{
+    ss << "\n";
+
+    for ( int y = 0; y < grid.height(); ++y )
+    {
+        for ( int x = 0; x < grid.width(); ++x )
+        {
+            ss << grid.get( x, y );
+        }
+
+        ss << "\n";
+    }
+
+    return ss;
 }

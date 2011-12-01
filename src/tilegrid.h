@@ -20,6 +20,8 @@
 #include "common/fixedgrid.h"
 #include "tile.h"
 
+#include <iosfwd>
+
 class Rect;
 
 /**
@@ -32,28 +34,24 @@ public:
     TileGrid( const TileGrid& grid );
     ~TileGrid();
 
+    // Checks if the area occupied by the rectangle is empty
     bool isAreaEmpty( const Rect& area ) const;
 
+    // Carves a room into the tile grid
     void carveRoom( const Rect& floorArea,
                     int wallWidth,
                     const Tile& wallTemplate,
                     const Tile& floorTemplate );
 
+    // Carves a room that overlaps another room into the tile grid
     void carveOverlappingRoom( const Rect& floorArea,
                                int wallWidth,
                                const Tile& wallTemplate,
                                const Tile& floorTemplate );
-
-    /**
-     * Adds a non-overlapping room into the tile grid. If the insertion would
-     * cause already placed tiles to be overwritten then this method will raise
-     * an error.
-     */
-    void addRoom( const Rect& area, const TileGrid& roomGrid );
-
-    // Adds an overlapping room in the tile grid
-    void addOverlappingRoom( const Point& upperLeft, const TileGrid& roomGrid );
-
+    
+    // stream output
+    friend std::ostream& operator << ( std::ostream& ss,
+                                       const TileGrid& grid );
 private:
 };
 
