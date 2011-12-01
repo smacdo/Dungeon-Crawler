@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<terraindata>
+    <!-- ========================================================== -->
+    <!--   Terrain templates                                        -->
+    <!-- ========================================================== -->
+    <terrain_template name="wall">
+        <is_wall />
+        <blocks_light />
+        <can_tunnel v="false" />
+    </terrain_template>
+
+    <terrain_template name="floor">
+        <is_floor />
+    </terrain_template>
+
+    <!-- ========================================================== -->
+    <!--   Required "core" terrain types. These are hardcoded into  -->
+    <!--   the game engine, and should never be removed. Modify     -->
+    <!--   these values at your own risk                            -->
+    <!-- ========================================================== -->
+    <terrain id="0" name="void" sprite="...">
+        <impassable />
+        <empty />
+    </terrain>
+
+    <terrain id="1" name="bedrock" sprite="...">
+        <impassable />
+        <unbreakable />
+    </terrain>
+
+    <terrain id="10"
+             name="granite"
+             family="granite"
+             extends="wall"
+             sprite="granitewall" />
+
+    <!-- ========================================================== -->
+    <!--   Stone theme terrain tiles                                -->
+    <!-- ========================================================== -->
+    <terrain id="1000" name="stone_wall"    family="brick" extends="wall" sprite="stone_wall" />
+    <terrain id="1001" name="stone_doorway" family="brick" extends="wall" sprite="stone_doorframe">
+        <is_doorway />
+    </terrain>
+    <terrain id="5000" name="stonefloor" extends="default_floor" sprite="stonefloor" />
+
+</terraindata>
