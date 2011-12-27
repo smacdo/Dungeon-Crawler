@@ -70,6 +70,53 @@ TEST(Common,Point_Operator_Assignment)
     EXPECT_EQ( Point( 5, 7 ), a );
 }
 
+TEST(Common,Point_Operator_LessThan)
+{
+    Point a( 5, 7 );
+
+    Point b( 6, 9 );      // a < b, both components are obviously larger
+    Point c( 6, 7 );      // a < b, y is the same but x is larger
+    Point d( 4, 8 );      // a < b, y is larger but x is smaller
+
+    Point e( 5, 6 );      // a > e, y is smaller and x is the same
+    Point f( 1, 1 );      // a > f, both y and x are smaller
+
+    EXPECT_LT( a, b );
+    EXPECT_LT( a, c );
+    EXPECT_LT( a, d );
+
+    EXPECT_FALSE( a < a );
+    EXPECT_FALSE( a < e );
+    EXPECT_FALSE( a < f );
+
+    EXPECT_LT( e, a );
+    EXPECT_LT( f, a );
+}
+
+TEST(Common,Point_Operator_GreaterThan)
+{
+    Point a( 5, 7 );
+
+    Point b( 3, 2 );    // a > b because b.x and b.y are smaller
+    Point c( 6, 6 );    // a > b, c.x is larger than a.x but c.y smaller
+    Point d( 4, 7 );    // a > c, d.x is smaller even if a.y == d.y
+
+    Point e( 6, 7 );    // e > a because e.x is larger even if a.y == e.y
+    Point f( 2, 8 );    // f > a because f.y is larger even if f.x is smaller
+
+    EXPECT_FALSE( a > a );      // not possible logically
+
+    EXPECT_GT( a, b );
+    EXPECT_GT( a, c );
+    EXPECT_GT( a, d );
+
+    EXPECT_FALSE( a > e );
+    EXPECT_FALSE( a > f );
+
+    EXPECT_GT( e, a );
+    EXPECT_GT( f, a );
+}
+
 TEST(Common,Point_Operator_Addition)
 {
     const Point a( 2, 5 );

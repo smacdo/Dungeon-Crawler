@@ -20,6 +20,9 @@
 #include <iosfwd>
 #include "common/types.h"
 
+// boost serialization forward declaration
+namespace boost { namespace serialization { class access; } }
+
 /**
  * Represents a 2d cartesian point using integer values.
  */
@@ -37,6 +40,16 @@ public:
 
     // Assignment operator
     Point& operator = ( const Point& rhs  );
+
+    // Used for ordering and comparing points. Does not actually mean
+    // a point is less than another point... that doesn't really make
+    // any sense!
+    bool operator < ( const Point& rhs ) const;
+
+    // Used for ordering and comparing points with STL algorithms. This
+    // operator should never be used to in the same context as a numerical
+    // "this point is less than that point"
+    bool operator > ( const Point& rhs ) const;
 
     // Equality operator
     bool operator == ( const Point& rhs ) const;
@@ -74,9 +87,9 @@ public:
     // Set the x and y component of the point class
     void set( int x, int y );
 
-    /**
-     * Serialization
-     */
+    /////////////////////////
+    // Boost serialization //
+    /////////////////////////
     friend class boost::serialization::access;
 
     template<typename Archive>

@@ -92,7 +92,22 @@ bool Rect::operator == ( const Rect& rhs ) const
 }
 
 /**
+ * Inequality operator. Check if the other rectangle is not equal to us
+ *
+ * \param   rhs  The rectangle to for inequality to
+ * \return  True if the rectangles are not equal in value
+ */
+bool Rect::operator != ( const Rect& rhs ) const
+{
+    return ( mTop    != rhs.mTop    || mLeft  != rhs.mLeft ||
+             mBottom != rhs.mBottom || mRight != rhs.mRight );
+}
+
+/**
  * Assignment operator
+ *
+ * \param  rhs  Source rectangle to copy values from
+ * \return      Reference to this rectangle
  */
 Rect& Rect::operator = ( const Rect& rhs )
 {
@@ -108,6 +123,9 @@ Rect& Rect::operator = ( const Rect& rhs )
  * Checks if the rectangle is null, which is when the rectangle has
  * an invalid width or height property. This can only happen if the
  * rectangle was default initialized
+ *
+ * \return  True if the rectangle has zero width or zero height. False
+ *          otherwise
  */
 bool Rect::isNull() const
 {
@@ -206,6 +224,14 @@ Point Rect::topLeft() const
 }
 
 /**
+ * Returns the top right point of the rectangle
+ */
+Point Rect::topRight() const
+{
+    return Point( mRight, mTop );
+}
+
+/**
  * Returns the bottom right point of the rectangle
  */
 Point Rect::bottomRight() const
@@ -214,8 +240,20 @@ Point Rect::bottomRight() const
 }
 
 /**
- * Returns an approximate center of the rectangle. If a boundary is even,
- * then the result will be rounded down the nearest whole number
+ * Returns the bottom left point of the rectangle
+ */
+Point Rect::bottomLeft() const
+{
+    return Point( mLeft, mBottom );
+}
+
+
+/**
+ * Returns an approximate center point of the rectangle. Values that are
+ * not whole numbers will be rounded down to the nearest integer, hence
+ * the "approximate" name of the method.
+ *
+ * \return  Approximate center point of the rectangle
  */
 Point Rect::approximateCenter() const
 {
@@ -227,10 +265,10 @@ Point Rect::approximateCenter() const
 }
 
 /**
- * Returns a copy of this rectangle moved by the requested distance
+ * Returns a copy of this rectangle translated by the requested distance
  *
  * \param  distance  Distance to move this rectangle by
- * \return Translated rectangle
+ * \return           Rectangle that has been translated
  */
 Rect Rect::translate( const Point& distance ) const
 {
@@ -245,14 +283,13 @@ Rect Rect::translate( const Point& distance ) const
 
 /**
  * Moves the top left corner of the rect to the requested position
- *
- * \param  x  New top left x value
- * \param  y  New top left y value
+ * 
+ * \param  pos  The new upper left position of the rectangle
  */
-void Rect::moveTo( int x, int y )
+void Rect::moveTo( const Point& pos )
 {
-    int dX = mLeft - x;
-    int dY = mTop - y;
+    int dX = pos.x() - mLeft;
+    int dY = pos.y() - mTop;
 
     mLeft   += dX;
     mTop    += dY;
@@ -263,7 +300,7 @@ void Rect::moveTo( int x, int y )
 /**
  * Calculate and returns the area of the rectangle
  *
- * \return Area of the rectangle
+ * \return  Area of the rectangle
  */
 size_t Rect::area() const
 {

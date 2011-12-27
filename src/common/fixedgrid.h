@@ -249,6 +249,16 @@ public:
                                        const FixedGrid<U>& fg );
 
     /**
+     * Clears the fixed grid by calling the default constructor on each
+     * tile
+     */
+    void clear()
+    {
+        std::fill( &mTiles[0], &mTiles[mWidth*mHeight], T() );
+
+    }
+
+    /**
      * Clears the fixed grid by setting every tile to the requested 'base'
      *
      * \param  base  The value to assign to each tile
@@ -363,6 +373,19 @@ public:
     size_t size() const
     {
         return mWidth * mHeight;
+    }
+
+    /////////////////////////
+    // Boost serialization //
+    /////////////////////////
+    friend class boost::serialization::access;
+                        
+    template<typename Archive>
+    void serialize( Archive& ar, const unsigned int version )
+    {
+        ar & mWidth;
+        ar & mHeight;
+        ar & mTiles;
     }
 
 protected:

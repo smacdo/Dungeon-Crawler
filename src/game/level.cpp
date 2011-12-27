@@ -1,8 +1,6 @@
-#include "level.h"
-#include "tile.h"
-#include "tiletype.h"
+#include "game/level.h"
+#include "game/tile.h"
 #include "common/utils.h"
-#include "tilegrid.h"
 
 #include <iostream>
 #include <vector>
@@ -64,21 +62,7 @@ std::string Level::dump() const
     {
         for ( int x = 0; x < mTileGrid.width(); ++x )
         {
-            const Tile& tile = mTileGrid.get( x, y );
-
-            switch ( tile.type )
-            {
-                case TILE_IMPASSABLE:
-                    ss << 'x';
-                case TILE_EMPTY:
-                    ss << ' ';
-                case TILE_WALL:
-                    ss << '#';
-                case TILE_FLOOR:
-                    ss << '.';
-                default:
-                    ss << '?';
-            }
+            ss << mTileGrid.get( x, y );
         }
 
         ss << '\n';

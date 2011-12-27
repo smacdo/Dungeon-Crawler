@@ -6,6 +6,7 @@
 set(test_srcs
         test_alwaystrue.cpp
         test_fixedgrid.cpp
+        test_pathfinder.cpp
         test_point.cpp
         test_rect.cpp
         test_tilegrid.cpp
@@ -17,8 +18,9 @@ set(test_req_srcs
         ${GAME_SRC_PATH}/common/rect.cpp
         ${GAME_SRC_PATH}/common/point.cpp
         ${GAME_SRC_PATH}/common/platform_unix.cpp
-        ${GAME_SRC_PATH}/tile.cpp
-        ${GAME_SRC_PATH}/tilegrid.cpp
+        ${GAME_SRC_PATH}/game/pathfinder.cpp
+        ${GAME_SRC_PATH}/game/tile.cpp
+        ${GAME_SRC_PATH}/game/tilegrid.cpp
 )
 
 ###########################################################################

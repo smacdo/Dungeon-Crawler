@@ -110,6 +110,10 @@ EAssertionStatus raiseAssertion( const char *message,
     std::wstring wExpression = WinNTStringToWideString( ss.str() );
     std::wstring wMessage    = WinNTStringToWideString( message );
 
+    // Quickly spit it out into Visual Studio's debugger
+    OutputDebugStringA( wMessage.c_str() );
+    OutputDebugStringA( wMessage.c_str() );
+
     // Set up variables required to display the task dialog
     TASKDIALOGCONFIG tc = { 0 };
 

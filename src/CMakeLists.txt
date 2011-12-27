@@ -51,50 +51,71 @@ set(graphics_headers
         graphics/spritemanager.h
 )
 
+set(engine_srcs
+        engine/camera.cpp
+)
+
+set(engine_headers
+        engine/camera.h
+)
+
 set(game_srcs
-        appconfig.cpp
-        camera.cpp
-        dungeon.cpp
-        dungeoncrawler.cpp
-        inputmanager.cpp
-        level.cpp
-        tile.cpp
-        tilegrid.cpp
-        world.cpp
+        game/dungeon.cpp
+        game/level.cpp
+        game/tile.cpp
+        game/tilefactory.cpp
+        game/tilegrid.cpp
+        game/pathfinder.cpp
+        game/world.cpp
 )
 
 set(game_headers
-        appconfig.h
-        camera.h
-        config.h
-        door.h
-        dungeon.h
-        dungeoncrawler.h
-        inputmanager.h
-        level.h
-        tilegrid.h
-        tile.h
-        tiletype.h
-        world.h
+        game/dungeon.h
+        game/level.h
+        game/tile.h
+        game/tilefactory.h
+        game/tiledata.h
+        game/tileflags.h
+        game/tilegrid.h
+        game/pathfinder.h
+        game/world.h
 )
 
+set(app_srcs
+        appconfig.cpp
+        dungeoncrawler.cpp
+        inputmanager.cpp
+)
+
+set(app_headers
+        appconfig.h
+        config.h
+        dungeoncrawler.h
+        inputmanager.h
+)
 ###########################################################################
 # Main build script
 ###########################################################################
-set(srcs ${common_srcs} ${worldgen_srcs} ${game_srcs} ${graphics_srcs})
+set(srcs ${common_srcs} ${worldgen_srcs} ${engine_srcs} ${game_srcs}
+         ${app_srcs} ${graphics_srcs})
 set(cxx_flags "")
 
 ###
 ### Visual Studio (or other IDEs) file groupings
 ###
+source_group( app\\src          FILES ${app_srcs}         )
+source_group( app\\headers      FILES ${app_headers}      )
 source_group( common\\src       FILES ${common_srcs}      )
 source_group( common\\headers   FILES ${common_headers}   )
+source_group( engine\\src       FILES ${common_srcs}      )
+source_group( engine\\headers   FILES ${engine_headers}   )
 source_group( gameplay\\src     FILES ${game_srcs}        )
 source_group( gameplay\\headers FILES ${game_headers}     )
-source_group( graphics\\src     FILES ${graphics_srcs}    )
-source_group( graphics\\headers FILES ${graphics_headers} )
+source_group( client\\src       FILES ${graphics_srcs}    )
+source_group( client\\headers   FILES ${graphics_headers} )
 source_group( worldgen\\src     FILES ${worldgen_srcs}    )
 source_group( worldgen\\headers FILES ${worldgen_headers} )
+
 ###
 ### Additional compiler settings and definitions
 ###

@@ -15,9 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "dungeoncrawler.h"
-#include "dungeon.h"
 #include "appconfig.h"
-#include "world.h"
+#include "game/dungeon.h"
+#include "game/tilefactory.h"
+#include "game/world.h"
 
 #include "worldgen/dungeongenerator.h"
 #include "graphics/clientview.h"
@@ -48,7 +49,9 @@ int main( int argc , char* argv[] )
     const size_t levelHeight = 50;
     const size_t levelSeed   = 42;
 
-    DungeonGenerator generator( levelWidth, levelHeight, levelSeed );
+    TileFactory tileManager;
+
+    DungeonGenerator generator( tileManager, levelWidth, levelHeight, levelSeed );
     Dungeon *pDungeon = generator.generate();
 
     World  world( pDungeon );

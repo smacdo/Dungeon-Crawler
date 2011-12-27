@@ -22,36 +22,42 @@
 #include <ostream>
 
 /**
- * Constructor
+ * Constructor. Creates a blank tile grid with the requested dimensions.
  *
  * \param  width   Width of the tile grid
  * \param  height  Height of the tile grid
  */
-TileGrid::TileGrid( size_t width, size_t height )
-    : FixedGrid<Tile>( width, height, Tile( TILE_EMPTY ) )
+TileGrid::TileGrid( size_t width, size_t height, const Tile& defaultTile )
+    : FixedGrid<Tile>( width, height, defaultTile )
 {
 }
 
 /**
- * Copy constructor
+ * Tile grid copy constructor
+ *
+ * \param  source  The tile grid to copy values from
  */
-TileGrid::TileGrid( const TileGrid& tileGrid )
-    : FixedGrid<Tile>( tileGrid )
+TileGrid::TileGrid( const TileGrid& source )
+    : FixedGrid<Tile>( source )
 {
+    // Empty
 }
 
 /**
- * Destructor
+ * Tile grid destructor
  */
 TileGrid::~TileGrid()
 {
+    // Empty
 }
 
 /**
- * Checks if all the tiles inside of the provided rectangle are empty
+ * Checks if all the tiles inside of the provided rectangle are considered
+ * "empty", which means that the dungeon generator has not placed a non-void
+ * tile.
  *
  * \param  area  The area inside the tile grid to check
- * \return True if all tiles inside of the rectangle are empty
+ * \return       True if all tiles inside of the rectangle are empty
  */
 bool TileGrid::isAreaEmpty( const Rect& area ) const
 {
@@ -71,7 +77,7 @@ bool TileGrid::isAreaEmpty( const Rect& area ) const
             int y = iy + area.y();
 
             // Is there anything here?
-            isEmpty = (mTiles[ offset(x, y) ].wasPlaced() == false);
+            isEmpty = (mTiles[ offset(x,y) ].isPlaced() == false);
         }
     }
 

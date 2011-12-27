@@ -3,8 +3,8 @@
 #include "worldgen/roomgenerator.h"
 #include "common/random.h"
 #include "common/utils.h"
-
-#include "dungeon.h"
+#include "game/tilefactory.h"
+#include "game/dungeon.h"
 
 #include <cstddef>
 #include <memory>
@@ -15,15 +15,18 @@
  * \param  width  The maximum width of a dungeon level
  * \param  height The maximum height of a dungeon level
  */
-DungeonGenerator::DungeonGenerator( size_t width, 
+DungeonGenerator::DungeonGenerator( const TileFactory& tileFactory,
+                                    size_t width, 
                                     size_t height,
                                     unsigned int randomSeed )
-    : mLevelGenerator( NULL ),
+    : mTileFactory( tileFactory ),
+      mLevelGenerator( NULL ),
       mRandom( randomSeed ),
       mLevelWidth( width ),
       mLevelHeight( height )
 {
     mLevelGenerator = new LevelGenerator( mRandom,
+                                          mTileFactory,
                                           mLevelWidth,
                                           mLevelHeight );
 }

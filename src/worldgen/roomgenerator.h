@@ -1,11 +1,11 @@
 #ifndef SCOTT_DUNGEON_ROOM_GENERATOR_H
 #define SCOTT_DUNGEON_ROOM_GENERATOR_H
 
-#include "tilegrid.h"
-#include "dungeoncrawler.h"
+#include "game/tilegrid.h"
 
 class Rect;
 class Random;
+class TileFactory;
 struct RoomData;
 
 
@@ -19,13 +19,12 @@ struct RoomData;
 class RoomGenerator
 {
 public:
-    RoomGenerator( Random& mRandom );
+    RoomGenerator( const TileFactory& tileFactory, Random& mRandom );
     ~RoomGenerator();
 
     /**
-     * Generates a room to place in the requested area. This method
-     * can potentially refuse to place a level, in which case the returned
-     * pointer will be null
+     * Generates a randomly created room, and returns a pointer to the
+     * room data
      */
     RoomData* generate( ERoomSize roomSize );
 
@@ -37,6 +36,8 @@ private:
     Rect findBounds( const Rect& a, const Rect& b ) const;
 
 private:
+    const TileFactory &mTileFactory;
+
     // Reference to the random instance used by the dungeon generator
     Random& mRandom;
 };

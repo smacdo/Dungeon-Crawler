@@ -3,7 +3,7 @@
 
 #include "common/point.h"
 #include "common/rect.h"
-#include "tilegrid.h"
+#include "game/tilegrid.h"
 
 #include <vector>
 
@@ -25,7 +25,7 @@ struct RoomData
      * The rectangle does not need to be entirely floor tiles, so long as the
      * top left, bottom left and center are floor tiles.
      */
-    RoomData( const Rect& floorRect )
+    RoomData( const Rect& floorRect, TileGrid& tileGrid )
         : floorArea( floorRect ),
           totalArea( floorRect.x() - 1,
                      floorRect.y() - 1,
@@ -34,7 +34,7 @@ struct RoomData
           floorTopLeft( floorRect.topLeft() ),
           floorBottomRight( floorRect.bottomRight() ),
           floorCenter( floorRect.approximateCenter() ),
-          tiles( floorArea.width() + 2, floorArea.height() + 2 )
+          tiles( tileGrid )
     {
     }
 

@@ -20,8 +20,9 @@
 #include "worldgen/hallgenerator.h"
 #include "common/utils.h"
 #include "common/random.h"
-
-#include "level.h"
+#include "game/level.h"
+#include "game/tile.h"
+#include "game/tilefactory.h"
 
 /**
  * Level generator constructor. Creates a new level generator that is ready
@@ -32,12 +33,13 @@
  * \param  height  Height of the level
  */
 LevelGenerator::LevelGenerator( Random& random,
+                                const TileFactory& tileFactory,
                                 int width,
                                 int height )
     : mRandom( random ),
+      mTileFactory( tileFactory ),
       mLevelWidth( width ),
-      mLevelHeight( height ),
-      mTileGrid( width, height )
+      mLevelHeight( height )
 {
     assert( width > 5 );
     assert( height > 5 );
@@ -55,15 +57,19 @@ LevelGenerator::~LevelGenerator()
  */
 Level* LevelGenerator::generate()
 {
-    RoomGenerator roomGenerator( mRandom );
+    RoomGenerator roomGenerator( mTileFactory, mRandom );
+    TileGrid      tilegrid( mLevelWidth,
+                            mLevelHeight,
+                            mTileFactory.createVoid() );
+
     std::vector<RoomData*> levelRooms;
 
     // Turn the level border tiles into impassable bedrock tiles to prevent
     // the player (or anyone really) from escaping into the void
-    mTileGrid.carveRoom( Rect( 1, 1, mLevelWidth-2, mLevelHeight-2 ),
-                         1,
-                         Tile( TILE_IMPASSABLE ),
-                         Tile( TILE_EMPTY ) );
+    tilegrid.carveRoom( Rect( 1, 1, mLevelWidth-2, mLevelHeight-2 ),
+                        1,
+                        mTileFactory.createGranite(),
+                        mTileFactory.createVoid() );
 
     // Generate the requested number of rooms
     for ( int i = 0; i < 150; ++i )
@@ -78,9 +84,9 @@ Level* LevelGenerator::generate()
         // Try to place the room's tile grid into our level's tile grid. If it
         // doesn't succeed, make sure to delete the room data before trying
         // another room
-        if ( canPlaceRoomAt( deref(pRoomData), placeAt ) )
+        if ( canPlaceRoomAt( tilegrid, deref(pRoomData), placeAt ) )
         {
-            mTileGrid.insert( placeAt, pRoomData->tiles );
+            tilegrid.insert( placeAt, pRoomData->tiles );
             levelRooms.push_back( pRoomData );
         }
         else
@@ -101,7 +107,7 @@ Level* LevelGenerator::generate()
     }
 
     // Return the generated level
-    return new Level( "Default Level", mTileGrid );
+    return new Level( "Default Level", tilegrid );
 }
 
 /**
@@ -152,8 +158,9 @@ Point LevelGenerator::findRandomPointFor( const RoomData& roomData ) const
  * \param  pos       Position you are trying to place the room at
  * \return True if the room can be positioned there, false otherwise
  */
-bool LevelGenerator::canPlaceRoomAt( const RoomData& roomData,
+bool LevelGenerator::canPlaceRoomAt( const TileGrid& tilegrid,
+                                     const RoomData& roomData,
                                      const Point& pos ) const
 {
-    return mTileGrid.isAreaEmpty( roomData.totalArea.translate( pos ) );
+    return tilegrid.isAreaEmpty( roomData.totalArea.translate( pos ) );
 }

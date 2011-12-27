@@ -39,19 +39,6 @@ SpriteManager::~SpriteManager()
 }
 
 /**
- * Instructs the sprite manager to preload an image. Right now all images
- * must be preloaded before being used in a sprite, but in the future
- * the sprite manager class will gain the ability to manually load sprite
- * definitions
- */
-void SpriteManager::preloadImage( const std::string& filepath )
-{
-    // Forward the call to loadImage, which will take care of caching
-    // and whatnot
-    loadImage( filepath );
-}
-
-/**
  * Instructs the sprite manager to create a new sprite using the given
  * image as a source and caching it for further use.
  * 
@@ -93,12 +80,12 @@ void SpriteManager::addSprite( const std::string& spriteName,
  * \parma  height     Height of the sprite
  * \return            Pointer to the generated sprite
  */
-void SpriteManager::addSprite( const std::string& spriteName,
-                               const std::string& imagepath,
-                               int xOffset,
-                               int yOffset,
-                               int width,
-                               int height )
+void SpriteManager::addSpriteTemplate( const std::string& spriteName,
+                                       const std::string& imagepath,
+                                       int xOffset,
+                                       int yOffset,
+                                       int width,
+                                       int height )
 {
     // Has this sprite already been loaded once before? If so, don't
     // load anything

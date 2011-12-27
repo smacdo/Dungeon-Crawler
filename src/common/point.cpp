@@ -79,6 +79,16 @@ bool Point::operator != ( const Point& rhs ) const
     return ( mX != rhs.mX || mY != rhs.mY );
 }
 
+bool Point::operator < ( const Point& rhs ) const
+{
+    return ( mY < rhs.mY || ( mY == rhs.mY && mX < rhs.mX ) );
+}
+
+bool Point::operator > ( const Point& rhs ) const
+{
+    return ( mY > rhs.mY || ( mY == rhs.mY && mX > rhs.mX ) );
+}
+
 /**
  * Addition operator
  */

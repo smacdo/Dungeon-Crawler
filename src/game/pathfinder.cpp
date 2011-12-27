@@ -1,8 +1,8 @@
-#include "engine/pathfinder.h"
+#include "game/pathfinder.h"
+#include "game/tilegrid.h"
 #include "common/point.h"
 #include "common/fixedgrid.h"
-#include "common/logger.h"
-#include "tilegrid.h"
+#include "common/logging.h"
 
 #include <iostream>
 #include <string>
@@ -11,17 +11,35 @@
 #include <algorithm>
 #include <queue>
 
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
 /**
- * Path node constructor. Path node is an internal structure used by
- * the path finder class to keep track of potential paths while searching
- * for the optimal one
+ * Path tile constructor
+ */
+PathTile::PathTile()
+    : prevPos( -1, -1 ),
+      movementCost( 0 ),
+      estimatedCost( 0 ),
+      state( PATHTILE_STATE_START )
+{
+}
+
+/**
+ * Path node constructor
  */
 PathNode::PathNode()
-    : prevPos( -1, -1 ),
-      movementCost( -1 ).
-      estimatedCost( -1 ),
-      mOpenState( false ),
-      mCloseState( false )
+    : position(),
+      totalCost(0)
+{
+}
+
+/**
+ * Path node constructor
+ */
+PathNode::PathNode( const Point& position_, size_t totalCost_ )
+    : position( position_ ),
+      totalCost( totalCost_ )
 {
 }
 
@@ -30,30 +48,42 @@ PathNode::PathNode()
  * for use when ordering path nodes in a list.
  *
  * \param  rhs  Node to check against
- * \return      True if this node has a lesser total cost than rhs
+ * \return      True if this node has a greater total cost than rhs
  */
-bool PathNode::operator < ( const PathNode& rhs ) const
+bool PathNode::operator > ( const PathNode& rhs ) const
 {
-    return (movementCost     + estimatedCost) < 
-           (rhs.movementCost + rhs.estimatedCost);
+    return totalCost > rhs.totalCost;
 }
 
 /**
  * Pathfinder constructor.
  */
-PathFinder::PathFinder( const Tilemap& map )
-    : mMap( map ),
+PathFinder::PathFinder( const TileGrid& map )
+    : mCostFunction( boost::bind(&PathFinder::findMovementCost, this, _1, _2) ),
       mAllowDiagonals( false ),
-      mBaseMoveCost( 0 ),
-      mMoveStraightCost( 10 ),
-      mMoveDiagonalCost( 14 ),
-      mPathGrid( map.width(), map.height() ),
+      mPathGrid( map.width(), map.height(), PathTile() ),
       mOpenStore( 256 ),
       mOpenNodes( mOpenStore.begin(), mOpenStore.end() ),
       mStartPoint(),
       mDestPoint(),
       mDidPathToEnd( false ),
-      mFailedToPath( false ),
+      mFailedToPath( false )
+{
+}
+
+/**
+ * Path finder custom constructor
+ */
+PathFinder::PathFinder( const TileGrid& map, PathFinderCostFunction costFunc )
+    : mCostFunction( costFunc ),
+      mAllowDiagonals( false ),
+      mPathGrid( map.width(), map.height(), PathTile() ),
+      mOpenStore( 256 ),
+      mOpenNodes( mOpenStore.begin(), mOpenStore.end() ),
+      mStartPoint(),
+      mDestPoint(),
+      mDidPathToEnd( false ),
+      mFailedToPath( false )
 {
 }
 
@@ -81,10 +111,12 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
     // Initialize the pathfinder by first resetting our internal state,
     // and then adding the starting position to our list of open nodes
     resetPathFinderState();
-    markAsOpen( start );
 
     mStartPoint = start;
     mDestPoint  = dest;
+
+    markAsOpen( start );
+    mOpenNodes.push( PathNode( start, 0 ) );
 
     std::cerr << "===================================" << std::endl
               << "Starting findpath... "               << std::endl
@@ -95,7 +127,6 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
     // Now start the iterative path finding operation by continually
     // trying to find a path to the destination
     const size_t MAX_STEPS = 25;
-    bool keepSearching     = true;
     size_t step            = 0;
 
     while ( step < MAX_STEPS && (!mDidPathToEnd) && (!mFailedToPath) )
@@ -103,6 +134,8 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
         findPathStep();
         ++step;
     }
+
+    std::cout << " *** STEPS: " << step << std::endl;
 
     // Check if we have found a valid path from the starting point to the
     // ending point. If so, follow the path backward and add each node to
@@ -114,10 +147,10 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
         Point currentPos = dest;
 
         // Walk backward from the destination back to the starting position
-        while ( p != start )
+        while ( currentPos != Point(-1,-1) )
         {
             path.push_back( currentPos );
-            currentPos = mTileGrid.get(currentPos).prevPos;
+            currentPos = mPathGrid.get(currentPos).prevPos;
         }
 
         // Reverse the list, so the caller sees it as a list of points from
@@ -142,14 +175,16 @@ void PathFinder::findPathStep()
     //
     // If there are no entries left in the open nodes list, then we have
     // exhausted all posibilities and must return an error
-    if ( openNodes.empty() )
+    if ( mOpenNodes.empty() )
     {
         mFailedToPath = true;
         return;
     }
 
-    Point currentPos = openNodes.top();
-    openNodes.pop();
+    PathNode currentNode = mOpenNodes.top();
+    mOpenNodes.pop();
+    
+    Point currentPos = currentNode.position;
 
     markAsClosed( currentPos );
 
@@ -161,15 +196,14 @@ void PathFinder::findPathStep()
 
     // Did we just pop off the destination tile? If so, we managed to path
     // to the destination succesfully!
-    if ( currentPos == dest )
+    if ( currentPos == mDestPoint )
     {
         mDidPathToEnd = true;
         return;
     }
 
     // Who will be our neighbors? Will they be our friends?
-    std::vector<Point> neighbors =
-        generateNeighbors( currentPos, neighbors );
+    std::vector<Point> neighbors = generateNeighbors( currentPos );
 
     // Consider each generated neighbor. If the tile is both a valid
     // walkable tile, is in bounds and has not been visited yet then
@@ -183,27 +217,20 @@ void PathFinder::findPathStep()
             continue;
         }
 
-        // Before counting cost, ensure that this tile we are considering
-        // supports pathing. If isPathable returns false, we consider this
-        // unreachable and therefore should skip it
-        if ( isPathable( neighbors[i] ) == false )
-        {
-            continue;
-        }
-
         // Calculate the costs of moving to this node, and the
         // estimated cost of getting to the destination
-        int estimatedCost = findEstimatedCost( neighbors[i], mDestPoint );
-        int movementCost  = findMovementCost( neighbors[i], currentPos ) +
-                            currentMovementCost;
+        size_t estimatedCost = findEstimatedCost( neighbors[i], mDestPoint );
+        int movementCost     = mCostFunction( neighbors[i], currentPos )
+                                 + currentMovementCost;
 
-        // Ensure that this position supports a path. If the returned
-        // movement cost is less than zero skip this tile
-        if ( movementCost < 0  )
+        // Before continuing with the pathfinding, make sure the movement
+        // cost is at least zero. If it is negative, then we cannot path
+        // to this tile and should skip it
+        if ( movementCost < 0 )
         {
             continue;
         }
-        
+
         // Debugging help
         std::cerr << "  ==> Considering " << neighbors[i]
                   << ", e: "              << estimatedCost
@@ -214,21 +241,21 @@ void PathFinder::findPathStep()
 
         // Now is this node already listed on the open list? Search the
         // list of open nodes, and see if we find a match
-        PathNode& existingNode = mPathGrid.get( neighbors[i] );
+        PathTile& existingTile = mPathGrid.get( neighbors[i] );
 
         if ( isOpen( neighbors[i] ) ) 
         {
             // The node is already in the list of open tiles. Do we have
             // a better movement score than the already stored node?
-            if ( movementCost < existingNode.movementCost )
+            if ( movementCost < existingTile.movementCost )
             {
-                existingNode.prevPos       = currentPos;
-                existingNode.movementCost  = movementCost;
-                existingNode.estimatedCost = estimatedCost;
+                existingTile.prevPos       = currentPos;
+                existingTile.movementCost  = movementCost;
+                existingTile.estimatedCost = estimatedCost;
 
                 std::cerr << "   * Replacing existing open node"
-                          << ",old e: " << existingNode.estimatedCost
-                          << ",old f: " << existingNode.movementCost
+                          << ",old e: " << existingTile.estimatedCost
+                          << ",old f: " << existingTile.movementCost
                           << std::endl;
             }
             else
@@ -242,12 +269,15 @@ void PathFinder::findPathStep()
             std::cerr << "   * Adding to open node list" << std::endl;
 
             // Update the path node element for this position
-            existingNode.prevPos       = currentPos;
-            existingNode.movementCost  = movementCost;
-            existingNode.estimatedCost = estimatedCost;
+            existingTile.prevPos       = currentPos;
+            existingTile.movementCost  = movementCost;
+            existingTile.estimatedCost = estimatedCost;
 
             // Make sure this tile is added to the list of open points
+            PathNode node( neighbors[i], movementCost + estimatedCost );
+
             markAsOpen( neighbors[i] );
+            mOpenNodes.push( node );
         }
     }
 }
@@ -262,22 +292,28 @@ void PathFinder::findPathStep()
  * \param  to    Destination tile we are trying to reach
  * \return The estimated cost of moving from current to destination
  */
-int PathFinder::findEstimatedCost( const Point& from,
-                                   const Point& to ) const
+size_t PathFinder::findEstimatedCost( const Point& from,
+                                      const Point& to ) const
 {
+    const static size_t MOVE_BASE_COST     = 0;
+    const static size_t MOVE_STRAIGHT_COST = 10;
+    const static size_t MOVE_DIAGONAL_COST = 14;
+
+    // Calculate the x and y straight distance from start to the target
     int xDistance = std::abs( from.x() - to.x() );
     int yDistance = std::abs( from.y() - to.y() );
-    int estimated = 0;
+
+    size_t estimated = MOVE_BASE_COST;
 
     if ( xDistance > yDistance )
     {
-        estimated = mMoveDiagonalCost * yDistance +
-                    mMoveStraightCost * ( xDistance - yDistance );
+        estimated = MOVE_DIAGONAL_COST * yDistance +
+                    MOVE_STRAIGHT_COST * ( xDistance - yDistance );
     }
     else
     {
-        estimated = mMoveDiagonalCost * xDistance +
-                    mMoveStraightCost * ( yDistance - xDistance );
+        estimated = MOVE_DIAGONAL_COST * xDistance +
+                    MOVE_STRAIGHT_COST * ( yDistance - xDistance );
     }
 
     return estimated;
@@ -293,22 +329,27 @@ int PathFinder::findEstimatedCost( const Point& from,
  * \return               Cost of moving from prevPoint to currentPoint
 */
 int PathFinder::findMovementCost( const Point& currentPoint,
-                                  const Point& prevPoint ) const
+                                  const Point& prevPoint )
 {
+    const static size_t MOVE_BASE_COST     = 0;
+    const static size_t MOVE_STRAIGHT_COST = 10;
+    const static size_t MOVE_DIAGONAL_COST = 14;
+
     // Factor in the basic cost of movement
-    int movementCost = mBaseMoveCost;
+    int movementCost = MOVE_BASE_COST;
 
     // Is the move from prevPoint to currentPoint a straight move, or
     // is it cutting across diagonally?
-    if ( currentPt.x() == prevPt.x() || currentPt.y() == prevPt.y() )
+    if ( currentPoint.x() == prevPoint.x() ||
+         currentPoint.y() == prevPoint.y() )
     {
         // straight move
-        movementCost += mMoveStraightCost;
+        movementCost += MOVE_STRAIGHT_COST; 
     }
     else
     {
         // diagonal move
-        movementCost += mMoveDiagonalCost;
+        movementCost += MOVE_DIAGONAL_COST;
     }
 
     return movementCost;
@@ -344,13 +385,13 @@ std::vector<Point> PathFinder::generateNeighbors( const Point& currentPoint ) co
 
     // Consider each potential neighbor offset and if the point is still
     // within the bounds of the tilemap, add it to the output list
-    int mapWidth  = static_cast<int>( mMap.width() );
-    int mapHeight = static_cast<int>( mMap.height() );
+    int mapWidth  = static_cast<int>( mPathGrid.width() );
+    int mapHeight = static_cast<int>( mPathGrid.height() );
 
     for ( size_t i = 0; i < MAX_STRAIGHT_TILES; ++i )
     {
-        Point n = currentPoint + Point( NEIGHBOR_OFFSET[i][0],
-                                        NEIGHBOR_OFFSET[i][1] );
+        Point n = currentPoint + Point( NEIGHBOR_OFFSETS[i][0],
+                                        NEIGHBOR_OFFSETS[i][1] );
 
         if ( n.x() >= 0 && n.x() < mapWidth &&
              n.y() >= 0 && n.y() < mapHeight )
@@ -371,8 +412,7 @@ void PathFinder::resetPathFinderState()
     mPathGrid.clear();
     mOpenStore.clear();
 
-    mOpenNodes = std::priority_queue( mOpenStore.begin(),
-                                      mOpenStore.end() );
+    mOpenNodes = PathNodePriorityQueue( mOpenStore.begin(), mOpenStore.end() );
  
     mDidPathToEnd = false;
     mFailedToPath = false;
@@ -386,9 +426,9 @@ void PathFinder::resetPathFinderState()
  * \param  point  The point to consider
  * \return        True if we can path onto this point, false otherwise
  */
-bool PathFinder::isPathable( const Point& ) const
+bool PathFinder::isPathable( const Point& point ) const
 {
-    return true;    // for the moment, always true
+    return true;
 }
 
 /**
@@ -396,12 +436,10 @@ bool PathFinder::isPathable( const Point& ) const
  *
  * \param  point  Location of the point to mark as closed
  */
-void PathFinder::markAsClosed( const Point& point ) const
+void PathFinder::markAsClosed( const Point& point ) 
 {
-    PathNode& node = mPathGrid.get( point );
-    assert( node.openState == false && node.closeState == false );
-
-    node.closeState = true;   
+    PathTile& tile = mPathGrid.get( point );
+    tile.state = PATHTILE_STATE_CLOSED;
 }
 
 /**
@@ -409,15 +447,10 @@ void PathFinder::markAsClosed( const Point& point ) const
  *
  * \param  point  Location of the point to mark as open
  */
-void PathFinder::markAsOpen( const Point& point ) const
+void PathFinder::markAsOpen( const Point& point ) 
 {
-    PathNode& node = mPathGrid.get( point );
-    assert( node.openState  == false && node.closeState == false );
-
-    // Update the path node where this point is located as being open,
-    // and then add it to the priority queue of open points
-    node.openState  = true;
-    mOpenNodes.push( point );
+    PathTile& tile = mPathGrid.get( point );
+    tile.state = PATHTILE_STATE_OPEN;
 }
 
 /**
@@ -428,7 +461,7 @@ void PathFinder::markAsOpen( const Point& point ) const
  */
 bool PathFinder::isOpen( const Point& point ) const
 {
-    return mPathGrid.get( point ).openState;
+    return mPathGrid.get( point ).state == PATHTILE_STATE_OPEN;
 }
 
 /**
@@ -439,7 +472,7 @@ bool PathFinder::isOpen( const Point& point ) const
  */
 bool PathFinder::isClosed( const Point& point ) const
 {
-    return mPathGrid.get( point ).closeState;
+    return mPathGrid.get( point ).state == PATHTILE_STATE_CLOSED;
 }
 
 /**
@@ -447,12 +480,14 @@ bool PathFinder::isClosed( const Point& point ) const
  */
 void PathFinder::debugFindPathStep( const Point& currentPoint ) const
 {
-    const PathNode& node = mPathGrid.get( currentPoint );
+    const PathTile& tile = mPathGrid.get( currentPoint );
+    int totalCost        = tile.estimatedCost + tile.movementCost;
 
-    std::cerr << "_____________________________ "    << std::endl
-              << " Picked  : " << currentPoint       << std::endl
-              << "  prevPos: " << node.prevPos       << std::endl
-              << "  moveC  : " << node.movementCost  << std::endl
-              << "  estimC : " << node.estimatedCost << std::endl
-              << " "                                 << std::endl;
+    std::cerr << "_____________________________ "      << std::endl
+              << " Picked  : " << currentPoint         << std::endl
+              << "  prevPos: " << tile.prevPos         << std::endl
+              << "  cost   : " << "e = " << tile.estimatedCost << ", "
+                               << "m = " << tile.movementCost  << ", "
+                               << "t = " << totalCost  << std::endl
+              << " "                                   << std::endl;
 }

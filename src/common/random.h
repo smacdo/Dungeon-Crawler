@@ -24,6 +24,9 @@
 
 #include "common/types.h"
 
+// boost serialization forward declaration
+namespace boost { namespace serialization { class access; } }
+
 class Random : boost::noncopyable
 {
 public:
@@ -60,9 +63,9 @@ public:
     // Returns the seed used to initialize the random number generator
     unsigned int seed() const;
 
-    /**
-     * Serialization
-     */
+    /////////////////////////
+    // Boost serialization //
+    /////////////////////////
     friend class boost::serialization::access;
 
     template<typename Archive>

@@ -19,14 +19,12 @@
 #include "common/rect.h"
 #include "common/logging.h"
 #include "common/random.h"
-#include "tilegrid.h"
-#include "level.h"
-#include "tile.h"
 #include "common/utils.h"
-#include "tiletype.h"
-#include "dungeoncrawler.h"
-
 #include "common/platform.h"
+#include "game/tilegrid.h"
+#include "game/level.h"
+#include "game/tile.h"
+#include "game/tilefactory.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Room generation constants
@@ -42,14 +40,14 @@ const int ROOM_SIZES[ERoomSize_COUNT][2] =
     { 20, 30 }   /* ERROM_GIGANTIC */
 };
 
-RoomGenerator::RoomGenerator( Random& random )
-    : mRandom( random )
+RoomGenerator::RoomGenerator( const TileFactory& tileFactory, Random& random )
+    : mTileFactory( tileFactory ),
+      mRandom( random )
 {
 }
 
 RoomGenerator::~RoomGenerator()
 {
-
 }
 
 /**
@@ -75,20 +73,22 @@ RoomData* RoomGenerator::generate( ERoomSize roomSize )
     // room rects
     Rect floorRect = findBounds( mainRoomRect, overlapRect );
    
-    // Create the structure that will hold data about our room. Need to do this
-    // before we start carving
-    RoomData * pRoomData = new RoomData( floorRect );
+    // Create a tilegrid that is sized to hold the floor space and the walls
+    // that enclose the generated room
+    TileGrid tiles( floorRect.width()  + 2,
+                    floorRect.height() + 2,
+                    mTileFactory.createGranite() );
 
-    // Finally we can carve our room out!
-    Tile wallTile  = Tile( TILE_WALL );
-    Tile floorTile = Tile( TILE_FLOOR );
+    // Carve the two rects into the tilegrid and call this our room
+    Tile wallTile  = mTileFactory.createWall();
+    Tile floorTile = mTileFactory.createFloor();
     
-    pRoomData->tiles.carveRoom( mainRoomRect, 1, wallTile, floorTile );
-    pRoomData->tiles.carveOverlappingRoom( overlapRect, 1, wallTile, floorTile );
+    tiles.carveRoom( mainRoomRect, 1, wallTile, floorTile );
+    tiles.carveOverlappingRoom( overlapRect, 1, wallTile, floorTile );
 
-    // All done, return information to the level generator about our newly
-    // created room
-    return pRoomData;
+    // The room has been created and carved. Return a structure containing
+    // information about its generation to the caller
+    return new RoomData( floorRect, tiles );
 }
 
 /**

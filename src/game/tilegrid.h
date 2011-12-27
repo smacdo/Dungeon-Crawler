@@ -30,7 +30,9 @@ class Rect;
 class TileGrid : public FixedGrid<Tile>
 {
 public:
-    TileGrid( size_t width, size_t height );
+    TileGrid( size_t width,
+              size_t height,
+              const Tile& defaultTile );
     TileGrid( const TileGrid& grid );
     ~TileGrid();
 

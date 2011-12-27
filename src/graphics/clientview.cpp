@@ -5,10 +5,10 @@
 #include "common/utils.h"
 #include "common/platform.h"
 
-#include "tiletype.h"
-#include "level.h"
-#include "world.h"
-#include "dungeon.h"
+#include "game/tiletype.h"
+#include "game/level.h"
+#include "game/world.h"
+#include "game/dungeon.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -71,6 +71,8 @@ void ClientView::load()
     SDL_Init( SDL_INIT_EVERYTHING );
 
     // preload all of our images
+    mSpriteManager.loadSpritesFromXml( "sprites.xml" );
+
     mSpriteManager.addSprite( "tile_impassable", "tile_blocked.png" );
     mSpriteManager.addSprite( "tile_empty",      "tile_unallocated.png" );
     mSpriteManager.addSprite( "tile_wall",       "dg_dungeon32.png", 0 * 32, 0 * 32, 32, 32 );

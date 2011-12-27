@@ -3,28 +3,63 @@
 
 #include <vector>
 #include <queue>
+#include <boost/utility.hpp>
+#include <boost/function.hpp>
 
+#include "common/fixedgrid.h"
 #include "common/point.h"
 
 // Forward declarations
-class Tilemap;
+class TileGrid;
+struct PathNode;
+
+// Function callback typedefs
+typedef boost::function<int (const Point&, const Point&)>
+    PathFinderCostFunction;
+
+// Priority queue declaration
+typedef
+    std::priority_queue<PathNode, std::vector<PathNode>, std::greater<PathNode> >
+    PathNodePriorityQueue;
+
+// Node open/closed status
+enum EPathTileState
+{
+    PATHTILE_STATE_START,
+    PATHTILE_STATE_OPEN,
+    PATHTILE_STATE_CLOSED,
+    PATHTILE_STATE_COUNT
+};
 
 /**
- * Path node is an internal helper structure that is used by the path
- * finder class. It is used to keep track of all possible paths and their
- * weights
+ * Path tile is an internal helper structure that is used by the path finder
+ * to keep track of the state of each tile in the tilegrid.
  */
-struct PathNode
+struct PathTile
 {
 public:
-    PathNode();
-    bool operator < ( const PathNode& rhs ) const;
+    PathTile();
+    PathTile( PathFinderCostFunction costFunc );
 
     Point prevPos;
     int movementCost;
-    int estimatedCost;
-    bool openState;
-    bool closeState;
+    size_t estimatedCost;
+    EPathTileState state;
+};
+
+/**
+ * Path node is another internal helper structure. This struct keeps track
+ * of open path nodes inside of the priority queue
+ */
+struct PathNode
+{
+    PathNode();
+    PathNode( const Point& position_, size_t totalCost );
+
+    bool operator > ( const PathNode& rhs ) const;
+
+    Point position;
+    size_t totalCost;
 };
 
 /**
@@ -39,7 +74,9 @@ class PathFinder : boost::noncopyable
 {
 public:
     // Constructor
-    PathFinder( const Tilemap& map );
+    PathFinder( const TileGrid& map );
+
+    PathFinder( const TileGrid& map, PathFinderCostFunction costFunc );
 
     // Destructor
     ~PathFinder();
@@ -53,11 +90,11 @@ private:
 
     // Calculates the estimated cost for pathing from the source point to
     // the destination point
-    int findEstimatedCost( const Point& from, const Point& to ) const;
+    size_t findEstimatedCost( const Point& from, const Point& to ) const;
 
     // Calculates the (exact) cost of moving from the starting node to this
     // node, using the path followed from the start
-    int findMovementCost( const Point& currentPt, const Point& prevPoint ) const;
+    int findMovementCost( const Point& currentPt, const Point& prevPoint );
 
     // Generates a list of potentially valid neighbors
     std::vector<Point> generateNeighbors( const Point& currentPoint ) const;
@@ -69,10 +106,10 @@ private:
     bool isPathable( const Point& ) const;
 
     // Marks a node as closed
-    void markAsClosed( const Point& p ) const;
+    void markAsClosed( const Point& p );
 
     // Marks a point as open
-    void markAsOpen( const Point& p ) const;
+    void markAsOpen( const Point& p );
 
     // Checks if a point is open
     bool isOpen( const Point& p ) const;
@@ -84,15 +121,12 @@ private:
     void debugFindPathStep( const Point& p ) const;
 
 private:
-    const Tilemap& mMap;
+    PathFinderCostFunction mCostFunction;
     const bool mAllowDiagonals;
-    const int mBaseMoveCost;
-    const int mMoveStraightCost;
-    const int mMoveDiagonalCost;
 
-    FixedGrid<PathNode> mPathGrid;
-    std::vector<Point> mOpenStore;
-    std::priority_queue<Point> mOpenNodes;
+    FixedGrid<PathTile> mPathGrid;
+    std::vector<PathNode> mOpenStore;
+    PathNodePriorityQueue mOpenNodes;
     Point mStartPoint;
     Point mDestPoint;
     bool mDidPathToEnd;
