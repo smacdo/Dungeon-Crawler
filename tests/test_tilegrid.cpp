@@ -1,24 +1,31 @@
-#include "tilegrid.h"
+#include "game/tilegrid.h"
+#include "game/tile.h"
+#include "game/tiledata.h"
 #include <gtest.h>
 
 class TileGridTest : public ::testing::Test
 {
 public:
     TileGridTest()
-        : emptyGrid( 4, 6 ),
+        : mpFloorData( new TileData( 1, "floor", ETILE_FLOOR ) ),
+          mpWallData( new TileData( 2, "wall", ETILE_WALL ) ),
+          emptyGrid( 4, 6 ),
           sampleGrid( 4, 6 )
     {
     }
 
-protected:
-    TileGrid emptyGrid;
-    TileGrid sampleGrid;
+    virtual ~TileGridTest()
+    {
+        delete mpFloorData;
+        delete mpWallData;
+    }
 
+protected:
     virtual void SetUp()
     {
         TileGrid &t = sampleGrid;
-        Tile      w = Tile( TILE_WALL );
-        Tile      f = Tile( TILE_FLOOR );
+        Tile      w = Tile( mpWallData );
+        Tile      f = Tile( mpFloorData );
 
         // Set up the sample grid like so
         //   W W W W 
@@ -32,6 +39,12 @@ protected:
         t.set( 0, 3, w ); t.set( 1, 3, f ); t.set( 2, 3, f ); t.set( 3, 3, w );
         t.set( 0, 4, w ); t.set( 1, 4, w ); t.set( 2, 4, w ); t.set( 3, 4, w );
     }
+
+protected:
+    TileData * mpFloorData;
+    TileData * mpWallData;
+    TileGrid emptyGrid;
+    TileGrid sampleGrid;
 };
 
 TEST_F(TileGridTest,Constructor_Makes_Area_Empty)
@@ -50,7 +63,7 @@ TEST_F(TileGridTest,CarveRoom)
     // Carve the room, see if it is what we expected
     grid.carveRoom( Rect( 1, 1, 2, 3 ),
                     1,
-                    Tile( TILE_WALL ),
-                    Tile( TILE_FLOOR ) );
+                    Tile( mpWallData ),
+                    Tile( mpFloorData ) );
     EXPECT_EQ( sampleGrid, grid );
 }

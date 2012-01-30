@@ -1,6 +1,7 @@
-#include "engine/pathfinder.h"
+#include "game/pathfinder.h"
+#include "game/tilegrid.h"
+#include "game/tiledata.h"
 #include "common/point.h"
-#include "tilegrid.h"
 #include <gtest.h>
 #include <vector>
 
@@ -11,11 +12,16 @@ class PathFinderTest : public ::testing::Test
 {
 public:
     PathFinderTest();
+    virtual ~PathFinderTest();
 
 protected:
     virtual void SetUp();
     TileGrid createMap( size_t width, size_t height, const int* tiles );
     int noMoveFunction( const Point& from, const Point& to );
+
+private:
+    TileData * mpFloorData;
+    TileData * mpWallData;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -163,7 +169,15 @@ TEST_F(PathFinderTest,PathFinder_PathWithWallBlocking)
 // Internal helper methods
 ///////////////////////////////////////////////////////////////////////////
 PathFinderTest::PathFinderTest()
+    : mpFloorData( new TileData( 1, "floor", ETILE_FLOOR ) ),
+      mpWallData( new TileData( 2, "wall", ETILE_WALL ) )
 {
+}
+
+PathFinderTest::~PathFinderTest()
+{
+    delete mpFloorData;
+    delete mpWallData;
 }
 
 void PathFinderTest::SetUp()
@@ -188,11 +202,11 @@ TileGrid PathFinderTest::createMap( size_t width,
             switch ( value )
             {
                 case 0:     // floor
-                    map.set( x, y, Tile( TILE_FLOOR ) );
+                    map.set( x, y, Tile( mpFloorData ) );
                     break;
 
                 case 1:     // wall
-                    map.set( x, y, Tile( TILE_WALL ) );
+                    map.set( x, y, Tile( mpWallData ) );
                     break;
 
             }

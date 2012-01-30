@@ -14,23 +14,20 @@ public:
     SpriteManager();
     ~SpriteManager();
 
-    // Instruct sprite manager to preload an image
-    void preloadImage( const std::string& filepath );
-
     // Creates a new sprite object and stores it in the sprite manager
-    void addSprite( const std::string& spriteName,
-                    const std::string& filename );
+    void addSpriteTemplate( const std::string& spriteName,
+                            const std::string& filename );
 
     // Creates a new sprite object and store it in the sprite manager
-    void addSprite( const std::string& spriteName,
-                    const std::string& filename,
-                    int xOffset,
-                    int yOffset,
-                    int width,
-                    int height );
+    void addSpriteTemplate( const std::string& spriteName,
+                            const std::string& filename,
+                            int xOffset,
+                            int yOffset,
+                            int width,
+                            int height );
 
     // Locates a loaded sprite and returns a copy of it
-    Sprite* findSprite( const std::string& spriteName ) const;
+    Sprite* createSprite( const std::string& spriteName ) const;
 
     // Returns the number of sprites loaded
     size_t spriteCount() const;

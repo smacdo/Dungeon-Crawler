@@ -3,6 +3,7 @@
 #include "worldgen/roomgenerator.h"
 #include "common/random.h"
 #include "common/utils.h"
+#include "game/level.h"
 #include "game/tilefactory.h"
 #include "game/dungeon.h"
 

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #ifndef SCOTT_DUNGEON_CLIENTVIEW_H
 #define SCOTT_DUNGEON_CLIENTVIEW_H
 
@@ -8,7 +23,8 @@
 #include "common/rect.h"
 #include "inputmanager.h"
 
-struct SDL_Surface;
+struct SDL_Window;
+struct SDL_Renderer;
 struct SDL_Rect;
 class Sprite;
 class World;
@@ -33,10 +49,6 @@ public:
     bool didUserPressQuit();
     void processInput();
 
-    // Return a string containing information about the client's
-    // video settings and capabilities
-    std::string dumpInfo() const;
-
 protected:
     void load();
     void unload();
@@ -48,11 +60,12 @@ protected:
     void createMainWindow();
 
     bool isInCameraBounds( const SDL_Rect& camera, int x, int y, int w, int h ) const;
+    void verifySDL() const;
 
 private:
     bool mWasStarted;
-    SDL_Surface *mpBackbuffer;
-    SDL_Surface *mpAppIcon;
+    SDL_Window *mpWindow;
+    SDL_Renderer * mpRenderer;
     SpriteManager mSpriteManager;
     std::vector<Sprite*> mTileSprites;
     Rect mCamera;

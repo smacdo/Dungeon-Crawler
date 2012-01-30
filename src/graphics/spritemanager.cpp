@@ -1,3 +1,18 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
 #include "common/utils.h"
@@ -7,8 +22,8 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <boost/checked_delete.hpp>
 
 #include <iostream>
@@ -45,8 +60,8 @@ SpriteManager::~SpriteManager()
  * \param  spriteName  Name to give to the newly created sprite
  * \param  filepath    Path to the image that this sprite will use
  */
-void SpriteManager::addSprite( const std::string& spriteName,
-                               const std::string& filepath )
+void SpriteManager::addSpriteTemplate( const std::string& spriteName,
+                                       const std::string& filepath )
 {
 
     // Has this sprite already been loaded once before? If so, don't
@@ -115,7 +130,7 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
  * \param  spriteName  Name of the sprite to instantiate
  * \return             Pointer to a sprite object
  */
-Sprite* SpriteManager::findSprite( const std::string& spriteName ) const
+Sprite* SpriteManager::createSprite( const std::string& spriteName ) const
 {
     // Look the sprite up. Hopefully it has been loaded, otherwise
     // we're going to be in trouble...
@@ -172,11 +187,11 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
     }
 
     // Now convert it to be the same format as the back buffers
-    optimizedSurface = SDL_DisplayFormat( rawSurface );
+    optimizedSurface = rawSurface;// SDL_DisplayFormat( rawSurface );
     assert( optimizedSurface != NULL );
 
     // Release the older surface, and cache the optimized version
-    SDL_FreeSurface( rawSurface );
+//    SDL_FreeSurface( rawSurface );
     mLoadedSurfaces.insert( SurfaceListEntry( imagepath, optimizedSurface ) );
 
     // Now return the loaded sprite

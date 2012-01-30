@@ -1,3 +1,18 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "game/tile.h"
 #include "game/tiledata.h"
 #include "game/tileflags.h"
@@ -5,12 +20,15 @@
 #include <cstddef>
 #include <ostream>
 
+// Default tile data
+const TileData * Tile::DEFAULT_TILE_DATA = new TileData;
+
 /**
  * Default tile constructor. Creates a null tile that is treated as a VOID
  * tile type
  */
 Tile::Tile()
-    : mpData( NULL )
+    : mpData( DEFAULT_TILE_DATA )
 {
 }
 
@@ -32,6 +50,7 @@ Tile::Tile( TileData* pTileData )
 Tile::Tile( const Tile& source )
     : mpData( source.mpData )
 {
+    assert( mpData != NULL );
 }
 
 /**
@@ -67,14 +86,8 @@ bool Tile::operator == ( const Tile& rhs ) const
  */
 bool Tile::isImpassable() const
 {
-    bool impassable = true;
-
-    if ( mpData != NULL )
-    {
-        impassable = mpData->flags.test( ETILE_IMPASSABLE );
-    }
-
-    return impassable;
+    assert( mpData != NULL );
+    return mpData->flags.test( ETILE_IMPASSABLE );
 }
 
 /**
@@ -84,14 +97,8 @@ bool Tile::isImpassable() const
  */
 bool Tile::isWall() const
 {
-    bool wall = false;
-
-    if ( mpData != NULL )
-    {
-        wall = mpData->flags.test( ETILE_WALL );
-    }
-
-    return wall;
+    assert( mpData != NULL );
+    return mpData->flags.test( ETILE_WALL );
 }
 
 /**
@@ -101,14 +108,8 @@ bool Tile::isWall() const
  */
 bool Tile::isFloor() const
 {
-    bool floor = false;
-
-    if ( mpData != NULL )
-    {
-        floor = mpData->flags.test( ETILE_FLOOR );
-    }
-
-    return floor;
+    assert( mpData != NULL );
+    return mpData->flags.test( ETILE_FLOOR );
 }
 
 /**
@@ -121,14 +122,17 @@ bool Tile::isFloor() const
  */
 bool Tile::isPlaced() const
 {
-    bool placed = false;
+    assert( mpData != NULL );
+    return mpData->flags.test( ETILE_PLACED );
+}
 
-    if ( mpData != NULL )
-    {
-        placed = mpData->flags.test( ETILE_PLACED );
-    }
-
-    return placed;
+/**
+ * Returns the id of this tile
+ */
+unsigned int Tile::tileid() const
+{
+    assert( mpData != NULL );
+    return mpData->id;
 }
 
 /**

@@ -1,7 +1,7 @@
 #ifndef SCOTT_DUNGEON_INPUT_MANAGER_H
 #define SCOTT_DUNGEON_INPUT_MANAGER_H
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 class InputManager
 {

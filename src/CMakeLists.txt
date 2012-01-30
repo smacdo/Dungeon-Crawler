@@ -134,15 +134,16 @@ endif()
 ### Required packages
 ###
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
-find_package(SDL REQUIRED)
-find_package(SDL_image REQUIRED)
+find_package(OpenGL REQUIRED)
+#find_package(SDL2 REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
-# find_package(OpenGL REQUIRED)
+link_directories( /usr/local/lib )
 
 # on OS X we also have to add '-framework Cocoa' as library.  This is
 # # actually a bit of an hack but it's easy enough and reliable.
-set(EXTRA_LIBS "")
+set(EXTRA_LIBS )
+
 if (APPLE)
     set(EXTRA_LIBS ${EXTRA_LIBS} "-framework Cocoa -framework SDL")
 
@@ -168,9 +169,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src
 add_executable(dungeon MACOSX_BUNDLE ${srcs})
 target_link_libraries(dungeon
     ${Boost_LIBRARIES}
+    SDL2 SDL2_image SDL2_ttf
     ${EXTRA_LIBS}
-    ${SDL_LIBRARY}
-    ${SDLIMAGE_LIBRARY}
     ${OPENGL_LIBRARIES}
     SDLmain                 # apparently not included on some systems?
 )

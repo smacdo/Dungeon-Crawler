@@ -61,6 +61,8 @@ int main( int argc , char* argv[] )
     //
     ClientView clientView;
 
+    clientView.start();
+
     while (! clientView.didUserPressQuit() )
     {
         // make sure all user input is taken into account before simulation
