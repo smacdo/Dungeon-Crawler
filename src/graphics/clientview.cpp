@@ -119,7 +119,7 @@ void ClientView::createMainWindow()
 
     // Make sure SDL's video subsystem is initialized before proceeding with
     // window creation
-    if ( SDL_Init( SDL_INIT_VIDEO ) != 0 )
+    if ( SDL_VideoInit( NULL ) != 0 )
     {
         App::raiseFatalError( "Failed to initialize SDL video",
                               SDL_GetError() );
@@ -155,6 +155,9 @@ void ClientView::createMainWindow()
     // Make sure there were no uncaught errors before we proceed with
     // the game
     verifySDL();
+
+    // Configure the sprite manager before loading any sprites
+    mSpriteManager.setRenderer( mpRenderer );
 }
 
 /**
@@ -193,7 +196,7 @@ void ClientView::draw( World& world )
     assert( mpRenderer != NULL );
 
     // Clear the background prior to any game rendering
-    SDL_SetRenderDrawColor( mpRenderer, 128, 128, 128, 255 );
+    SDL_SetRenderDrawColor( mpRenderer, 255, 255, 255, 255 );
     SDL_RenderClear( mpRenderer );
 
     // Draw the main game level
@@ -247,22 +250,28 @@ void ClientView::drawSprite( int x, int y, const Sprite& sprite )
 
     // Construct a rectangle that encompasses only the area of the image
     // that the sprite wants to pull from (for sprite sheet sprites)
- /*   SDL_Rect clip   = { static_cast<int16_t>(sprite.x()),
+    SDL_Rect clip   = { static_cast<int16_t>(sprite.x()),
                         static_cast<int16_t>(sprite.y()),
                         static_cast<int16_t>(sprite.width()),
                         static_cast<int16_t>(sprite.height()) };
 
     SDL_Rect offset = { static_cast<int16_t>(x),
                         static_cast<int16_t>(y),
-                        0, 0 };
+                        static_cast<int16_t>( sprite.width() ),
+                        static_cast<int16_t>( sprite.height() ) };
 
-    // Now blit the sprite image onto the backbuffer
-    const SDL_Surface *pSurface = sprite.surface();*/
+    // Grab a copy of the texture. I don't like having to cast away the
+    // const-ness of the texture pointer, but SDL doesn't support clean const
+    // programming
+    SDL_Texture * pTexture = const_cast<SDL_Texture*>( sprite.texture() );
 
-//    SDL_BlitSurface( const_cast<SDL_Surface*>(pSurface),
-//                     &clip,
-//                     mpWindow,
-//                     &offset );
+    // Render the texture to the back buffer
+    SDL_RenderCopy( mpRenderer, pTexture, &clip, &offset );
+    SDL_SetRenderDrawColor( mpRenderer, 255, 0, 0, 255 );
+  //  SDL_RenderFillRect( mpRenderer, &offset );
+
+    SDL_SetRenderDrawColor( mpRenderer, 0, 0, 0, 255 );
+    SDL_RenderDrawRect( mpRenderer, &offset );
 }
 
 /**

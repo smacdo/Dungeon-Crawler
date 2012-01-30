@@ -18,7 +18,7 @@
 
 #include <boost/noncopyable.hpp>
 
-struct SDL_Surface;
+struct SDL_Texture;
 
 /**
  * Defines a sprite that is located in a (potential) spritesheet
@@ -27,10 +27,10 @@ class Sprite : boost::noncopyable
 {
 public:
     // Sprite constructor for a standalone sprite image
-    Sprite( SDL_Surface *surface );
+    Sprite( SDL_Texture *surface );
 
     // Sprite constructor a sprite located in a spritesheet
-    Sprite( SDL_Surface *surface,
+    Sprite( SDL_Texture *surface,
             int xOffset,
             int yOffset,
             int width,
@@ -38,14 +38,14 @@ public:
 
     ~Sprite();
 
-    const SDL_Surface* surface() const;
+    const SDL_Texture* texture() const;
     int x() const;
     int y() const;
     int width() const;
     int height() const;
 
 private:
-    SDL_Surface *mpSurface;
+    SDL_Texture *mpTexture;
     int mX, mY, mW, mH;
 };
 

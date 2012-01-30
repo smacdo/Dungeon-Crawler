@@ -33,15 +33,16 @@ typedef std::map<std::string, Sprite*>::iterator SpriteCacheItr;
 typedef std::map<std::string, Sprite*>::const_iterator SpriteCacheConstItr;
 typedef std::pair<std::string, Sprite*> SpriteCacheEntry;
 
-typedef std::map<std::string, SDL_Surface*>::iterator SurfaceListItr;
-typedef std::map<std::string, SDL_Surface*>::const_iterator SurfaceListConstItr;
-typedef std::pair<std::string, SDL_Surface*> SurfaceListEntry;
+typedef std::map<std::string, SDL_Texture*>::iterator TextureListItr;
+typedef std::map<std::string, SDL_Texture*>::const_iterator TextureListConstItr;
+typedef std::pair<std::string, SDL_Texture*> TextureListEntry;
 
 /**
  * Constructor
  */
 SpriteManager::SpriteManager()
-    : mImageRoot("data/")
+    : mpRenderer( NULL ),
+      mImageRoot("data/")
 {
 }
 
@@ -51,6 +52,12 @@ SpriteManager::SpriteManager()
 SpriteManager::~SpriteManager()
 {
     unload();
+}
+
+void SpriteManager::setRenderer( SDL_Renderer * pRenderer )
+{
+    assert( pRenderer != NULL );
+    mpRenderer = pRenderer;
 }
 
 /**
@@ -71,15 +78,14 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
     if ( itr == mSpriteCache.end() )
     {
         // This sprite needs to be loaded and then cached
-        SDL_Surface *pSurface = loadImage( filepath );
-        Sprite      *pSprite  = new Sprite( pSurface );
+        SDL_Texture *pTexture = loadImage( filepath );
+        Sprite      *pSprite  = new Sprite( pTexture );
 
         mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
     else
     {
-        LOG_WARN("Graphics")
-            << "Sprite '" << spriteName << "' loaded twice";
+        LOG_WARN("Graphics") << "Sprite '" << spriteName << "' loaded twice";
     }
 }
 
@@ -109,8 +115,8 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
     if ( itr == mSpriteCache.end() )
     {
         // This sprite needs to be loaded and then cached
-        SDL_Surface *pSurface = loadImage( imagepath );
-        Sprite      *pSprite  = new Sprite( pSurface,
+        SDL_Texture *pTexture = loadImage( imagepath );
+        Sprite      *pSprite  = new Sprite( pTexture,
                                             xOffset, yOffset,
                                             width, height );
 
@@ -118,8 +124,7 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
     }
     else
     {
-        LOG_WARN("Graphics")
-            << "Sprite '" << spriteName << "' loaded twice";
+        LOG_WARN("Graphics") << "Sprite '" << spriteName << "' loaded twice";
     }
 }
 
@@ -155,47 +160,50 @@ Sprite* SpriteManager::createSprite( const std::string& spriteName ) const
  * \param  filename  Path to the image
  * \return Pointer to the loaded image's SDL surface
  */
-SDL_Surface* SpriteManager::loadImage( const std::string& filename )
+SDL_Texture* SpriteManager::loadImage( const std::string& filename )
 {
-    SDL_Surface *rawSurface = NULL, *optimizedSurface = NULL;
+    assert( mpRenderer != NULL );
+    SDL_Surface *rawSurface = NULL;
 
     // Tack the content prefix on
     std::string imagepath = mImageRoot + filename;
 
     // Do not load the image if it has already been loaded
-    SurfaceListItr itr = mLoadedSurfaces.find( imagepath );
+    TextureListItr itr = mLoadedTextures.find( imagepath );
 
-    if ( itr != mLoadedSurfaces.end() )
+    if ( itr != mLoadedTextures.end() )
     {
-        LOG_WARN("Graphics")
-            << "Image was already loaded when attempting to preload: "
-            << imagepath;
-
         return itr->second;
     }
 
-    // First load the image into a potentially unoptimized surface
+    // Since we can't instruct SDL_image to directly load a picture into a
+    // texture, we'll have to first assign it to a SDL_Surface* object
     rawSurface = IMG_Load( imagepath.c_str() );
 
     if ( rawSurface == NULL )
     {
-        std::string error = std::string("IMAGE: ") + imagepath + "\n" +
-                            "SDL: " + SDL_GetError();
+        std::string error =
+            std::string("IMAGE: ") +
+            imagepath              + "\n" +
+            "SDL: "                + SDL_GetError();
 
         App::raiseFatalError( "Could not load the requested image from disk",
                                error );
     }
 
-    // Now convert it to be the same format as the back buffers
-    optimizedSurface = rawSurface;// SDL_DisplayFormat( rawSurface );
-    assert( optimizedSurface != NULL );
+    // Now that we have the surface loaded in memory, convert it into an
+    // opimtized hardware texture
+    SDL_Texture * pTexture =
+        SDL_CreateTextureFromSurface( mpRenderer, rawSurface );
 
-    // Release the older surface, and cache the optimized version
-//    SDL_FreeSurface( rawSurface );
-    mLoadedSurfaces.insert( SurfaceListEntry( imagepath, optimizedSurface ) );
+    assert( pTexture != NULL );
 
-    // Now return the loaded sprite
-    return optimizedSurface;
+    // Release the software sdl surface, and cache the optimized hardware
+    // texture before returning the newly created texture
+    mLoadedTextures.insert( TextureListEntry( imagepath, pTexture ) );
+    SDL_FreeSurface( rawSurface );
+
+    return pTexture;
 }
 
 /**
@@ -203,23 +211,23 @@ SDL_Surface* SpriteManager::loadImage( const std::string& filename )
  */
 void SpriteManager::unload()
 {
-    size_t freedSurfaces = 0, freedSprites = 0;
+    size_t freedTextures = 0, freedSprites = 0;
 
     // Destroy all sprites
     DeleteMapPointers( mSpriteCache );
 
-    // Kill all surfaces
-    SurfaceListItr itr;
+    // Kill all loaded textures
+    TextureListItr itr;
 
-    for ( itr = mLoadedSurfaces.begin(); itr != mLoadedSurfaces.end(); ++itr )
+    for ( itr = mLoadedTextures.begin(); itr != mLoadedTextures.end(); ++itr )
     {
-        SDL_FreeSurface( itr->second );
-        freedSurfaces++;
+        SDL_DestroyTexture( itr->second );
+        freedTextures++;
     }
 
     // Let 'em know how many things were unloaded
-    LOG_INFO("Graphics") << "Unloaded " << freedSprites << " sprites";
-    LOG_INFO("Graphics") << "Unloaded " << freedSurfaces << " images";
+    LOG_INFO("Graphics") << "Unloaded " << freedSprites  << " sprites";
+    LOG_INFO("Graphics") << "Unloaded " << freedTextures << " textures";
 }
 
 /**
@@ -241,5 +249,5 @@ size_t SpriteManager::spriteCount() const
  */
 size_t SpriteManager::imageCount() const
 {
-    return mLoadedSurfaces.size();
+    return mLoadedTextures.size();
 }

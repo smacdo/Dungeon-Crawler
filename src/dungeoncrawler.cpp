@@ -44,6 +44,12 @@ int main( int argc , char* argv[] )
     AppConfig config = parseCommandLineArgs( argc, argv );
     App::startup();
 
+    // Make sure SDL is up and running
+    if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
+    {
+        App::raiseFatalError( "Failed to init SDL", SDL_GetError() );
+    }
+
     // Construct a world to play in
     const size_t levelWidth  = 76;
     const size_t levelHeight = 50;
