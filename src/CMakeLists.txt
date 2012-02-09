@@ -93,11 +93,19 @@ set(app_headers
         dungeoncrawler.h
         inputmanager.h
 )
+
 ###########################################################################
 # Main build script
 ###########################################################################
-set(srcs ${common_srcs} ${worldgen_srcs} ${engine_srcs} ${game_srcs}
-         ${app_srcs} ${graphics_srcs})
+set(srcs
+        ${app_srcs}
+        ${common_srcs}
+        ${engine_srcs}
+        ${game_srcs}
+        ${graphics_srcs}
+        ${worldgen_srcs}
+)
+
 set(cxx_flags "")
 
 ###
@@ -111,8 +119,8 @@ source_group( engine\\src       FILES ${common_srcs}      )
 source_group( engine\\headers   FILES ${engine_headers}   )
 source_group( gameplay\\src     FILES ${game_srcs}        )
 source_group( gameplay\\headers FILES ${game_headers}     )
-source_group( client\\src       FILES ${graphics_srcs}    )
-source_group( client\\headers   FILES ${graphics_headers} )
+source_group( graphics\\src     FILES ${graphics_srcs}    )
+source_group( graphics\\headers FILES ${graphics_headers} )
 source_group( worldgen\\src     FILES ${worldgen_srcs}    )
 source_group( worldgen\\headers FILES ${worldgen_headers} )
 
@@ -187,14 +195,14 @@ if(NOT MSVC)
     add_custom_target(
         run dungeon DEPENDS dungeon
         WORKING_DIRECTORY ${GAME_PATH}
-        COMMENT "Starts the game"
+        COMMENT "Start the game"
     )
 
     add_custom_target(debug
-        gdb `pwd`/dungeon -d ${PROJECT_SOURCE_DIR}/src
-        ${GAME_PATH}
+        gdb `pwd`/dungeon -d ${PROJECT_SOURCE_DIR}
+        WORKING_DIRECTORY ${GAME_PATH}
         DEPENDS dungeon
-        COMMENT "Runs the game with gdb support"
+        COMMENT "Runs the game with GDB support"
     )
 
     add_custom_target(doxygen

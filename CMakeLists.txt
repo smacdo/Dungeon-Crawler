@@ -6,14 +6,11 @@ cmake_minimum_required(VERSION 2.8)
 ###
 ### Set a default build type if there was none provided
 ###  - this has to be done before project()
+###    (Can be Debug, Release, ReleaseWithDebInfo)
 ###
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
-
-### Project name
-#project(DungeonCrawler)
-
 
 ### CMake includes
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -26,12 +23,10 @@ set(VERSION_MINOR 1)
 set(VERSION_PATCH 1)
 
 ### Additional settings
-set(GAME_PATH              "${CMAKE_SOURCE_DIR}/game")
+set(GAME_PATH              "${CMAKE_CURRENT_BINARY_DIR}")
 set(GAME_SRC_PATH          "${CMAKE_SOURCE_DIR}/src")
 set(GTEST_ROOT             "${PROJECT_SOURCE_DIR}/thirdparty/googletest")
-set(DESTDIR                "${GAME_PATH}")
-set(EXECUTABLE_OUTPUT_PATH "${GAME_PATH}")
-set(LIBRARY_OUTPUT_PATH    "${GAME_PATH}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 ### Build options
 set(BUILD_DOC FALSE CACHE BOOL "TRUE to generate API docs, FALSE otherwise")
