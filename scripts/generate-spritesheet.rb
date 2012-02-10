@@ -142,9 +142,10 @@ xmldoc.spritesheet( "file" => "#{outputname}.png" ) do
     end
 end
 
-puts "Created spritetable: #{outputpath}/#{outputname}.xml"
+# Write it to disk
+xmlfile = File.new( "#{outputpath}/#{outputname}.xml", "w" )
+xmlfile.print( xmldoc.target! )
+xmlfile.close
 
-s = String.new
-s << xmldoc
-puts s
+puts "Created spritetable: #{outputpath}/#{outputname}.xml"
 
