@@ -6,14 +6,23 @@
 #########################################################################
 require 'RMagick'
 require 'find'
+require 'builder'
+
 include Magick
 
 ###
 ### Grab arguments from the command line
 ###
-inputpath  = "tiles/dungeon"
-outputpath = "output"
-outputname = "dungeon"
+if ARGV.count < 3
+    puts "./generate-spritesheet.rb [inputdir] [outputdir] [outputname]"
+    exit
+end
+
+inputpath  = ARGV[0]
+outputpath = ARGV[1]
+outputname = ARGV[2]
+
+inputFileName = nil
 
 ###
 ### Output spritesheet dimensions
@@ -26,22 +35,61 @@ padWidth     = 0
 padHeight    = 0
 
 ###
-### Find all the images that will comprise the spritesheet
+### Use ruby's find command to locate all potential sprite sheet images in the directory
+### that the user gave us.
+###
+### Once we've found a sprite file, add it both to image magick's list of sprites and an
+### in-memory XML database containing information on how to look up the sprite in the
+### sprite sheet
 ###
 puts "Loading sprite images..."
-inputs = ImageList.new
+inputs  = ImageList.new
+index   = 0
+data    = Array.new
 
 Find.find( inputpath ) do |path|
     if FileTest.directory?( path )
-        # Allow sub directories when searching
-        next
+        next    # Allow subdirectories when searching for sprites
     else
         # Only allow .png files to be included, ignore everything else
-        if /[A-Za-z0-9_-]+\.png$/.match( path )
-            # Add it to the image list
+        if /([A-Za-z0-9_-]+)\.png$/.match( path )
+            # Use image magick to query information about this image
+            name  = $1
+            image = Image.read( path )
+
+            if ( image.length != 1 )
+                puts "Failed to read image #{path}"
+                exit
+            end
+
+            width  = image[0].columns
+            height = image[0].rows
+
+            # Make sure dimensions are valid
+            if ( width != spriteWidth || height != spriteHeight )
+                puts "Invalid width/height for #{path}"
+                exit
+            end
+
+            # Generate data the XML writer will need
+            row = index / spriteWidth
+            col = index % spriteWidth
+            
+            data <<
+            {
+                :name => name,
+                :row  => row,
+                :col  => col,
+                :x    => col * spriteWidth,
+                :y    => row * spriteHeight
+            }
+
+            # Also add it to image magick's list of images
             inputs.read path
+
+            # Make sure file counter is updated
+            index += 1
         else
-            puts "IGNORING: #{path}"
             Find.prune
         end
     end
@@ -72,5 +120,31 @@ if outputIL.length > 1
     exit
 end
 
+###
 ### Write the sprite sheet out to disk
+###
 outputIL.write "#{outputpath}/#{outputname}.png"
+puts "Created spritesheet: #{outputpath}/#{outputname}.png"
+
+###
+### Write an XML file describing the sprite sheet out to disk
+###
+xmldoc = Builder::XmlMarkup.new( :indent => 4 )
+xmldoc.instruct! :xml, :encoding => "UTF-8"
+
+xmldoc.spritesheet( "file" => "#{outputname}.png" ) do
+    data.each do |value|
+        xmldoc.sprite( "name" => value[:name],
+                       "x"    => value[:x],
+                       "y"    => value[:y],
+                       "w"    => spriteWidth,
+                       "h"    => spriteHeight )
+    end
+end
+
+puts "Created spritetable: #{outputpath}/#{outputname}.xml"
+
+s = String.new
+s << xmldoc
+puts s
+

@@ -23,6 +23,12 @@ libboost-thread-dev
 
 cmake
 
+Optional Packages
+=========================
+Ruby 1.9
+rmagick
+rmagick2 (ruby gem)
+
 
 Building
 =========================
