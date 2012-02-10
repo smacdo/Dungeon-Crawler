@@ -42,12 +42,14 @@ set(worldgen_headers
 set(graphics_srcs 
         graphics/spritemanager.cpp
         graphics/sprite.cpp
+        graphics/spriteloader.cpp
         graphics/clientview.cpp
 )
 
 set(graphics_headers
         graphics/clientview.h
         graphics/sprite.h
+        graphics/spriteloader.h
         graphics/spritemanager.h
 )
 
@@ -145,7 +147,10 @@ find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(OpenGL REQUIRED)
 #find_package(SDL2 REQUIRED)
 
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(
+    ${Boost_INCLUDE_DIRS}
+    ${THIRDPARTY_ROOT}/tinyxml/include
+)
 link_directories( /usr/local/lib )
 
 # on OS X we also have to add '-framework Cocoa' as library.  This is
@@ -178,6 +183,7 @@ add_executable(dungeon MACOSX_BUNDLE ${srcs})
 target_link_libraries(dungeon
     ${Boost_LIBRARIES}
     SDL2 SDL2_image SDL2_ttf
+    tinyxml
     ${EXTRA_LIBS}
     ${OPENGL_LIBRARIES}
     SDLmain                 # apparently not included on some systems?

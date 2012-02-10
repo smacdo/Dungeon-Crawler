@@ -42,7 +42,7 @@ typedef std::pair<std::string, SDL_Texture*> TextureListEntry;
  */
 SpriteManager::SpriteManager()
     : mpRenderer( NULL ),
-      mImageRoot("data/")
+      mImageRoot("data/sprites/")
 {
 }
 

@@ -10,5 +10,6 @@ DungeonCrawler.suo
 DungeonCrawler.vcxproj.user
 DungeonCrawler.opensdf
 *.swp
+*.directory
 Debug/
 ipch/

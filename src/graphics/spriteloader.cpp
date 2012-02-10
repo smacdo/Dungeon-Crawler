@@ -1,150 +1,233 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+#include "graphics/spriteloader.h"
+#include "graphics/sprite.h"
+#include "graphics/spritemanager.h"
+
+#include "common/logging.h"
+
+#include <tinyxml/tinyxml.h>
+#include <string>
+#include <sstream>
+
 /**
  * Loads sprites and hands them to the sprite manager for caching and eventual
  * display
  */
 SpriteLoader::SpriteLoader( SpriteManager& spriteManager )
-    : mSpriteManager( spriteManager )
+    : mSpriteManager( spriteManager ),
+      mErrorText( "" ),
+      mExactWidth( 0 ),
+      mExactHeight( 0 )
 {
 
 }
 
+/**
+ * Sprite loader destructor
+ */
+SpriteLoader::~SpriteLoader()
+{
+}
+
+/**
+ * Loads sprite images from the requested xml file
+ */
 void SpriteLoader::loadSpritesFromXml( const std::string& filename )
 {
-    using namespace rapidxml;
-
+    TiXmlDocument doc( filename );
+    
     // Load the XML file into memory
-    bool didWork        = false;
-    std::string xmldata = Utils::loadFile( filename, &didWork );
+    LOG_INFO("Loader") << "Loading spritesheet from " << filename;
 
-    if (! didWork )
+    if (! doc.LoadFile() )
     {
-        raiseError( "Failed to load the file '" + filename + "'" );
+        raiseError( NULL, "Failed to load XML file: " + filename );
         return;
     }
 
     // Instantiate an XML parser to parse this loaded xml string data, and
-    // then grab the topmost tag <spritepackage>
-    xml_document<> doc;
-    doc.parse<0>( xmldata );
+    // then grab the topmost tag <spritesheet>
+    TiXmlElement * pRoot = doc.FirstChildElement( "spritesheet" );
 
-    xml_node<> *pXmlNode = doc.first_node( "spritepackage" );
-
-    if ( pXmlNode == NULL )
+    if ( pRoot == NULL )
     {
-        raiseError( "Failed to find a <spritepackage> element" );
-        return;
+        raiseError( NULL, "Failed to find a <spritesheet> element" );
+    }
+    else
+    {
+        readSpriteSheetNode( pRoot );
     }
 
-    // Iterate through every child element of the current <spritepackage>,
-    // and process the commands appropriately
-    xml_node<> *pCurrentNode = pXmlNode->first_node();
+}
+
+/**
+ * Parses a <spritesheet ..> element, and for will create a sprite template
+ * (in the sprite manager) for every <sprite ...> element it finds
+ *
+ * \param  pNode  The <spritesheet ...> XML node
+ */
+void SpriteLoader::readSpriteSheetNode( const TiXmlElement *pNode )
+{
+    assert( pNode != NULL );
+
+    // Load the sprite sheet file name
+    std::string spriteSheetFile;
+
+    if ( pNode->QueryStringAttribute( "file", &spriteSheetFile ) != TIXML_SUCCESS )
+    {
+        raiseError( pNode,
+                    "Failed to find 'file' attribute for sprite sheet tag" );
+        return;
+    }
+    else
+    {
+        LOG_DEBUG("Loader") << "Loading sprite sheet node "
+                            << spriteSheetFile;
+    }
+
+    // Iterate through every child element of the current <spritesheet>
+    // container and read every <sprite>
+    const TiXmlElement *pCurrentNode = pNode->FirstChildElement( "sprite" );
 
     while ( pCurrentNode != NULL && (! hasErrors() ) )
     {
-        // What kind of node is this?
-        std::string name = pCurrentNode->name();
+        // First read the node
+        readSpriteNode( spriteSheetFile, pCurrentNode );
 
-        if ( name == "sheet" )
-        {
-            parseSheetTag( pCurrentNode );
-        }
-        else if ( name == "sprite" )
-        {
-            parseSpriteTag( pCurrentNode );
-        }
-        else if ( name == "image" )
-        {
-            parseImageTag( pCurrentNode );
-        }
-        else
-        {
-            raiseWarning( "Unknown sprite tag " + name );
-        }
-
-        // Move to the next xml node in <spritepackage>
-        pCurrentNode = pXmlNode->next_sibling();
+        // Then move to the next node
+        pCurrentNode = pCurrentNode->NextSiblingElement( "sprite" );
     }
 }
 
 /**
- * Parses a <sheet ...> XML tag
+ * Parses a <sprite ...> element and proceeds to load it into this sprite
+ * loader's sprite manager
  */
-void SpriteLoader::parseSheetTag( const XmlNode* pXmlNode )
+void SpriteLoader::readSpriteNode( const std::string& spriteSheetFile,
+                                   const TiXmlElement * pNode )
 {
-    assert( pXmlNode != NULL );
+    assert( pNode != NULL );
 
-    // Attributes that are required
-    std::string filename;
-    std::string sheetname;
-    int spriteWidth = -1;
-    int spriteHeight = -1;
+    // Read sprite name
+    std::string name;
 
-    // Walk through all of the attributes that this <sheet ...> XML tag
-    // contains
-    XmlAttribute *pAttribute = pXmlNode->first_attribute();
-
-    while ( pAttribute != NULL )
+    if ( pNode->QueryStringAttribute( "name", &name ) )
     {
-        std::string key   = pAttribute->name();
-        std::string value = pAttribute->value();
-
-        if ( key == "file" )
-        {
-            filename = value;
-        }
-        else if ( key == "name" )
-        {
-            sheetname = value;
-        }
-        else if ( key == "sw" )
-        {
-            if (! Utils::parseInt( value, &spriteWidth ) )
-            {
-                raiseError( "Invalid spritesheet width: " + value );
-            }
-        }
-        else if ( name == "sh" )
-        {
-            if (! Utils::parseInt( value, &spriteHeight ) )
-            {
-                raiseError( "Invalid spritesheet height: " + value );
-            }
-        }
-        else
-        {
-            // warning...
-        }
+        raiseError( pNode, "Failed reading sprite name" );
+        return;
     }
 
-    // Validate that all attributes were loaded and are semi-correct
-    if ( filename.empty() || sheetname.empty() || spriteWidth < 1 ||
-         spriteHeight < 1 )
+    // Read X and Y attributes
+    int x = 0, y = 0;
+
+    if ( pNode->QueryIntAttribute( "x", &x ) != TIXML_SUCCESS ||
+         pNode->QueryIntAttribute( "y", &y ) != TIXML_SUCCESS )
     {
-        raiseError( "Missing or invalid content for spritesheet" );
+        raiseError( pNode, "Failed reading x/y values. Missing or invalid" );
+        return;
+    }
+    
+
+    // Read the sprite width and height
+    int w = 0, h = 0;
+
+    if ( pNode->QueryIntAttribute( "w", &w ) != TIXML_SUCCESS ||
+         pNode->QueryIntAttribute( "h", &h ) != TIXML_SUCCESS )
+    {
+        raiseError( pNode, "Failed reading w/h values. Missing or invalid" );
+        return;
     }
 
-    // Load the sprite sheet
+    // Check if there are exact width or heights. If so, then verify that this
+    // sprite's width and height match
+    if ( ( mExactWidth  > 0 && w != mExactWidth  ) ||
+         ( mExactHeight > 0 && h != mExactHeight ) )
+    {
+        raiseError( pNode,
+                    "Sprite's width or height does not match what is "
+                    "expected" );
+        return;
+    }
+
+    // Now that we've read all of the required sprite attributes, lets create
+    // a new sprite template in our sprite manager
+    mSpriteManager.addSpriteTemplate( name,
+                                      spriteSheetFile,
+                                      x,
+                                      y,
+                                      w,
+                                      h );
 }
 
-void SpriteLoader::addSpriteSheet( const std::string& name,
-                                   const std::string& imagepath,
-                                   unsigned int spriteWidth,
-                                   unsigned int spriteHeight )
+/**
+ * Internal method that raises an error, and can therefore be reported back
+ * to the user.
+ *
+ * This method keeps track of the position of the xml node being read which
+ * makes error reporting a little nicer
+ *
+ * \param  pNode    The XML node that triggered an error condition (NULL for none)
+ * \param  message  The error message to report to the user
+ */
+void SpriteLoader::raiseError( const TiXmlElement * pNode,
+                               const std::string& message )
 {
+    std::ostringstream ss;
+
+    // Either append the message to an already existing error text, or just
+    // add it for the first time
+    if ( hasErrors() )
+    {
+        ss << mErrorText << "\n" << message;
+    }
+    else
+    {
+        ss << message;
+    }
+
+    // If we were provided an xml node that triggered the error condition,
+    // print it's information out
+    if ( pNode != NULL )
+    {
+        ss << " ( line " << pNode->Row() 
+           << ", col "  << pNode->Column()
+           << " ) ";
+    }
+
+    // Store the new error information
+    mErrorText = ss.str();
 }
 
-bool SpriteLoader::addSpriteTile( const std::string& name,
-                                  const std::string& sheetName,
-                                  unsigned int row,
-                                  unsigned int col )
+/**
+ * Raises an error inside of the sprite loader, so that it can be queried
+ * and reported back to the user
+ *
+ * \return  True if there were errors while loading, false otherwise
+ */
+bool SpriteLoader::hasErrors() const
 {
-
+    return (! mErrorText.empty() );
 }
 
-bool SpriteLoader::addSprite( const std::string& name,
-                              const std::string& filename,
-                              unsigned int spriteWidth,
-                              unsigned int spriteHeight )
+/**
+ * Returns the text of any errors that were raised while loading a sprite
+ * sheet data file
+ */
+std::string SpriteLoader::errorText() const
 {
-
+    return mErrorText;
 }

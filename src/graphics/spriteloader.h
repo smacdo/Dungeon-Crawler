@@ -1,14 +1,34 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #ifndef DUNGEON_GRAPHICS_SPRITELOADER_H
 #define DUNGEON_GRAPHICS_SPRITELOADER_H
 
-// Forward declarations
-template<class Ch> class xml_node;
-template<class Ch> class xml_attribute;
+#include <boost/utility.hpp>
 
-typedef xml_node<char> XmlNode;
-typedef xml_attribute<Char> XmlAttribute;
+class SpriteManager;
+class TiXmlElement;
 
-class SpriteLoader
+/**
+ * The sprite loader class is responsible for taking an XML spritesheet
+ * description and then loading all of the sprites it contains into the
+ * sprite manager
+ *
+ * TODO: Add support for unloading a loaded sprite file
+ */
+class SpriteLoader : boost::noncopyable
 {
 public:
     SpriteLoader( SpriteManager& manager );
@@ -20,16 +40,19 @@ public:
     std::string errorText() const;
 
 protected:
-    void parseSheetTag( const XmlNode* pXmlNode );
-    void parseSpriteTag( const XmlNode* pXmlNode );
-    void parseImageTag( const XmlNode* pXmlNode );
+    void readSpriteSheetNode( const TiXmlElement * );
+    void readSpriteNode( const std::string& spriteSheetFile,
+                         const TiXmlElement * );
     
-    void raiseError( const std::string& message );
-    void raiseWarning( const std::string& message );
+    void raiseError( const TiXmlElement * pNode,
+                     const std::string& message );
 
 private:
     SpriteManager& mSpriteManager;
     std::string mErrorText;
+
+    int mExactWidth;
+    int mExactHeight;
 };
 
 #endif

@@ -16,6 +16,7 @@
 #include "graphics/clientview.h"
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
+#include "graphics/spriteloader.h"
 #include "common/rect.h"
 #include "common/utils.h"
 #include "common/platform.h"
@@ -88,6 +89,16 @@ void ClientView::load()
 
     // preload all of our images
 //    mSpriteManager.loadSpritesFromXml( "sprites.xml" );
+    SpriteLoader loader( mSpriteManager );
+
+    loader.loadSpritesFromXml( "data/sprites/tiles.xml" );
+
+    if ( loader.hasErrors() )
+    {
+        App::raiseFatalError( "Loading sprites", loader.errorText() );
+    }
+
+    std::cout << "all done?" << std::endl;
 
     mSpriteManager.addSpriteTemplate( "tile_impassable", "tile_blocked.png" );
     mSpriteManager.addSpriteTemplate( "tile_empty",      "tile_unallocated.png" );

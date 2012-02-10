@@ -24,8 +24,10 @@ set(VERSION_PATCH 1)
 
 ### Additional settings
 set(GAME_PATH              "${CMAKE_CURRENT_BINARY_DIR}")
+set(GAME_DATA_ROOT         "${PROJECT_SOURCE_DIR}/game")
 set(GAME_SRC_PATH          "${CMAKE_SOURCE_DIR}/src")
-set(GTEST_ROOT             "${PROJECT_SOURCE_DIR}/thirdparty/googletest")
+set(THIRDPARTY_ROOT        "${PROJECT_SOURCE_DIR}/thirdparty")
+set(GTEST_ROOT             "${THIRDPARTY_ROOT}/googletest")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 ### Build options
@@ -41,4 +43,5 @@ endif()
 ### Allow code to build
 add_subdirectory(thirdparty)
 add_subdirectory(src)
+add_subdirectory(game)
 add_subdirectory(tests)
