@@ -41,8 +41,9 @@ struct TileData
         : id( 0 ),
           name( "void" ),
           title( "The Void" ),
-          flags( ETILE_IMPASSABLE )
+          flags()
     {
+        flags.set( ETILE_IMPASSABLE );
     }
 
     TileData( unsigned int id,

@@ -9,10 +9,10 @@
 
 enum ETileType
 {
-    ETILETYPE_VOID,
-    ETILETYPE_GRANITE,
-    ETILETYPE_STONEWALL,
-    ETILETYPE_STONEFLOOR,
+    ETILETYPE_VOID       = 0,
+    ETILETYPE_GRANITE    = 1,
+    ETILETYPE_STONEWALL  = 2,
+    ETILETYPE_STONEFLOOR = 3,
     ETILETYPE_COUNT
 };
 
@@ -20,7 +20,7 @@ enum ETileType
  * The tile factory constructor
  */
 TileFactory::TileFactory()
-    : mBlueprints( ETILETYPE_COUNT )
+    : mBlueprints( ETILETYPE_COUNT, 0 )
 {
     // Construct void tile
     TileData *pVoidData = new TileData;
@@ -37,7 +37,6 @@ TileFactory::TileFactory()
     pGraniteData->name     = "granite";
     pGraniteData->title    = "Granite Wall";
 
-    pGraniteData->flags.set( ETILE_PLACED );
     pGraniteData->flags.set( ETILE_IMPASSABLE );
     pGraniteData->flags.set( ETILE_WALL );
     pGraniteData->flags.set( ETILE_BLOCK_LOS );
