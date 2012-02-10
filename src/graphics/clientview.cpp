@@ -98,19 +98,16 @@ void ClientView::load()
         App::raiseFatalError( "Loading sprites", loader.errorText() );
     }
 
-    std::cout << "all done?" << std::endl;
-
-    mSpriteManager.addSpriteTemplate( "tile_impassable", "tile_blocked.png" );
-    mSpriteManager.addSpriteTemplate( "tile_empty",      "tile_unallocated.png" );
-    mSpriteManager.addSpriteTemplate( "tile_wall",       "dg_dungeon32.png", 0 * 32, 0 * 32, 32, 32 );
-    mSpriteManager.addSpriteTemplate( "tile_floor",      "dg_dungeon32.png", 3 * 32, 6 * 32, 32, 32 );
-
-    // load all of our tile sprites
+    //
+    // Load all of our tile sprites
+    //   (I need to refactor this and make it load terrain types out of
+    //    an XML file instead)
+    //
     mTileSprites.resize( ETILETYPE_COUNT );
-    mTileSprites[ ETILETYPE_VOID ]    = mSpriteManager.createSprite( "tile_impassable" );
-    mTileSprites[ ETILETYPE_GRANITE ] = mSpriteManager.createSprite( "tile_empty" );
-    mTileSprites[ ETILETYPE_WALL ]    = mSpriteManager.createSprite( "tile_wall"  );
-    mTileSprites[ ETILETYPE_FLOOR ]   = mSpriteManager.createSprite( "tile_floor" );
+    mTileSprites[ ETILETYPE_VOID ]    = mSpriteManager.createSprite( "tile_void" );
+    mTileSprites[ ETILETYPE_GRANITE ] = mSpriteManager.createSprite( "tile_blocked" );
+    mTileSprites[ ETILETYPE_WALL ]    = mSpriteManager.createSprite( "wall_stone_dark"  );
+    mTileSprites[ ETILETYPE_FLOOR ]   = mSpriteManager.createSprite( "stone_floor_gravel" );
 }
 
 /**
