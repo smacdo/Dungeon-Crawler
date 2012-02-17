@@ -1,43 +1,57 @@
 ###########################################################################
-### Dungeon Crawler build script
+### Dungeon Crawler build script                                        ###
+###  - Set CMAKE_BUILD_TYPE to Debug, Release, RelWithDebInfo           ###
 ###########################################################################
 cmake_minimum_required(VERSION 2.8)
 
-###
-### Set a default build type if there was none provided
-###  - this has to be done before project()
-###    (Can be Debug, Release, ReleaseWithDebInfo)
-###
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
-endif()
+# Load extra special cmake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-### CMake includes
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/shared.cmake)
+include( config )
+include( shared )
+include( GetGitRevisionDescription )
+include( GetCompilerInfoString )
+include( EnableExtraCompilerWarnings )
 
-### Version information
+# Load the current revision for this project
+get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+
+# Load the current compiler's id
+get_compiler_info_string(COMPILER_ID)
+
+### Version and build information
+set(GAME_NAME "Dungeon Crawler")
+set(GAME_AUTHOR "Scott MacDonald")
+set(GAME_EMAIL "scott@whitespaceconsideredharmful.com")
+
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
-set(VERSION_PATCH 1)
+set(VERSION_PATCH 2)
+set(VERSION_RELEASE development)
 
 ### Additional settings
-set(GAME_PATH              "${CMAKE_CURRENT_BINARY_DIR}")
+set(GAME_OUTPUT_PATH       "${CMAKE_CURRENT_BINARY_DIR}")
 set(GAME_DATA_ROOT         "${PROJECT_SOURCE_DIR}/game")
 set(GAME_SRC_PATH          "${CMAKE_SOURCE_DIR}/src")
 set(THIRDPARTY_ROOT        "${PROJECT_SOURCE_DIR}/thirdparty")
-set(GTEST_ROOT             "${THIRDPARTY_ROOT}/googletest")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-### Build options
-set(BUILD_DOC FALSE CACHE BOOL "TRUE to generate API docs, FALSE otherwise")
+# Take this out once we start detecting compilers for C++0x support
+add_definitions(-std=c++0x)
+add_definitions(-TIXML_USE_STL)
 
-### Mac OSX support
+# Special  XCode (v4.0) Support
 if(MACOSX)
     set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
     set(CMAKE_OSX_SYSROOT "/Developer/SDKs/MacOSX10.6.sdk")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.6")
+
+    # This seems like a better way of setting XCode attributes
+    set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++0x")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+
+    # Might not need this line?
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++")
 endif()
 
 ### Allow code to build

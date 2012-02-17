@@ -16,7 +16,7 @@
  */
 #include "common/platform.h"
 #include "common/utils.h"
-#include "config.h"
+#include "version.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -140,11 +140,7 @@ std::string getBuildString()
     // need to implement this
 
     // Properly format the build string according to the compiler
-    ss << GAME_ID << " "
-       << GAME_VERSION_MAJOR << "."
-       << GAME_VERSION_MINOR << "."
-       << GAME_VERSION_PATCH << GAME_VERSION_RELEASE << "-"
-       << releaseMode << " "
+    ss << Version::VERSION_S << " "
        << sse         << " "
        << platform    << " "
        << __DATE__    << " "

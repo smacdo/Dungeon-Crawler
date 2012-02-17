@@ -91,6 +91,7 @@ public:
     // Constructor
     PathFinder( const TileGrid& map );
 
+    // Constructor w/ custom cost estimation callback
     PathFinder( const TileGrid& map, PathFinderCostFunction costFunc );
 
     // Destructor
@@ -98,6 +99,9 @@ public:
 
     // Attempts to path from the starting point to the destination
     std::vector<Point> findPath( const Point& start, const Point& dest );
+
+protected:
+    Point getPreviousPoint( const Point& position );
 
 private:
     // Performs one step in the pathfinding algorithm
@@ -116,9 +120,6 @@ private:
 
     // Reset the path finder's internal state
     void resetPathFinderState();
-
-    // Checks if allows pathing
-    bool isPathable( const Point& ) const;
 
     // Marks a node as closed
     void markAsClosed( const Point& p );
