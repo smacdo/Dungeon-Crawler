@@ -4,4 +4,4 @@
 ###########################################################################
 set(OUTDIR "${GAME_OUTPUT_PATH}/data")
 file( COPY spritesheets/tiles.png spritesheets/tiles.xml
-      DESTINATION ${OUTDIR}/data/sprites )
+      DESTINATION ${OUTDIR}/sprites )

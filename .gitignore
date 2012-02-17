@@ -13,3 +13,4 @@ DungeonCrawler.opensdf
 *.directory
 Debug/
 ipch/
+src/version.h
