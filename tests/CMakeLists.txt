@@ -22,6 +22,7 @@ set(test_req_srcs
         ${GAME_SRC_PATH}/game/pathfinder.cpp
         ${GAME_SRC_PATH}/game/tile.cpp
         ${GAME_SRC_PATH}/game/tilegrid.cpp
+        ${GAME_SRC_PATH}/game/tiletype.cpp
 )
 
 ###########################################################################

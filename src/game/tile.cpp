@@ -85,7 +85,7 @@ bool Tile::operator == ( const Tile& rhs ) const
 bool Tile::isGranite() const
 {
     assert( mpType != NULL );
-    return mpType->flags.test( ETILE_GRANITE );
+    return mpType->flags().test( ETILE_GRANITE );
 }
 
 /**
@@ -97,7 +97,7 @@ bool Tile::isGranite() const
 bool Tile::isImpassable() const
 {
     assert( mpType != NULL );
-    return mpType->flags.test( ETILE_IMPASSABLE );
+    return mpType->flags().test( ETILE_IMPASSABLE );
 }
 
 /**
@@ -108,7 +108,7 @@ bool Tile::isImpassable() const
 bool Tile::isWall() const
 {
     assert( mpType != NULL );
-    return mpType->flags.test( ETILE_WALL );
+    return mpType->flags().test( ETILE_WALL );
 }
 
 /**
@@ -119,7 +119,7 @@ bool Tile::isWall() const
 bool Tile::isFloor() const
 {
     assert( mpType != NULL );
-    return mpType->flags.test( ETILE_FLOOR );
+    return mpType->flags().test( ETILE_FLOOR );
 }
 
 /**
@@ -144,7 +144,7 @@ bool Tile::isPlaced() const
 unsigned int Tile::tileid() const
 {
     assert( mpType != NULL );
-    return mpType->id;
+    return mpType->id();
 }
 
 /**

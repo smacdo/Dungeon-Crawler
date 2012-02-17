@@ -31,6 +31,26 @@ enum ETileType
     ETILETYPE_COUNT
 };
 
+enum ETileTypeFlags
+{
+    ETILE_GRANITE,      // set if this tile is granite (unmodifable)
+//    ETILE_PLACED,       // set if the dungeon generator has modified this tile
+    ETILE_IMPASSABLE,   // nothing can enter or be placed on this tile
+    ETILE_WALK,         // tile can be walked on
+    ETILE_FLY,          // tile can be flown across
+    ETILE_SWIM,         // tile can be swum across
+    ETILE_TUNNEL,       // tile can be tunneled through
+    ETILE_WALL,         // considered wall tile for dungeon generation
+    ETILE_FLOOR,        // considered floor tile for dungeon generation
+    ETILE_DOORWAY,      // considered doorway for dungeon generation
+//    ETILE_IS_ROOM,      // tile belongs to a "room"
+//    ETILE_IS_HALL,      // tile belongs to a "hall"
+    ETILE_BLOCK_LOS,    // blocks line of sight for an actor
+    ETILE_FLAGS_COUNT
+};
+
+typedef std::bitset<ETileTypeFlags::ETILE_FLAGS_COUNT> TileTypeFlagSet;
+
 /**
  * Tile tile data structure serves two purposes for the game. The first
  * (and most obvious) is that it contains all the intial settings used to
@@ -45,54 +65,44 @@ enum ETileType
  * Generally, the only data that can be changed on a per tile basis are the
  * flags
  */
-#include "game/tileflags.h"
 class TileType
 {
 public:
-    /**
-     * Default TileType constructor. This creates an "invalid" tile which is
-     * also known as the void
-     *
-     * (Assumes that tile id = void!!)
-     */
-    TileType()
-        : id( 0 ),
-          name( "void" ),
-          title( "The Void" ),
-          flags()
-    {
-        flags.set( ETILE_IMPASSABLE );
-    }
+    // Default constructor
+    TileType();
 
-    /**
-     * Tile data constructor
-     *
-     * \param  id     The tile id that uniquely identifies this tile type
-     * \param  name   Name of this tile
-     * \param  flags  Bit flags for this tile
-     */
     TileType( unsigned int id,
               const std::string& name,
-              std::bitset<ETileTypeFlags::ETILE_FLAGS_COUNT> flags )
-        : id(id),
-          name( name ),
-          title( name ),
-          flags( flags )
-    {
-    }
+              TileTypeFlagSet flags );
 
-    // This is the numeric identifier for this tile
-    unsigned int id;
+    // Constructor
+    TileType( unsigned int id,
+              const std::string& name,
+              const std::string& title,
+              TileTypeFlagSet flags );
 
-    // This is the string name given to the tile, and can be used to look
-    // it up
-    std::string name;
+    // Get the tile id
+    unsigned int id() const;
 
-    // Displayed named
-    std::string title;
+    // Get the tile name
+    std::string name() const;
 
-    // Flags that determine behavior of the tile
-    std::bitset<ETileTypeFlags::ETILE_FLAGS_COUNT> flags;
+    // Reference to the tile's flags
+    const TileTypeFlagSet& flags() const;
+
+private:
+    //! This is the numeric identifier for this tile
+    unsigned int mId;
+
+    //! This is the string name given to the tile, and can be used to look
+    //! it up
+    std::string mName;
+
+    //! Displayed named
+    std::string mTitle;
+
+    //! Flags that determine behavior of the tile
+    TileTypeFlagSet mFlags;
 };
 
 #endif

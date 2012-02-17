@@ -67,6 +67,7 @@ set(game_srcs
         game/tile.cpp
         game/tilefactory.cpp
         game/tilegrid.cpp
+        game/tiletype.cpp
         game/pathfinder.cpp
         game/world.cpp
 )
@@ -76,9 +77,9 @@ set(game_headers
         game/level.h
         game/tile.h
         game/tilefactory.h
-        game/tiledata.h
         game/tileflags.h
         game/tilegrid.h
+        game/tiletype.h
         game/pathfinder.h
         game/world.h
 )
