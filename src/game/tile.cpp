@@ -137,6 +137,22 @@ bool Tile::isFloor() const
 }
 
 /**
+ * Checks if the tile is in a room
+ */
+bool Tile::isInRoom() const
+{
+    return mFlags.test( ETILE_IS_ROOM );
+}
+
+/**
+ * Checks if the tile is in a hall
+ */
+bool Tile::isInHall() const
+{
+    return mFlags.test( ETILE_IS_HALL );
+}
+
+/**
  * Checks if this tile was placed by the dungeon generator. If the tile was
  * not placed, then it is considered "void" and should not be used by the
  * game.
@@ -156,6 +172,22 @@ unsigned int Tile::tileid() const
 {
     assert( mpType != NULL );
     return mpType->id();
+}
+
+/**
+ * Return a reference to this tile instance's flags
+ */
+TileFlagSet& Tile::flags()
+{
+    return mFlags;
+}
+
+/**
+ * Return a reference to this tile instance's flags
+ */
+const TileFlagSet& Tile::flags() const
+{
+    return mFlags;
 }
 
 /**

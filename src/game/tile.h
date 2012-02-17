@@ -63,6 +63,18 @@ public:
     // Check if this tile is considered a floor
     bool isFloor() const;
 
+    // Check if this tile is considered part of a room
+    bool isInRoom() const;
+
+    // Check if this tile is considered part of a hallway
+    bool isInHall() const;
+
+    // Get a reference to this tile's flags
+    TileFlagSet& flags();
+
+    // Get a const reference to this tile's flags
+    const TileFlagSet& flags() const;
+
     // Returns the ID of this tile's type
     unsigned int tileid() const;
 

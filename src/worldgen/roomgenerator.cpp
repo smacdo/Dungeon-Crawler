@@ -79,10 +79,18 @@ RoomData* RoomGenerator::generate( ERoomSize roomSize )
                     floorRect.height() + 2,
                     mTileFactory.createFiller() );
 
-    // Carve the two rects into the tilegrid and call this our room
+    // Generate the wall and floor tile templates, and make sure to flag them
+    // as being part of our room
     Tile wallTile  = mTileFactory.createWall();
     Tile floorTile = mTileFactory.createFloor();
-    
+
+    wallTile.flags().set( ETILE_PLACED );
+    wallTile.flags().set( ETILE_IS_ROOM );
+
+    floorTile.flags().set( ETILE_PLACED );
+    floorTile.flags().set( ETILE_IS_ROOM );
+
+    // Carve the two rects into the tilegrid and call this our room
     tiles.carveRoom( mainRoomRect, 1, wallTile, floorTile );
     tiles.carveOverlappingRoom( overlapRect, 1, wallTile, floorTile );
 

@@ -57,10 +57,21 @@ void HallGenerator::connect( RoomData *pStartRoom, RoomData *pEndRoom )
     // Find a path between the two rooms
     std::vector<Point> path = mPathFinder.findPath( start, end );
 
+    // Generate the wall and floor tile templates, and make sure to flag these
+    // as being part of a hallway
+    Tile floorTile = mTileFactory.createFloor();
+    Tile wallTile  = mTileFactory.createWall();
+
+    floorTile.flags().set( ETILE_PLACED );
+    floorTile.flags().set( ETILE_IS_HALL );
+
+    wallTile.flags().set( ETILE_PLACED );
+    wallTile.flags().set( ETILE_IS_HALL );
+
     // Carve the path out
     for ( auto itr = path.begin(); itr != path.end(); ++itr )
     {
-        mTileGrid.set( *itr, mTileFactory.createFloor() );
+        mTileGrid.set( *itr, floorTile );
     }
 
     // Reset our generator before beginning
@@ -104,6 +115,13 @@ int HallGenerator::findMovementCost( const Point& from,
     Tile& fromTile = mTileGrid.get( from );
     Tile& toTile   = mTileGrid.get( to );
 
+    // Calcualte the forward velocity of the movement
+    //  (used to figure out the next tile straight)
+    int xDistance = std::abs( to.x() - from.x() );
+    int yDistance = std::abs( to.y() - from.y() );
+
+    Tile& nextTile = mTileGrid.get( Point( xDistance, yDistance ) );
+
     // Factor in the basic cost of movement
     int movementCost = MOVE_BASE_COST;
     int turnPenalty  = 0;
@@ -126,21 +144,34 @@ int HallGenerator::findMovementCost( const Point& from,
     if ( (prev.x() != to.x()) && (prev.y() != to.y()) &&
          (prev.x() != -1 && prev.y() != -1) )
     {
-        turnPenalty = movementCost * 5;
+        turnPenalty += 12;
     }
 
     // Check if we are in a room? (TODO: Make this more nuanced then a simple
     // are you a floor)
-    if ( toTile.isFloor() )
+    if ( fromTile.isInRoom() )
     {
+        // Make sure we are not entering in a corner
+        if ( toTile.isWall() && nextTile.isWall() )
+        {
+            return ILLEGAL_MOVE;
+        }
+
+        // Make sure we do not turn while we are in a room's wall
+        else if ( fromTile.isWall() && toTile.isWall() && turnPenalty > 0 )
+        {
+            return ILLEGAL_MOVE;
+        }
+
         // No turning cost when we are in a room
         turnPenalty = 0;
     }
 
     // Is this a hallway? We like hallways
-    if ( toTile.isFloor() )
+    if ( toTile.isInHall() )
     {
         movementCost /= 3;
+        turnPenalty   = 0;      // merge the intersection
     }
   
 
