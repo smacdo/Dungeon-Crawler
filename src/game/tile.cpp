@@ -79,6 +79,16 @@ bool Tile::operator == ( const Tile& rhs ) const
 }
 
 /**
+ * Checks if the tile is marked as granite. A granite tile cannot be altered
+ * and almost always marks boundaries or borders
+ */
+bool Tile::isGranite() const
+{
+    assert( mpData != NULL );
+    return mpData->flags.test( ETILE_GRANITE );
+}
+
+/**
  * Checks if the tile is totally impassable. An impassable tile means that
  * no actor or object can be placed or enter.
  *

@@ -18,6 +18,7 @@ public:
     ~TileFactory();
 
     Tile createGranite() const;
+    Tile createFiller() const;
     Tile createVoid() const;
     Tile createWall() const;
     Tile createFloor() const;

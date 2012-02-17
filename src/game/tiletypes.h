@@ -20,11 +20,13 @@
 // of this out into XML
 enum ETileType
 {
-    ETILETYPE_VOID,
-    ETILETYPE_GRANITE,
-    ETILETYPE_WALL,
-    ETILETYPE_FLOOR,
+    ETILETYPE_VOID          = 0,
+    ETILETYPE_GRANITE       = 1,
+    ETILETYPE_DUNGEON_WALL  = 2,
+    ETILETYPE_DUNGEON_FLOOR = 3,
+    ETILETYPE_FILLER_STONE  = 4,
     ETILETYPE_COUNT
 };
+
 
 #endif

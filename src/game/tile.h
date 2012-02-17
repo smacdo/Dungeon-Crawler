@@ -46,6 +46,9 @@ public:
     // Check if tile is impassable
     bool isImpassable() const;
 
+    // Check if the tile is granite
+    bool isGranite() const;
+
     // Check if this tile is considered a wall
     bool isWall() const;
 

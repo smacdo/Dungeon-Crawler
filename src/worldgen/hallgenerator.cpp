@@ -29,7 +29,7 @@ HallGenerator::HallGenerator( Random& random,
     : mRandom( random ),
       mTileFactory( factory ),
       mTileGrid( tileGrid ),
-      mPathFinder( tileGrid, boost::bind(&HallGenerator::findMovementCost, this, _1, _2)),
+      mPathFinder( tileGrid, boost::bind(&HallGenerator::findMovementCost, this, _1, _2, _3)),
       mpStartRoom( NULL ),
       mpDestRoom( NULL )
 {
@@ -80,41 +80,70 @@ void HallGenerator::reset( RoomData *pStartRoom, RoomData *pEndRoom )
 }
 
 /**
- * Custom cost estimation function that creates unqiue hall ways
- * [NEEDS BETTER DESCRIPTION RIGHT NAO]
- */
-/**
- * Calculates the cost incurred by moving from the previous point to the
- * given current point. This method assumes that the two points are adjacent
- * to each other.
+ * The hall generator's cost estimation function. This method is fed into the
+ * A* pathfinder, which uses it for estimating the cost of moving between
+ * adjacent tiles.
  *
- * \param  currentPoint  The point to calculate the cost for moving to
- * \param  prevPoint     The point that we are moving from
- * \return               Cost of moving from prevPoint to currentPoint
-*/
-int HallGenerator::findMovementCost( const Point& currentPoint,
-                                  const Point& prevPoint )
+ * By varying the cost of specific moves (say, making diagonals very expensive),
+ * we can "encourage" the generation of nicer hallways.
+ *
+ * \param  from  The current tile we are estimating cost for
+ * \param  to    Destination tile we are trying to reach
+ * \param  prev  The prior point that lead to 'from'
+ *
+ * \return The cost of moving from current to destination
+ */
+int HallGenerator::findMovementCost( const Point& from,
+                                     const Point& to,
+                                     const Point& prev ) const
 {
-    const static size_t MOVE_BASE_COST     = 0;
-    const static size_t MOVE_STRAIGHT_COST = 10;
+    const int ILLEGAL_MOVE       = -1;
+    const int MOVE_BASE_COST     = 10;
+
+    // What tiles are these positions?
+    Tile& fromTile = mTileGrid.get( from );
+    Tile& toTile   = mTileGrid.get( to );
 
     // Factor in the basic cost of movement
     int movementCost = MOVE_BASE_COST;
+    int turnPenalty  = 0;
 
-    // Is the move from prevPoint to currentPoint a straight move, or
-    // is it cutting across diagonally?
-    if ( currentPoint.x() != prevPoint.x() &&
-         currentPoint.y() != prevPoint.y() )
+    // Disallow diagonal moves entirely
+    if ( (from.x() != to.x()) && (from.y() != to.y()) )
     {
-        // disallow diagonals
-        return -1;
-    }
-    else
-    {
-        // straight move
-        movementCost += MOVE_STRAIGHT_COST; 
+        return ILLEGAL_MOVE;
     }
 
-    return movementCost ;
+    // Avoid the edge of the dungeon, or other impossible to tunnel through
+    // elements
+    if ( toTile.isGranite() )
+    {
+        return ILLEGAL_MOVE;
+    }
+
+    // Factor in the cost of turning, unless this is the first path node from
+    // the origin
+    if ( (prev.x() != to.x()) && (prev.y() != to.y()) &&
+         (prev.x() != -1 && prev.y() != -1) )
+    {
+        turnPenalty = movementCost * 5;
+    }
+
+    // Check if we are in a room? (TODO: Make this more nuanced then a simple
+    // are you a floor)
+    if ( toTile.isFloor() )
+    {
+        // No turning cost when we are in a room
+        turnPenalty = 0;
+    }
+
+    // Is this a hallway? We like hallways
+    if ( toTile.isFloor() )
+    {
+        movementCost /= 3;
+    }
+  
+
+    return movementCost + turnPenalty;
 }
 

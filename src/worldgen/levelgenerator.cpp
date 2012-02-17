@@ -69,7 +69,7 @@ Level* LevelGenerator::generate()
     tilegrid.carveRoom( Rect( 1, 1, mLevelWidth-2, mLevelHeight-2 ),
                         1,
                         mTileFactory.createGranite(),
-                        mTileFactory.createVoid() );
+                        mTileFactory.createFiller() );
 
     // Generate the requested number of rooms
     for ( int i = 0; i < 150; ++i )

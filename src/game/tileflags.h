@@ -3,6 +3,7 @@
 
 enum ETileFlags
 {
+    ETILE_GRANITE,      // set if this tile is granite (unmodifable)
     ETILE_PLACED,       // set if the dungeon generator has modified this tile
     ETILE_IMPASSABLE,   // nothing can enter or be placed on this tile
     ETILE_WALK,         // tile can be walked on

@@ -74,7 +74,7 @@ bool PathNode::operator > ( const PathNode& rhs ) const
  * Pathfinder constructor.
  */
 PathFinder::PathFinder( const TileGrid& map )
-    : mCostFunction( boost::bind(&PathFinder::findMovementCost, this, _1, _2) ),
+    : mCostFunction( boost::bind(&PathFinder::findMovementCost, this, _1, _2, _3) ),
       mAllowDiagonals( false ),
       mPathGrid( map.width(), map.height(), PathTile() ),
       mOpenStore( 256 ),
@@ -133,11 +133,13 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
     markAsOpen( start );
     mOpenNodes.push( PathNode( start, 0 ) );
 
+#ifdef PATHFINDER_DEBUG
     std::cerr << "===================================" << std::endl
               << "Starting findpath... "               << std::endl
               << "  start: "  << mStartPoint           << std::endl
               << "  dest : "  << mDestPoint            << std::endl
               << " " << std::endl;
+#endif
 
     // Now start the iterative path finding operation by continually
     // trying to find a path to the destination
@@ -169,12 +171,13 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
         // Reverse the list, so the caller sees it as a list of points from
         // the start to the end
         std::reverse( path.begin(), path.end() );
-
-        std::cout << "Found path" << std::endl;
+        std::cout << "Created a path" << std::endl;
     }
     else
     {
-        std::cout << "Failed to find path" << std::endl;
+        std::cout << "Failed to find path, steps attempted "
+                  << step << std::endl;
+        assert( false );
     }
 
     return path;
@@ -204,10 +207,15 @@ void PathFinder::findPathStep()
     mOpenNodes.pop();
     
     Point currentPos = currentNode.position;
+    Point prevPos    = mPathGrid.get(currentPos).prevPos;
 
+    // Now that we are calculating moves from this spot, mark this point as
+    // closed. This will prevent us from re-visiting this spot again and again
     markAsClosed( currentPos );
 
-//    debugFindPathStep( currentPos );
+#ifdef PATHFINDER_DEBUG
+    debugFindPathStep( currentPos );
+#endif
 
     // Keep track of the recorded movement cost to go from the start to this
     // position. We will need it when adding new open neighbor tiles
@@ -239,8 +247,9 @@ void PathFinder::findPathStep()
         // Calculate the costs of moving to this node, and the
         // estimated cost of getting to the destination
         size_t estimatedCost = findEstimatedCost( neighbors[i], mDestPoint );
-        int movementCost     = mCostFunction( neighbors[i], currentPos )
-                                 + currentMovementCost;
+        int movementCost     = mCostFunction( currentPos,
+                                              neighbors[i],
+                                              prevPos );
 
         // Before continuing with the pathfinding, make sure the movement
         // cost is at least zero. If it is negative, then we cannot path
@@ -250,12 +259,18 @@ void PathFinder::findPathStep()
             continue;
         }
 
+        // Now factor in the current movement cost before updating the
+        // tile
+        movementCost += currentMovementCost;
+
         // Debugging help
-//        std::cerr << "  ==> Considering " << neighbors[i]
-//                  << ", e: "              << estimatedCost
-//                  << ", m: "              << movementCost
-//                  << ", t: "              << estimatedCost + movementCost
-//                  << std::endl;
+#ifdef PATHFINDER_DEBUG
+        std::cerr << "  ==> Considering " << neighbors[i]
+                  << ", e: "              << estimatedCost
+                  << ", m: "              << movementCost
+                  << ", t: "              << estimatedCost + movementCost
+                  << std::endl;
+#endif
 
 
         // Now is this node already listed on the open list? Search the
@@ -272,20 +287,26 @@ void PathFinder::findPathStep()
                 existingTile.movementCost  = movementCost;
                 existingTile.estimatedCost = estimatedCost;
 
+#ifdef PATHFINDER_DEBUG
                 std::cerr << "   * Replacing existing open node"
                           << ",old e: " << existingTile.estimatedCost
                           << ",old f: " << existingTile.movementCost
                           << std::endl;
+#endif
             }
             else
             {
-                //std::cerr << "   * Existing open node is already better"
-                //          << std::endl;
+#ifdef PATHFINDER_DEBUG
+                std::cerr << "   * Existing open node is already better"
+                          << std::endl;
+#endif
             }
         }
         else
         {
-            //std::cerr << "   * Adding to open node list" << std::endl;
+#ifdef PATHFINDER_DEBUG
+            std::cerr << "   * Adding to open node list" << std::endl;
+#endif
 
             // Update the path node element for this position
             existingTile.prevPos       = currentPos;
@@ -302,14 +323,6 @@ void PathFinder::findPathStep()
 }
 
 /**
- * Returns the requested tile's previous tile.
- */
-Point PathFinder::getPreviousPoint( const Point& point )
-{
-    return Point( 0, 0 );
-}
-
-/**
  * Calculates the estimated cost for moving from the given current tile
  * location to the destination tile location. This is a conservative
  * cost estimator that attempts to never over estimate the actual cost,
@@ -317,7 +330,9 @@ Point PathFinder::getPreviousPoint( const Point& point )
  *
  * \param  from  The current tile we are estimating cost for
  * \param  to    Destination tile we are trying to reach
- * \return The estimated cost of moving from current to destination
+ * \param  prev  The prior point that lead to 'from'
+ *
+ * \return The cost of moving from current to destination
  */
 size_t PathFinder::findEstimatedCost( const Point& from,
                                       const Point& to ) const
@@ -347,16 +362,23 @@ size_t PathFinder::findEstimatedCost( const Point& from,
 }
 
 /**
- * Calculates the cost incurred by moving from the previous point to the
- * given current point. This method assumes that the two points are adjacent
- * to each other.
+ * Calculates the cost incurred by moving from one position to an adjacent
+ * position in the tilegrid. Any cost that is less than zero is assumed to be
+ * "impossible", and will inform the path finder to abort that path.
  *
- * \param  currentPoint  The point to calculate the cost for moving to
- * \param  prevPoint     The point that we are moving from
- * \return               Cost of moving from prevPoint to currentPoint
+ * This method is the default, "reference" implementation of cost finding,
+ * attempting to treat straight and diagonal moves equally. Any programmer can
+ * use boost::function to implement their own cost finding callback.
+ *
+ * \param  from  The point that we are moving from
+ * \param  to    The point that we are moving to
+ * \param  prev  The prior point that lead to 'from'
+ *
+ * \return Cost of moving from 'from' to 'to'
 */
-int PathFinder::findMovementCost( const Point& currentPoint,
-                                  const Point& prevPoint )
+int PathFinder::findMovementCost( const Point& from,
+                                  const Point& to,
+                                  const Point& prev ) const
 {
     const static size_t MOVE_BASE_COST     = 0;
     const static size_t MOVE_STRAIGHT_COST = 10;
@@ -367,8 +389,7 @@ int PathFinder::findMovementCost( const Point& currentPoint,
 
     // Is the move from prevPoint to currentPoint a straight move, or
     // is it cutting across diagonally?
-    if ( currentPoint.x() == prevPoint.x() ||
-         currentPoint.y() == prevPoint.y() )
+    if ( from.x() == to.x() || from.y() == to.y() )
     {
         // straight move
         movementCost += MOVE_STRAIGHT_COST; 

@@ -29,7 +29,7 @@ class TileGrid;
 struct PathNode;
 
 // Function callback typedefs
-typedef boost::function<int (const Point&, const Point&)>
+typedef boost::function<int (const Point&, const Point&, const Point&)>
     PathFinderCostFunction;
 
 // Priority queue declaration
@@ -100,9 +100,6 @@ public:
     // Attempts to path from the starting point to the destination
     std::vector<Point> findPath( const Point& start, const Point& dest );
 
-protected:
-    Point getPreviousPoint( const Point& position );
-
 private:
     // Performs one step in the pathfinding algorithm
     void findPathStep();
@@ -113,7 +110,9 @@ private:
 
     // Calculates the (exact) cost of moving from the starting node to this
     // node, using the path followed from the start
-    int findMovementCost( const Point& currentPt, const Point& prevPoint );
+    int findMovementCost( const Point& from,
+                          const Point& to,
+                          const Point& prev ) const;
 
     // Generates a list of potentially valid neighbors
     std::vector<Point> generateNeighbors( const Point& currentPoint ) const;

@@ -77,7 +77,7 @@ RoomData* RoomGenerator::generate( ERoomSize roomSize )
     // that enclose the generated room
     TileGrid tiles( floorRect.width()  + 2,
                     floorRect.height() + 2,
-                    mTileFactory.createGranite() );
+                    mTileFactory.createFiller() );
 
     // Carve the two rects into the tilegrid and call this our room
     Tile wallTile  = mTileFactory.createWall();
