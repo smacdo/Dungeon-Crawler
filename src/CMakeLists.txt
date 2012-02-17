@@ -91,9 +91,10 @@ set(app_srcs
 
 set(app_headers
         appconfig.h
-        config.h
         dungeoncrawler.h
         inputmanager.h
+        version.h.in
+        version.h
 )
 
 ###########################################################################
@@ -107,8 +108,6 @@ set(srcs
         ${graphics_srcs}
         ${worldgen_srcs}
 )
-
-set(cxx_flags "")
 
 ###
 ### Visual Studio (or other IDEs) file groupings
@@ -126,67 +125,51 @@ source_group( graphics\\headers FILES ${graphics_headers} )
 source_group( worldgen\\src     FILES ${worldgen_srcs}    )
 source_group( worldgen\\headers FILES ${worldgen_headers} )
 
-###
-### Additional compiler settings and definitions
-###
-if(COMPILER_GCC)
-    set(cxx_flags "${cxx_flags} -g -W -Wall -Werror -Wextra -std=c++0x")
-    set(cxx_flags "${cxx_flags} -Wno-unused-parameter")
-endif()
-
-if(MSVC)
-    set(cxx_flags "${cxx_flags} /Wp64")
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
-    add_definitions(-DWIN32_LEAN_AND_MEAN)
-endif()
-
-###
-### Required packages
-###
+#
+# Required packages
+#
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(OpenGL REQUIRED)
-#find_package(SDL2 REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
-include_directories(
-    ${Boost_INCLUDE_DIRS}
-    ${THIRDPARTY_ROOT}/tinyxml/include
-)
-link_directories( /usr/local/lib )
+add_definitions(-DTIXML_USE_STL)
 
-# on OS X we also have to add '-framework Cocoa' as library.  This is
-# # actually a bit of an hack but it's easy enough and reliable.
-set(EXTRA_LIBS )
+#
+# set up configuration variables
+#
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
+                ${CMAKE_CURRENT_SOURCE_DIR}/version.h )
 
-if (APPLE)
-    set(EXTRA_LIBS ${EXTRA_LIBS} "-framework Cocoa -framework SDL")
-
-    # I really do not like building on the mac
-    add_library( SDLmain SDLMain.m)
-    set_target_properties( SDLmain PROPERTIES COMPILE_FLAGS "" )
-endif()
-
-
-###
-### Make sure compile flags are applied to the source code files
-###
+#
+# Make sure compile flags are applied to the source code files
+#
 set_source_files_properties( ${srcs}
     PROPERTIES
     COMPILE_FLAGS "${cxx_flags}"
 )
 
-###
-### Generate the executable and link required libraries
-###
-include_directories(${CMAKE_SOURCE_DIR}/src 
-                    ${CMAKE_SOURCE_DIR}/thirdparty/sdl/include)
-add_executable(dungeon MACOSX_BUNDLE ${srcs})
-target_link_libraries(dungeon
-    ${Boost_LIBRARIES}
-    SDL2 SDL2_image SDL2_ttf
+#
+# Generate the executable and link required libraries
+#
+include_directories(
+    ${CMAKE_SOURCE_DIR}/src
+    ${Boost_INCLUDE_DIRS}
+    ${THIRDPARTY_ROOT}/tinyxml/include
+    ${SDL2_INCLUDE_DIR}
+)
+
+add_executable( dungeon MACOSX_BUNDLE ${srcs})
+enable_extra_compiler_warnings( dungeon )
+
+target_link_libraries( dungeon
     tinyxml
-    ${EXTRA_LIBS}
+    ${Boost_LIBRARIES}
+    ${SDL2_LIBRARY}
+    ${SDL2IMAGE_LIBRARY}
+    ${SDL2TTF_LIBRARY}
     ${OPENGL_LIBRARIES}
-    SDLmain                 # apparently not included on some systems?
 )
 
 set_target_properties( dungeon
@@ -200,21 +183,23 @@ set_target_properties( dungeon
 if(NOT MSVC)
     add_custom_target(
         run dungeon DEPENDS dungeon
-        WORKING_DIRECTORY ${GAME_PATH}
+        WORKING_DIRECTORY ${GAME_OUTPUT_PATH}
         COMMENT "Start the game"
     )
 
     add_custom_target(debug
         gdb `pwd`/dungeon -d ${PROJECT_SOURCE_DIR}
-        WORKING_DIRECTORY ${GAME_PATH}
+        WORKING_DIRECTORY ${GAME_OUTPUT_PATH}
         DEPENDS dungeon
         COMMENT "Runs the game with GDB support"
     )
-
-    add_custom_target(doxygen
-        doxygen ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Generates doxygen documentation"
-    )
 endif()
 
+include(DoxygenTargets)
+add_doxygen( ${PROJECT_SOURCE_DIR}/Doxyfile
+             OUTPUT_DIRECTORY ${GAME_OUTPUT_PATH}/doc
+             PROJECT_NUMBER "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATH}"
+             DOC_TARGET doxygen
+             NO_WARNINGS
+             NO_PDF )
+             

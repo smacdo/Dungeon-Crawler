@@ -1,6 +1,7 @@
 ###
 ### Dungeon Crawler unit tests
 ###
+enable_testing()
 
 ### List of unit test files
 set(test_srcs
@@ -28,19 +29,9 @@ set(test_req_srcs
 ###########################################################################
 project(DungeonCrawler-Tests)
 
-if(COMPILER_GCC)
-    set(cxx_flags "${cxx_flags} -g -W -Wall -Werror -std=c++0x")
-    set(cxx_flags "${cxx_flags} -Wno-unused-parameter")
-endif()
-
-set_source_files_properties( ${test_srcs} ${test_req_srcs}
-    PROPERTIES
-    COMPILE_FLAGS "${cxx_flags}"
-    )
-
 include_directories(
     ${GAME_SRC_PATH}
-    ${GTEST_ROOT}/include
+    ${THIRDPARTY_ROOT}/googletest/include
 )
 
 add_executable(
@@ -54,6 +45,9 @@ target_link_libraries(test-dungeoncrawler gtest)
 
 add_custom_target(tests ALL test-dungeoncrawler
                   DEPENDS test-dungeoncrawler
-                  WORKING_DIRECTORY ${GAME_PATH}
+                  WORKING_DIRECTORY ${GAME_OUTPUT_PATH}
                   COMMENT Runs dungeon crawler unit tests)
 
+add_test(
+    NAME test-dungeoncrawler
+    COMMAND test-dungeoncrawler )
