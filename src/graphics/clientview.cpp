@@ -106,8 +106,8 @@ void ClientView::load()
     mTileSprites.resize( ETILETYPE_COUNT );
     mTileSprites[ ETILETYPE_VOID ]          = mSpriteManager.createSprite( "tile_void" );
     mTileSprites[ ETILETYPE_GRANITE ]       = mSpriteManager.createSprite( "tile_blocked" );
-    mTileSprites[ ETILETYPE_DUNGEON_WALL ]  = mSpriteManager.createSprite( "wall_stone_dark"  );
-    mTileSprites[ ETILETYPE_DUNGEON_FLOOR ] = mSpriteManager.createSprite( "stone_floor_gravel" );
+    mTileSprites[ ETILETYPE_DUNGEON_WALL ]  = mSpriteManager.createSprite( "stone2_floor"  );
+    mTileSprites[ ETILETYPE_DUNGEON_FLOOR ] = mSpriteManager.createSprite( "dcss_rl_lit_corridor" );
     mTileSprites[ ETILETYPE_FILLER_STONE  ] = mSpriteManager.createSprite( "tile_void" );
 }
 
@@ -279,8 +279,8 @@ void ClientView::drawSprite( int x, int y, const Sprite& sprite )
     SDL_SetRenderDrawColor( mpRenderer, 255, 0, 0, 255 );
   //  SDL_RenderFillRect( mpRenderer, &offset );
 
-    SDL_SetRenderDrawColor( mpRenderer, 0, 0, 0, 255 );
-    SDL_RenderDrawRect( mpRenderer, &offset );
+  //  SDL_SetRenderDrawColor( mpRenderer, 0, 0, 0, 255 );
+  //  SDL_RenderDrawRect( mpRenderer, &offset );
 }
 
 /**
