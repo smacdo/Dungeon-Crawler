@@ -126,7 +126,7 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
 
     // Now start the iterative path finding operation by continually
     // trying to find a path to the destination
-    const size_t MAX_STEPS = 25;
+    const size_t MAX_STEPS = 4096;
     size_t step            = 0;
 
     while ( step < MAX_STEPS && (!mDidPathToEnd) && (!mFailedToPath) )
@@ -156,6 +156,12 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
         // Reverse the list, so the caller sees it as a list of points from
         // the start to the end
         std::reverse( path.begin(), path.end() );
+
+        std::cout << "Found path" << std::endl;
+    }
+    else
+    {
+        std::cout << "Failed to find path" << std::endl;
     }
 
     return path;
@@ -188,7 +194,7 @@ void PathFinder::findPathStep()
 
     markAsClosed( currentPos );
 
-    debugFindPathStep( currentPos );
+//    debugFindPathStep( currentPos );
 
     // Keep track of the recorded movement cost to go from the start to this
     // position. We will need it when adding new open neighbor tiles
@@ -232,11 +238,11 @@ void PathFinder::findPathStep()
         }
 
         // Debugging help
-        std::cerr << "  ==> Considering " << neighbors[i]
-                  << ", e: "              << estimatedCost
-                  << ", m: "              << movementCost
-                  << ", t: "              << estimatedCost + movementCost
-                  << std::endl;
+//        std::cerr << "  ==> Considering " << neighbors[i]
+//                  << ", e: "              << estimatedCost
+//                  << ", m: "              << movementCost
+//                  << ", t: "              << estimatedCost + movementCost
+//                  << std::endl;
 
 
         // Now is this node already listed on the open list? Search the
@@ -260,13 +266,13 @@ void PathFinder::findPathStep()
             }
             else
             {
-                std::cerr << "   * Existing open node is already better"
-                          << std::endl;
+                //std::cerr << "   * Existing open node is already better"
+                //          << std::endl;
             }
         }
         else
         {
-            std::cerr << "   * Adding to open node list" << std::endl;
+            //std::cerr << "   * Adding to open node list" << std::endl;
 
             // Update the path node element for this position
             existingTile.prevPos       = currentPos;

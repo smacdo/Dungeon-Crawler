@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Scott MacDonald. All rights reserved.
+ * Copyright (C) 2012 Scott MacDonald. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,6 @@ Level* LevelGenerator::generate()
                         mTileFactory.createVoid() );
 
     // Generate the requested number of rooms
-    std::cout << tilegrid << std::endl;
     for ( int i = 0; i < 150; ++i )
     {
         // Generate a random room
@@ -85,10 +84,11 @@ Level* LevelGenerator::generate()
         // Try to place the room's tile grid into our level's tile grid. If it
         // doesn't succeed, make sure to delete the room data before trying
         // another room
-        std::cout << pRoomData->tiles << std::endl;
         if ( canPlaceRoomAt( tilegrid, deref(pRoomData), placeAt ) )
         {
             tilegrid.insert( placeAt, pRoomData->tiles );
+            pRoomData->worldOffset = placeAt;
+
             levelRooms.push_back( pRoomData );
         }
         else
@@ -100,7 +100,7 @@ Level* LevelGenerator::generate()
     // Show debug stats about rooms generated and whatnot
 
     // Really stupid tunneling. Connect each room to the next one
-    HallGenerator hallGenerator( mRandom );
+    HallGenerator hallGenerator( mRandom, mTileFactory, tilegrid );
 
     for ( size_t index = 0; index < levelRooms.size(); ++index )
     {

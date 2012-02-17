@@ -34,7 +34,8 @@ struct RoomData
           floorTopLeft( floorRect.topLeft() ),
           floorBottomRight( floorRect.bottomRight() ),
           floorCenter( floorRect.approximateCenter() ),
-          tiles( tileGrid )
+          tiles( tileGrid ),
+          worldOffset( Point(0,0) )
     {
     }
 
@@ -56,6 +57,9 @@ struct RoomData
 
     /// Tile grid that describes the room
     TileGrid tiles;
+
+    /// World position for this room (zero is invalid)
+    Point worldOffset;
 
     /// List of rooms that this room is connected to
     std::vector<RoomData*> connectedRooms;
