@@ -1,3 +1,18 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "game/pathfinder.h"
 #include "game/tilegrid.h"
 #include "common/point.h"
@@ -134,8 +149,6 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
         findPathStep();
         ++step;
     }
-
-    std::cout << " *** STEPS: " << step << std::endl;
 
     // Check if we have found a valid path from the starting point to the
     // ending point. If so, follow the path backward and add each node to
@@ -283,6 +296,14 @@ void PathFinder::findPathStep()
 }
 
 /**
+ * Returns the requested tile's previous tile.
+ */
+Point PathFinder::getPreviousPoint( const Point& point )
+{
+    return Point( 0, 0 );
+}
+
+/**
  * Calculates the estimated cost for moving from the given current tile
  * location to the destination tile location. This is a conservative
  * cost estimator that attempts to never over estimate the actual cost,
@@ -416,19 +437,6 @@ void PathFinder::resetPathFinderState()
  
     mDidPathToEnd = false;
     mFailedToPath = false;
-}
-
-/**
- * Checks if the given node can be pathed to or through. If the position
- * does not support pathing (say it is a huge rock), then this function
- * should return false
- *
- * \param  point  The point to consider
- * \return        True if we can path onto this point, false otherwise
- */
-bool PathFinder::isPathable( const Point& point ) const
-{
-    return true;
 }
 
 /**
