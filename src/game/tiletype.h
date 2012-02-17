@@ -46,10 +46,10 @@ enum ETileTypeFlags
 //    ETILE_IS_ROOM,      // tile belongs to a "room"
 //    ETILE_IS_HALL,      // tile belongs to a "hall"
     ETILE_BLOCK_LOS,    // blocks line of sight for an actor
-    ETILE_FLAGS_COUNT
+    ETILETYPE_FLAGS_COUNT
 };
 
-typedef std::bitset<ETileTypeFlags::ETILE_FLAGS_COUNT> TileTypeFlagSet;
+typedef std::bitset<ETileTypeFlags::ETILETYPE_FLAGS_COUNT> TileTypeFlagSet;
 
 /**
  * Tile tile data structure serves two purposes for the game. The first

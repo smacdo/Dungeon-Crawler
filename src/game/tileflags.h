@@ -16,5 +16,15 @@
 #ifndef DUNGEON_ENGINE_TILE_FLAGS
 #define DUNGEON_ENGINE_TILE_FLAGS
 
+/**
+ * These bit flags can be set per tile instance
+ */
+enum ETileFlags
+{
+    ETILE_PLACED,       // set if the dungeon generator has placed this tile
+    ETILE_IS_ROOM,      // set if tile is part of a room
+    ETILE_IS_HALL,      // set if tile is part of a hallway
+    ETILE_FLAGS_COUNT
+};
 
 #endif

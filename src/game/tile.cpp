@@ -28,7 +28,8 @@ const TileType * Tile::DEFAULT_TILE_TYPE = new TileType;
  * tile type
  */
 Tile::Tile()
-    : mpType( DEFAULT_TILE_TYPE )
+    : mpType( DEFAULT_TILE_TYPE ),
+      mFlags()
 {
 }
 
@@ -39,7 +40,18 @@ Tile::Tile()
  * \param  pTileData  Pointer to data for the tile that we are to become
  */
 Tile::Tile( TileType* pTileType )
-    : mpType( pTileType )
+    : mpType( pTileType ),
+      mFlags()
+{
+    assert( pTileType != NULL );
+}
+
+/**
+ * Tile constructor
+ */
+Tile::Tile( TileType *pTileType, TileFlagSet flags )
+    : mpType( pTileType ),
+      mFlags( flags )
 {
     assert( pTileType != NULL );
 }
@@ -48,7 +60,8 @@ Tile::Tile( TileType* pTileType )
  * Tile copy constructor
  */
 Tile::Tile( const Tile& source )
-    : mpType( source.mpType )
+    : mpType( source.mpType ),
+      mFlags( source.mFlags )
 {
     assert( mpType != NULL );
 }
@@ -62,6 +75,7 @@ Tile::Tile( const Tile& source )
 Tile& Tile::operator = ( const Tile& rhs )
 {
     mpType = rhs.mpType;
+    mFlags = rhs.mFlags;
     return *this;
 }
 
@@ -75,7 +89,7 @@ Tile& Tile::operator = ( const Tile& rhs )
  */
 bool Tile::operator == ( const Tile& rhs ) const
 {
-    return mpType == rhs.mpType && mLightLevel == rhs.mLightLevel;
+    return mpType == rhs.mpType && mFlags == rhs.mFlags;
 }
 
 /**
@@ -132,10 +146,7 @@ bool Tile::isFloor() const
  */
 bool Tile::isPlaced() const
 {
-    assert( mpType != NULL );
-    assert( false && "Need to re-implement me" );
-    return false;
-//    return mpType->flags.test( ETILE_PLACED );
+    return mFlags.test( ETILE_PLACED );
 }
 
 /**

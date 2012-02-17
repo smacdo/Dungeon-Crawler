@@ -17,8 +17,13 @@
 #define SCOTT_DUNGEON_TILE_H
 
 #include <iosfwd>
-#include <stdint.h>
+#include <bitset>
+
+#include "game/tileflags.h"
+
 class TileType;
+
+typedef std::bitset<ETileFlags::ETILE_FLAGS_COUNT> TileFlagSet;
 
 /**
  * Tile represents a terrain tile in the level gridmap
@@ -31,6 +36,9 @@ public:
 
     // Instantiate a new tile with the given tile type
     explicit Tile( TileType *pTileType );
+
+    // Instantiate a new tile with a type and predefined values
+    Tile( TileType *pTileType, TileFlagSet flags );
 
     // Copy constructor
     Tile( const Tile& other );
@@ -69,9 +77,8 @@ private:
     //    implement tile swapping)
     const TileType * mpType;
 
-    // Light level of the tile (eventually switch this to a special light
-    // class that can calculate blended lights)
-    uint8_t mLightLevel;
+    // Per tile flags
+    TileFlagSet mFlags;
 };
 
 #endif
