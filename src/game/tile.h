@@ -18,7 +18,7 @@
 
 #include <iosfwd>
 #include <stdint.h>
-struct TileData;
+class TileType;
 
 /**
  * Tile represents a terrain tile in the level gridmap
@@ -29,8 +29,8 @@ public:
     // Default constructor
     Tile();
 
-    // Instantiate a new tile
-    explicit Tile( TileData *pTileData );
+    // Instantiate a new tile with the given tile type
+    explicit Tile( TileType *pTileType );
 
     // Copy constructor
     Tile( const Tile& other );
@@ -62,12 +62,12 @@ public:
 
 private:
     // Default tile data for a tile that was created without a template
-    const static TileData * DEFAULT_TILE_DATA;
+    const static TileType * DEFAULT_TILE_TYPE;
 
     // Pointer back to this tile's immutable tile data
     //   (constant for the moment, we may need to change this when we
     //    implement tile swapping)
-    const TileData * mpData;
+    const TileType * mpType;
 
     // Light level of the tile (eventually switch this to a special light
     // class that can calculate blended lights)

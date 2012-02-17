@@ -17,10 +17,9 @@
 #include <string>
 
 #include "game/tilefactory.h"
-#include "game/tiledata.h"
 #include "game/tileflags.h"
 #include "game/tile.h"
-#include "game/tiletypes.h"
+#include "game/tiletype.h"
 #include "common/utils.h"
 
 /**
@@ -30,16 +29,15 @@ TileFactory::TileFactory()
     : mBlueprints( ETILETYPE_COUNT, 0 )
 {
     // Construct void tile
-    TileData *pVoidData = new TileData;
+    TileType *pVoidData = new TileType;
     pVoidData->id    = ETILETYPE_VOID;
     pVoidData->name  = "void";
     pVoidData->title = "Void Tile";
-    pVoidData->flags.set( ETILE_IMPASSABLE );
 
     mBlueprints[ pVoidData->id ] = pVoidData;
 
     // Construct granite tile
-    TileData *pGraniteData = new TileData;
+    TileType *pGraniteData = new TileType;
     pGraniteData->id       = ETILETYPE_GRANITE;
     pGraniteData->name     = "granite";
     pGraniteData->title    = "Granite Wall";
@@ -52,12 +50,11 @@ TileFactory::TileFactory()
     mBlueprints[ pGraniteData->id ] = pGraniteData;
 
     // Construct stone wall tile
-    TileData *pStoneWallData = new TileData;
+    TileType *pStoneWallData = new TileType;
     pStoneWallData->id       = ETILETYPE_DUNGEON_WALL;
     pStoneWallData->name     = "stone_wall";
     pStoneWallData->title    = "Stone Wall";
 
-    pStoneWallData->flags.set( ETILE_PLACED );
     pStoneWallData->flags.set( ETILE_IMPASSABLE );
     pStoneWallData->flags.set( ETILE_WALL );
     pStoneWallData->flags.set( ETILE_BLOCK_LOS );
@@ -65,19 +62,18 @@ TileFactory::TileFactory()
     mBlueprints[ pStoneWallData->id ] = pStoneWallData;
 
     // Construct stone floor tile
-    TileData *pStoneFloorData = new TileData;
+    TileType *pStoneFloorData = new TileType;
     pStoneFloorData->id       = ETILETYPE_DUNGEON_FLOOR;
     pStoneFloorData->name     = "stone_floor";
     pStoneFloorData->title    = "Stone Floor";
 
-    pStoneFloorData->flags.set( ETILE_PLACED );
     pStoneFloorData->flags.set( ETILE_WALK );
     pStoneFloorData->flags.set( ETILE_FLOOR );
 
     mBlueprints[ pStoneFloorData->id ] = pStoneFloorData;
 
     // Construct stone tile filler tile
-    TileData *pStoneFillerData = new TileData;
+    TileType *pStoneFillerData = new TileType;
     pStoneFillerData->id        = ETILETYPE_FILLER_STONE;
     pStoneFillerData->name      = "filler_stone";
     pStoneFillerData->title     = "Stone Rock";
@@ -102,10 +98,10 @@ TileFactory::~TileFactory()
  */
 Tile TileFactory::createVoid() const
 {
-    TileData *pTileData = mBlueprints[ ETILETYPE_VOID ];
-    assert( pTileData != NULL );
+    TileType *pTileType = mBlueprints[ ETILETYPE_VOID ];
+    assert( pTileType != NULL );
 
-    return Tile( pTileData );
+    return Tile( pTileType );
 }
 
 /**
@@ -113,10 +109,10 @@ Tile TileFactory::createVoid() const
  */
 Tile TileFactory::createGranite() const
 {
-    TileData *pTileData = mBlueprints[ ETILETYPE_GRANITE ];
-    assert( pTileData != NULL );
+    TileType *pTileType = mBlueprints[ ETILETYPE_GRANITE ];
+    assert( pTileType != NULL );
 
-    return Tile( pTileData );
+    return Tile( pTileType );
 }
 
 /**
@@ -125,10 +121,10 @@ Tile TileFactory::createGranite() const
  */
 Tile TileFactory::createFiller() const
 {
-    TileData *pTileData = mBlueprints[ ETILETYPE_FILLER_STONE ];
-    assert( pTileData != NULL );
+    TileType *pTileType = mBlueprints[ ETILETYPE_FILLER_STONE ];
+    assert( pTileType != NULL );
 
-    return Tile( pTileData );
+    return Tile( pTileType );
 }
 
 /**
@@ -136,10 +132,10 @@ Tile TileFactory::createFiller() const
  */
 Tile TileFactory::createWall() const
 {
-    TileData *pTileData = mBlueprints[ ETILETYPE_DUNGEON_WALL ];
-    assert( pTileData != NULL );
+    TileType *pTileType = mBlueprints[ ETILETYPE_DUNGEON_WALL ];
+    assert( pTileType != NULL );
     
-    return Tile( pTileData );
+    return Tile( pTileType );
 }
 
 /**
@@ -147,8 +143,8 @@ Tile TileFactory::createWall() const
  */
 Tile TileFactory::createFloor() const
 {
-    TileData *pTileData = mBlueprints[ ETILETYPE_DUNGEON_FLOOR ];
-    assert( pTileData != NULL );
+    TileType *pTileType = mBlueprints[ ETILETYPE_DUNGEON_FLOOR ];
+    assert( pTileType != NULL );
 
-    return Tile( pTileData );
+    return Tile( pTileType );
 }

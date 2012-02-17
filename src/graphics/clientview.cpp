@@ -22,7 +22,7 @@
 #include "common/platform.h"
 #include "common/logging.h"
 
-#include "game/tiletypes.h"
+#include "game/tiletype.h"
 #include "game/level.h"
 #include "game/world.h"
 #include "game/dungeon.h"

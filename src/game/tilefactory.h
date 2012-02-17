@@ -21,7 +21,7 @@
 
 #include "game/tile.h"
 
-struct TileData;
+class TileType;
 
 /**
  * Tile factory is responsible for creating tiles
@@ -39,7 +39,7 @@ public:
     Tile createFloor() const;
 
 private:
-    std::vector<TileData*> mBlueprints;
+    std::vector<TileType*> mBlueprints;
 };
 
 #endif

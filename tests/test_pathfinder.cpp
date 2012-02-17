@@ -1,6 +1,6 @@
 #include "game/pathfinder.h"
 #include "game/tilegrid.h"
-#include "game/tiledata.h"
+#include "game/tiletype.h"
 #include "common/point.h"
 #include <gtest.h>
 #include <vector>
@@ -20,8 +20,8 @@ protected:
     int noMoveFunction( const Point& from, const Point& to );
 
 private:
-    TileData * mpFloorData;
-    TileData * mpWallData;
+    TileType * mpFloorData;
+    TileType * mpWallData;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -169,8 +169,8 @@ TEST_F(PathFinderTest,PathFinder_PathWithWallBlocking)
 // Internal helper methods
 ///////////////////////////////////////////////////////////////////////////
 PathFinderTest::PathFinderTest()
-    : mpFloorData( new TileData( 1, "floor", ETILE_FLOOR ) ),
-      mpWallData( new TileData( 2, "wall", ETILE_WALL ) )
+    : mpFloorData( new TileType( 1, "floor", ETILE_FLOOR ) ),
+      mpWallData( new TileType( 2, "wall", ETILE_WALL ) )
 {
 }
 

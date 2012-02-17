@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SCOTT_DUNGEON_TILEDATA_H
-#define SCOTT_DUNGEON_TILEDATA_H
+#ifndef SCOTT_DUNGEON_TILE_TYPE_H
+#define SCOTT_DUNGEON_TILE_TYPE_H
 
 #include <bitset>
 #include <string>
 
-#include "game/tileflags.h"
+// These are the built in tile types. Eventually we'll want to pull most
+// of this out into XML
+enum ETileType
+{
+    ETILETYPE_VOID          = 0,
+    ETILETYPE_GRANITE       = 1,
+    ETILETYPE_DUNGEON_WALL  = 2,
+    ETILETYPE_DUNGEON_FLOOR = 3,
+    ETILETYPE_FILLER_STONE  = 4,
+    ETILETYPE_COUNT
+};
 
 /**
  * Tile tile data structure serves two purposes for the game. The first
@@ -35,9 +45,17 @@
  * Generally, the only data that can be changed on a per tile basis are the
  * flags
  */
-struct TileData
+#include "game/tileflags.h"
+class TileType
 {
-    TileData()
+public:
+    /**
+     * Default TileType constructor. This creates an "invalid" tile which is
+     * also known as the void
+     *
+     * (Assumes that tile id = void!!)
+     */
+    TileType()
         : id( 0 ),
           name( "void" ),
           title( "The Void" ),
@@ -46,9 +64,16 @@ struct TileData
         flags.set( ETILE_IMPASSABLE );
     }
 
-    TileData( unsigned int id,
+    /**
+     * Tile data constructor
+     *
+     * \param  id     The tile id that uniquely identifies this tile type
+     * \param  name   Name of this tile
+     * \param  flags  Bit flags for this tile
+     */
+    TileType( unsigned int id,
               const std::string& name,
-              std::bitset<ETileFlags::ETILE_FLAGS_COUNT> flags )
+              std::bitset<ETileTypeFlags::ETILE_FLAGS_COUNT> flags )
         : id(id),
           name( name ),
           title( name ),
@@ -67,7 +92,7 @@ struct TileData
     std::string title;
 
     // Flags that determine behavior of the tile
-    std::bitset<ETileFlags::ETILE_FLAGS_COUNT> flags;
+    std::bitset<ETileTypeFlags::ETILE_FLAGS_COUNT> flags;
 };
 
 #endif

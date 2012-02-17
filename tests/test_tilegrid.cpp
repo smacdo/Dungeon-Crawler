@@ -1,14 +1,14 @@
 #include "game/tilegrid.h"
 #include "game/tile.h"
-#include "game/tiledata.h"
+#include "game/tiletype.h"
 #include <gtest.h>
 
 class TileGridTest : public ::testing::Test
 {
 public:
     TileGridTest()
-        : mpFloorData( new TileData( 1, "floor", ETILE_FLOOR ) ),
-          mpWallData( new TileData( 2, "wall", ETILE_WALL ) ),
+        : mpFloorData( new TileType( 1, "floor", ETILE_FLOOR ) ),
+          mpWallData( new TileType( 2, "wall", ETILE_WALL ) ),
           emptyGrid( 4, 6 ),
           sampleGrid( 4, 6 )
     {
@@ -41,8 +41,8 @@ protected:
     }
 
 protected:
-    TileData * mpFloorData;
-    TileData * mpWallData;
+    TileType * mpFloorData;
+    TileType * mpWallData;
     TileGrid emptyGrid;
     TileGrid sampleGrid;
 };

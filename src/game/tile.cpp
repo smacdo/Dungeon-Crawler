@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 #include "game/tile.h"
-#include "game/tiledata.h"
+#include "game/tiletype.h"
 #include "game/tileflags.h"
 #include "common/platform.h"
 #include <cstddef>
 #include <ostream>
 
-// Default tile data
-const TileData * Tile::DEFAULT_TILE_DATA = new TileData;
+// Default tile data (relies on TileFactory creating a void tile type)
+const TileType * Tile::DEFAULT_TILE_TYPE = new TileType;
 
 /**
  * Default tile constructor. Creates a null tile that is treated as a VOID
  * tile type
  */
 Tile::Tile()
-    : mpData( DEFAULT_TILE_DATA )
+    : mpType( DEFAULT_TILE_TYPE )
 {
 }
 
@@ -38,19 +38,19 @@ Tile::Tile()
  *
  * \param  pTileData  Pointer to data for the tile that we are to become
  */
-Tile::Tile( TileData* pTileData )
-    : mpData( pTileData )
+Tile::Tile( TileType* pTileType )
+    : mpType( pTileType )
 {
-    assert( pTileData != NULL );
+    assert( pTileType != NULL );
 }
 
 /**
  * Tile copy constructor
  */
 Tile::Tile( const Tile& source )
-    : mpData( source.mpData )
+    : mpType( source.mpType )
 {
-    assert( mpData != NULL );
+    assert( mpType != NULL );
 }
 
 /**
@@ -61,7 +61,7 @@ Tile::Tile( const Tile& source )
  */
 Tile& Tile::operator = ( const Tile& rhs )
 {
-    mpData = rhs.mpData;
+    mpType = rhs.mpType;
     return *this;
 }
 
@@ -75,7 +75,7 @@ Tile& Tile::operator = ( const Tile& rhs )
  */
 bool Tile::operator == ( const Tile& rhs ) const
 {
-    return mpData == rhs.mpData && mLightLevel == rhs.mLightLevel;
+    return mpType == rhs.mpType && mLightLevel == rhs.mLightLevel;
 }
 
 /**
@@ -84,8 +84,8 @@ bool Tile::operator == ( const Tile& rhs ) const
  */
 bool Tile::isGranite() const
 {
-    assert( mpData != NULL );
-    return mpData->flags.test( ETILE_GRANITE );
+    assert( mpType != NULL );
+    return mpType->flags.test( ETILE_GRANITE );
 }
 
 /**
@@ -96,8 +96,8 @@ bool Tile::isGranite() const
  */
 bool Tile::isImpassable() const
 {
-    assert( mpData != NULL );
-    return mpData->flags.test( ETILE_IMPASSABLE );
+    assert( mpType != NULL );
+    return mpType->flags.test( ETILE_IMPASSABLE );
 }
 
 /**
@@ -107,8 +107,8 @@ bool Tile::isImpassable() const
  */
 bool Tile::isWall() const
 {
-    assert( mpData != NULL );
-    return mpData->flags.test( ETILE_WALL );
+    assert( mpType != NULL );
+    return mpType->flags.test( ETILE_WALL );
 }
 
 /**
@@ -118,8 +118,8 @@ bool Tile::isWall() const
  */
 bool Tile::isFloor() const
 {
-    assert( mpData != NULL );
-    return mpData->flags.test( ETILE_FLOOR );
+    assert( mpType != NULL );
+    return mpType->flags.test( ETILE_FLOOR );
 }
 
 /**
@@ -132,8 +132,10 @@ bool Tile::isFloor() const
  */
 bool Tile::isPlaced() const
 {
-    assert( mpData != NULL );
-    return mpData->flags.test( ETILE_PLACED );
+    assert( mpType != NULL );
+    assert( false && "Need to re-implement me" );
+    return false;
+//    return mpType->flags.test( ETILE_PLACED );
 }
 
 /**
@@ -141,8 +143,8 @@ bool Tile::isPlaced() const
  */
 unsigned int Tile::tileid() const
 {
-    assert( mpData != NULL );
-    return mpData->id;
+    assert( mpType != NULL );
+    return mpType->id;
 }
 
 /**
