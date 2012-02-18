@@ -82,6 +82,17 @@ TileFactory::TileFactory()
                       "Stone Doorway",
                       flags );
 
+    // Stairs up ////////////////////////////////////////////////////////////
+    flags.reset();
+    flags.set( ETILE_WALL );
+    flags.set( ETILE_WALK );
+
+    mBlueprints[ ETILETYPE_STAIRS_UP ] =
+        new TileType( ETILETYPE_STAIRS_UP,
+                      "stairs_up",
+                      "Stairs Up",
+                      flags );
+
     // Construct stone tile filler tile ///////////////////////////////////
     flags.reset();
     flags.set( ETILE_IMPASSABLE );
@@ -164,6 +175,17 @@ Tile TileFactory::createFloor() const
 Tile TileFactory::createDoorway() const
 {
     TileType *pTileType = mBlueprints[ ETILETYPE_DUNGEON_DOORWAY ];
+    assert( pTileType != NULL );
+
+    return Tile( pTileType );
+}
+
+/**
+ * Create and return a stairway going up
+ */
+Tile TileFactory::createStairsUp() const
+{
+    TileType *pTileType = mBlueprints[ ETILETYPE_STAIRS_UP ];
     assert( pTileType != NULL );
 
     return Tile( pTileType );

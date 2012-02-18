@@ -109,6 +109,7 @@ void ClientView::load()
     mTileSprites[ ETILETYPE_DUNGEON_WALL ]    = mSpriteManager.createSprite( "stone2_floor"  );
     mTileSprites[ ETILETYPE_DUNGEON_FLOOR ]   = mSpriteManager.createSprite( "dcss_rl_lit_corridor" );
     mTileSprites[ ETILETYPE_DUNGEON_DOORWAY ] = mSpriteManager.createSprite( "stone2_door_open" );
+    mTileSprites[ ETILETYPE_STAIRS_UP ]       = mSpriteManager.createSprite( "stone2_stairs_up" );
     mTileSprites[ ETILETYPE_FILLER_STONE  ]   = mSpriteManager.createSprite( "tile_void" );
 }
 

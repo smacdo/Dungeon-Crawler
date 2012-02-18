@@ -38,6 +38,7 @@ public:
     Tile createWall() const;
     Tile createFloor() const;
     Tile createDoorway() const;
+    Tile createStairsUp() const;
 
 private:
     std::vector<TileType*> mBlueprints;
