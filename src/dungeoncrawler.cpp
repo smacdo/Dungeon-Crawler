@@ -19,6 +19,7 @@
 #include "game/world.h"
 #include "game/gameplayengine.h"
 #include "graphics/clientview.h"
+#include "inputmanager.h"
 #include "common/platform.h"
 #include "common/utils.h"
 
@@ -49,6 +50,11 @@ int main( int argc , char* argv[] )
     }
 
     //
+    // Create the game's subsystems
+    //
+    InputManager input;
+
+    //
     // Start the game simulation
     //
     GamePlayEngine gamePlayEngine;
@@ -57,14 +63,14 @@ int main( int argc , char* argv[] )
     //
     // Main game loop
     //
-    ClientView clientView;
+    ClientView clientView( input );
     clientView.start();
 
-    while (! clientView.didUserPressQuit() )
+    while (! input.didUserPressQuit() )
     {
         // make sure all user input is taken into account before simulation
         // and rendering
-        clientView.processInput();
+        input.process();
 
         // simulate the world for a tiny timeslice
         gamePlayEngine.simulate( 1 );

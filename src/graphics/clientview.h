@@ -21,11 +21,12 @@
 
 #include "graphics/spritemanager.h"
 #include "common/rect.h"
-#include "inputmanager.h"
 
+class InputManager;
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Rect;
+struct SDL_Surface;
 class Sprite;
 class World;
 class Level;
@@ -37,7 +38,7 @@ class Actor;
 class ClientView : boost::noncopyable
 {
 public:
-    ClientView();
+    ClientView( InputManager& inputManager );
     ~ClientView();
 
     void start();
@@ -48,7 +49,6 @@ public:
 
     // remove
     bool didUserPressQuit();
-    void processInput();
 
 protected:
     void load();
@@ -65,6 +65,7 @@ protected:
     void verifySDL() const;
 
 private:
+    InputManager& mInput;
     bool mWasStarted;
     SDL_Window *mpWindow;
     SDL_Renderer * mpRenderer;
@@ -72,7 +73,6 @@ private:
     Sprite * mpPlayerSprite;
     std::vector<Sprite*> mTileSprites;
     Rect mCamera;
-    InputManager mInput;
 };
 
 #endif

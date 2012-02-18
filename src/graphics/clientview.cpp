@@ -28,6 +28,8 @@
 #include "game/dungeon.h"
 #include "game/actor.h"
 
+#include "inputmanager.h"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <boost/checked_delete.hpp>
@@ -36,7 +38,6 @@
 #include <sstream>
 #include <string>
 #include <cassert>
-
 
 namespace Config
 {
@@ -52,8 +53,9 @@ namespace Config
  * uninitialized state. Make sure to call start() before
  * using the class
  */
-ClientView::ClientView()
-    : mWasStarted( false ),
+ClientView::ClientView( InputManager& inputManager )
+    : mInput( inputManager ),
+      mWasStarted( false ),
       mpWindow( NULL ),
       mpRenderer( NULL ),
       mSpriteManager(),
@@ -177,31 +179,6 @@ void ClientView::createMainWindow()
 }
 
 /**
- * Processes input, and returns a list of commands to be executed
- */
-void ClientView::processInput()
-{
-    mInput.processInput();
-
-    // If the user moved, make sure to move the camera
-    //  (move this into a command!)
-    if ( mInput.didUserMove() )
-    {
-        moveCamera( mInput.userMoveXAxis(),
-                    mInput.userMoveYAxis() );
-    }
-}
-
-/**
- * This needs to be removed! User quitting should be a command that is
- * executed by the world engine, not us
- */
-bool ClientView::didUserPressQuit()
-{
-    return mInput.didUserPressQuit();
-}
-
-/**
  * Draws the game world
  *   todo make this const
  */
@@ -214,6 +191,12 @@ void ClientView::draw( const World& world )
     // Clear the background prior to any game rendering
     SDL_SetRenderDrawColor( mpRenderer, 255, 255, 255, 255 );
     SDL_RenderClear( mpRenderer );
+
+    if ( mInput.didUserMove() )
+    {
+        moveCamera( mInput.userMoveXAxis(),
+                    mInput.userMoveYAxis() );
+    }
 
     // Load the world's main player, so that we can draw from his/her
     // perspective
