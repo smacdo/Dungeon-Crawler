@@ -124,7 +124,7 @@ Rect RoomGenerator::generateRoomRect( int minSize, int maxSize ) const
  * \param  mainRoom  Rectangle contaning the dimensions of the primary room
  * \return Rectangle describing the dimensions of the overlapping room
  */
-Rect RoomGenerator::generateOverlapRect( int minSize,
+Rect RoomGenerator::generateOverlapRect( int,
                                          int maxSize,
                                          const Rect& mainRoom ) const
 {

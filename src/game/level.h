@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2012 Scott MacDonald. All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 #ifndef SCOTT_DUNGEON_LEVEL_H
 #define SCOTT_DUNGEON_LEVEL_H
 
@@ -18,7 +34,8 @@ class Level : boost::noncopyable
 public:
     // Level constructor
     Level( const std::string& levelName,
-           const TileGrid& tileGrid );
+           const TileGrid& tileGrid,
+           const Point& stairsUp );
 
     // Level destructor
     ~Level();
@@ -41,9 +58,13 @@ public:
     // Return the height of this level
     size_t height() const;
 
+    // Temp accessor
+    Point stairsUp() const;
+
 private:
     std::string mName;
     TileGrid mTileGrid;
+    Point mStairsUp;
 };
 
 #endif

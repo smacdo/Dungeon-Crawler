@@ -62,6 +62,10 @@ Level* LevelGenerator::generate()
                             mLevelHeight,
                             mTileFactory.createVoid() );
 
+    // temporary info for stairs... should make this better
+    Point stairsUpPos;
+    bool didPlaceStairsUp = false;
+
     std::vector<RoomData*> levelRooms;
 
     // Turn the level border tiles into impassable bedrock tiles to prevent
@@ -89,15 +93,34 @@ Level* LevelGenerator::generate()
             tilegrid.insert( placeAt, pRoomData->tiles );
             pRoomData->worldOffset = placeAt;
 
+            // Add it to the list of rooms we created
             levelRooms.push_back( pRoomData );
+
+            // Create the entrance here if we haven't already
+            if (! didPlaceStairsUp )
+            {
+                // Generate a spot to place the stairs at
+                Point p = pRoomData->worldOffset + pRoomData->floorTopLeft;
+                assert( tilegrid.get( p ).isFloor() == true );
+
+                // Add the stairs
+                Tile t = mTileFactory.createStairsUp();
+                t.flags().set( ETILE_SEALED );
+                t.flags().set( ETILE_PLACED );
+                t.flags().set( ETILE_IS_ROOM );
+
+                tilegrid.set( p, t );
+
+                // only put 'em down once
+                didPlaceStairsUp = true;
+                stairsUpPos      = p;
+            }
         }
         else
         {
             Delete( pRoomData );
         }
     }
-
-    // Show debug stats about rooms generated and whatnot
 
     // Really stupid tunneling. Connect each room to the next one
     HallGenerator hallGenerator( mRandom, mTileFactory, tilegrid );
@@ -108,8 +131,13 @@ Level* LevelGenerator::generate()
         hallGenerator.connect( levelRooms[index], levelRooms[nextIndex] );   
     }
 
+    // Make sure stairs were placed
+    assert( didPlaceStairsUp == true );
+
     // Return the generated level
-    return new Level( "Default Level", tilegrid );
+    return new Level( "Default Level",
+                      tilegrid,
+                      stairsUpPos );
 }
 
 /**

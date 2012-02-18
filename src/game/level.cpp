@@ -1,5 +1,22 @@
+/*
+ * Copyright (C) 2012 Scott MacDonald. All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "game/level.h"
 #include "game/tile.h"
+#include "game/tiletype.h"
 #include "common/utils.h"
 
 #include <iostream>
@@ -9,12 +26,20 @@
 #include <cassert>
 
 /**
- * Level constructor. Creates a new level
+ * Level constructor
+ *
+ * \param  levelName  Name of the levle
+ * \param  grid       The tile grid that represents this level
+ * \param  stairsUp   Location of the stairs up
  */
-Level::Level( const std::string& levelName, const TileGrid& grid )
+Level::Level( const std::string& levelName,
+              const TileGrid& grid,
+              const Point& stairsUp )
     : mName( levelName ),
-      mTileGrid( grid )
+      mTileGrid( grid ),
+      mStairsUp( stairsUp )
 {
+    assert( mTileGrid.get( mStairsUp ).tileid() == ETILETYPE_STAIRS_UP );
     // empty
 }
 
@@ -93,4 +118,12 @@ size_t Level::width() const
 size_t Level::height() const
 {
     return mTileGrid.height();
+}
+
+/**
+ * Return the location of the stairs up. This should be changed
+ */
+Point Level::stairsUp() const
+{
+    return mStairsUp;
 }

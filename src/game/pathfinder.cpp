@@ -171,7 +171,6 @@ std::vector<Point> PathFinder::findPath( const Point& start, const Point& dest )
         // Reverse the list, so the caller sees it as a list of points from
         // the start to the end
         std::reverse( path.begin(), path.end() );
-        std::cout << "Created a path" << std::endl;
     }
     else
     {

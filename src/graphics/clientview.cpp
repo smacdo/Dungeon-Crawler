@@ -26,6 +26,7 @@
 #include "game/level.h"
 #include "game/world.h"
 #include "game/dungeon.h"
+#include "game/actor.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -56,6 +57,7 @@ ClientView::ClientView()
       mpWindow( NULL ),
       mpRenderer( NULL ),
       mSpriteManager(),
+      mpPlayerSprite( NULL ),
       mCamera( 0, 0, Config::DefaultScreenWidth, Config::DefaultScreenHeight )
 {
 }
@@ -92,6 +94,7 @@ void ClientView::load()
     SpriteLoader loader( mSpriteManager );
 
     loader.loadSpritesFromXml( "data/sprites/tiles.xml" );
+    loader.loadSpritesFromXml( "data/sprites/players.xml" );
 
     if ( loader.hasErrors() )
     {
@@ -111,6 +114,8 @@ void ClientView::load()
     mTileSprites[ ETILETYPE_DUNGEON_DOORWAY ] = mSpriteManager.createSprite( "stone2_door_open" );
     mTileSprites[ ETILETYPE_STAIRS_UP ]       = mSpriteManager.createSprite( "stone2_stairs_up" );
     mTileSprites[ ETILETYPE_FILLER_STONE  ]   = mSpriteManager.createSprite( "tile_void" );
+
+    mpPlayerSprite = mSpriteManager.createSprite( "hunter" );
 }
 
 /**
@@ -216,6 +221,9 @@ void ClientView::draw( World& world )
     
     drawGameLevel( deref(level.get()) );
 
+    // Draw the player
+    drawPlayer( deref( world.player() ) );
+
     // Render the backbuffer to the actual display
     SDL_RenderPresent( mpRenderer );
 }
@@ -250,6 +258,21 @@ void ClientView::drawGameLevel( const Level& level )
                         bounds.y() - mCamera.y(),
                         deref( pTileSprite) );
         }
+    }
+}
+
+void ClientView::drawPlayer( const Actor& player )
+{
+    Point pos    = player.position();
+    Point drawAt = Point( pos.x() * 32, pos.y() * 32 );
+
+    // Only draw the player if they are on the screen
+    if ( mCamera.contains( drawAt ) )
+    {
+        drawSprite( drawAt.x() - mCamera.x(),
+                    drawAt.y() - mCamera.y(),
+                    deref(mpPlayerSprite) );
+        
     }
 }
 

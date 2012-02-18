@@ -6,6 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #include <map>
 #include <vector>
+#include <memory>
 #include <boost/checked_delete.hpp>
 #include <algorithm>
 
@@ -112,6 +113,15 @@ template<typename T>
 inline T& deref( T* ptr )
 {
     assert( ptr != NULL );
+    return *ptr;
+}
+
+template<typename T>
+inline T& deref( std::shared_ptr<T> sharedPtr )
+{
+    T* ptr = sharedPtr.get();
+    assert( ptr != NULL );
+
     return *ptr;
 }
 

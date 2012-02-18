@@ -16,13 +16,14 @@
  */
 #include "dungeoncrawler.h"
 #include "appconfig.h"
-#include "game/dungeon.h"
 #include "game/tilefactory.h"
 #include "game/world.h"
+#include "game/actor.h"
 
-#include "worldgen/dungeongenerator.h"
+#include "worldgen/worldgenerator.h"
 #include "graphics/clientview.h"
 #include "common/platform.h"
+#include "common/utils.h"
 
 #include <string>
 #include <iostream>
@@ -50,17 +51,31 @@ int main( int argc , char* argv[] )
         App::raiseFatalError( "Failed to init SDL", SDL_GetError() );
     }
 
+    //
     // Construct a world to play in
+    //
     const size_t levelWidth  = 76;
     const size_t levelHeight = 50;
     const size_t levelSeed   = 42;
 
     TileFactory tileManager;
+    
+    WorldGenerator worldGen( levelWidth, levelHeight, levelSeed );
 
-    DungeonGenerator generator( tileManager, levelWidth, levelHeight, levelSeed );
-    Dungeon *pDungeon = generator.generate();
+    // Generate a new game world to play in
+    World * pWorld = worldGen.generate( tileManager );
+    assert( pWorld != NULL );
 
-    World  world( pDungeon );
+    // Spawn the player's character and wire it up
+    std::shared_ptr<Actor> pPlayer =
+        std::shared_ptr<Actor>( new Actor( pWorld->spawnLevel(),
+                                           pWorld->spawnPoint() ) );
+
+    pWorld->addPlayer( pPlayer );
+//    
+//    Actor * pActor = new Actor;
+
+    
 
     //
     // Main game loop
@@ -76,10 +91,10 @@ int main( int argc , char* argv[] )
         clientView.processInput();
 
         // simulate the world for a tiny timeslice
-        world.simulate( 1 );
+        pWorld->simulate( 1 );
 
         // and now draw the world
-        clientView.draw( world );
+        clientView.draw( deref( pWorld ) );
     }
 
     // all done. it worked!

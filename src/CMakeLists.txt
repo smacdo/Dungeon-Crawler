@@ -30,6 +30,7 @@ set(worldgen_srcs
         worldgen/dungeongenerator.cpp
         worldgen/roomgenerator.cpp
         worldgen/hallgenerator.cpp
+        worldgen/worldgenerator.cpp
 )
 
 set(worldgen_headers
@@ -37,6 +38,7 @@ set(worldgen_headers
         worldgen/hallgenerator.h
         worldgen/levelgenerator.h
         worldgen/roomgenerator.h
+        worldgen/worldgenerator.h
 )
 
 set(graphics_srcs 
@@ -62,6 +64,7 @@ set(engine_headers
 )
 
 set(game_srcs
+        game/actor.cpp
         game/dungeon.cpp
         game/level.cpp
         game/tile.cpp
@@ -73,6 +76,7 @@ set(game_srcs
 )
 
 set(game_headers
+        game/actor.h
         game/dungeon.h
         game/level.h
         game/tile.h

@@ -29,6 +29,7 @@ struct SDL_Rect;
 class Sprite;
 class World;
 class Level;
+class Actor;
 
 /**
  * Displays the game graphically
@@ -54,6 +55,7 @@ protected:
     void unload();
 
     void drawGameLevel( const Level& level );
+    void drawPlayer( const Actor& actor );
 
     SDL_Surface* loadImage( const std::string& filename );
     void drawSprite( int x, int y, const Sprite& sprite );
@@ -67,6 +69,7 @@ private:
     SDL_Window *mpWindow;
     SDL_Renderer * mpRenderer;
     SpriteManager mSpriteManager;
+    Sprite * mpPlayerSprite;
     std::vector<Sprite*> mTileSprites;
     Rect mCamera;
     InputManager mInput;
