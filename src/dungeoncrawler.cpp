@@ -18,6 +18,7 @@
 #include "appconfig.h"
 #include "game/world.h"
 #include "game/gameplayengine.h"
+#include "game/playerinputcontroller.h"
 #include "graphics/clientview.h"
 #include "inputmanager.h"
 #include "common/platform.h"
@@ -28,6 +29,7 @@
 #include <fstream>
 
 #include <boost/program_options.hpp>
+#include <SDL2/SDL.h>
 
 AppConfig parseCommandLineArgs( int argc, char** args );
 
@@ -53,11 +55,12 @@ int main( int argc , char* argv[] )
     // Create the game's subsystems
     //
     InputManager input;
+    PlayerInputController inputController;
 
     //
     // Start the game simulation
     //
-    GamePlayEngine gamePlayEngine;
+    GamePlayEngine gamePlayEngine( inputController );
     gamePlayEngine.createNewWorld();
 
     //
@@ -71,9 +74,10 @@ int main( int argc , char* argv[] )
         // make sure all user input is taken into account before simulation
         // and rendering
         input.process();
+        inputController.update( input );
 
         // simulate the world for a tiny timeslice
-        gamePlayEngine.simulate( 1 );
+        gamePlayEngine.simulate();
 
         // and now draw the world
         clientView.draw( gamePlayEngine.activeWorld() );

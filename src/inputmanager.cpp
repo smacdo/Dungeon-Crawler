@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 #include "inputmanager.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <cassert>
 
 InputManager::InputManager()
     : mUserPressedQuit( false ),
       mDidUserMove( false ),
+      mUserMovement(),
       mUserMoveX( 0 ),
       mUserMoveY( 0 )
 {
@@ -41,6 +42,7 @@ void InputManager::process()
     // Clear out last time's input values
     mUserPressedQuit = false;
     mDidUserMove     = false;
+    mUserMovement    = Point( 0, 0 );
 
     mUserMoveX = 0;
     mUserMoveY = 0;
@@ -87,31 +89,60 @@ void InputManager::processKeypress( const SDL_Event& event )
             break;
 
         case SDLK_UP:
-        case SDLK_w:
-            mDidUserMove = true;
             mUserMoveY   = -1;
             break;
 
         case SDLK_DOWN:
-        case SDLK_s:
-            mDidUserMove = true;
             mUserMoveY   = 1;
             break;
 
         case SDLK_LEFT:
-        case SDLK_a:
-            mDidUserMove = true;
             mUserMoveX   = -1;
             break;
 
         case SDLK_RIGHT:
-        case SDLK_d:
-            mDidUserMove = true;
             mUserMoveX   = 1;
+            break;
+
+        case SDLK_KP_7:
+            mUserMovement = Point( -1, -1 );
+            break;
+
+        case SDLK_KP_8:
+            mUserMovement = Point( 0, -1 );
+            break;
+
+        case SDLK_KP_9:
+            mUserMovement = Point( 1, -1 );
+            break;
+
+        case SDLK_KP_4:
+            mUserMovement = Point( -1, 0 );
+            break;
+
+        case SDLK_KP_6:
+            mUserMovement = Point( 1, 0 );
+            break;
+
+        case SDLK_KP_1:
+            mUserMovement = Point( -1, 1 );
+            break;
+
+        case SDLK_KP_2:
+            mUserMovement = Point( 0, 1 );
+            break;
+
+        case SDLK_KP_3:
+            mUserMovement = Point( 1, 1 );
             break;
 
         default:
             break;
+    }
+
+    if ( mUserMovement.x() != 0 || mUserMovement.y() != 0 )
+    {
+        mDidUserMove = true;
     }
 }
 
@@ -136,4 +167,9 @@ int InputManager::userMoveXAxis() const
 int InputManager::userMoveYAxis() const
 {
     return mUserMoveY;
+}
+
+Point InputManager::userMovement() const
+{
+    return mUserMovement;
 }

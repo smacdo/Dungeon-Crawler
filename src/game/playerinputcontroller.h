@@ -13,41 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SCOTT_DUNGEON_INPUT_MANAGER_H
-#define SCOTT_DUNGEON_INPUT_MANAGER_H
+#ifndef SCOTT_DUNGEON_PLAYER_INPUT_CONTROLLER_H
+#define SCOTT_DUNGEON_PLAYER_INPUT_CONTROLLER_H
 
-#include "common/point.h"
+#include <memory>
+#include <boost/utility.hpp>
 
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_events.h>
+class Actor;
+class InputManager;
 
-class InputManager
+/**
+ * A plyaer input controller is the interface between the game's input state,
+ * the actions fed into an actor and the resulting UI reactions
+ */
+class PlayerInputController : boost::noncopyable
 {
 public:
-    InputManager();
-    ~InputManager();
+    PlayerInputController();
+    ~PlayerInputController();
 
-    void process();
-
-    bool didUserPressQuit() const;
-    bool didUserMove() const;
-
-    int userMoveXAxis() const;
-    int userMoveYAxis() const;
-
-    Point userMovement() const;
+    void attachTo( std::shared_ptr<Actor> pActor );
+    void update( const InputManager& input );
 
 private:
-    void processKeypress( const SDL_Event& event );
-
-    bool mUserPressedQuit;
-    bool mDidUserMove;
-
-    Point mUserMovement;
-
-    int mUserMoveX;
-    int mUserMoveY;
+    std::shared_ptr<Actor> mpActor;
 };
 
 #endif
-

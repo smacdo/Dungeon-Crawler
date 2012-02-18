@@ -13,41 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SCOTT_DUNGEON_INPUT_MANAGER_H
-#define SCOTT_DUNGEON_INPUT_MANAGER_H
+#ifndef SCOTT_DUNGEON_ACTOR_CONTROLLER_H
+#define SCOTT_DUNGEON_ACTOR_CONTROLLER_H
 
-#include "common/point.h"
+#include <memory>
+#include <boost/utility.hpp>
 
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_events.h>
+class Actor;
 
-class InputManager
+/**
+ * This class controls the movement and actions of an actor
+ */
+class ActorController : boost::noncopyable
 {
 public:
-    InputManager();
-    ~InputManager();
-
-    void process();
-
-    bool didUserPressQuit() const;
-    bool didUserMove() const;
-
-    int userMoveXAxis() const;
-    int userMoveYAxis() const;
-
-    Point userMovement() const;
+    ActorController( std::shared_ptr<Actor> pActor );
+    ~ActorController();
 
 private:
-    void processKeypress( const SDL_Event& event );
-
-    bool mUserPressedQuit;
-    bool mDidUserMove;
-
-    Point mUserMovement;
-
-    int mUserMoveX;
-    int mUserMoveY;
+    std::shared_ptr<Actor> mpActor;
 };
 
 #endif
-

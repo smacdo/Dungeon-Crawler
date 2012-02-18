@@ -192,7 +192,7 @@ void ClientView::draw( const World& world )
     SDL_SetRenderDrawColor( mpRenderer, 255, 255, 255, 255 );
     SDL_RenderClear( mpRenderer );
 
-    if ( mInput.didUserMove() )
+    if ( mInput.userMoveXAxis() != 0 || mInput.userMoveYAxis() != 0 )
     {
         moveCamera( mInput.userMoveXAxis(),
                     mInput.userMoveYAxis() );

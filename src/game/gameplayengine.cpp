@@ -18,6 +18,8 @@
 #include "game/actor.h"
 #include "game/world.h"
 #include "game/level.h"
+#include "game/playerinputcontroller.h"
+#include "game/actorcontroller.h"
 
 #include "worldgen/worldgenerator.h"
 
@@ -33,9 +35,10 @@ namespace
 /**
  * Game play engine constructor
  */
-GamePlayEngine::GamePlayEngine()
+GamePlayEngine::GamePlayEngine( PlayerInputController& inputController )
     : mpWorld( NULL ),
       mpTileFactory( new TileFactory ),
+      mInputController( inputController ),
       mpPlayerActor()
 {
 
@@ -53,10 +56,18 @@ GamePlayEngine::~GamePlayEngine()
 /**
  * Runs the world simulation
  */
-void GamePlayEngine::simulate( unsigned int iterations )
+void GamePlayEngine::simulate()
 {
-    assert( mpWorld );
-    mpWorld->simulate( iterations );
+    assert( mpWorld       && "Cannot simulate game without a world" );
+    assert( mpPlayerActor && "Must have an active player to simulate game" );
+    
+
+    // Update all actor controllers (both the player's input and the game's
+    // AI controllers)
+    
+
+    // Now simulate the game world
+    //mpWorld->simulate( 1 );
 }
 
 /**
@@ -79,6 +90,8 @@ void GamePlayEngine::createNewWorld()
 
     mpWorld->addPlayer( mpPlayerActor );
 
+    // Update the player controller
+    mInputController.attachTo( mpPlayerActor );
 }
 
 /**

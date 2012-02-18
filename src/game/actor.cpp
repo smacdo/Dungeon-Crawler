@@ -38,11 +38,38 @@ Actor::~Actor()
 }
 
 /**
+ * Tells the actor to update itself
+ */
+void Actor::update()
+{
+}
+
+/**
  * Return our position
  */
 Point Actor::position() const
 {
     return mPosition;
+}
+
+/**
+ * Set the actor's position. Note that this position he is being placed at must
+ * be a valid position for him
+ */
+void Actor::setPosition( const Point& point )
+{
+    assert( mpActiveLevel && "Actor must be attached to a level" );
+    Tile tile = mpActiveLevel->tileAt( point );
+
+    // Is this a valid position for the actor?
+    if ( tile.isImpassable() || tile.isWall() )
+    {
+        App::raiseFatalError( "Attempted to place actor at invalid location" );
+    }
+    else
+    {
+        mPosition = point;
+    }
 }
 
 /**

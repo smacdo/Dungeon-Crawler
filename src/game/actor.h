@@ -38,6 +38,12 @@ public:
     // The actor's position
     Point position() const;
 
+    // Set a new position for the actor
+    void setPosition( const Point& point );
+
+    // Tells the actor to update itself
+    void update();
+
     // The level that this actor is currently in
     std::shared_ptr<Level> activeLevel();
 

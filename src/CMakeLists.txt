@@ -65,6 +65,7 @@ set(engine_headers
 
 set(game_srcs
         game/actor.cpp
+        game/actorcontroller.cpp
         game/gameplayengine.cpp
         game/dungeon.cpp
         game/level.cpp
@@ -73,11 +74,13 @@ set(game_srcs
         game/tilegrid.cpp
         game/tiletype.cpp
         game/pathfinder.cpp
+        game/playerinputcontroller.cpp
         game/world.cpp
 )
 
 set(game_headers
         game/actor.h
+        game/actorcontroller.h
         game/gameplayengine.h
         game/dungeon.h
         game/level.h
@@ -87,6 +90,7 @@ set(game_headers
         game/tilegrid.h
         game/tiletype.h
         game/pathfinder.h
+        game/playerinputcontroller.cpp
         game/world.h
 )
 

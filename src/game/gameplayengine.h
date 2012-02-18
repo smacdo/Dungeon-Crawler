@@ -20,6 +20,9 @@
 #include "game/gameplayengine.h"
 
 class TileFactory;
+class InputManager;
+class PlayerInputController;
+class ActorController;
 class World;
 class Actor;
 
@@ -34,11 +37,11 @@ class Actor;
 class GamePlayEngine
 {
 public:
-    GamePlayEngine();
+    GamePlayEngine( PlayerInputController& inputController );
     ~GamePlayEngine();
 
     // Simulate the game world for one or more iterations
-    void simulate( unsigned int iterations );
+    void simulate();
 
     // This creates a new world and spawns a player into it
     void createNewWorld();
@@ -52,6 +55,7 @@ public:
 private:
     World * mpWorld;
     TileFactory * mpTileFactory;
+    PlayerInputController& mInputController;
     std::shared_ptr<Actor> mpPlayerActor;
 };
 
