@@ -71,6 +71,14 @@ std::shared_ptr<Dungeon> World::mainDungeon()
 }
 
 /**
+ * Returns a shared constant pointer to the main dungeon in the world
+ */
+std::shared_ptr<const Dungeon> World::mainDungeon() const
+{
+    return mpMainDungeon;
+}
+
+/**
  * Returns a shared pointer to the level that players initially spawn in when
  * they start playing
  */
@@ -91,7 +99,15 @@ Point World::spawnPoint() const
 /**
  * Returns a shared pointer to the active player
  */
-std::shared_ptr<Actor> World::player()
+std::shared_ptr<Actor> World::activePlayer()
+{
+    return mpPlayer;
+}
+
+/**
+ * Returns a shared pointer to the active player
+ */
+std::shared_ptr<const Actor> World::activePlayer() const
 {
     return mpPlayer;
 }

@@ -52,3 +52,12 @@ std::shared_ptr<Level> Actor::activeLevel()
 {
     return mpActiveLevel;
 }
+
+/**
+ * Return a shared constant pointer to the level that this actor is residing
+ * in
+ */
+std::shared_ptr<const Level> Actor::activeLevel() const
+{
+    return mpActiveLevel;
+}

@@ -41,6 +41,9 @@ public:
     // The level that this actor is currently in
     std::shared_ptr<Level> activeLevel();
 
+    // Constant pointer to this actor's level
+    std::shared_ptr<const Level> activeLevel() const;
+
 private:
     std::shared_ptr<Level> mpActiveLevel;
     Point mPosition;

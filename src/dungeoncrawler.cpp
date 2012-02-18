@@ -16,11 +16,8 @@
  */
 #include "dungeoncrawler.h"
 #include "appconfig.h"
-#include "game/tilefactory.h"
 #include "game/world.h"
-#include "game/actor.h"
-
-#include "worldgen/worldgenerator.h"
+#include "game/gameplayengine.h"
 #include "graphics/clientview.h"
 #include "common/platform.h"
 #include "common/utils.h"
@@ -52,36 +49,15 @@ int main( int argc , char* argv[] )
     }
 
     //
-    // Construct a world to play in
+    // Start the game simulation
     //
-    const size_t levelWidth  = 76;
-    const size_t levelHeight = 50;
-    const size_t levelSeed   = 42;
-
-    TileFactory tileManager;
-    
-    WorldGenerator worldGen( levelWidth, levelHeight, levelSeed );
-
-    // Generate a new game world to play in
-    World * pWorld = worldGen.generate( tileManager );
-    assert( pWorld != NULL );
-
-    // Spawn the player's character and wire it up
-    std::shared_ptr<Actor> pPlayer =
-        std::shared_ptr<Actor>( new Actor( pWorld->spawnLevel(),
-                                           pWorld->spawnPoint() ) );
-
-    pWorld->addPlayer( pPlayer );
-//    
-//    Actor * pActor = new Actor;
-
-    
+    GamePlayEngine gamePlayEngine;
+    gamePlayEngine.createNewWorld();
 
     //
     // Main game loop
     //
     ClientView clientView;
-
     clientView.start();
 
     while (! clientView.didUserPressQuit() )
@@ -91,10 +67,10 @@ int main( int argc , char* argv[] )
         clientView.processInput();
 
         // simulate the world for a tiny timeslice
-        pWorld->simulate( 1 );
+        gamePlayEngine.simulate( 1 );
 
         // and now draw the world
-        clientView.draw( deref( pWorld ) );
+        clientView.draw( gamePlayEngine.activeWorld() );
     }
 
     // all done. it worked!

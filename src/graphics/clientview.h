@@ -43,7 +43,7 @@ public:
     void start();
 
     // todo make this const
-    void draw( World& world );
+    void draw( const World& world );
     void moveCamera( int x, int y );
 
     // remove

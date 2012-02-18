@@ -44,8 +44,10 @@ public:
     void simulate( size_t sliceCount );
 
     std::shared_ptr<Dungeon> mainDungeon();
+    std::shared_ptr<const Dungeon> mainDungeon() const;
     std::shared_ptr<Level> spawnLevel();
-    std::shared_ptr<Actor> player();
+    std::shared_ptr<Actor> activePlayer();
+    std::shared_ptr<const Actor> activePlayer() const;
 
     Point spawnPoint() const;
 

@@ -205,7 +205,7 @@ bool ClientView::didUserPressQuit()
  * Draws the game world
  *   todo make this const
  */
-void ClientView::draw( World& world )
+void ClientView::draw( const World& world )
 {
     // Sanity checks first!
     assert( mpWindow != NULL );
@@ -215,14 +215,18 @@ void ClientView::draw( World& world )
     SDL_SetRenderDrawColor( mpRenderer, 255, 255, 255, 255 );
     SDL_RenderClear( mpRenderer );
 
-    // Draw the main game level
-    std::shared_ptr<Dungeon> dungeon = world.mainDungeon();
-    std::shared_ptr<Level>   level   = dungeon->getLevel( 0 );
-    
-    drawGameLevel( deref(level.get()) );
+    // Load the world's main player, so that we can draw from his/her
+    // perspective
+    std::shared_ptr<const Actor> pPlayer = world.activePlayer();
+    assert( pPlayer != NULL );
+
+    // Query the player's actor for the current level. Once we have that,
+    // render it to the screen
+    std::shared_ptr<const Level> pLevel = pPlayer->activeLevel();
+    drawGameLevel( deref( pLevel ) );
 
     // Draw the player
-    drawPlayer( deref( world.player() ) );
+    drawPlayer( deref( pPlayer ) );
 
     // Render the backbuffer to the actual display
     SDL_RenderPresent( mpRenderer );

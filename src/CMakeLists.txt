@@ -65,6 +65,7 @@ set(engine_headers
 
 set(game_srcs
         game/actor.cpp
+        game/gameplayengine.cpp
         game/dungeon.cpp
         game/level.cpp
         game/tile.cpp
@@ -77,6 +78,7 @@ set(game_srcs
 
 set(game_headers
         game/actor.h
+        game/gameplayengine.h
         game/dungeon.h
         game/level.h
         game/tile.h
