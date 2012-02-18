@@ -37,6 +37,7 @@ public:
     Tile createVoid() const;
     Tile createWall() const;
     Tile createFloor() const;
+    Tile createDoorway() const;
 
 private:
     std::vector<TileType*> mBlueprints;

@@ -104,11 +104,12 @@ void ClientView::load()
     //    an XML file instead)
     //
     mTileSprites.resize( ETILETYPE_COUNT );
-    mTileSprites[ ETILETYPE_VOID ]          = mSpriteManager.createSprite( "tile_void" );
-    mTileSprites[ ETILETYPE_GRANITE ]       = mSpriteManager.createSprite( "tile_blocked" );
-    mTileSprites[ ETILETYPE_DUNGEON_WALL ]  = mSpriteManager.createSprite( "stone2_floor"  );
-    mTileSprites[ ETILETYPE_DUNGEON_FLOOR ] = mSpriteManager.createSprite( "dcss_rl_lit_corridor" );
-    mTileSprites[ ETILETYPE_FILLER_STONE  ] = mSpriteManager.createSprite( "tile_void" );
+    mTileSprites[ ETILETYPE_VOID ]            = mSpriteManager.createSprite( "tile_void" );
+    mTileSprites[ ETILETYPE_GRANITE ]         = mSpriteManager.createSprite( "tile_blocked" );
+    mTileSprites[ ETILETYPE_DUNGEON_WALL ]    = mSpriteManager.createSprite( "stone2_floor"  );
+    mTileSprites[ ETILETYPE_DUNGEON_FLOOR ]   = mSpriteManager.createSprite( "dcss_rl_lit_corridor" );
+    mTileSprites[ ETILETYPE_DUNGEON_DOORWAY ] = mSpriteManager.createSprite( "stone2_door_open" );
+    mTileSprites[ ETILETYPE_FILLER_STONE  ]   = mSpriteManager.createSprite( "tile_void" );
 }
 
 /**

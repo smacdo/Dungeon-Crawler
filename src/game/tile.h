@@ -69,6 +69,12 @@ public:
     // Check if this tile is considered part of a hallway
     bool isInHall() const;
 
+    // Check if the this tile is masked (unable to be modified)
+    bool isSealed() const;
+
+    // Sets this tile to be masked or unmasked
+    void setIsSealed( bool flag );
+
     // Get a reference to this tile's flags
     TileFlagSet& flags();
 

@@ -166,6 +166,30 @@ bool Tile::isPlaced() const
 }
 
 /**
+ * Check if a tile is masked by the generator. A masked tile means that the
+ * tile generator should avoid making modification to this tile.
+ */
+bool Tile::isSealed() const
+{
+    return mFlags.test( ETILE_SEALED );
+}
+
+/**
+ * Sets or unsets the mask flag on this tile
+ */
+void Tile::setIsSealed( bool flag )
+{
+    if ( flag )
+    {
+        mFlags.set( ETILE_SEALED );
+    }
+    else
+    {
+        mFlags.reset( ETILE_SEALED );
+    }
+}
+
+/**
  * Returns the id of this tile
  */
 unsigned int Tile::tileid() const

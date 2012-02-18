@@ -19,6 +19,7 @@
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/array.hpp>
 
 /**
  * Hall generator constructor
@@ -57,10 +58,24 @@ void HallGenerator::connect( RoomData *pStartRoom, RoomData *pEndRoom )
     // Find a path between the two rooms
     std::vector<Point> path = mPathFinder.findPath( start, end );
 
+    // Neighbor positions
+    const boost::array<Point, 8> NEIGHBOR_DIRS
+    {
+        Point(  0, -1 ),  // up
+        Point(  1, -1 ),  // upper right
+        Point(  1,  0 ),  // right
+        Point(  1,  1 ),  // lower right
+        Point(  0,  1 ),  // down
+        Point( -1,  1 ),  // lower left
+        Point( -1,  0 ),  // left
+        Point( -1, -1 ),  // upper left
+    };
+
     // Generate the wall and floor tile templates, and make sure to flag these
     // as being part of a hallway
     Tile floorTile = mTileFactory.createFloor();
     Tile wallTile  = mTileFactory.createWall();
+    Tile doorTile  = mTileFactory.createDoorway();
 
     floorTile.flags().set( ETILE_PLACED );
     floorTile.flags().set( ETILE_IS_HALL );
@@ -68,10 +83,92 @@ void HallGenerator::connect( RoomData *pStartRoom, RoomData *pEndRoom )
     wallTile.flags().set( ETILE_PLACED );
     wallTile.flags().set( ETILE_IS_HALL );
 
-    // Carve the path out
+    doorTile.flags().set( ETILE_PLACED );
+    doorTile.flags().set( ETILE_IS_ROOM );
+
+    // Scan the returned hallway path. We will need to take note of where
+    // to generate hallway tiles, door tiles and other things before proceeding
+    // with the actual hallway construction
+    std::vector<Point> carvePoints;
+    std::vector<Point> doorPoints;
+
+    carvePoints.reserve( path.size() );
+    doorPoints.reserve( path.size() );
+  
     for ( auto itr = path.begin(); itr != path.end(); ++itr )
     {
+        Point point = *itr;
+        Tile tile   = mTileGrid.get( point );
+
+        // Freak out if we cannot modify this tile (the pathway generator
+        // should have prevented this!)
+        assert( tile.isSealed() == false );
+
+        // Do not modify the tile if it inside of a room, unless we are piercing
+        // a wall (in which deploy a floor)
+        if ( tile.isInRoom() )
+        {
+            if ( tile.isWall() )
+            {
+                doorPoints.push_back( point );
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        // Pierce through a wallways
+        if ( tile.isInHall() )
+        {
+            carvePoints.push_back( point );
+        }
+
+        // Create the hall point here
+        carvePoints.push_back( point );
+    }
+
+    // Carve out the hallway tiles
+    for ( auto itr = carvePoints.begin(); itr != carvePoints.end(); ++itr )
+    {
         mTileGrid.set( *itr, floorTile );
+    }
+
+    // Dude it's a door. Mask any walls next to this tile to prevent doors
+    // from being adjacent to each other
+    for ( auto itr = doorPoints.begin(); itr != doorPoints.end(); ++itr )
+    {
+        mTileGrid.set( *itr, doorTile );
+
+        for ( auto neighbor  = NEIGHBOR_DIRS.begin();
+                   neighbor != NEIGHBOR_DIRS.end();
+                 ++neighbor )
+        {
+            Point p = *itr + *neighbor;
+
+            if ( mTileGrid.get( p ).isWall() )
+            {
+                mTileGrid.get( *itr + *neighbor ).setIsSealed( true );
+            }
+        }
+    }
+
+    // Once the hallway tiles have been cut out, we can proceed with the walling
+    // the sides of the hallway off (unless there is an already existing tile
+    // there)
+    for ( auto itr = carvePoints.begin(); itr != carvePoints.end(); ++itr )
+    {
+        for ( auto neighbor  = NEIGHBOR_DIRS.begin();
+                   neighbor != NEIGHBOR_DIRS.end();
+                 ++neighbor )
+        {
+            Point p = *neighbor + *itr;
+
+            if (! mTileGrid.get( p ).isPlaced() )
+            {
+                mTileGrid.set( p, wallTile );
+            }
+        }
     }
 
     // Reset our generator before beginning
@@ -115,13 +212,6 @@ int HallGenerator::findMovementCost( const Point& from,
     Tile& fromTile = mTileGrid.get( from );
     Tile& toTile   = mTileGrid.get( to );
 
-    // Calcualte the forward velocity of the movement
-    //  (used to figure out the next tile straight)
-    int xDistance = std::abs( to.x() - from.x() );
-    int yDistance = std::abs( to.y() - from.y() );
-
-    Tile& nextTile = mTileGrid.get( Point( xDistance, yDistance ) );
-
     // Factor in the basic cost of movement
     int movementCost = MOVE_BASE_COST;
     int turnPenalty  = 0;
@@ -139,6 +229,20 @@ int HallGenerator::findMovementCost( const Point& from,
         return ILLEGAL_MOVE;
     }
 
+    // Avoid tiles that are sealed
+    if ( toTile.isSealed() )
+    {
+        return ILLEGAL_MOVE;
+    }
+
+    // Calcualte the forward velocity of the movement
+    //  (used to figure out the next tile straight)
+    int xDistance   = std::abs( to.x() - from.x() );
+    int yDistance   = std::abs( to.y() - from.y() );
+    Point nextPoint = Point( xDistance, yDistance ) + to;
+
+    Tile& nextTile = mTileGrid.get( nextPoint );
+
     // Factor in the cost of turning, unless this is the first path node from
     // the origin
     if ( (prev.x() != to.x()) && (prev.y() != to.y()) &&
@@ -149,16 +253,16 @@ int HallGenerator::findMovementCost( const Point& from,
 
     // Check if we are in a room? (TODO: Make this more nuanced then a simple
     // are you a floor)
-    if ( fromTile.isInRoom() )
+    if ( toTile.isInRoom() )
     {
-        // Make sure we are not entering in a corner
+        // Make sure we are not entering a room in an awkward position
         if ( toTile.isWall() && nextTile.isWall() )
         {
             return ILLEGAL_MOVE;
         }
 
         // Make sure we do not turn while we are in a room's wall
-        else if ( fromTile.isWall() && toTile.isWall() && turnPenalty > 0 )
+        if ( fromTile.isWall() && toTile.isWall() && turnPenalty > 0 )
         {
             return ILLEGAL_MOVE;
         }
@@ -168,7 +272,7 @@ int HallGenerator::findMovementCost( const Point& from,
     }
 
     // Is this a hallway? We like hallways
-    if ( toTile.isInHall() )
+    if ( toTile.isInHall() && toTile.isFloor() )
     {
         movementCost /= 3;
         turnPenalty   = 0;      // merge the intersection

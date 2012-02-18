@@ -72,7 +72,7 @@ Level* LevelGenerator::generate()
                         mTileFactory.createFiller() );
 
     // Generate the requested number of rooms
-    for ( int i = 0; i < 150; ++i )
+    for ( int i = 0; i < 250; ++i )
     {
         // Generate a random room
         ERoomSize roomSize  = generateRandomRoomSize( ROOM_SIZE_LARGE );

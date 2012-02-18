@@ -1,0 +1,14 @@
+A lot of this is temporary and even possibly out of date! I created this
+file as a way for new contributers to add content to the game... also as an
+incentive for me to stop hardcoding game data and move it into data files :)
+
+Adding a new tile
+======================================================
+ - Load tiletype.h, and add a definition to ETileType. This value will be the
+   ID for your new tile
+ - Modify tilefactory.cpp. Look at the lines for the other tile types, and copy
+   what they've done
+ - Modify clientview.cpp, near the lines that start with
+   mTileSprites[ ETILETYPE... ]. The array value is the tile's ID and the
+   string parameter to createSprite is the name of the sprite
+
