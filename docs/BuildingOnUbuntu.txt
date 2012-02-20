@@ -1,74 +1,83 @@
-Required packages
------------------
-build-essential mercurial make autoconf automake 
-libtool libasound2-dev libpulse-dev libaudio-dev libx11-dev libxext-dev 
-libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev libxxf86vm-dev 
-libxss-dev libgl1-mesa-dev libesd0-dev 
-
-libjpeg-dev
-libpng-dev
-libtff-dev
-libsmpeg-dev
-libflac-dev
-libmikmod2-dev
-libfreetype6-dev
-
-libboost-dev
-libboost-filesystem-dev
-libboost-program-options-dev
-libboost-regex-dev
-libboost-serialization-dev
-libboost-system-dev
-libboost-thread-dev
-
-cmake
-
-Optional Packages
-=========================
-Ruby 1.9
-rmagick
-rmagick2 (ruby gem)
-
-
-Building
+Building Dungeon Crawler
 =========================
 
-Building SDL 1.3
------------------
-Ubuntu does not come with packages for SDL 1.3 (yet), so we must
-manually build them. These instructions assume that you do not
-already have SDL 1.2 installed (but it might work). Set up all your
-build dependencies, and then checkout the SDL code somewhere
 
-hg clone http://hg.libsdl.org/SDL
-cd SDL
-./autogen.sh
-mkdir build
-cd build
-../configure 
-make 
-sudo make install 
+On Ubuntu Linux
+-------------------------
+Ubuntu Linux is Dungeon Crawler's officially supported linux distribution. The project requires Ubuntu 11.10 ("Oneiric Ocelot"), along with the following list of packages. Don't let the instructions intimidate you... there might be a lot, but they're simple.
 
-hg clone http://hg.libsdl.org/SDL_image
-cd SDL_image
-./autogen.sh
-mkdir build
-../configure --disable-tif --disable-webp
-make
-sudo make install
+### Building SDL2
+Let's do the most complicated part first - installing SDL2. SDL2 is still very much in development, so there are no official ubuntu packages for it. No matter! We shall build and install from source control. Make sure mercurial is installed!
 
-hg clone http://hg.libsdl.org/SDL_ttf
-cd SDL_ttf
-./autogen.sh
-mkdir build
-../configure
-make
-sudo make install
+    sudo aptitude install mercurial
 
-hg clone http://hg.libsdl.org/SDL_net
-cd SDL_net
-./autogen.sh
-mkdir build
-../configure
-make
-sudo make install
+Now change directory to your temporary directory. We will check out the build files here.
+
+    cd /tmp
+
+Check out all of the SDL libraries used by Dungeon Crawler
+
+    hg clone http://hg.libsdl.org/SDL/
+    hg clone http://hg.libsdl.org/SDL_image/
+    hg clone http://hg.libsdl.org/SDL_ttf/
+
+To build these libraries, we will first need to install their dependencies. Run the next apt command:
+
+    sudo aptitude install build-essential make autoconf automake libtool libasound2-dev libpulse-dev libaudio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev libxxf86vm-dev libxss-dev libgl1-mesa-dev libesd0-dev libjpeg-dev libpng-dev libtiff-dev libsmpeg-dev libflac-dev libmikmod2-dev libfreetype6-dev
+
+Now to build SDL
+
+    cd /tmp/SDL
+    ./autogen.sh
+    mkdir build
+    cd build
+    ../configure
+    make
+    sudo make install
+
+Repeat the steps for SDL_image
+
+    cd /tmp/SDL_image
+    ./autogen.sh
+    mkdir build
+    cd build
+    ../configure
+    make
+    sudo make install
+
+Again, repeat the same steps for SDL_ttf
+
+    cd /tmp/SDL_ttf
+    ./autogen.sh
+    mkdir build
+    cd build
+    ../configure
+    make
+    sudo make install
+
+Onward to building the actual game!
+
+### Building the game client
+Dungeon Client uses git for version control, and cmake for its build system. We'll need to install both before proceeding:
+
+    sudo aptitude install git cmake
+
+Don't forget to install the game's library dependencies too. Stick with me, we're getting there!
+
+    sudo aptitude install libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev
+
+Now we can build the game client. All that preparation work, and now we can finally start building the actual game code :)
+
+    cd /tmp
+    git clone git://github.com/smacdo/Dungeon-Crawler.git
+    cd Dungeon-Crawler
+    mkdir build
+    cd build
+    cmake ../
+    make
+
+And finally... the magic step that will run your game:
+
+    make run
+
+If you've made it this far, you deserve a cookie. Once the project gets more advanced (meaning it actually resembles a game), I'll sit down a build debian packages to automate this whole nasty process.
