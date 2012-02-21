@@ -44,10 +44,11 @@ add_executable(
 
 target_link_libraries(test-dungeoncrawler gtest)
 
-add_custom_target(tests ALL test-dungeoncrawler
-                  DEPENDS test-dungeoncrawler
-                  WORKING_DIRECTORY ${GAME_OUTPUT_PATH}
-                  COMMENT Runs dungeon crawler unit tests)
+add_custom_target( tests test-dungeoncrawler
+                   DEPENDS test-dungeoncrawler
+                   WORKING_DIRECTORY ${GAME_OUTPUT_PATH}
+                   COMMENT Run dungeon crawler unit tests)
+
 
 add_test(
     NAME test-dungeoncrawler
