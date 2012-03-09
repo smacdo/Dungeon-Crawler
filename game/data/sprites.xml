@@ -1,76 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<spritepackage
+<artpackage
     xsi:noNamespaceSchemaLocation="sprites.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <!-- ================================================================ -->
-    <!--  Sprite sheets used by the game. These must be specified before  -->
-    <!--  any sprites are defined!                                        -->
-    <!-- ================================================================ -->
-    <sheet file="dg_dungeon32.png" name="dungeon" sw="32" sh="32" />
-    <sheet file="dg_grounds32.png" name="grounds" sw="32" sh="32" />
-    <sheet file="dg_human32.png" name="avatars" sw="32" sh="32" />
-    <sheet file="dg_monster132.png" name="monsters" sw="32" sh="32" />
-
-    <!-- ================================================================ -->
-    <!--  Dungeon tile sprites                                            -->
-    <!-- ================================================================ -->
-    <sprite sheet="dungeon" name="wall_stone" row="0" col="0" />
-    <sprite sheet="dungeon" name="wall_stone_alt" row="0" col="1" />
-    <sprite sheet="dungeon" name="wall_stone_dark" row="0" col="2" />
-    <sprite sheet="dungeon" name="wall_door_closed" row="1" col="0" />
-    <sprite sheet="dungeon" name="wall_door_open" row="1" col="1" />
-    <sprite sheet="dungeon" name="wall_door_destroyed" row="1" col="2" />
-    <sprite sheet="dungeon" name="wall_stairs_up" row="2" col="0" />
-    <sprite sheet="dungeon" name="wall_stairs_down" row="2" col="1" />
-    <sprite sheet="dungeon" name="wall_door_barred" row="2" col="2" />
-    <sprite sheet="dungeon" name="wall_door_vault_closed" row="1" col="3" />
-    <sprite sheet="dungeon" name="wall_door_vault_open" row="1" col="4" />
-    <sprite sheet="dungeon" name="wall_door_vault_destroyed" row="1" col="5" />
-
-    <!-- ************************************************************** -->
-    <!--   Terrain tiles                                                -->
-    <!-- ************************************************************** -->
-    <sprite sheet="grounds" name="grass_light" row="1" col="0" />
-    <sprite sheet="grounds" name="grass_medium" row="1" col="1" />
-    <sprite sheet="grounds" name="grass_dark" row="1" col="2" />
-    <sprite sheet="grounds" name="sand_light" row="1" col="3" />
-    <sprite sheet="grounds" name="sand_medium" row="1" col="4" />
-    <sprite sheet="grounds" name="sand_dark" row="1" col="5" />
-    <sprite sheet="grounds" name="water_shallow_light" row="1" col="6" />
-    <sprite sheet="grounds" name="water_shallow_medium" row="1" col="7" />
-    <sprite sheet="grounds" name="water_shallow_dark" row="1" col="8" />
-    <sprite sheet="grounds" name="water_deep_light" row="2" col="0" />
-    <sprite sheet="grounds" name="water_deep_medium" row="2" col="1" />
-    <sprite sheet="grounds" name="water_deep_dark" row="2" col="2" />
-    <sprite sheet="grounds" name="dirt_cracked_light" row="3" col="0" />
-    <sprite sheet="grounds" name="stone_cracked_light" row="3" col="3" />
-    <sprite sheet="grounds" name="magma_stone_light" row="3" col="6" />
-    
-    <sprite sheet="grounds" name="tree_0_light"  row="6" col="0" />
-    <sprite sheet="grounds" name="tree_0_medium" row="6" col="1" />
-    <sprite sheet="grounds" name="tree_0_dark"   row="6" col="2" />
-    <sprite sheet="grounds" name="tree_1_light"  row="6" col="3" />
-    <sprite sheet="grounds" name="tree_1_medium" row="6" col="4" />
-    <sprite sheet="grounds" name="tree_1_dark"   row="6" col="5" />
-    <sprite sheet="grounds" name="tree_2_light"  row="6" col="6" />
-    <sprite sheet="grounds" name="tree_2_medium" row="6" col="7" />
-    <sprite sheet="grounds" name="tree_2_dark"   row="6" col="8" />
-    
-    <sprite sheet="grounds" name="field_0_light" row="17" col="0" />
-
-    <!-- ============================================================== -->
-    <!--  Player character sprites                                      -->
-    <!-- ============================================================== -->
-    <sprite sheet="avatars" name="player" row="1" col="5" />
-
-    <!-- ============================================================== -->
-    <!--  Monster sprites                                               -->
-    <!-- ============================================================== -->
-    <sprite sheet="monsters" name="rat_0" row="4" col="0" />
-    <sprite sheet="monsters" name="rat_1" row="4" col="1" />
-    <sprite sheet="monsters" name="rat_2" row="4" col="2" />
-    <sprite sheet="monsters" name="orc_0" row="3" col="2" />
-    <sprite sheet="monsters" name="kobold_0" row="8" col="5" />
+    <terrain id="void" sprite="tile_void" />
+    <terrain id="granite" sprite="tile_blocked" />
+    <terrain id="dungeon_wall" sprite="stone2_floor" />
+    <terrain id="dungeon_floor" sprite="dcss_rl_lit_corridor" />
+    <terrain id="dungeon_doorway" sprite="stone2_door_open" />
+    <terrain id="stairs_up" sprite="stone2_stairs_up" />
+    <terrain id="filler_stone" sprite="tile_void" />
 </spritepackage>
