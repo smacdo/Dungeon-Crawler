@@ -73,6 +73,9 @@ private:
 
     // List of loaded sprite definitions
     std::map<std::string, Sprite*> mSpriteCache;
+
+    // Number of sprites created
+    mutable size_t mNumSpritesCreated;
 };
 
 #endif

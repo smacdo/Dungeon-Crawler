@@ -42,7 +42,8 @@ typedef std::pair<std::string, SDL_Texture*> TextureListEntry;
  */
 SpriteManager::SpriteManager()
     : mpRenderer( NULL ),
-      mImageRoot("data/sprites/")
+      mImageRoot("data/sprites/"),
+      mNumSpritesCreated( 0 )
 {
 }
 
@@ -147,7 +148,13 @@ Sprite* SpriteManager::createSprite( const std::string& spriteName ) const
                               spriteName );
     }
 
-    return itr->second;
+    // Update stats!
+    mNumSpritesCreated += 1;
+
+    // Create a copy of the sprite and give it to the caller
+    //  TODO: Change this to look up a SpriteData object, then create a new
+    //        Sprite instance and pass it a shared pointer to the SpriteData
+    return new Sprite( deref( itr->second ) );
 }
 
 /**
@@ -214,7 +221,7 @@ void SpriteManager::unload()
     size_t freedTextures = 0, freedSprites = 0;
 
     // Destroy all sprites
-    DeleteMapPointers( mSpriteCache );
+    freedSprites = DeleteMapPointers( mSpriteCache );
 
     // Kill all loaded textures
     TextureListItr itr;
@@ -226,7 +233,10 @@ void SpriteManager::unload()
     }
 
     // Let 'em know how many things were unloaded
-    LOG_INFO("Graphics") << "Unloaded " << freedSprites  << " sprites";
+    LOG_INFO("Graphics") << "A total of " << mNumSpritesCreated << " "
+                         << "sprites were created during this sprite "
+                         << "manager's life";
+    LOG_INFO("Graphics") << "Unloaded " << freedSprites  << " sprite templates";
     LOG_INFO("Graphics") << "Unloaded " << freedTextures << " textures";
 }
 

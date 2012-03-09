@@ -60,6 +60,7 @@ ClientView::ClientView( InputManager& inputManager )
       mpRenderer( NULL ),
       mSpriteManager(),
       mpPlayerSprite( NULL ),
+      mTileSprites(),
       mCamera( 0, 0, Config::DefaultScreenWidth, Config::DefaultScreenHeight )
 {
 }
@@ -69,6 +70,11 @@ ClientView::ClientView( InputManager& inputManager )
  */
 ClientView::~ClientView()
 {
+    // Get rid of our sprites
+    Delete( mpPlayerSprite );
+    DeletePointerContainer( mTileSprites );
+
+    // Now destroy SDL objects
     SDL_DestroyWindow( mpWindow );
     SDL_DestroyRenderer( mpRenderer );
 }

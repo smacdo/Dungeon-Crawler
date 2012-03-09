@@ -111,7 +111,7 @@ TEST(UtilsTests,DeletePointerGenericContainerWhichIsAVector)
     EXPECT_EQ( 1u, b );
     EXPECT_EQ( 1u, c );
 
-    DeletePointerContainer( v );
+    EXPECT_EQ( 3u, DeletePointerContainer( v ) );
     EXPECT_EQ( 0u, total );
     EXPECT_EQ( 0u, a );
     EXPECT_EQ( 0u, b );
@@ -135,7 +135,7 @@ TEST(UtilsTests,DeleteVectorPointers)
     EXPECT_EQ( 1u, b );
     EXPECT_EQ( 1u, c );
 
-    DeleteVectorPointers( v );
+    EXPECT_EQ( 3u, DeleteVectorPointers( v ) );
     EXPECT_EQ( 0u, total );
     EXPECT_EQ( 0u, a );
     EXPECT_EQ( 0u, b );
@@ -159,7 +159,7 @@ TEST(UtilsTests,DeleteMapPointers)
     EXPECT_EQ( 1u, b );
     EXPECT_EQ( 1u, c );
 
-    DeleteMapPointers( v );
+    EXPECT_EQ( 3u, DeleteMapPointers( v ) );
     EXPECT_EQ( 0u, total );
     EXPECT_EQ( 0u, a );
     EXPECT_EQ( 0u, b );

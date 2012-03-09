@@ -61,39 +61,109 @@ Sprite::Sprite( SDL_Texture *pTexture,
       mW( width ),
       mH( height )
 {
-    assert( pTexture != NULL );
+    assert( mpTexture != NULL );
     assert( mX >= 0 );
     assert( mY >= 0 );
     assert( mW > 0 );
     assert( mH > 0 );
 }
 
-Sprite::~Sprite()
+/**
+ * Copy constructor. Clones another sprite, but does not deep copy the SDL
+ * source texture
+ */
+Sprite::Sprite( const Sprite& s )
+    : mpTexture( s.mpTexture ),
+      mX( s.mX ),
+      mY( s.mY ),
+      mW( s.mW ),
+      mH( s.mH )
 {
-    // SDL_Surfaces are not released, since other sprites could
-    // be using them
+    assert( mpTexture != NULL );
+    assert( mX >= 0 );
+    assert( mY >= 0 );
+    assert( mW > 0 );
+    assert( mH > 0 );
 }
 
+/**
+ * Sprite destructor
+ */
+Sprite::~Sprite()
+{
+    // SDL_Surfaces are not released, since other sprites could potentially the
+    // texture. This is especially the case with tilesheet sprites
+    mpTexture = NULL;       // prevent stupid mistakes
+}
+
+/**
+ * Assignment operator. Clones the sprite, but does not deep copy the source
+ * texture
+ */
+Sprite& Sprite::operator = ( const Sprite& rhs )
+{
+    mpTexture = rhs.mpTexture;
+    mX        = rhs.mX;
+    mY        = rhs.mY;
+    mW        = rhs.mW;
+    mH        = rhs.mH;
+}
+
+/**
+ * Equality operator. Checks if this sprite is an identical copy of another
+ * sprite
+ */
+bool Sprite::operator == ( const Sprite& rhs ) const
+{
+    return ( mpTexture == rhs.mpTexture && mX == rhs.mX && mY == rhs.mY
+                                        && mW == rhs.mW && mH == rhs.mH );
+}
+
+/**
+ * Inequality operator. Checks if this sprite is not an indentical copy of another
+ * sprite
+ */
+bool Sprite::operator != ( const Sprite& rhs ) const
+{
+    return ( mpTexture != rhs.mpTexture || mX != rhs.mX || mY != rhs.mY
+                                        || mW != rhs.mW || mH != rhs.mH );
+}
+
+/**
+ * Return a pointer to the sprite's underlying texture object
+ */
 const SDL_Texture* Sprite::texture() const
 {
     return mpTexture;
 }
 
+/**
+ * The texture x offset for the sprite
+ */
 int Sprite::x() const
 {
     return mX;
 }
 
+/**
+ * The texture y offset for the sprite
+ */
 int Sprite::y() const
 {
     return mY;
 }
 
+/**
+ * The sprite's width
+ */
 int Sprite::width() const
 {
     return mW;
 }
 
+/**
+ * The sprite's height
+ */
 int Sprite::height() const
 {
     return mH;

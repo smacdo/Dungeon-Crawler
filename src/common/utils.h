@@ -61,16 +61,22 @@ void DeleteArray( T& arrayPointer )
  * \param  container  A generic container holding pointers
  */
 template<typename T>
-void DeletePointerContainer( T& container )
+size_t DeletePointerContainer( T& container )
 {
     typename T::iterator itr;
+    size_t count = 0;
 
     for ( itr = container.begin(); itr != container.end(); std::advance(itr,1) )
     {
         Delete<typename T::value_type>( *itr );
+        count++;
     }
 
+    // Also reset the container to have zero entries
     container.clear();
+
+    // Make sure caller knows how many objects were destroyed
+    return count;
 }
 
 /**
@@ -79,10 +85,17 @@ void DeletePointerContainer( T& container )
  * \param  container  A STL vector holding pointers
  */
 template<typename T>
-void DeleteVectorPointers( std::vector<T>& container )
+size_t DeleteVectorPointers( std::vector<T>& container )
 {
+    // Record how many objects are in the container before destroying
+    size_t count = container.size();
+
+    // Now destroy every pointer in the container, and then reset the container
+    // to be empty
     std::for_each( container.begin(), container.end(), Delete<T> );
     container.clear();
+
+    return count;
 }
 
 /**
@@ -91,16 +104,22 @@ void DeleteVectorPointers( std::vector<T>& container )
  * \param  container  A STL map holding pointers
  */
 template<typename T, typename U>
-void DeleteMapPointers( std::map<T,U>& container )
+size_t DeleteMapPointers( std::map<T,U>& container )
 {
     typename std::map<T,U>::iterator itr;
+    size_t count = 0;
 
     for ( itr = container.begin(); itr != container.end(); ++itr )
     {
         boost::checked_delete( itr->second );
+        count++;
     }
 
+    // Reset the container to be empty, ensuring we don't accidently reference a
+    // null pointer
     container.clear();
+
+    return count;
 }
 
 /**

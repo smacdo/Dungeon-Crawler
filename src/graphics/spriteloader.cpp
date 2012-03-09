@@ -93,11 +93,6 @@ void SpriteLoader::readSpriteSheetNode( const TiXmlElement *pNode )
                     "Failed to find 'file' attribute for sprite sheet tag" );
         return;
     }
-    else
-    {
-        LOG_DEBUG("Loader") << "Loading sprite sheet node "
-                            << spriteSheetFile;
-    }
 
     // Iterate through every child element of the current <spritesheet>
     // container and read every <sprite>
