@@ -71,42 +71,44 @@ void reportSoftwareError( const std::string& message,
 {
     // Error header
     std::cerr
-        << "=================================================================="
         << std::endl
-        << "A " << getNameForError( type ) << " has occurred. Details follow. "
+        << "########################################################################"
         << std::endl
+        << "# A(n) " << getNameForError( type ) << " has occurred. Details follow. "
+        << std::endl
+        << "#"
         << std::endl;
 
     // Print the message body
-    std::cerr << "MESSAGE: " << message << std::endl;
+    std::cerr << "# MESSAGE: " << message << std::endl;
 
     if ( filename != NULL )
     {
-        std::cerr << "   FILE: " << filename << std::endl;
+        std::cerr << "#   FILE: " << filename << std::endl;
     }
 
     if ( lineNumber > 0 )
     {
-        std::cerr << "   LINE: " << lineNumber << std::endl;
+        std::cerr << "#   LINE: " << lineNumber << std::endl;
     }
 
     if ( functionName != NULL )
     {
-        std::cerr << "   FUNC: " << functionName << std::endl;
+        std::cerr << "#   FUNC: " << functionName << std::endl;
     }
 
     // If there were extra details, print them at the bottom of the error
     // output
     if (! details.empty() )
     {
-        std::cerr << "DETAILS: " << std::endl
-                  << "-------- " << std::endl
-                  << details     << std::endl;
+        std::cerr << "# DETAILS: "   << std::endl
+                  << "# -------- "   << std::endl
+                  << "# " << details << std::endl;
     }
 
     // Message bottom
     std::cerr
-        << "============================================================="
+        << "########################################################################"
         << std::endl
         << std::endl;
 }
