@@ -9,8 +9,6 @@ to tell the tales of your exploits! Just try not to die :)
 
 ![Dungeon Crawler Screenshot](http://i.imgur.com/8ODmQ.png)
 
-Look for platform specific build instructions in doc/
-
 TABLE OF CONTENTS
 =================
 
