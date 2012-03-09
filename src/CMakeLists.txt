@@ -57,11 +57,15 @@ set(graphics_headers
 )
 
 set(engine_srcs
+        engine/appconfig.cpp
         engine/camera.cpp
+        engine/optionsparser.cpp
 )
 
 set(engine_headers
+        engine/appconfig.h
         engine/camera.h
+        engine/optionsparser.h
 )
 
 set(game_srcs
@@ -96,13 +100,11 @@ set(game_headers
 )
 
 set(app_srcs
-        appconfig.cpp
         dungeoncrawler.cpp
         inputmanager.cpp
 )
 
 set(app_headers
-        appconfig.h
         dungeoncrawler.h
         inputmanager.h
         version.h.in

@@ -123,7 +123,7 @@ namespace App
 
     // Performs any needed platform specific work before starting the game
     void startup();
-    void quit( EProgramStatus quitStatus, const std::string& message );
+    void quit( EProgramStatus quitStatus, const std::string& message = "" );
 
     EAssertionStatus raiseAssertion( const char* message,
                                      const char* expression,

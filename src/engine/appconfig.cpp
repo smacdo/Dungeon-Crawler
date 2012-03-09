@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "appconfig.h"
+#include "engine/appconfig.h"
 
 #include <string>
 
@@ -30,7 +30,9 @@ const bool DEFAULT_FULLSCREEN   = false;
  * applications settings
  */
 AppConfig::AppConfig()
-    : rwWidth( DEFAULT_RENDER_WIDTH ),
+    : debug( false ),
+      quiet( false ),
+      rwWidth( DEFAULT_RENDER_WIDTH ),
       rwHeight( DEFAULT_RENDER_HEIGHT ),
       rwFullscreen( DEFAULT_FULLSCREEN ),
       randomSeed( 0 ),

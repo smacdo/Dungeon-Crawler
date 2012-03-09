@@ -31,13 +31,15 @@ struct AppConfig
 {
     AppConfig();
 
-    void readCommandLine( int argc, char** argv );
-    void readConfigFile( const std::string& path );
+    // Enables extra debugging and console logging information
+    bool debug;
+
+    // Makes the game especially quiet on the console
+    bool quiet;
 
     int rwWidth;
     int rwHeight;
     bool rwFullscreen;
-    std::string rwDriver;
     int randomSeed;
     bool shouldLaunchGame;
 };

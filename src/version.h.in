@@ -12,7 +12,7 @@ namespace Version
     const std::string TITLE      = "@GAME_NAME@";
     const std::string AUTHOR     = "@GAME_AUTHOR@";
     const std::string EMAIL      = "@GAME_EMAIL@";
-    const std::string WEBSITE    = "@GAME_WWW@";
+    const std::string WEBSITE    = "@GAME_WEBSITE@";
     const std::string COPYRIGHT  = "Copyright (c) 2012 @GAME_AUTHOR@";
     const std::string VERSION_S  = "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@-@VERSION_RELEASE@";
     const std::string RELEASE    = "@VERSION_RELEASE@";

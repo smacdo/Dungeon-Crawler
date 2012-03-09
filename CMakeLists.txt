@@ -20,9 +20,10 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 get_compiler_info_string(COMPILER_ID)
 
 ### Version and build information
-set(GAME_NAME "Dungeon Crawler")
-set(GAME_AUTHOR "Scott MacDonald")
-set(GAME_EMAIL "scott@whitespaceconsideredharmful.com")
+set(GAME_NAME    "Dungeon Crawler")
+set(GAME_AUTHOR  "Scott MacDonald")
+set(GAME_EMAIL   "scott@whitespaceconsideredharmful.com")
+set(GAME_WEBSITE "http://www.whitespaceconsideredharmful.com/dungeoncrawler")
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
