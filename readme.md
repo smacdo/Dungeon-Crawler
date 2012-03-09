@@ -12,7 +12,7 @@ See the files ./INSTALL* for building and installation instructions.
 Screenshot
 =================
 Here is a snapshot of the game:
-![Dungeon Crawler Screenshot](http://imgur.com/8ODmQ)
+![Dungeon Crawler Screenshot](http://i.imgur.com/8ODmQ.png)
 
 TABLE OF CONTENTS
 =================
