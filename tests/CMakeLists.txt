@@ -18,6 +18,7 @@ set(test_srcs
 set(test_req_srcs
         ${GAME_SRC_PATH}/common/rect.cpp
         ${GAME_SRC_PATH}/common/point.cpp
+        ${GAME_SRC_PATH}/common/platform.cpp
         ${GAME_SRC_PATH}/common/platform_unix.cpp
         ${GAME_SRC_PATH}/game/pathfinder.cpp
         ${GAME_SRC_PATH}/game/tile.cpp

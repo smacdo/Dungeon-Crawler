@@ -1,8 +1,25 @@
+/*
+ * Copyright 2012 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "common/utils.h"
-#include <ostream>
-#include <gtest.h>
+#include "common/platform.h"
 
+#include <memory>
+#include <ostream>
 #include <vector>
+#include <gtest.h>
 
 class TestDummy
 {
@@ -26,7 +43,7 @@ private:
     size_t& mSelfCounter;
 };
 
-TEST(Common,Utils_InternalTest_VerifyTestDummy)
+TEST(UtilsTests,InternalTest_VerifyTestDummy)
 {
     size_t total = 0;
     size_t a     = 0;
@@ -54,7 +71,7 @@ TEST(Common,Utils_InternalTest_VerifyTestDummy)
 
 }
 
-TEST(Common,Utils_Delete_Pointer)
+TEST(UtilsTests,DeletePointer)
 {
     size_t total = 0;
     size_t a = 0;
@@ -68,7 +85,16 @@ TEST(Common,Utils_Delete_Pointer)
     EXPECT_TRUE( pA == NULL );
 }
 
-TEST(Common,Utils_DeletePointerContainer)
+TEST(UtilsTest,DeletePointerArray)
+{
+    size_t total = 0;
+    size_t a     = 0;
+
+    // TODO: Implement
+    EXPECT_TRUE( true );
+}
+
+TEST(UtilsTests,DeletePointerGenericContainerWhichIsAVector)
 {
     size_t total = 0;
     size_t a     = 0;
@@ -92,7 +118,7 @@ TEST(Common,Utils_DeletePointerContainer)
     EXPECT_EQ( 0u, c );
 }
 
-TEST(Common,Utils_DeleteVectorPointers)
+TEST(UtilsTests,DeleteVectorPointers)
 {
     size_t total = 0;
     size_t a     = 0;
@@ -116,7 +142,7 @@ TEST(Common,Utils_DeleteVectorPointers)
     EXPECT_EQ( 0u, c );
 }
 
-TEST(Common,Utils_DeleteMapPointers)
+TEST(UtilsTests,DeleteMapPointers)
 {
     size_t total = 0;
     size_t a     = 0;
@@ -140,7 +166,10 @@ TEST(Common,Utils_DeleteMapPointers)
     EXPECT_EQ( 0u, c );
 }
 
-TEST(Common,Utils_Deref_Valid)
+/**
+ * Tests that we can deref a non-null pointer value
+ */
+TEST(UtilsTests,DerefValid)
 {
     int v = 42;
     int *pV = &v;
@@ -153,7 +182,10 @@ TEST(Common,Utils_Deref_Valid)
     EXPECT_EQ( 250, *pV );
 }
 
-TEST(Common,Utils_Deref_Const_Valid)
+/**
+ * Tests if we can deref a non-null constant pointer value
+ */
+TEST(UtilsTests,DerefConst)
 {
     int v = 42;
     const int *pV = &v;
@@ -161,12 +193,41 @@ TEST(Common,Utils_Deref_Const_Valid)
     EXPECT_EQ( 42, deref( pV ) );
 }
 
-TEST(Common,Utils_Deref_Null_Death)
+/**
+ * Tests if we can deref a non-null smart pointer value
+ */
+TEST(UtilsTest,DerefSmartPointer)
 {
-    const int *pV = NULL;
-    EXPECT_DEATH( deref( pV ), "ASSERTION FAILED: ptr != __null" );
+    std::shared_ptr<int> p( new int(42) );
+    EXPECT_EQ( 42, deref( p ) );
 }
 
+/**
+ * Tests if we can deref a non-null constant smart pointer value
+ */
+TEST(UtilsTest,DerefConstSmartPointer)
+{
+    std::shared_ptr<const int> p( new int(42) );
+    EXPECT_EQ( 42, deref( p ) );
+}
 
+TEST(UtilsTests,DerefNullDeath)
+{
+    const int *pV = NULL;
 
+    App::setTestAssertsShouldDie( true );
+    EXPECT_DEATH( deref( pV ), "ASSERTION FAILED: ptr != __null" );
+
+    App::resetTestAssertsShouldDie();
+}
+
+TEST(UtilsTests,DerefNullSmartPointerDeath)
+{
+    std::shared_ptr<int> p;
+
+    App::setTestAssertsShouldDie( true );
+    EXPECT_DEATH( deref( p ), "ASSERTION FAILED: ptr != __null" );
+
+    App::resetTestAssertsShouldDie();
+}
 

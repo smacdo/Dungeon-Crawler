@@ -3,7 +3,7 @@
 #include <gtest.h>
 #include <stdint.h>
 
-TEST(Common,Rect_Constructor_Default)
+TEST(RectTests,DefaultConstructor)
 {
     // Default constructor should always create a invalid rect that is
     // positioned on the origin (0,0) with zero width and height
@@ -15,7 +15,7 @@ TEST(Common,Rect_Constructor_Default)
     EXPECT_EQ( 0, r.left() );
 }
 
-TEST(Common,Rect_Constructor_PositionWidthHeight)
+TEST(RectTests,Constructor_PositionWidthHeight)
 {
     // Constructor that takes UL position and width/height
     Rect r( Point( 2, 4 ), 5, 6 );
@@ -26,7 +26,7 @@ TEST(Common,Rect_Constructor_PositionWidthHeight)
     EXPECT_EQ( 7,  r.right()  );
 }
 
-TEST(Common,Rect_Constructor_XYWidthHeight)
+TEST(RectTests,Constructor_XYWidthHeight)
 {
     // Same as above, but takes x/y rather than a point object
     Rect r( 2, 4, 5, 6 );
@@ -37,7 +37,7 @@ TEST(Common,Rect_Constructor_XYWidthHeight)
     EXPECT_EQ( 7,  r.right()  );
 }
 
-TEST(Common,Rect_Constructor_UpperLeftBottomRight)
+TEST(RectTests,Constructor_UpperLeftBottomRight)
 {
     // Constructor that takes a upper left and bottom right constructor
     Rect r( Point( 3, 2 ), Point( 8, 5 ) );
@@ -48,7 +48,7 @@ TEST(Common,Rect_Constructor_UpperLeftBottomRight)
     EXPECT_EQ( 8, r.right()  );
 }
 
-TEST(Common,Rect_Constructor_Copy)
+TEST(RectTests,Constructor_Copy)
 {
     // COpy constructor
     Rect t( 2, 4, 5, 6 );
@@ -60,7 +60,7 @@ TEST(Common,Rect_Constructor_Copy)
     EXPECT_EQ( 7,  r.right()  );
 }
 
-TEST(Common,Rect_Operator_Equality)
+TEST(RectTests,Operator_Equality)
 {
     Rect a( 1, 2, 3, 4 );   // control rect. {ul=(1,2), lr=(4,6) w=3, h=4}
     Rect b( 1, 2, 3, 4 );   // another rect with identical stats
@@ -77,7 +77,7 @@ TEST(Common,Rect_Operator_Equality)
     EXPECT_FALSE( a == f ); // same as above
 }
 
-TEST(Common,Rect_Operator_Inequality)
+TEST(RectTests,Operator_Inequality)
 {
     Rect a( 1, 2, 3, 4 );   // control rect. {ul=(1,2), lr=(4,6) w=3, h=4}
     Rect b( 1, 2, 3, 4 );   // another rect with identical stats
@@ -94,7 +94,7 @@ TEST(Common,Rect_Operator_Inequality)
     EXPECT_NE( f, a );      // same as above
 }
 
-TEST(Common,Rect_Operator_Assignment)
+TEST(RectTests,Operator_Assignment)
 {
     Rect t( 2, 4, 5, 6 );   // control rect
     Rect a( 0, 0, 1, 1 );   // a default constructed rect not equal to t
@@ -105,7 +105,7 @@ TEST(Common,Rect_Operator_Assignment)
     EXPECT_EQ( t, a );                  // the actual equality check
 }
 
-TEST(Common,Rect_IsNull)
+TEST(RectTests,IsNull)
 {
     Rect null;                   // default constructed rect was invalid w/h
     Rect notNull( 0, 0, 1, 1 );  // non-default construct rect can never be null   
@@ -114,35 +114,35 @@ TEST(Common,Rect_IsNull)
     EXPECT_FALSE( notNull.isNull() );
 }
 
-TEST(Common,Rect_Top )
+TEST(RectTests,Top )
 {
     // Check the top y value of the rectangle
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( 4, a.top() );
 }
 
-TEST(Common,Rect_Bottom)
+TEST(RectTests,Bottom)
 {
     // Check the bottom y value of the rectangle
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( 10, a.bottom() );
 }
 
-TEST(Common,Rect_Left)
+TEST(RectTests,Left)
 {
     // Check the left x value of the rectangle
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( 2, a.left() );
 }
 
-TEST(Common,Rect_Right)
+TEST(RectTests,Right)
 {
     // Check the right value of the rectangle
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( 7, a.right() );
 }
 
-TEST(Common,Rect_XIsLeft)
+TEST(RectTests,XIsLeft)
 {
     // Ensure that the x value is also the same as the left
     //   x = upper LEFT
@@ -150,7 +150,7 @@ TEST(Common,Rect_XIsLeft)
     EXPECT_EQ( 2, a.x() );
 }
 
-TEST(Common,Rect_YIsTop)
+TEST(RectTests,YIsTop)
 {
     // Ensure the y value is also the same as the top
     //   y = UPPER left
@@ -158,7 +158,7 @@ TEST(Common,Rect_YIsTop)
     EXPECT_EQ( 4, a.y() );
 }
 
-TEST(Common,Rect_Width)
+TEST(RectTests,Width)
 {
     // Verify the width is calculated correctly
     Rect a( 2, 4, 5, 6 );               // ctor with width / height valeus
@@ -168,7 +168,7 @@ TEST(Common,Rect_Width)
     EXPECT_EQ( 5, b.width() );
 }
 
-TEST(Common,Rect_Height)
+TEST(RectTests,Height)
 {
     Rect a( 2, 4, 5, 6 );               // ctor with width / height values
     Rect b( Point(2,4), Point(7,10) );  // ctor with UL, LR values
@@ -177,35 +177,35 @@ TEST(Common,Rect_Height)
     EXPECT_EQ( 6, b.height() );
 }
 
-TEST(Common,Rect_TopLeft)
+TEST(RectTests,TopLeft)
 {
     // Checks top left of rectangle is correct
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( Point( 2, 4 ), a.topLeft() );
 }
 
-TEST(Common,Rect_TopRight)
+TEST(RectTests,TopRight)
 {
     // Checks top right of rectangle is correct
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( Point( 7, 4 ), a.topRight() );
 }
 
-TEST(Common,Rect_BottomRight)
+TEST(RectTests,BottomRight)
 {
     // Checks bottom right of rectangle is correct
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( Point( 7, 10 ), a.bottomRight() );
 }
 
-TEST(Common,Rect_BottomLeft)
+TEST(RectTests,BottomLeft)
 {
     // Checks bottom left of rectangle is correct
     Rect a( 2, 4, 5, 6 );
     EXPECT_EQ( Point( 2, 10 ), a.bottomLeft() );
 }
 
-TEST(Common,Rect_ApproximateCenter)
+TEST(RectTests,ApproximateCenter)
 {
     // Test the the approximate center calculation is correct
     Rect a( Point(3, 1), Point(7, 3) ); // ((7+3)/2, (1+3)/2) => (5,2)
@@ -217,7 +217,7 @@ TEST(Common,Rect_ApproximateCenter)
     EXPECT_EQ( Point( 4, 5 ), c.approximateCenter() );
 }
 
-TEST(Common,Rect_Translate)
+TEST(RectTests,Translate)
 {
     const Rect base( 2, 4, 3, 4 );      // Control rectangle
     const Rect expected( 5, 6, 3, 4 );  // Expected result
@@ -226,7 +226,7 @@ TEST(Common,Rect_Translate)
     EXPECT_EQ( expected, base.translate( dist ) );
 }
 
-TEST(Common,Rect_MoveTo)
+TEST(RectTests,MoveTo)
 {
     const Rect base( 2, 4, 3, 4 );      // Control rectangle
     const Rect expected( 5, 6, 3, 4 );  // Expected result
@@ -238,7 +238,7 @@ TEST(Common,Rect_MoveTo)
     EXPECT_EQ( expected, result );
 }
 
-TEST(Common,Rect_Area)
+TEST(RectTests,Area)
 {
     // Test rectangle area calculation
     Rect a( 0, 0, 6, 4 );   // 6*4 => 24
@@ -250,7 +250,7 @@ TEST(Common,Rect_Area)
     EXPECT_EQ( static_cast<size_t>(24), c.area() );
 }
 
-TEST(Common,Rect_Touches_AlwaysTouchesSelf)
+TEST(RectTests,Touches_AlwaysTouchesSelf)
 {
     // This does not mean that the rectangle touches itself, it means
     // that a rectangle will always be touching another rectangle that
@@ -259,7 +259,7 @@ TEST(Common,Rect_Touches_AlwaysTouchesSelf)
     EXPECT_TRUE( a.touches(a) );
 }
 
-TEST(Common,Rect_Touches_TouchOnly)
+TEST(RectTests,Touches_TouchOnly)
 {
     Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
     Rect b( 2, 6, 2, 4 );       // touching [2,6 and 4,10]
@@ -269,7 +269,7 @@ TEST(Common,Rect_Touches_TouchOnly)
     EXPECT_TRUE( a.touches( c ) );
 }
 
-TEST(Common,Rect_Touches_Intersections)
+TEST(RectTests,Touches_Intersections)
 {
     Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
     Rect b( 3, 2, 2, 2 );       // intersects a, c [3,2 and 5,4]
@@ -277,7 +277,7 @@ TEST(Common,Rect_Touches_Intersections)
     EXPECT_TRUE( a.touches( b ) );
 }
 
-TEST(Common,Rect_Touches_NoTouchNoIntersect)
+TEST(RectTests,Touches_NoTouchNoIntersect)
 {
     Rect a(  2, 3, 2, 3 );      // center [2,3 and 4,6]
     Rect b( -2, 3, 3, 2 );      // no touch/intersect [-2,3 and 1,5]
@@ -285,7 +285,7 @@ TEST(Common,Rect_Touches_NoTouchNoIntersect)
     EXPECT_FALSE( a.touches( b ) );
 }
 
-TEST(Common,Rect_Touches_FullyContained)
+TEST(RectTests,Touches_FullyContained)
 {
     // A rectangle that is fully within the bounds of a larger rectangle
     // and has no borders that overlap should always test true
@@ -296,7 +296,7 @@ TEST(Common,Rect_Touches_FullyContained)
     EXPECT_TRUE( a.touches( b ) );
 }
 
-TEST(Common,Rect_Intersects_AlwaysIntersectsSelf)
+TEST(RectTests,Intersects_AlwaysIntersectsSelf)
 {   
     // This does not mean that the rectangle intersects itself, it means
     // that a rectangle will always be intersecting another rectangle that
@@ -305,7 +305,7 @@ TEST(Common,Rect_Intersects_AlwaysIntersectsSelf)
     EXPECT_TRUE( a.intersects( a ) );
 }
 
-TEST(Common,Rect_Intersects_TouchOnly)
+TEST(RectTests,Intersects_TouchOnly)
 {
     Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
     Rect b( 2, 6, 2, 4 );       // touching [2,6 and 4,10]
@@ -316,7 +316,7 @@ TEST(Common,Rect_Intersects_TouchOnly)
 }
 
 /*
-TEST(Common,Rect_Touches_Intersections)
+TEST(RectTests,Touches_Intersections)
 {
     Rect a( 2, 3, 2, 3 );       // center [2,3 and 4,6]
     Rect b( 3, 2, 2, 2 );       // intersects a, c [3,2 and 5,4]
@@ -324,7 +324,7 @@ TEST(Common,Rect_Touches_Intersections)
     EXPECT_TRUE( a.touches( b ) );
 }
 
-TEST(Common,Rect_Touches_NoTouchNoIntersect)
+TEST(RectTests,Touches_NoTouchNoIntersect)
 {
     Rect a(  2, 3, 2, 3 );      // center [2,3 and 4,6]
     Rect b( -2, 3, 3, 2 );      // no touch/intersect [-2,3 and 1,5]
@@ -332,14 +332,14 @@ TEST(Common,Rect_Touches_NoTouchNoIntersect)
     EXPECT_FALSE( a.touches( b ) );
 }
 
-TEST(Common,Rect_Touches_FullyContained)
+TEST(RectTests,Touches_FullyContained)
 {
     Rect a( 4, 5, 6, 7 );      // outer rectangle
     Rect b( 5, 6, 4, 4 );      // rectangle contained entirely in ia
 
     EXPECT_TRUE( a.touches( b ) );
 }*/
-TEST(Common,Rect_Cout)
+TEST(RectTests,Cout)
 {
     Rect r( 1, 5, 3, 6 );
     std::ostringstream ss;

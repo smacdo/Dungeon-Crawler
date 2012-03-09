@@ -2,7 +2,7 @@
 #include <ostream>
 #include <gtest.h>
 
-TEST(Common,Point_Constructor_Default)
+TEST(PointTests,Constructor_Default)
 {
     const Point a;
 
@@ -10,7 +10,7 @@ TEST(Common,Point_Constructor_Default)
     EXPECT_EQ( 0, a.y() );
 }
 
-TEST(Common,Point_Constructor_XY)
+TEST(PointTests,Constructor_XY)
 {
     const Point a( 2, 5 );
 
@@ -18,7 +18,7 @@ TEST(Common,Point_Constructor_XY)
     EXPECT_EQ( 5, a.y() );
 }
 
-TEST(Common,Point_Constructor_Copy)
+TEST(PointTests,Constructor_Copy)
 {
     const Point a( 2, 5 );
     const Point b( a );
@@ -27,7 +27,7 @@ TEST(Common,Point_Constructor_Copy)
     EXPECT_EQ( 5, b.y() );
 }
 
-TEST(Common,Point_Operator_Equality)
+TEST(PointTests,Operator_Equality)
 {
     const Point a( 1, 4 );
     const Point b( 0, 4 );
@@ -44,7 +44,7 @@ TEST(Common,Point_Operator_Equality)
     EXPECT_TRUE( a == e );
 }
 
-TEST(Common,Point_Operator_Inequality)
+TEST(PointTests,Operator_Inequality)
 {
     const Point a( 1, 4 );
     const Point b( 0, 4 );
@@ -60,7 +60,7 @@ TEST(Common,Point_Operator_Inequality)
     EXPECT_FALSE( a != e );
 }
 
-TEST(Common,Point_Operator_Assignment)
+TEST(PointTests,Operator_Assignment)
 {
     Point a( 2, 4  );
     const Point b( 5, 7  );
@@ -70,7 +70,7 @@ TEST(Common,Point_Operator_Assignment)
     EXPECT_EQ( Point( 5, 7 ), a );
 }
 
-TEST(Common,Point_Operator_LessThan)
+TEST(PointTests,Operator_LessThan)
 {
     Point a( 5, 7 );
 
@@ -93,7 +93,7 @@ TEST(Common,Point_Operator_LessThan)
     EXPECT_LT( f, a );
 }
 
-TEST(Common,Point_Operator_GreaterThan)
+TEST(PointTests,Operator_GreaterThan)
 {
     Point a( 5, 7 );
 
@@ -117,7 +117,7 @@ TEST(Common,Point_Operator_GreaterThan)
     EXPECT_GT( f, a );
 }
 
-TEST(Common,Point_Operator_Addition)
+TEST(PointTests,Operator_Addition)
 {
     const Point a( 2, 5 );
     const Point b( 7, 1 );
@@ -126,7 +126,7 @@ TEST(Common,Point_Operator_Addition)
     EXPECT_EQ( r, a + b );
 }
 
-TEST(Common,Point_Operator_SelfAddition)
+TEST(PointTests,Operator_SelfAddition)
 {
     const Point a( 2, 5 );
     const Point b( 7, 1 );
@@ -138,7 +138,7 @@ TEST(Common,Point_Operator_SelfAddition)
     EXPECT_EQ( r, t );
 }
 
-TEST(Common,Point_Operator_Subtraction)
+TEST(PointTests,Operator_Subtraction)
 {
     const Point a(  2, 5 );
     const Point b(  7, 1 );
@@ -147,7 +147,7 @@ TEST(Common,Point_Operator_Subtraction)
     EXPECT_EQ( r, a - b );
 }
 
-TEST(Common,Point_Operator_SelfSubtraction)
+TEST(PointTests,Operator_SelfSubtraction)
 {
     const Point a(  2, 5 );
     const Point b(  7, 1 );
@@ -159,7 +159,7 @@ TEST(Common,Point_Operator_SelfSubtraction)
     EXPECT_EQ( r, t );
 }
 
-TEST(Common,Point_Operator_Negation)
+TEST(PointTests,Operator_Negation)
 {
     Point a( 2, -3 );
     const Point r( -2, 3 );
@@ -167,7 +167,7 @@ TEST(Common,Point_Operator_Negation)
     EXPECT_EQ( r, -a );
 }
 
-TEST(Common,Point_Translate)
+TEST(PointTests,Translate)
 {
     const Point a( 2, 4 );
     const Point r( 7, 10 );
@@ -178,7 +178,7 @@ TEST(Common,Point_Translate)
     EXPECT_EQ( Point( 2, 4 ), a );
 }
 
-TEST(Common,Point_IsZero)
+TEST(PointTests,IsZero)
 {
     const Point a;
     const Point b( 0, 0 );
@@ -193,7 +193,7 @@ TEST(Common,Point_IsZero)
     EXPECT_FALSE( e.isZero() );
 }
 
-TEST(Common,Point_Set)
+TEST(PointTests,Set)
 {
     Point a( 2, 5 );
     a.set( 3, 2 );
@@ -201,7 +201,7 @@ TEST(Common,Point_Set)
     EXPECT_EQ( Point( 3, 2 ), a );
 }
 
-TEST(Common,Point_Cout)
+TEST(PointTests,Cout)
 {
     const Point r( 2, 5 );
     std::ostringstream ss;
