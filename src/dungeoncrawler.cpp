@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 #include "dungeoncrawler.h"
+#include "inputmanager.h"
 #include "engine/appconfig.h"
 #include "engine/optionsparser.h"
 #include "game/world.h"
 #include "game/gameplayengine.h"
 #include "game/playerinputcontroller.h"
 #include "graphics/clientview.h"
-#include "inputmanager.h"
 #include "common/platform.h"
 #include "common/utils.h"
 
 #include <string>
-#include <iostream>
-
 #include <SDL2/SDL.h>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,36 +83,5 @@ int main( int argc , char** argv )
     }
 
     // all done. it worked!
-    return 0;
+    return EXIT_SUCCESS;
 }
-
-/**
- * Command line parsing. This function parses all options provided to the
- * dungeon crawler client when launched, and returns an AppConfig structure
- * that contains all parsed options
- */
-/*
-AppConfig parseCommandLineArgs( int argc, char** argv )
-{
-
-    if ( varmap.count("help") )
-    {
-        std::cout << App::getBuildString() << std::endl
-                  << generic
-                  << std::endl;
-    }
-    else if ( varmap.count("help-all") )
-    {
-        std::cout << App::getBuildString() << std::endl
-                  << generic          << std::endl
-                  << config
-                  << std::endl;
-    }
-    else if ( varmap.count("version") )
-    {
-        std::cout << App::getBuildString() << std::endl;
-    }
-
-    // All done parsing
-    return appConfig;
-}*/
