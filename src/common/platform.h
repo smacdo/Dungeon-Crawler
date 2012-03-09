@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2011 Scott MacDonald. All rights reserved.
+ * Copyright 2012 Scott MacDonald
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 #ifndef SCOTT_DUNGEON_PLATFORM_H
 #define SCOTT_DUNGEON_PLATFORM_H
@@ -101,10 +100,26 @@ namespace App
     enum EAssertionStatus
     {
         EAssertion_Halt = 0,
-        EAssertion_Continue = 1
+        EAssertion_Continue = 1,
+        EAssertion_Default = 2
     };
 
-    void setTestingMode( bool inTestingMode );
+    enum EErrorType
+    {
+        EERROR_WARNING,
+        EERROR_ERROR,
+        EERROR_FATAL
+    };
+
+    // Specifies the default handling of assertions.
+    const EAssertionStatus GDefaultAssertionStatus = EAssertion_Halt;
+
+    void setIsInUnitTestMode( bool isInUnitTesting );
+    void setTestAssertsShouldDie( bool shouldBlowUp );
+    void resetTestAssertsShouldDie();
+
+    // Converts an error type enum into a string
+    std::string getNameForError( EErrorType error );
 
     // Performs any needed platform specific work before starting the game
     void startup();
@@ -120,6 +135,18 @@ namespace App
 
     void raiseFatalError( const std::string& message,
                           const std::string& details = "" );
+
+    EAssertionStatus reportAssertion( const std::string& message,
+                                      const std::string& expression,
+                                      const std::string& filename,
+                                      unsigned int line );
+
+    void reportSoftwareError( const std::string& message,
+                              const std::string& details,
+                              EErrorType type,
+                              unsigned int lineNumber,
+                              const char * fileName,
+                              const char * functionName );
 
     // Returns a "build string", which is a long string containing information
     // about the settings under which the game was built

@@ -1,18 +1,17 @@
 /*
- * Copyright (C) 2011 Scott MacDonald. All rights reserved.
+ * Copyright 2012 Scott MacDonald
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 #include "common/platform.h"
 #include "common/utils.h"
@@ -23,16 +22,6 @@
 #include <stdlib.h>
 
 namespace App {
-    bool GAppTestingMode = false;
-
-/**
- * Configures assertion handling for either normal application mode or
- * unit testing mode
- */
-void setTestingMode( bool inTestingMode )
-{
-    GAppTestingMode = inTestingMode;
-}
 
 /**
  * Generates a assertion reporting dialog (or console output) to show to the
@@ -43,22 +32,11 @@ void setTestingMode( bool inTestingMode )
  * \param  filename    Name of the file that generated the assertion
  * \param  lineNumber  Line that generated the assertion
  */
-EAssertionStatus raiseAssertion( const char *message,
-                                 const char *expression,
-                                 const char *filename,
-                                 unsigned int lineNumber )
+EAssertionStatus reportAssertion( const std::string& message,
+                                  const std::string& expression,
+                                  const std::string& filename,
+                                  unsigned int lineNumber )
 {
-    if ( message == NULL )
-    {
-        message = "Assertion failed";
-    }
-
-    if ( GAppTestingMode )
-    {
-        std::cerr << "ASSERTION FAILED: " << expression << std::endl;
-        quit( EPROGRAM_ASSERT_FAILED, "ASSERTION FAILED" );      
-    }
-
     std::cerr
         << "---------- ASSERTION FAILED! ---------- " << std::endl
         << "MESSAGE   : "  << message                 << std::endl
@@ -69,47 +47,73 @@ EAssertionStatus raiseAssertion( const char *message,
         << std::endl;
 
     // Now return and let the caller know that they should abort
-    return EAssertion_Halt;
+    return EAssertion_Default;
 }
 
 /**
- * Generates a non-fatal error message that is displayed to the player, and
- * the player is allowed to choose whether to continue or quit.
+ * Platform specific error reporting utility. This method is called by the
+ * game engine whenever there is an error (or warning) to be reported. The
+ * method is responsible for providing this information to the user and 
+ * allowing the player to take appropriate action based on it.
  *
- * \param  message  The main error message
- * \param  details  (optional) Details about the problem
+ * \param  message       A terse description of the error that occurred
+ * \param  details       Optional contextual details of the error
+ * \param  type          What type of error is this
+ * \param  lineNumber    Line number that this error occurred on
+ * \param  functionName  Name of the function where error occurred
  */
-void raiseError( const std::string& message,
-                 const std::string& details )
+void reportSoftwareError( const std::string& message,
+                          const std::string& details,
+                          EErrorType type,
+                          unsigned int lineNumber,
+                          const char * filename,
+                          const char * functionName )
 {
+    // Error header
     std::cerr
-        << "---------- AN ERROR OCCURRED! ---------- " << std::endl
-        << "MESSAGE: " << message                      << std::endl
-        << "DETAILS: " << details                      << std::endl
-        << "----------------------------------------"  << std::endl
+        << "=================================================================="
+        << std::endl
+        << "A " << getNameForError( type ) << " has occurred. Details follow. "
+        << std::endl
+        << std::endl;
+
+    // Print the message body
+    std::cerr << "MESSAGE: " << message << std::endl;
+
+    if ( filename != NULL )
+    {
+        std::cerr << "   FILE: " << filename << std::endl;
+    }
+
+    if ( lineNumber > 0 )
+    {
+        std::cerr << "   LINE: " << lineNumber << std::endl;
+    }
+
+    if ( functionName != NULL )
+    {
+        std::cerr << "   FUNC: " << functionName << std::endl;
+    }
+
+    // If there were extra details, print them at the bottom of the error
+    // output
+    if (! details.empty() )
+    {
+        std::cerr << "DETAILS: " << std::endl
+                  << "-------- " << std::endl
+                  << details     << std::endl;
+    }
+
+    // Message bottom
+    std::cerr
+        << "============================================================="
+        << std::endl
         << std::endl;
 }
 
 /**
- * Displays a fatal error message to the player before he/she is forced to
- * quit playing.
- *
- * \param  message  The main error message
- * \param  details  (optional) Details about the problem
+ * Performs UNIX specific start up tasks
  */
-void raiseFatalError( const std::string& message,
-                      const std::string& details )
-{
-    std::cerr
-        << "---------- FATAL ERROR OCCURRED ---------- " << std::endl
-        << "MESSAGE: " << message                      << std::endl
-        << "DETAILS: " << details                      << std::endl
-        << "------------------------------------------"  << std::endl
-        << std::endl;
-
-    App::quit( EPROGRAM_FATAL_ERROR, message );
-}
-
 void startup()
 {
 }
@@ -117,8 +121,13 @@ void startup()
 /**
  * Quit the program with the requested status and reason
  */
-void quit( EProgramStatus programStatus, const std::string& )
+void quit( EProgramStatus programStatus, const std::string& message )
 {
+    if (! message.empty() )
+    {
+        std::cerr << "EXITING: " << message << std::endl;
+    }
+
     exit( programStatus );
 }
 

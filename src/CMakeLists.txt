@@ -8,6 +8,7 @@ project(DungeonCrawler)
 #==========================================================================
 set(common_srcs
         common/logging.cpp
+        common/platform.cpp
         common/platform_unix.cpp
         common/point.cpp
         common/random.cpp
@@ -118,6 +119,7 @@ set(srcs
         ${game_srcs}
         ${graphics_srcs}
         ${worldgen_srcs}
+        ${THIRDPARTY_ROOT}/googletest/googletest-all.cpp
 )
 
 ###
@@ -168,6 +170,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${Boost_INCLUDE_DIRS}
     ${THIRDPARTY_ROOT}/tinyxml/include
+    ${THIRDPARTY_ROOT}/googletest/include
     ${SDL2_INCLUDE_DIR}
 )
 

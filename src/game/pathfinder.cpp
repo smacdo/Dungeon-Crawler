@@ -18,11 +18,11 @@
 #include "common/point.h"
 #include "common/fixedgrid.h"
 #include "common/logging.h"
+#include "common/platform.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cassert>
 #include <algorithm>
 #include <queue>
 
