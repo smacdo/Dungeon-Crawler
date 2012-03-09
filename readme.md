@@ -7,12 +7,9 @@ generated worlds filled with random dungeons housing epic loot, stake
 out a portion of the unforgiving wild wildness to call your own and live
 to tell the tales of your exploits! Just try not to die :)
 
-See the files ./INSTALL* for building and installation instructions.
-
-Screenshot
-=================
-Here is a snapshot of the game:
 ![Dungeon Crawler Screenshot](http://i.imgur.com/8ODmQ.png)
+
+Look for platform specific build instructions in doc/
 
 TABLE OF CONTENTS
 =================
