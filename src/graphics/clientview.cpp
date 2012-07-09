@@ -16,6 +16,7 @@
 #include "graphics/clientview.h"
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
+#include "graphics/spritedata.h"
 #include "graphics/spriteloader.h"
 #include "common/rect.h"
 #include "common/utils.h"
@@ -26,7 +27,7 @@
 #include "game/level.h"
 #include "game/world.h"
 #include "game/dungeon.h"
-#include "game/actor.h"
+#include "engine/actor.h"
 
 #include "inputmanager.h"
 
@@ -206,16 +207,14 @@ void ClientView::draw( const World& world )
 
     // Load the world's main player, so that we can draw from his/her
     // perspective
-    std::shared_ptr<const Actor> pPlayer = world.activePlayer();
-    assert( pPlayer != NULL );
+    const Actor& player = world.activePlayer();
 
     // Query the player's actor for the current level. Once we have that,
     // render it to the screen
-    std::shared_ptr<const Level> pLevel = pPlayer->activeLevel();
-    drawGameLevel( deref( pLevel ) );
+    drawGameLevel( player.activeLevel() );
 
     // Draw the player
-    drawPlayer( deref( pPlayer ) );
+    drawPlayer( player );
 
     // Render the backbuffer to the actual display
     SDL_RenderPresent( mpRenderer );
@@ -245,11 +244,15 @@ void ClientView::drawGameLevel( const Level& level )
 
             // Get information on that tile
             const Tile& tile    = level.tileAt( Point( x, y ) );
-            Sprite *pTileSprite = mTileSprites[ tile.tileid() ];
+//            SpriteData *pSprite = mTileSprites[ tile.tileid() ];
+            Point position      = Point( bounds.x() - mCamera.x(),
+                                         bounds.y() - mCamera.y() );
 
-            drawSprite( bounds.x() - mCamera.x(),
-                        bounds.y() - mCamera.y(),
-                        deref( pTileSprite) );
+            Sprite *pSprite = mTileSprites[ tile.tileid() ];
+            pSprite->SetPosition( position );
+
+            // Generate a sprite and draw it
+            drawSprite( pSprite );
         }
     }
 }
@@ -269,28 +272,27 @@ void ClientView::drawPlayer( const Actor& player )
     }
 }
 
-void ClientView::drawSprite( int x, int y, const Sprite& sprite )
+void ClientView::drawSprite( const Sprite& sprite )
 {
-    // Make sure the position being drawn to makes sense
-    assert( x >= 0 );
-    assert( y >= 0 );
+    const SpriteData& data = deref( sprite.spriteData() );
+    const Point pos        = sprite.position();
 
     // Construct a rectangle that encompasses only the area of the image
     // that the sprite wants to pull from (for sprite sheet sprites)
-    SDL_Rect clip   = { static_cast<int16_t>(sprite.x()),
-                        static_cast<int16_t>(sprite.y()),
-                        static_cast<int16_t>(sprite.width()),
-                        static_cast<int16_t>(sprite.height()) };
+    SDL_Rect clip   = { static_cast<int16_t>(data.x()),
+                        static_cast<int16_t>(data.y()),
+                        static_cast<int16_t>(data.width()),
+                        static_cast<int16_t>(data.height()) };
 
-    SDL_Rect offset = { static_cast<int16_t>(x),
-                        static_cast<int16_t>(y),
-                        static_cast<int16_t>( sprite.width() ),
-                        static_cast<int16_t>( sprite.height() ) };
+    SDL_Rect offset = { static_cast<int16_t>(point.x()),
+                        static_cast<int16_t>(point.y()),
+                        static_cast<int16_t>(data.width()),
+                        static_cast<int16_t>(data.height()) };
 
     // Grab a copy of the texture. I don't like having to cast away the
     // const-ness of the texture pointer, but SDL doesn't support clean const
     // programming
-    SDL_Texture * pTexture = const_cast<SDL_Texture*>( sprite.texture() );
+    SDL_Texture * pTexture = const_cast<SDL_Texture*>( data.texture() );
 
     // Render the texture to the back buffer
     SDL_RenderCopy( mpRenderer, pTexture, &clip, &offset );

@@ -14,76 +14,36 @@
  * limitations under the License.
  */
 #include "graphics/sprite.h"
+#include "graphics/spritedata.h"
 #include "common/platform.h"
-#include <SDL2/SDL.h>
 
 /**
- * Sprite constructor for a sprite that is in a standalone
- * image
+ * Sprite constructor, places sprite at position 0,0
  */
-Sprite::Sprite( SDL_Texture *pTexture )
-    : mpTexture( pTexture ),
-      mX( 0 ),
-      mY( 0 ),
-      mW( 0 ),
-      mH( 0 )
+Sprite::Sprite( SpriteData * pSpriteData )
+    : mpData( pSpriteData ),
+      mPosition( 0, 0 )
 {
-    assert( pTexture != NULL );
-
-    // Copy the width and height from the sdl surface
-    unsigned int format;
-    int temp;
-    
-    if ( SDL_QueryTexture( pTexture, &format, &temp, &mW, &mH ) != 0 )
-    {
-        App::raiseFatalError( "Failed to query texture for height/width",
-                              SDL_GetError() );
-    }
-
-    // Make sure they are valid
-    assert( mW > 0 );
-    assert( mH > 0 );
+    assert( pSpriteData != NULL );
 }
 
 /**
- * Sprite constructor for a sprite that is located within a
- * spritesheet image. X and Y denote the offset, and width/height
- * denote how big the sprite is.
+ * Sprite constructor
  */
-Sprite::Sprite( SDL_Texture *pTexture,
-                int xOffset,
-                int yOffset,
-                int width,
-                int height )
-    : mpTexture( pTexture ),
-      mX( xOffset ),
-      mY( yOffset ),
-      mW( width ),
-      mH( height )
+Sprite::Sprite( SpriteData * pSpriteData, const Point& position )
+    : mpData( pSpriteData ),
+      mPosition( position )
 {
-    assert( mpTexture != NULL );
-    assert( mX >= 0 );
-    assert( mY >= 0 );
-    assert( mW > 0 );
-    assert( mH > 0 );
+    assert( pSpriteData != NULL );
 }
 
 /**
- * Copy constructor. Clones another sprite, but does not deep copy the SDL
- * source texture
+ * Copy constructor (shallow copies the sprite data)
  */
 Sprite::Sprite( const Sprite& s )
-    : mpTexture( s.mpTexture ),
-      mX( s.mX ),
-      mY( s.mY ),
-      mW( s.mW ),
-      mH( s.mH )
+    : mpData( s.mpData ),
+      mPosition( s.mPosition )
 {
-    assert( mpTexture != NULL );
-    assert( mX >= 0 );
-    assert( mY >= 0 );
-    assert( mW > 0 );
-    assert( mH > 0 );
 }
 
 /**
@@ -91,80 +51,34 @@ Sprite::Sprite( const Sprite& s )
  */
 Sprite::~Sprite()
 {
-    // SDL_Surfaces are not released, since other sprites could potentially the
-    // texture. This is especially the case with tilesheet sprites
-    mpTexture = NULL;       // prevent stupid mistakes
+    // Sprite data is not released, since other sprites may be potentially
+    // sharing it
+    mpData = NULL;
 }
 
 /**
- * Assignment operator. Clones the sprite, but does not deep copy the source
- * texture
+ * Assignment operator. Shallow copy
  */
 Sprite& Sprite::operator = ( const Sprite& rhs )
 {
-    mpTexture = rhs.mpTexture;
-    mX        = rhs.mX;
-    mY        = rhs.mY;
-    mW        = rhs.mW;
-    mH        = rhs.mH;
+    mpData    = rhs.mpData;
+    mPosition = rhs.mPosition;
+
+    return *this;
 }
 
 /**
- * Equality operator. Checks if this sprite is an identical copy of another
- * sprite
+ * Return a pointer to the sprite's underlying sprite data
  */
-bool Sprite::operator == ( const Sprite& rhs ) const
+const SpriteData* Sprite::spriteData() const
 {
-    return ( mpTexture == rhs.mpTexture && mX == rhs.mX && mY == rhs.mY
-                                        && mW == rhs.mW && mH == rhs.mH );
+    return mpData;
 }
 
 /**
- * Inequality operator. Checks if this sprite is not an indentical copy of another
- * sprite
+ * Position of the sprite
  */
-bool Sprite::operator != ( const Sprite& rhs ) const
+Point Sprite::position() const
 {
-    return ( mpTexture != rhs.mpTexture || mX != rhs.mX || mY != rhs.mY
-                                        || mW != rhs.mW || mH != rhs.mH );
-}
-
-/**
- * Return a pointer to the sprite's underlying texture object
- */
-const SDL_Texture* Sprite::texture() const
-{
-    return mpTexture;
-}
-
-/**
- * The texture x offset for the sprite
- */
-int Sprite::x() const
-{
-    return mX;
-}
-
-/**
- * The texture y offset for the sprite
- */
-int Sprite::y() const
-{
-    return mY;
-}
-
-/**
- * The sprite's width
- */
-int Sprite::width() const
-{
-    return mW;
-}
-
-/**
- * The sprite's height
- */
-int Sprite::height() const
-{
-    return mH;
+    return mPosition;
 }

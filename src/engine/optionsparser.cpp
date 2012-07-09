@@ -23,6 +23,8 @@
 #include <fstream>
 
 #include <boost/program_options.hpp>
+#include <boost/functional/hash.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace po = boost::program_options;
 
@@ -34,6 +36,7 @@ OptionsParser::OptionsParser()
       mHelpRequested( false ),
       mVersionRequested( false ),
       mHadErrors( false ),
+      mConfigPath( "dungeon.ini" ),
       mGenericOptions( "Application Options" ),
       mCommandLineOptions( "Command Line Options" ),
       mVariables()
@@ -72,10 +75,25 @@ bool OptionsParser::parseCommandLine( int argc, char ** argv )
         po::store( po::parse_command_line( argc, argv, options ), mVariables );
         po::notify( mVariables );
 
+        // Did the user special an additional configuration file to parse?
+        //  (Or was there a built in config file to parse?)
+        if (! mConfigPath.empty() )
+        {
+            std::cerr << "parsing: " << mConfigPath << std::endl;
+            parseConfigFile( mConfigPath );
+        }
+
         // Were any "special" options requested?
-        mHelpRequested    = ( mVariables.count("help") > 0 );
-        mVersionRequested = ( mVariables.count("version") > 0 );
-        mLicenseRequested = ( mVariables.count("license") > 0 );
+        mHelpRequested    = ( mVariables.count("help") );
+        mVersionRequested = ( mVariables.count("version") );
+        mLicenseRequested = ( mVariables.count("license") );
+
+        // Load the random seed (if provided).
+        if ( mVariables.count("game.randomseed") )
+        {
+            mConfig.randomSeed =
+                parseSeed( mVariables["game.randomseed"].as<std::string>() );
+        }
     }
     catch ( ... )
     {
@@ -285,6 +303,16 @@ void OptionsParser::init()
             po::value<bool>( &mConfig.quiet )->default_value( false ),
             "Greatly reduces the amount of information sent to the console"
         )
+        (
+            "datadir",
+            po::value<std::string>( &mConfig.contentPath ),
+            "Directory containing game content files"
+        )
+        (
+            "config",
+            po::value<std::string>( &mConfigPath ),
+            "Path to an additional configuration file"
+        )
         ;
 
     // Declare a group of options that will be allowed from both the command
@@ -292,23 +320,74 @@ void OptionsParser::init()
     mGenericOptions.add_options()
         (
             "renderer.width,w",
-            po::value<int>( &mConfig.rwWidth )->default_value( mConfig.rwWidth ),
+            po::value<int>( &mConfig.rwWidth ),
             "Width of the main game window"
         )
         (
             "renderer.height,h",
-            po::value<int>( &mConfig.rwHeight )->default_value( mConfig.rwHeight ),
+            po::value<int>( &mConfig.rwHeight ),
             "Height of the main game window"
         )
         (
+            "renderer.x",
+            po::value<int>( &mConfig.rwX ),
+            "X position to create window at"
+        )
+        (
+            "renderer.y",
+            po::value<int>( &mConfig.rwY ),
+            "Y position to create window at"
+        )
+        (
             "renderer.fullscreen,f",
-            po::value<bool>( &mConfig.rwFullscreen )->default_value( false ),
+            po::value<bool>( &mConfig.rwFullscreen ),
             "Launch in full screen or windowed mode"
         )
         (
             "game.randomseed,s",
-            po::value<int>( &mConfig.randomSeed )->default_value( 0 ),
+            po::value<unsigned int>( &mConfig.randomSeed ),
             "Value to seed the random number generator with"
         )
     ;
+}
+
+/**
+ * Takes a user inputted string random seed and attempts to convert it into
+ * an unsigned integer. If the string is a numeric value, this function will
+ * merely convert it from a string. However, if the string is not numeric then
+ * this function will hash it and generate a value from that.
+ */
+unsigned int OptionsParser::parseSeed( const std::string& value )
+{
+    unsigned int seed = 0u;
+
+    // Try to cast it to an integer. If this fails... well it wasn't a numeric
+    // value!
+    try
+    {
+        seed = boost::lexical_cast<unsigned int>( value );
+    }
+    catch ( boost::bad_lexical_cast& )
+    {
+        // Failed to cast. Hash the string into a numeric value instead
+        try
+        {
+            boost::hash<std::string> hasher;
+            seed = hasher( value );
+        }
+        catch ( ... )
+        {
+            std::cerr << "Failed to parse random seed '" << value << "'"
+                      << std::endl;
+            mHadErrors = true;
+        }
+    }
+    catch ( ... )
+    {
+        std::cerr << "Failed to lexically cast random seed '" << value << "'"
+                  << std::endl;
+        mHadErrors = true;
+    }
+
+    return seed;
 }

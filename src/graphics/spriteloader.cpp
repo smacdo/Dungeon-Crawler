@@ -160,12 +160,12 @@ void SpriteLoader::readSpriteNode( const std::string& spriteSheetFile,
 
     // Now that we've read all of the required sprite attributes, lets create
     // a new sprite template in our sprite manager
-    mSpriteManager.addSpriteTemplate( name,
-                                      spriteSheetFile,
-                                      x,
-                                      y,
-                                      w,
-                                      h );
+    mSpriteManager.addSpriteData( name,
+                                  spriteSheetFile,
+                                  x,
+                                  y,
+                                  w,
+                                  h );
 }
 
 /**

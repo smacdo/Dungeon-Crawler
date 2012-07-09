@@ -16,30 +16,21 @@
 #ifndef SCOTT_DUNGEON_SPRITE_H
 #define SCOTT_DUNGEON_SPRITE_H
 
-#include <boost/noncopyable.hpp>
+#include "common/point.h"
 
-struct SDL_Texture;
+class SpriteData;
 
 /**
- * Defines a sprite that is located in a (potential) spritesheet.
- *
- * TODO: Split this class up into two separate classes. This class should be
- * renamed SpriteData, and a new Sprite class should contain a pointer to it.
- * That way we can instance sprites and store their world coordinates, among
- * other things such as rotation.
+ * Defines a visible sprite character
  */
 class Sprite
 {
 public:
-    // Sprite constructor for a standalone sprite image
-    Sprite( SDL_Texture *surface );
+    // Sprite constructor, default position at (0,0) TL
+    Sprite( SpriteData* pSpriteData );
 
     // Sprite constructor a sprite located in a spritesheet
-    Sprite( SDL_Texture *surface,
-            int xOffset,
-            int yOffset,
-            int width,
-            int height );
+    Sprite( SpriteData* pSpriteData, const Point& position );
 
     // Copy constructor
     Sprite( const Sprite& s );
@@ -49,22 +40,13 @@ public:
 
     // Assignment operator
     Sprite& operator = ( const Sprite& rhs );
+    Point position() const;
 
-    // Equality operator
-    bool operator == ( const Sprite& rhs ) const;
-
-    // Inequality operator
-    bool operator != ( const Sprite& rhs ) const;
-
-    const SDL_Texture* texture() const;
-    int x() const;
-    int y() const;
-    int width() const;
-    int height() const;
+    const SpriteData* spriteData() const;
 
 private:
-    SDL_Texture *mpTexture;
-    int mX, mY, mW, mH;
+    SpriteData * mpData;
+    Point mPosition;
 };
 
 #endif

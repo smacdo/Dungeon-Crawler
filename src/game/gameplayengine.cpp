@@ -15,11 +15,10 @@
  */
 #include "game/gameplayengine.h"
 #include "game/tilefactory.h"
-#include "game/actor.h"
+#include "engine/actor.h"
 #include "game/world.h"
 #include "game/level.h"
-#include "game/playerinputcontroller.h"
-#include "game/actorcontroller.h"
+#include "engine/playerinputcontroller.h"
 
 #include "worldgen/worldgenerator.h"
 
@@ -85,10 +84,7 @@ void GamePlayEngine::createNewWorld()
     assert( mpWorld != NULL );
 
     // Spawn the player's character and wire him (or her) in
-    mpPlayerActor.reset( new Actor( mpWorld->spawnLevel(),
-                                    mpWorld->spawnPoint() ) );
-
-    mpWorld->addPlayer( mpPlayerActor );
+    mpPlayerActor = mpWorld->spawnNewPlayer();
 
     // Update the player controller
     mInputController.attachTo( mpPlayerActor );

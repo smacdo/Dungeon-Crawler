@@ -6,3 +6,9 @@ Things to do in the future, once we get a basic framework going
 	  Point class
 	- Refactor the older code still sing row/col notation and just use
 	  x/y
+
+- performance overlay
+    - frames/sec
+    - update speed
+    - draw speed
+    - num sprites drawn
