@@ -40,7 +40,12 @@ public:
 
     // Assignment operator
     Sprite& operator = ( const Sprite& rhs );
+
+    // Get position
     Point position() const;
+
+    // Set sprite position
+    void setPosition( const Point& p );
 
     const SpriteData* spriteData() const;
 

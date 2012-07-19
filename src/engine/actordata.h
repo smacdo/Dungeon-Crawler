@@ -47,8 +47,14 @@ public:
     const Level& activeLevel() const;
 
 private:
+    /// Level that the actor is in
     std::shared_ptr<Level> mpActiveLevel;
+
+    /// Location of the actor in the level
     Point mPosition;
+
+    /// Name of the actor
+    std::string mName;
 };
 
 #endif
