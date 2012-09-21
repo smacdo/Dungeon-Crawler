@@ -1,4 +1,9 @@
 
+XCode:
+    cmake -GXcode ../
+    xcodebuild -configuration RelWithDebInfo
+
+
 Requirements
     - SDL framework
     - SDL_image framework

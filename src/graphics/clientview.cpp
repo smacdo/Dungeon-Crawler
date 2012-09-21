@@ -249,10 +249,10 @@ void ClientView::drawGameLevel( const Level& level )
                                          bounds.y() - mCamera.y() );
 
             Sprite *pSprite = mTileSprites[ tile.tileid() ];
-            pSprite->SetPosition( position );
+            pSprite->setPosition( position );
 
             // Generate a sprite and draw it
-            drawSprite( pSprite );
+            drawSprite( *pSprite );
         }
     }
 }
@@ -265,9 +265,7 @@ void ClientView::drawPlayer( const Actor& player )
     // Only draw the player if they are on the screen
     if ( mCamera.contains( drawAt ) )
     {
-        drawSprite( drawAt.x() - mCamera.x(),
-                    drawAt.y() - mCamera.y(),
-                    deref(mpPlayerSprite) );
+        drawSprite( deref( mpPlayerSprite ) );
         
     }
 }
@@ -284,8 +282,8 @@ void ClientView::drawSprite( const Sprite& sprite )
                         static_cast<int16_t>(data.width()),
                         static_cast<int16_t>(data.height()) };
 
-    SDL_Rect offset = { static_cast<int16_t>(point.x()),
-                        static_cast<int16_t>(point.y()),
+    SDL_Rect offset = { static_cast<int16_t>(pos.x()),
+                        static_cast<int16_t>(pos.y()),
                         static_cast<int16_t>(data.width()),
                         static_cast<int16_t>(data.height()) };
 

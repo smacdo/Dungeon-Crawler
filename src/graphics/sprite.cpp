@@ -82,3 +82,11 @@ Point Sprite::position() const
 {
     return mPosition;
 }
+
+/**
+ * Set sprite position
+ */
+void Sprite::setPosition( const Point& p )
+{
+    mPosition = p;
+}
