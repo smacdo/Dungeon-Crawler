@@ -143,6 +143,7 @@ source_group( worldgen\\headers FILES ${worldgen_headers} )
 #
 # Required packages
 #
+set(Boost_USE_STATIC_LIBS true)
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
@@ -212,8 +213,8 @@ if(NOT MSVC)
 endif()
 
 include(DoxygenTargets)
-add_doxygen( ${PROJECT_SOURCE_DIR}/Doxyfile
-             OUTPUT_DIRECTORY ${GAME_OUTPUT_PATH}/doc
+add_doxygen( Doxyfile
+             OUTPUT_DIRECTORY doc
              PROJECT_NUMBER "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATH}"
              DOC_TARGET doxygen
              NO_WARNINGS

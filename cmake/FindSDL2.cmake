@@ -80,12 +80,13 @@ FIND_PATH(SDL2_INCLUDE_DIR SDL.h
   /opt/local # DarwinPorts
   /opt/csw # Blastwave
   /opt
+  ${CMAKE_SOURCE_DIR}/thirdparty/sdl
 )
 
 #MESSAGE("SDL2_INCLUDE_DIR is ${SDL2_INCLUDE_DIR}")
 
 FIND_LIBRARY(SDL2_LIBRARY_TEMP 
-  NAMES SDL2
+  NAMES SDL2 SDL2.lib
   HINTS
   $ENV{SDL2DIR}
   PATH_SUFFIXES lib64 lib
@@ -94,6 +95,8 @@ FIND_LIBRARY(SDL2_LIBRARY_TEMP
   /opt/local
   /opt/csw
   /opt
+  ${CMAKE_SOURCE_DIR}/thirdparty/sdl/Win32/Release
+  ${CMAKE_SOURCE_DIR}/thirdparty/sdl/x64/Release
 )
 
 #MESSAGE("SDL2_LIBRARY_TEMP is ${SDL2_LIBRARY_TEMP}")
@@ -105,7 +108,7 @@ IF(NOT SDL_BUILDING_LIBRARY)
     # seem to provide SDLmain for compatibility even though they don't
     # necessarily need it.
     FIND_LIBRARY(SDLMAIN_LIBRARY 
-      NAMES SDLmain2
+      NAMES SDLmain2 SDL2main
       HINTS
       $ENV{SDLDIR}
       PATH_SUFFIXES lib64 lib
@@ -114,6 +117,8 @@ IF(NOT SDL_BUILDING_LIBRARY)
       /opt/local
       /opt/csw
       /opt
+      ${CMAKE_SOURCE_DIR}/thirdparty/sdl/Win32/Release
+      ${CMAKE_SOURCE_DIR}/thirdparty/sdl/x64/Release
     )
   ENDIF(NOT ${SDL2_INCLUDE_DIR} MATCHES ".framework")
 ENDIF(NOT SDL_BUILDING_LIBRARY)
