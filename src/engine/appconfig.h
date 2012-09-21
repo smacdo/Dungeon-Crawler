@@ -37,11 +37,26 @@ struct AppConfig
     // Makes the game especially quiet on the console
     bool quiet;
 
+    // Render window width
     int rwWidth;
+
+    // Render window height
     int rwHeight;
+
+    // Render window x
+    int rwX;
+
+    // Render window y
+    int rwY;
+
+    // Launch render window fullscreen or not
     bool rwFullscreen;
-    int randomSeed;
-    bool shouldLaunchGame;
+
+    // Seed to initialize random number generator
+    unsigned int randomSeed;
+
+    // Path to search for game files
+    std::string contentPath;
 };
 
 

@@ -22,6 +22,7 @@
 #include <boost/utility.hpp>
 
 class Sprite;
+class SpriteData;
 struct SDL_Renderer;
 struct SDL_Texture;
 
@@ -34,16 +35,16 @@ public:
     void setRenderer( SDL_Renderer * pRenderer );
 
     // Creates a new sprite object and stores it in the sprite manager
-    void addSpriteTemplate( const std::string& spriteName,
-                            const std::string& filename );
+    void addSpriteData( const std::string& spriteName,
+                        const std::string& filename );
 
     // Creates a new sprite object and store it in the sprite manager
-    void addSpriteTemplate( const std::string& spriteName,
-                            const std::string& filename,
-                            int xOffset,
-                            int yOffset,
-                            int width,
-                            int height );
+    void addSpriteData( const std::string& spriteName,
+                        const std::string& filename,
+                        int xOffset,
+                        int yOffset,
+                        int width,
+                        int height );
 
     // Locates a loaded sprite and returns a copy of it
     Sprite* createSprite( const std::string& spriteName ) const;
@@ -72,7 +73,7 @@ private:
     std::map<std::string, SDL_Texture*> mLoadedTextures;
 
     // List of loaded sprite definitions
-    std::map<std::string, Sprite*> mSpriteCache;
+    std::map<std::string, SpriteData*> mSpriteCache;
 
     // Number of sprites created
     mutable size_t mNumSpritesCreated;

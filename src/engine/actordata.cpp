@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "game/actor.h"
+#include "engine/actordata.h"
 #include "game/level.h"
 #include "common/point.h"
 #include "common/utils.h"
@@ -21,32 +21,27 @@
 #include <memory>
 
 /**
- * Actor constructor
+ * Constructor
  */
-Actor::Actor( std::shared_ptr<Level> pSpawnLevel, const Point& spawnPoint )
+ActorData::ActorData( std::shared_ptr<Level> pSpawnLevel,
+        const Point& spawnPoint )
     : mpActiveLevel( pSpawnLevel ),
       mPosition( spawnPoint )
 {
 }
 
 /**
- * Actor destructor
+ * Destructor
  */
-Actor::~Actor()
+ActorData::~ActorData()
 {
-}
-
-/**
- * Tells the actor to update itself
- */
-void Actor::update()
-{
+    // empty
 }
 
 /**
  * Return our position
  */
-Point Actor::position() const
+Point ActorData::position() const
 {
     return mPosition;
 }
@@ -55,7 +50,7 @@ Point Actor::position() const
  * Set the actor's position. Note that this position he is being placed at must
  * be a valid position for him
  */
-void Actor::setPosition( const Point& point )
+void ActorData::setPosition( const Point& point )
 {
     assert( mpActiveLevel && "Actor must be attached to a level" );
     Tile tile = mpActiveLevel->tileAt( point );
@@ -74,16 +69,16 @@ void Actor::setPosition( const Point& point )
 /**
  * Return a shared pointer to the level that this actor is residing in
  */
-std::shared_ptr<Level> Actor::activeLevel()
+Level& ActorData::activeLevel()
 {
-    return mpActiveLevel;
+    return deref( mpActiveLevel );
 }
 
 /**
  * Return a shared constant pointer to the level that this actor is residing
  * in
  */
-std::shared_ptr<const Level> Actor::activeLevel() const
+const Level& ActorData::activeLevel() const
 {
-    return mpActiveLevel;
+    return deref( mpActiveLevel );
 }

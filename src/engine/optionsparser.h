@@ -79,12 +79,16 @@ private:
     // program_options
     void init();
 
+    // Converts a potential user seed value into an actual numerical seed
+    unsigned int parseSeed( const std::string& value );
+
 private:
     AppConfig mConfig;
     bool mHelpRequested;
     bool mVersionRequested;
     bool mLicenseRequested;
     bool mHadErrors;
+    std::string mConfigPath;
     boost::program_options::options_description mGenericOptions;
     boost::program_options::options_description mCommandLineOptions;
     boost::program_options::variables_map       mVariables;

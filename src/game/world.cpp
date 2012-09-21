@@ -16,7 +16,8 @@
 #include "game/world.h"
 #include "game/dungeon.h"
 #include "game/level.h"
-#include "game/actor.h"
+#include "engine/actor.h"
+#include "engine/actordata.h"
 
 #include "common/utils.h"
 
@@ -28,7 +29,7 @@
  */
 World::World( Dungeon* mainDungeon )
     : mpPlayer(),
-      mpMainDungeon( mainDungeon ),
+      mpMainDungeon( std::shared_ptr<Dungeon>( mainDungeon ) ),
       mpSpawnLevel( mainDungeon->getLevel( 0 ) )
 {
     assert( mpMainDungeon != NULL );
@@ -43,14 +44,20 @@ World::World( Dungeon* mainDungeon )
  */
 World::~World()
 {
+    // Sanity checks
+    assert( mpPlayer.use_count() == 1 && "No one should still have a ptr" );
 }
 
 /**
  * Adds a player to the game
  */
-void World::addPlayer( std::shared_ptr<Actor> pActor )
+std::shared_ptr<Actor> World::spawnNewPlayer()
 {
-    mpPlayer = pActor;
+    mpPlayer =
+        std::shared_ptr<Actor>(
+            new Actor( new ActorData( mpSpawnLevel, mSpawnPoint ) ) );
+
+    return mpPlayer;
 }
 
 /**
@@ -64,26 +71,29 @@ void World::simulate( size_t sliceCount )
 /**
  * Returns a shared pointer to the main dungeon in the world
  */
-std::shared_ptr<Dungeon> World::mainDungeon()
+Dungeon& World::mainDungeon()
 {
-    return mpMainDungeon;
+    assert( mpMainDungeon && "Dungeon pointer cannot be null" );
+    return *mpMainDungeon.get();
 }
 
 /**
  * Returns a shared constant pointer to the main dungeon in the world
  */
-std::shared_ptr<const Dungeon> World::mainDungeon() const
+const Dungeon& World::mainDungeon() const
 {
-    return mpMainDungeon;
+    assert( mpMainDungeon != NULL );
+    return *mpMainDungeon;
 }
 
 /**
  * Returns a shared pointer to the level that players initially spawn in when
  * they start playing
  */
-std::shared_ptr<Level> World::spawnLevel()
+Level& World::spawnLevel()
 {
-    return mpSpawnLevel;
+    assert( mpSpawnLevel != NULL );
+    return *mpSpawnLevel;
 }
 
 /**
@@ -98,15 +108,18 @@ Point World::spawnPoint() const
 /**
  * Returns a shared pointer to the active player
  */
-std::shared_ptr<Actor> World::activePlayer()
+Actor& World::activePlayer()
 {
-    return mpPlayer;
+    assert( mpPlayer && "Active player cannot be null" );
+    return *mpPlayer.get();
 }
 
 /**
  * Returns a shared pointer to the active player
+ *
  */
-std::shared_ptr<const Actor> World::activePlayer() const
+const Actor& World::activePlayer() const
 {
-    return mpPlayer;
+    assert( mpPlayer && "Active player cannot be null" );
+    return *mpPlayer.get();
 }

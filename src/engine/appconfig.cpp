@@ -34,8 +34,10 @@ AppConfig::AppConfig()
       quiet( false ),
       rwWidth( DEFAULT_RENDER_WIDTH ),
       rwHeight( DEFAULT_RENDER_HEIGHT ),
+      rwX( 0 ),
+      rwY( 0 ),
       rwFullscreen( DEFAULT_FULLSCREEN ),
-      randomSeed( 0 ),
-      shouldLaunchGame( true )
+      randomSeed( 0u ),
+      contentPath( "./data" )
 {
 }

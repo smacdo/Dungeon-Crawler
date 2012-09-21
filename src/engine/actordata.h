@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SCOTT_DUNGEON_ACTOR_H
-#define SCOTT_DUNGEON_ACTOR_H
+#ifndef SCOTT_DUNGEON_ACTORDATA_H
+#define SCOTT_DUNGEON_ACTORDATA_H
 
 #include <boost/utility.hpp>
 #include <memory>
@@ -25,14 +25,14 @@ class Level;
 class Point;
 
 /**
- * Repreesnts a creature capable of moving and interacting with the game
- * world
+ * Contains data describing an individual actor and the template from
+ * which it was generated
  */
-class Actor : boost::noncopyable
+class ActorData : boost::noncopyable    // maybe change this
 {
 public:
-    Actor( std::shared_ptr<Level> pSpawnLevel, const Point& spawnAt );
-    ~Actor();
+    ActorData( std::shared_ptr<Level> pSpawnLevel, const Point& spawnAt );
+    ~ActorData();
 
     // The actor's position
     Point position() const;
@@ -40,14 +40,11 @@ public:
     // Set a new position for the actor
     void setPosition( const Point& point );
 
-    // Tells the actor to update itself
-    void update();
-
     // The level that this actor is currently in
-    std::shared_ptr<Level> activeLevel();
+    Level& activeLevel();
 
     // Constant pointer to this actor's level
-    std::shared_ptr<const Level> activeLevel() const;
+    const Level& activeLevel() const;
 
 private:
     std::shared_ptr<Level> mpActiveLevel;

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "game/playerinputcontroller.h"
-#include "game/actor.h"
-#include "game/actorcontroller.h"
+#include "engine/playerinputcontroller.h"
+#include "engine/actor.h"
 #include "inputmanager.h"
 
 /**

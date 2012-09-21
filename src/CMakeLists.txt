@@ -45,6 +45,7 @@ set(worldgen_headers
 set(graphics_srcs 
         graphics/spritemanager.cpp
         graphics/sprite.cpp
+        graphics/spritedata.cpp
         graphics/spriteloader.cpp
         graphics/clientview.cpp
 )
@@ -52,25 +53,30 @@ set(graphics_srcs
 set(graphics_headers
         graphics/clientview.h
         graphics/sprite.h
+        graphics/spritedata.h
         graphics/spriteloader.h
         graphics/spritemanager.h
 )
 
 set(engine_srcs
+        engine/actor.cpp
+        engine/actordata.cpp
         engine/appconfig.cpp
         engine/camera.cpp
         engine/optionsparser.cpp
+        engine/playerinputcontroller.cpp
 )
 
 set(engine_headers
+        engine/actor.h
+        engine/actordata.h
         engine/appconfig.h
         engine/camera.h
         engine/optionsparser.h
+        engine/playerinputcontroller.h
 )
 
 set(game_srcs
-        game/actor.cpp
-        game/actorcontroller.cpp
         game/gameplayengine.cpp
         game/dungeon.cpp
         game/level.cpp
@@ -79,13 +85,10 @@ set(game_srcs
         game/tilegrid.cpp
         game/tiletype.cpp
         game/pathfinder.cpp
-        game/playerinputcontroller.cpp
         game/world.cpp
 )
 
 set(game_headers
-        game/actor.h
-        game/actorcontroller.h
         game/gameplayengine.h
         game/dungeon.h
         game/level.h
@@ -95,7 +98,6 @@ set(game_headers
         game/tilegrid.h
         game/tiletype.h
         game/pathfinder.h
-        game/playerinputcontroller.cpp
         game/world.h
 )
 

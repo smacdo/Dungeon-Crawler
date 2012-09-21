@@ -38,18 +38,17 @@ public:
     World( Dungeon* mainDungeon );
     ~World();
 
-    void addPlayer( std::shared_ptr<Actor> pActor );
+    std::shared_ptr<Actor> spawnNewPlayer();
 
     void simulate( size_t sliceCount );
 
-    std::shared_ptr<Dungeon> mainDungeon();
-    std::shared_ptr<const Dungeon> mainDungeon() const;
-    std::shared_ptr<Level> spawnLevel();
-    std::shared_ptr<Actor> activePlayer();
-    std::shared_ptr<const Actor> activePlayer() const;
+    Dungeon& mainDungeon();
+    const Dungeon& mainDungeon() const;
+    Level& spawnLevel();
+    Actor& activePlayer();
+    const Actor& activePlayer() const;
 
     Point spawnPoint() const;
-
 
 protected:
 

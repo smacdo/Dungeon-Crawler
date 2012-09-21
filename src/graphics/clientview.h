@@ -58,7 +58,7 @@ protected:
     void drawPlayer( const Actor& actor );
 
     SDL_Surface* loadImage( const std::string& filename );
-    void drawSprite( int x, int y, const Sprite& sprite );
+    void drawSprite( const Sprite& sprite );
     void createMainWindow();
 
     bool isInCameraBounds( const SDL_Rect& camera, int x, int y, int w, int h ) const;

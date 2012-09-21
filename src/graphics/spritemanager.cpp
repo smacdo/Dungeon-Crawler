@@ -15,6 +15,7 @@
  */
 #include "graphics/spritemanager.h"
 #include "graphics/sprite.h"
+#include "graphics/spritedata.h"
 #include "common/utils.h"
 #include "common/platform.h"
 #include "common/logging.h"
@@ -29,9 +30,9 @@
 #include <iostream>
 #include <cassert>
 
-typedef std::map<std::string, Sprite*>::iterator SpriteCacheItr;
-typedef std::map<std::string, Sprite*>::const_iterator SpriteCacheConstItr;
-typedef std::pair<std::string, Sprite*> SpriteCacheEntry;
+typedef std::map<std::string, SpriteData*>::iterator SpriteCacheItr;
+typedef std::map<std::string, SpriteData*>::const_iterator SpriteCacheConstItr;
+typedef std::pair<std::string, SpriteData*> SpriteCacheEntry;
 
 typedef std::map<std::string, SDL_Texture*>::iterator TextureListItr;
 typedef std::map<std::string, SDL_Texture*>::const_iterator TextureListConstItr;
@@ -68,8 +69,8 @@ void SpriteManager::setRenderer( SDL_Renderer * pRenderer )
  * \param  spriteName  Name to give to the newly created sprite
  * \param  filepath    Path to the image that this sprite will use
  */
-void SpriteManager::addSpriteTemplate( const std::string& spriteName,
-                                       const std::string& filepath )
+void SpriteManager::addSpriteData( const std::string& spriteName,
+                                   const std::string& filepath )
 {
 
     // Has this sprite already been loaded once before? If so, don't
@@ -80,7 +81,7 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
     {
         // This sprite needs to be loaded and then cached
         SDL_Texture *pTexture = loadImage( filepath );
-        Sprite      *pSprite  = new Sprite( pTexture );
+        SpriteData  *pSprite  = new SpriteData( pTexture );
 
         mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
@@ -102,12 +103,12 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
  * \parma  height     Height of the sprite
  * \return            Pointer to the generated sprite
  */
-void SpriteManager::addSpriteTemplate( const std::string& spriteName,
-                                       const std::string& imagepath,
-                                       int xOffset,
-                                       int yOffset,
-                                       int width,
-                                       int height )
+void SpriteManager::addSpriteData( const std::string& spriteName,
+                                   const std::string& imagepath,
+                                   int xOffset,
+                                   int yOffset,
+                                   int width,
+                                   int height )
 {
     // Has this sprite already been loaded once before? If so, don't
     // load anything
@@ -117,9 +118,9 @@ void SpriteManager::addSpriteTemplate( const std::string& spriteName,
     {
         // This sprite needs to be loaded and then cached
         SDL_Texture *pTexture = loadImage( imagepath );
-        Sprite      *pSprite  = new Sprite( pTexture,
-                                            xOffset, yOffset,
-                                            width, height );
+        SpriteData  *pSprite  = new SpriteData( pTexture,
+                                                xOffset, yOffset,
+                                                width, height );
 
         mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
@@ -154,7 +155,7 @@ Sprite* SpriteManager::createSprite( const std::string& spriteName ) const
     // Create a copy of the sprite and give it to the caller
     //  TODO: Change this to look up a SpriteData object, then create a new
     //        Sprite instance and pass it a shared pointer to the SpriteData
-    return new Sprite( deref( itr->second ) );
+    return new Sprite( itr->second );
 }
 
 /**

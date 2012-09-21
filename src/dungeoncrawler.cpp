@@ -19,7 +19,7 @@
 #include "engine/optionsparser.h"
 #include "game/world.h"
 #include "game/gameplayengine.h"
-#include "game/playerinputcontroller.h"
+#include "engine/playerinputcontroller.h"
 #include "graphics/clientview.h"
 #include "common/platform.h"
 #include "common/utils.h"
@@ -37,8 +37,6 @@ int main( int argc , char** argv )
     OptionsParser optParser;
 
     optParser.parseCommandLine( argc, argv );
-    optParser.parseConfigFile( "dungeoncrawler.ini" );
-
     optParser.process();
 
     // Platform specific start up
