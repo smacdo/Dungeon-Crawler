@@ -32,7 +32,7 @@ namespace App {
  */
 void setIsInUnitTestMode( bool isInUnitTesting )
 {
-    GIsUnitTesting = true;
+    GIsUnitTesting = isInUnitTesting;
 }
 
 void setTestAssertsShouldDie( bool shouldBlowUp )

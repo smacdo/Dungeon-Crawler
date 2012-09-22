@@ -27,9 +27,11 @@ macro(_enable_extra_compiler_warnings_flags)
 			"Use compiler warnings that are probably overkill."
 			off)
 		mark_as_advanced(COMPILER_WARNINGS_EXTREME)
-		set(_flags "/W4")
+
 		if(COMPILER_WARNINGS_EXTREME)
-			set(_flags "${_flags} /Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710")
+			set(_flags "${_flags} /W4 /Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710")
+		else()
+			set(_flags "${_flags} /W3")
 		endif()
 	else()
 		include(CheckCXXCompilerFlag)

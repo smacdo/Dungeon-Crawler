@@ -31,8 +31,15 @@ set(test_req_srcs
 ###########################################################################
 project(DungeonCrawler-Tests)
 
+set(Boost_USE_STATIC_LIBS true)
+set(Boost_DEBUG true)
+
+find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
+find_package(Qt4 REQUIRED)
+
 include_directories(
     ${GAME_SRC_PATH}
+	${Boost_INCLUDE_DIRS}
     ${THIRDPARTY_ROOT}/googletest/include
 )
 

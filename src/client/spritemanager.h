@@ -21,18 +21,16 @@
 #include <string>
 #include <boost/utility.hpp>
 
+#include <QImage>
+
 class Sprite;
 class SpriteData;
-struct SDL_Renderer;
-struct SDL_Texture;
 
 class SpriteManager : boost::noncopyable
 {
 public:
     SpriteManager();
     ~SpriteManager();
-
-    void setRenderer( SDL_Renderer * pRenderer );
 
     // Creates a new sprite object and stores it in the sprite manager
     void addSpriteData( const std::string& spriteName,
@@ -57,20 +55,17 @@ public:
 
 protected:
     // Loads an image file and returns a SDL surface
-    SDL_Texture* loadImage( const std::string& filepath );
+    QImage loadImage( const std::string& filepath );
 
     // Destroys all loaded sprites and surfaces
     void unload();
 
 private:
-    // current sdl renderer
-    SDL_Renderer * mpRenderer;
-
     // Image content directory
     std::string mImageRoot;
 
     // Association of image names to loaded texture files
-    std::map<std::string, SDL_Texture*> mLoadedTextures;
+    std::map<std::string, QImage> mLoadedTextures;
 
     // List of loaded sprite definitions
     std::map<std::string, SpriteData*> mSpriteCache;

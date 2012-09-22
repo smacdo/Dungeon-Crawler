@@ -84,9 +84,9 @@ bool OptionsParser::parseCommandLine( int argc, char ** argv )
         }
 
         // Were any "special" options requested?
-        mHelpRequested    = ( mVariables.count("help") );
-        mVersionRequested = ( mVariables.count("version") );
-        mLicenseRequested = ( mVariables.count("license") );
+        mHelpRequested    = ( mVariables.count("help")    > 0 );
+        mVersionRequested = ( mVariables.count("version") > 0);
+        mLicenseRequested = ( mVariables.count("license") > 0);
 
         // Load the random seed (if provided).
         if ( mVariables.count("game.randomseed") )

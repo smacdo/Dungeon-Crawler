@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "graphics/spriteloader.h"
-#include "graphics/sprite.h"
-#include "graphics/spritemanager.h"
+#include "client/spriteloader.h"
+#include "client/sprite.h"
+#include "client/spritemanager.h"
 
 #include "common/logging.h"
 

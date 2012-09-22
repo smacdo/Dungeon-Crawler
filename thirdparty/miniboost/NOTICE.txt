@@ -1,0 +1,5 @@
+These are files copied from the boost project (version 1.50), and modified to
+work independently of an installed boost sdk.
+
+Please visit http://www.boost.org/ for details on boost, including licensing
+information.

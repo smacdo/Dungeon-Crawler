@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include "inputmanager.h"
-#include <SDL2/SDL.h>
 #include <cassert>
 
 InputManager::InputManager()
@@ -37,7 +36,7 @@ InputManager::~InputManager()
  */
 void InputManager::process()
 {
-    SDL_Event event;
+/*    SDL_Event event;
 
     // Clear out last time's input values
     mUserPressedQuit = false;
@@ -64,15 +63,15 @@ void InputManager::process()
             default:
                 break;
         }
-    }
+    }*/
 }
 
 /**
  * Processes keyboard inputs
  */
-void InputManager::processKeypress( const SDL_Event& event )
+void InputManager::processKeypress( /*const SDL_Event& event*/ )
 {
-    assert( event.type == SDL_KEYDOWN || event.type == SDL_KEYUP );
+/*    assert( event.type == SDL_KEYDOWN || event.type == SDL_KEYUP );
 
     // right now we don't care if keys are up or down... just register
     // based on down position
@@ -143,7 +142,7 @@ void InputManager::processKeypress( const SDL_Event& event )
     if ( mUserMovement.x() != 0 || mUserMovement.y() != 0 )
     {
         mDidUserMove = true;
-    }
+    }*/
 }
 
 /**

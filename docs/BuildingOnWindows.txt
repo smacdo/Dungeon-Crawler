@@ -1,0 +1,25 @@
+
+Requirements
+    - SDL framework
+    - SDL_image framework
+    - boost
+      - can install via ports
+
+launch cmake gui
+    set up source dir, build dir
+    when you configure, select the following options
+            - Generator: Unix Makefiles
+            - Specify native compilers
+    Press continue, then enter the following values
+            - C: /Developer/usr/bin/clang
+            - C++: /Developer/usr/bin/clang++
+
+
+> To create additional buildconfigurations switch to the projects pane and
+>  choose "Add" next to the "Edit BuildConfiguration" label, choose create,
+>  choose a different build directory and on the second wizard page enter,
+>  one of: -DCMAKE_BUILD_TYPE=None
+> -DCMAKE_BUILD_TYPE=Debug
+> -DCMAKE_BUILD_TYPE=Release
+> -DCMAKE_BUILD_TYPE=RelWithDebInfo
+> -DCMAKE_BUILD_TYPE=MinSizeRel

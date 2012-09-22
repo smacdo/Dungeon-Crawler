@@ -59,7 +59,7 @@ void HallGenerator::connect( RoomData *pStartRoom, RoomData *pEndRoom )
     std::vector<Point> path = mPathFinder.findPath( start, end );
 
     // Neighbor positions
-    const boost::array<Point, 8> NEIGHBOR_DIRS
+    const boost::array<Point, 8> NEIGHBOR_DIRS =
     {
         Point(  0, -1 ),  // up
         Point(  1, -1 ),  // upper right

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "graphics/spritemanager.h"
-#include "graphics/sprite.h"
-#include "graphics/spritedata.h"
+#include "client/spritemanager.h"
+#include "client/sprite.h"
+#include "client/spritedata.h"
 #include "common/utils.h"
 #include "common/platform.h"
 #include "common/logging.h"
@@ -23,27 +23,28 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+
 #include <boost/checked_delete.hpp>
 
 #include <iostream>
 #include <cassert>
 
+#include <QImage>
+#include <QPixmap>
+
+typedef std::map<std::string, QImage>::iterator TextureListItr;
+typedef std::map<std::string, QImage>::const_iterator TextureListConstItr;
+typedef std::pair<std::string, QImage> TextureListEntry;
+
 typedef std::map<std::string, SpriteData*>::iterator SpriteCacheItr;
 typedef std::map<std::string, SpriteData*>::const_iterator SpriteCacheConstItr;
 typedef std::pair<std::string, SpriteData*> SpriteCacheEntry;
-
-typedef std::map<std::string, SDL_Texture*>::iterator TextureListItr;
-typedef std::map<std::string, SDL_Texture*>::const_iterator TextureListConstItr;
-typedef std::pair<std::string, SDL_Texture*> TextureListEntry;
 
 /**
  * Constructor
  */
 SpriteManager::SpriteManager()
-    : mpRenderer( NULL ),
-      mImageRoot("data/sprites/"),
+    : mImageRoot("data/sprites/"),
       mNumSpritesCreated( 0 )
 {
 }
@@ -54,12 +55,6 @@ SpriteManager::SpriteManager()
 SpriteManager::~SpriteManager()
 {
     unload();
-}
-
-void SpriteManager::setRenderer( SDL_Renderer * pRenderer )
-{
-    assert( pRenderer != NULL );
-    mpRenderer = pRenderer;
 }
 
 /**
@@ -80,8 +75,8 @@ void SpriteManager::addSpriteData( const std::string& spriteName,
     if ( itr == mSpriteCache.end() )
     {
         // This sprite needs to be loaded and then cached
-        SDL_Texture *pTexture = loadImage( filepath );
-        SpriteData  *pSprite  = new SpriteData( pTexture );
+        QPixmap pixmap       = QPixmap::fromImage( loadImage( filepath ) );
+        SpriteData *pSprite  = new SpriteData( pixmap );
 
         mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
@@ -117,10 +112,9 @@ void SpriteManager::addSpriteData( const std::string& spriteName,
     if ( itr == mSpriteCache.end() )
     {
         // This sprite needs to be loaded and then cached
-        SDL_Texture *pTexture = loadImage( imagepath );
-        SpriteData  *pSprite  = new SpriteData( pTexture,
-                                                xOffset, yOffset,
-                                                width, height );
+        SpriteData *pSprite = new SpriteData( loadImage( imagepath ),
+                                              xOffset, yOffset,
+                                              width, height );
 
         mSpriteCache.insert( SpriteCacheEntry( spriteName, pSprite ) );
     }
@@ -168,11 +162,8 @@ Sprite* SpriteManager::createSprite( const std::string& spriteName ) const
  * \param  filename  Path to the image
  * \return Pointer to the loaded image's SDL surface
  */
-SDL_Texture* SpriteManager::loadImage( const std::string& filename )
+QImage SpriteManager::loadImage( const std::string& filename )
 {
-    assert( mpRenderer != NULL );
-    SDL_Surface *rawSurface = NULL;
-
     // Tack the content prefix on
     std::string imagepath = mImageRoot + filename;
 
@@ -184,34 +175,18 @@ SDL_Texture* SpriteManager::loadImage( const std::string& filename )
         return itr->second;
     }
 
-    // Since we can't instruct SDL_image to directly load a picture into a
-    // texture, we'll have to first assign it to a SDL_Surface* object
-    rawSurface = IMG_Load( imagepath.c_str() );
+    // Load the image from disk, and then cache it into our texture cache
+    QImage image;
 
-    if ( rawSurface == NULL )
+    if (! image.load( QString::fromStdString(filename) ) )
     {
-        std::string error =
-            std::string("IMAGE: ") +
-            imagepath              + "\n" +
-            "SDL: "                + SDL_GetError();
-
-        App::raiseFatalError( "Could not load the requested image from disk",
-                               error );
+        App::raiseFatalError( "Could not load the requested image from disk ",
+                              filename );
     }
 
-    // Now that we have the surface loaded in memory, convert it into an
-    // opimtized hardware texture
-    SDL_Texture * pTexture =
-        SDL_CreateTextureFromSurface( mpRenderer, rawSurface );
+    mLoadedTextures.insert( TextureListEntry( imagepath, image ) );
 
-    assert( pTexture != NULL );
-
-    // Release the software sdl surface, and cache the optimized hardware
-    // texture before returning the newly created texture
-    mLoadedTextures.insert( TextureListEntry( imagepath, pTexture ) );
-    SDL_FreeSurface( rawSurface );
-
-    return pTexture;
+    return image;
 }
 
 /**
@@ -223,15 +198,10 @@ void SpriteManager::unload()
 
     // Destroy all sprites
     freedSprites = DeleteMapPointers( mSpriteCache );
+    mSpriteCache.clear();
 
     // Kill all loaded textures
-    TextureListItr itr;
-
-    for ( itr = mLoadedTextures.begin(); itr != mLoadedTextures.end(); ++itr )
-    {
-        SDL_DestroyTexture( itr->second );
-        freedTextures++;
-    }
+    mLoadedTextures.clear();
 
     // Let 'em know how many things were unloaded
     LOG_INFO("Graphics") << "A total of " << mNumSpritesCreated << " "

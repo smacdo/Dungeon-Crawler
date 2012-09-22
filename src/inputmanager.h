@@ -18,9 +18,6 @@
 
 #include "common/point.h"
 
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_events.h>
-
 class InputManager
 {
 public:
@@ -38,7 +35,7 @@ public:
     Point userMovement() const;
 
 private:
-    void processKeypress( const SDL_Event& event );
+    void processKeypress();
 
     bool mUserPressedQuit;
     bool mDidUserMove;

@@ -17,8 +17,10 @@
 #define SCOTT_DUNGEON_SPRITEDATA_H
 
 #include <boost/noncopyable.hpp>
+#include <QPixmap>
+#include <QSize>
 
-struct SDL_Texture;
+class QImage;
 
 /**
  * Stores all of the information that is required to draw a sprite from
@@ -28,10 +30,10 @@ class SpriteData
 {
 public:
     // Sprite constructor for a standalone sprite image
-    SpriteData( SDL_Texture *surface );
+    SpriteData( const QPixmap& pixmap );
 
     // Sprite constructor a sprite located in a spritesheet
-    SpriteData( SDL_Texture *surface,
+    SpriteData( const QImage& pixmap,
                 int xOffset,
                 int yOffset,
                 int width,
@@ -46,21 +48,13 @@ public:
     // Assignment operator
     SpriteData& operator = ( const SpriteData& rhs );
 
-    // Equality operator
-    bool operator == ( const SpriteData& rhs ) const;
-
-    // Inequality operator
-    bool operator != ( const SpriteData& rhs ) const;
-
-    const SDL_Texture* texture() const;
-    int x() const;
-    int y() const;
+    const QPixmap& pixmap() const;
     int width() const;
     int height() const;
 
 private:
-    SDL_Texture *mpTexture;
-    int mX, mY, mW, mH;
+    QPixmap mPixmap;
+    QSize mSize;
 };
 
 #endif

@@ -42,22 +42,6 @@ set(worldgen_headers
         worldgen/worldgenerator.h
 )
 
-set(graphics_srcs 
-        graphics/spritemanager.cpp
-        graphics/sprite.cpp
-        graphics/spritedata.cpp
-        graphics/spriteloader.cpp
-        graphics/clientview.cpp
-)
-
-set(graphics_headers
-        graphics/clientview.h
-        graphics/sprite.h
-        graphics/spritedata.h
-        graphics/spriteloader.h
-        graphics/spritemanager.h
-)
-
 set(engine_srcs
         engine/actor.cpp
         engine/actordata.cpp
@@ -101,23 +85,39 @@ set(game_headers
         game/world.h
 )
 
-set(app_srcs
+set(client_srcs
         dungeoncrawler.cpp
         inputmanager.cpp
+		client/dungeonclientwindow.cpp
+        client/spritemanager.cpp
+        client/sprite.cpp
+        client/spritedata.cpp
+        client/spriteloader.cpp
+        client/clientview.cpp
 )
 
-set(app_headers
+set(client_headers
         dungeoncrawler.h
         inputmanager.h
         version.h.in
         version.h
+		client/dungeonclientwindow.h
+        client/clientview.h
+        client/sprite.h
+        client/spritedata.h
+        client/spriteloader.h
+        client/spritemanager.h
+)
+
+set(client_ui
+		client/dungeonclientwindow.ui
 )
 
 ###########################################################################
 # Main build script
 ###########################################################################
 set(srcs
-        ${app_srcs}
+        ${client_srcs}
         ${common_srcs}
         ${engine_srcs}
         ${game_srcs}
@@ -129,8 +129,8 @@ set(srcs
 ###
 ### Visual Studio (or other IDEs) file groupings
 ###
-source_group( app\\src          FILES ${app_srcs}         )
-source_group( app\\headers      FILES ${app_headers}      )
+source_group( client\\src       FILES ${client_srcs}      )
+source_group( client\\headers   FILES ${client_headers}   )
 source_group( common\\src       FILES ${common_srcs}      )
 source_group( common\\headers   FILES ${common_headers}   )
 source_group( engine\\src       FILES ${common_srcs}      )
@@ -142,17 +142,31 @@ source_group( graphics\\headers FILES ${graphics_headers} )
 source_group( worldgen\\src     FILES ${worldgen_srcs}    )
 source_group( worldgen\\headers FILES ${worldgen_headers} )
 
-#
-# Required packages
-#
-set(Boost_USE_STATIC_LIBS true)
-find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
+#=======================================================================#
+# libboost support                                                      #
+#=======================================================================#
+SET(Boost_ADDITIONAL_VERSIONS "1.48")
+set(Boost_USE_STATIC_LIBS ON)
+#set(Boost_DEBUG ON)
 
-add_definitions(-DTIXML_USE_STL)
+find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
+
+message("BOOST: ${Boost_LIBRARIES}")
+
+#=======================================================================#
+# Qt4 support                                                           #
+#=======================================================================#
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
+
+set(QT_USE_QTOPENGL TRUE)
+set(QT_USE_QTXML TRUE)
+set(QT_USE_QTSCRIPT TRUE)
+
+QT4_WRAP_CPP(client_HEADERS_MOC ${client_headers})
+QT4_WRAP_UI(client_FORMS_HEADERS ${client_ui})
+QT4_ADD_RESOURCES(client_RESOURCES_RCC "dungeoncrawler.qrc")
 
 #
 # set up configuration variables
@@ -161,33 +175,28 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
                 ${CMAKE_CURRENT_SOURCE_DIR}/version.h )
 
 #
-# Make sure compile flags are applied to the source code files
-#
-set_source_files_properties( ${srcs}
-    PROPERTIES
-    COMPILE_FLAGS "${cxx_flags}"
-)
-
-#
 # Generate the executable and link required libraries
 #
 include_directories(
+	${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${Boost_INCLUDE_DIRS}
     ${THIRDPARTY_ROOT}/tinyxml/include
     ${THIRDPARTY_ROOT}/googletest/include
-    ${SDL2_INCLUDE_DIR}
 )
 
-add_executable( dungeon MACOSX_BUNDLE ${srcs})
+add_executable( dungeon MACOSX_BUNDLE
+	${srcs}
+	${client_HEADERS_MOC}
+	${client_FORMS_HEADERS}
+	${client_RESOURCES_RCC}
+)
 enable_extra_compiler_warnings( dungeon )
 
 target_link_libraries( dungeon
     tinyxml
+	${QT_LIBRARIES}
     ${Boost_LIBRARIES}
-    ${SDL2_LIBRARY}
-    ${SDL2IMAGE_LIBRARY}
-    ${SDL2TTF_LIBRARY}
     ${OPENGL_LIBRARIES}
 )
 

@@ -37,10 +37,6 @@ set(GAME_DATA_ROOT         "${PROJECT_SOURCE_DIR}/game")
 set(GAME_SRC_PATH          "${CMAKE_SOURCE_DIR}/src")
 set(THIRDPARTY_ROOT        "${PROJECT_SOURCE_DIR}/thirdparty")
 
-# Take this out once we start detecting compilers for C++0x support
-add_definitions(-std=c++0x)
-add_definitions(-TIXML_USE_STL)
-
 # Special  XCode (v4.0) Support
 if(MACOSX)
     set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
@@ -72,6 +68,10 @@ if ( CMAKE_BUILD_TYPE STREQUAL "" )
         CACHE STRING "Build tye: Debug, Release, RelWithDebInfo, MinSizeRel"
         FORCE
     )
+endif()
+
+if(MSVC)
+	add_definitions(-D_SCL_SECURE_NO_WARNINGS -wd4482)
 endif()
 
 # Determine if we are building on a 32bit or 64bit system

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "graphics/clientview.h"
-#include "graphics/spritemanager.h"
-#include "graphics/sprite.h"
-#include "graphics/spritedata.h"
-#include "graphics/spriteloader.h"
+#include "client/clientview.h"
+#include "client/spritemanager.h"
+#include "client/sprite.h"
+#include "client/spritedata.h"
+#include "client/spriteloader.h"
 #include "common/rect.h"
 #include "common/utils.h"
 #include "common/platform.h"
@@ -31,8 +31,6 @@
 
 #include "inputmanager.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <boost/checked_delete.hpp>
 
 #include <iostream>
@@ -54,12 +52,8 @@ namespace Config
  * uninitialized state. Make sure to call start() before
  * using the class
  */
-ClientView::ClientView( InputManager& inputManager )
-    : mInput( inputManager ),
-      mWasStarted( false ),
-      mpWindow( NULL ),
-      mpRenderer( NULL ),
-      mSpriteManager(),
+ClientView::ClientView()
+    : mSpriteManager(),
       mpPlayerSprite( NULL ),
       mTileSprites(),
       mCamera( 0, 0, Config::DefaultScreenWidth, Config::DefaultScreenHeight )
@@ -74,10 +68,6 @@ ClientView::~ClientView()
     // Get rid of our sprites
     Delete( mpPlayerSprite );
     DeletePointerContainer( mTileSprites );
-
-    // Now destroy SDL objects
-    SDL_DestroyWindow( mpWindow );
-    SDL_DestroyRenderer( mpRenderer );
 }
 
 /**
@@ -91,15 +81,11 @@ void ClientView::start()
 {
     createMainWindow();
     load();
-    mWasStarted = true;
 }
 
 void ClientView::load()
 {
-    SDL_Init( SDL_INIT_EVERYTHING );
-
     // preload all of our images
-//    mSpriteManager.loadSpritesFromXml( "sprites.xml" );
     SpriteLoader loader( mSpriteManager );
 
     loader.loadSpritesFromXml( "data/sprites/tiles.xml" );
@@ -132,7 +118,6 @@ void ClientView::load()
  */
 void ClientView::unload()
 {
-    SDL_Quit();
 }
 
 /**
@@ -141,48 +126,6 @@ void ClientView::unload()
 void ClientView::createMainWindow()
 {
     LOG_DEBUG("ClientView") << "Creating main window";
-
-    // Make sure SDL's video subsystem is initialized before proceeding with
-    // window creation
-    if ( SDL_VideoInit( NULL ) != 0 )
-    {
-        App::raiseFatalError( "Failed to initialize SDL video",
-                              SDL_GetError() );
-    }
-
-
-    // Create the main game window that will display the game to the
-    // player
-    mpWindow = SDL_CreateWindow( "Dungeon Crawler",
-                                 SDL_WINDOWPOS_CENTERED,
-                                 SDL_WINDOWPOS_CENTERED,
-                                 Config::DefaultScreenWidth,
-                                 Config::DefaultScreenHeight,
-                                 SDL_WINDOW_SHOWN );
-  
-    if ( mpWindow == NULL )
-    {
-        App::raiseFatalError( "Failed to set video mode when creating window",
-                              SDL_GetError() );
-    }
-
-    // Start the SDL renderer
-    mpRenderer = SDL_CreateRenderer( mpWindow,
-                                     -1,    // first available context
-                                     SDL_RENDERER_ACCELERATED   |
-                                     SDL_RENDERER_PRESENTVSYNC );
-
-    if ( mpRenderer == NULL )
-    {
-        App::raiseFatalError( "Failed to create SDL renderer", SDL_GetError() );
-    }
-
-    // Make sure there were no uncaught errors before we proceed with
-    // the game
-    verifySDL();
-
-    // Configure the sprite manager before loading any sprites
-    mSpriteManager.setRenderer( mpRenderer );
 }
 
 /**
@@ -191,19 +134,15 @@ void ClientView::createMainWindow()
  */
 void ClientView::draw( const World& world )
 {
-    // Sanity checks first!
-    assert( mpWindow != NULL );
-    assert( mpRenderer != NULL );
-
     // Clear the background prior to any game rendering
-    SDL_SetRenderDrawColor( mpRenderer, 255, 255, 255, 255 );
-    SDL_RenderClear( mpRenderer );
+//    SDL_SetRenderDrawColor( mpRenderer, 255, 255, 255, 255 );
+//    SDL_RenderClear( mpRenderer );
 
-    if ( mInput.userMoveXAxis() != 0 || mInput.userMoveYAxis() != 0 )
+/*    if ( mInput.userMoveXAxis() != 0 || mInput.userMoveYAxis() != 0 )
     {
         moveCamera( mInput.userMoveXAxis(),
                     mInput.userMoveYAxis() );
-    }
+    }*/
 
     // Load the world's main player, so that we can draw from his/her
     // perspective
@@ -217,20 +156,20 @@ void ClientView::draw( const World& world )
     drawPlayer( player );
 
     // Render the backbuffer to the actual display
-    SDL_RenderPresent( mpRenderer );
+//    SDL_RenderPresent( mpRenderer );
 }
 
 /**
  * Draws a game level
  */
-void ClientView::drawGameLevel( const Level& level )
+void ClientView::drawGameLevel( const Level& /*level*/ )
 {
     //
     // This is a pretty terrible way of rendering the level's tiles,
     // but I'm hungry, the hour is late and I would really like to see
     // this work before i finish for the day
     //
-    for ( int y = 0; y < static_cast<int>(level.height()); ++y )
+/*    for ( int y = 0; y < static_cast<int>(level.height()); ++y )
     {
         for ( int x = 0; x < static_cast<int>(level.width()); ++x )
         {
@@ -254,12 +193,12 @@ void ClientView::drawGameLevel( const Level& level )
             // Generate a sprite and draw it
             drawSprite( *pSprite );
         }
-    }
+    }*/
 }
 
-void ClientView::drawPlayer( const Actor& player )
+void ClientView::drawPlayer( const Actor& /*player*/ )
 {
-    Point pos    = player.position();
+/*    Point pos    = player.position();
     Point drawAt = Point( pos.x() * 32, pos.y() * 32 );
 
     // Only draw the player if they are on the screen
@@ -267,12 +206,12 @@ void ClientView::drawPlayer( const Actor& player )
     {
         drawSprite( deref( mpPlayerSprite ) );
         
-    }
+    }*/
 }
 
-void ClientView::drawSprite( const Sprite& sprite )
+void ClientView::drawSprite( const Sprite& /*sprite*/ )
 {
-    const SpriteData& data = deref( sprite.spriteData() );
+/*    const SpriteData& data = deref( sprite.spriteData() );
     const Point pos        = sprite.position();
 
     // Construct a rectangle that encompasses only the area of the image
@@ -298,7 +237,7 @@ void ClientView::drawSprite( const Sprite& sprite )
   //  SDL_RenderFillRect( mpRenderer, &offset );
 
   //  SDL_SetRenderDrawColor( mpRenderer, 0, 0, 0, 255 );
-  //  SDL_RenderDrawRect( mpRenderer, &offset );
+  //  SDL_RenderDrawRect( mpRenderer, &offset );*/
 }
 
 /**
@@ -310,21 +249,4 @@ void ClientView::moveCamera( int x, int y )
 {
     // Move the camera
     mCamera = mCamera.translate( Point( x * 32 , y * 32 ) );
-}
-
-/**
- * Verifies that there were no SDL errors. We should strongly consider breaking
- * this out into a utility method, since this has nothing to do with the client
- * view
- */
-void ClientView::verifySDL() const
-{
-    const char * pErrorText = SDL_GetError();
-
-    if ( pErrorText != NULL && *pErrorText != '\0' )
-    {
-        // Printing a backtrace would be incredibly helpful... :)
-        App::raiseError( pErrorText );
-        SDL_ClearError();       // fat chance
-    }
 }

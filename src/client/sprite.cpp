@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "graphics/sprite.h"
-#include "graphics/spritedata.h"
+#include "client/sprite.h"
+#include "client/spritedata.h"
 #include "common/platform.h"
 
 /**

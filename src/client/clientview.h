@@ -19,7 +19,7 @@
 #include <string>
 #include <boost/noncopyable.hpp>
 
-#include "graphics/spritemanager.h"
+#include "client/spritemanager.h"
 #include "common/rect.h"
 
 class InputManager;
@@ -38,7 +38,7 @@ class Actor;
 class ClientView : boost::noncopyable
 {
 public:
-    ClientView( InputManager& inputManager );
+    ClientView();
     ~ClientView();
 
     void start();
@@ -62,13 +62,8 @@ protected:
     void createMainWindow();
 
     bool isInCameraBounds( const SDL_Rect& camera, int x, int y, int w, int h ) const;
-    void verifySDL() const;
 
 private:
-    InputManager& mInput;
-    bool mWasStarted;
-    SDL_Window *mpWindow;
-    SDL_Renderer * mpRenderer;
     SpriteManager mSpriteManager;
     Sprite * mpPlayerSprite;
     std::vector<Sprite*> mTileSprites;
