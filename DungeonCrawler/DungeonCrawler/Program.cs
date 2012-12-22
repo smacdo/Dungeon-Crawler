@@ -1,6 +1,6 @@
 using System;
 
-namespace DungeonCrawler
+namespace scott.dungeon
 {
 #if WINDOWS || XBOX
     static class Program

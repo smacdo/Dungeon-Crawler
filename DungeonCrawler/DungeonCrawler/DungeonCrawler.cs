@@ -9,19 +9,22 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-namespace DungeonCrawler
+using scott.dungeon;
+
+namespace scott.dungeon
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class DungeonCrawler : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        GraphicsDeviceManager mGraphics;
+        SpriteBatch mSpriteBatch;
+        SpriteData mSpriteData;
 
         public DungeonCrawler()
         {
-            graphics = new GraphicsDeviceManager( this );
+            mGraphics = new GraphicsDeviceManager( this );
             Content.RootDirectory = "Content";
         }
 
@@ -44,10 +47,8 @@ namespace DungeonCrawler
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch( GraphicsDevice );
-
-            // TODO: use this.Content to load your game content here
+            mSpriteBatch = new SpriteBatch( GraphicsDevice );
+            mSpriteData = Content.Load<scott.dungeon.SpriteData>( "maleplayer" );
         }
 
         /// <summary>
@@ -83,7 +84,9 @@ namespace DungeonCrawler
         {
             GraphicsDevice.Clear( Color.CornflowerBlue );
 
-            // TODO: Add your drawing code here
+            mSpriteBatch.Begin();
+            mSpriteBatch.Draw( mSpriteData.Texture, new Vector2( 0, 0 ), Color.White );
+            mSpriteBatch.End();
 
             base.Draw( gameTime );
         }

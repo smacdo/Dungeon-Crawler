@@ -9,7 +9,7 @@ namespace scott.dungeon
     /// <summary>
     /// Information about a sprite animation
     /// </summary>
-    public class SpriteAnimationData
+    public class AnimationData
     {
         /// <summary>
         /// Name of the animation
@@ -26,7 +26,7 @@ namespace scott.dungeon
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the animation</param>
-        public SpriteAnimationData( string name )
+        public AnimationData( string name )
         {
             Name = name;
             Frames = new List<Rectangle>();

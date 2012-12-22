@@ -9,6 +9,8 @@ DungeonCrawlerContentPipeline/obj
 *.cachefile
 *.csproj.user
 *.swp
+Thumbs.db
+*.suo
 *.directory
 Debug/
 ipch/

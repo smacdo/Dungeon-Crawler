@@ -9,27 +9,28 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using System.IO;
 
 // TODO: replace these with the processor input and output types.
-using TInput = scott.dungeon.pipeline.SpriteFile;
-using TOutput = scott.dungeon.SpriteData;
+using TInput = scott.dungeon.pipeline.SpriteDataContent;
+using TOutput = scott.dungeon.pipeline.SpriteDataContent;
 
 namespace scott.dungeon.pipeline
 {
     /// <summary>
-    /// This class will be instantiated by the XNA Framework Content Pipeline
-    /// to apply custom processing to content data, converting an object of
-    /// type TInput to TOutput. The input and output types may be the same if
-    /// the processor wishes to alter data without changing its type.
-    ///
-    /// This should be part of a Content Pipeline Extension Library project.
-    ///
-    /// TODO: change the ContentProcessor attribute to specify the correct
-    /// display name for this processor.
+    /// Processes an imported sprite data by transforming it's atlas file path into a loaded external
+    /// reference
     /// </summary>
     [ContentProcessor( DisplayName = "Sprite Xml File Processor" )]
     public class SpriteContentProcessor : ContentProcessor<TInput, TOutput>
     {
         public override TOutput Process( TInput input, ContentProcessorContext context )
         {
+            // Load the sprite's texture atlas and make sure it is built.
+            ExternalReference<TextureContent> atlasReference = new ExternalReference<TextureContent>( input.TextureFilePath );
+            input.Texture = context.BuildAsset<TextureContent, TextureContent>( atlasReference, "TextureProcessor" );
+
+            // All done
+            return input;
+
+            /*  deprecated, keeping it here until we're sure we don't need to change texture load params
             OpaqueDataDictionary textureParams = new OpaqueDataDictionary {
                 { "ColorKeyEnabled", false },
                 { "GenerateMipMaps", false },
@@ -39,6 +40,7 @@ namespace scott.dungeon.pipeline
 
             ExternalReference<TextureContent> textureSource = new ExternalReference<TextureContent>( input.TexturePath );
             ExternalReference<TextureContent> textureRef = context.BuildAsset<TextureContent, TextureContent>( textureSource, "PremultipliedTextureProcessor", textureParams, null, null );
+            */
         }
     }
 }

@@ -116,6 +116,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DungeonCrawlerCommon\DungeonCrawlerCommon.csproj">
+      <Project>{f31e0cbe-3e8c-4c7f-9546-045bc49425f8}</Project>
+      <Name>DungeonCrawlerCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DungeonCrawlerContent\DungeonCrawlerContent.contentproj">
       <Name>DungeonCrawlerContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>

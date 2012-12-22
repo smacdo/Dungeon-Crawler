@@ -6,61 +6,65 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System.Xml;
+using System.IO;
 
 // TODO: replace this with the type you want to import.
-using TImport = scott.dungeon.pipeline.SpriteFile;
+using TImport = scott.dungeon.pipeline.SpriteDataContent;
 
 namespace scott.dungeon.pipeline
 {
     /// <summary>
-    /// This class will be instantiated by the XNA Framework Content Pipeline
-    /// to import a file from disk into the specified type, TImport.
-    /// 
-    /// This should be part of a Content Pipeline Extension Library project.
-    /// 
-    /// TODO: change the ContentImporter attribute to specify the correct file
-    /// extension, display name, and default processor for this importer.
+    /// Imports a sprite XML file
     /// </summary>
-    [ContentImporter( ".sprite.xml", DisplayName = "Sprite Xml Importer", DefaultProcessor = "SpriteContentProcessor" )]
+    [ContentImporter( ".sprite", DisplayName = "Sprite Xml Importer", DefaultProcessor = "SpriteContentProcessor" )]
     public class SpriteFileImporter : ContentImporter<TImport>
     {
         public override TImport Import( string filename, ContentImporterContext context )
         {
+            // Load the XML file
             XmlDocument xml = new XmlDocument();
             xml.Load( filename );
 
-            XmlNode spriteNode = xml.SelectSingleNode( "/SpriteContent/Sprite" );
-
-            string spriteName = spriteNode.Attributes["name"].Value;
-            string imagePath = spriteNode.Attributes["image"].Value;
-            int spriteWidth = Convert.ToInt32( spriteNode.Attributes["spriteWidth"] );
-            int spriteHeight = Convert.ToInt32( spriteNode.Attributes["spriteHeight"] );
-
-            context.AddDependency( imagePath );
-
-            SpriteFile spriteFile = new SpriteFile( spriteName, textureName );
-
+            // Grab the root <sprite> node, and then a list of it's animation XML nodes
+            XmlNode spriteNode = xml.SelectSingleNode( "/sprite" );
             XmlNodeList animationNodes = spriteNode.SelectNodes( "animation" );
 
+            // Parse out the sprite's base attributes
+            string spriteName = spriteNode.Attributes["name"].Value;
+            string imagePath = spriteNode.Attributes["image"].Value;
+            int spriteWidth = Convert.ToInt32( spriteNode.Attributes["spriteWidth"].Value );
+            int spriteHeight = Convert.ToInt32( spriteNode.Attributes["spriteHeight"].Value );
+
+            // This sprite depends on it's texture atlas
+            string fullImagePath = Path.Combine( Path.GetDirectoryName( filename ), imagePath );
+            context.AddDependency( fullImagePath );
+
+            // Generate a new sprite data object to store information from the imported XML file
+            SpriteDataContent sprite = new SpriteDataContent( spriteName, fullImagePath );
+
+            // Iterate through all the animation nodes, and process them
             foreach ( XmlNode animNode in animationNodes )
             {
-                string animationName =  animNode.Attributes["name"].Value 
-                SpriteFile.AnimationInfo animation = new SpriteFile.AnimationInfo( animationName );
+                string animationName =  animNode.Attributes["name"].Value;
+                AnimationData animation = new AnimationData( animationName );
 
                 XmlNodeList frameNodes = animNode.SelectNodes( "frame" );
 
+                // Iterate though all the frames in the animation
                 foreach ( XmlNode frameNode in frameNodes )
                 {
                     int x = Convert.ToInt32( frameNode.Attributes["x"].Value );
                     int y = Convert.ToInt32( frameNode.Attributes["y"].Value );
 
-                    animation.FrameOffsets.Add( new Rectangle( x, y, spriteWidth, spriteHeight ) );
+                    animation.Frames.Add( new Rectangle( x, y, spriteWidth, spriteHeight ) );
                 }
 
-                spriteFile.Animations.Add( animation );
+                // Add the animation to the sprite object
+                sprite.Animations.Add( animationName, animation );
             }
 
-            return spriteFile;
+            // All done, return the imported sprite
+            return sprite;
         }
     }
 }

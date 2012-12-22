@@ -8,20 +8,22 @@ using Microsoft.Xna.Framework.Graphics;
 namespace scott.dungeon
 {
     /// <summary>
-    /// Renderable sprite that uses a backing SpriteData to perform animations
-    /// and other nifty things
+    /// The sprite class is the base class used for rendering animated 2d images on
+    /// screen. It uses a flywheel pattern to make sprites lightweight, where the sprite
+    /// class itself stores current animation information, and references all the static
+    /// sprite data from the SpriteData class.
     /// </summary>
     public class Sprite
     {
         /// <summary>
         /// Sprite data that this sprite is using
         /// </summary>
-        private SpriteData<Texture2D> mSpriteData;
+        private SpriteData mSpriteData;
 
         /// <summary>
         /// The animation that is currently playing
         /// </summary>
-        private SpriteAnimationData mCurrentAnimation;
+        private AnimationData mCurrentAnimation;
 
         /// <summary>
         /// The current frame being animated
@@ -41,8 +43,8 @@ namespace scott.dungeon
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="spriteData">The animation data for this sprite</param>
-        public Sprite( SpriteData<Texture2D> spriteData )
+        /// <param name="spriteData">The sprite data that this sprite will be rendering</param>
+        public Sprite( SpriteData spriteData )
         {
             mSpriteData = spriteData;
         }

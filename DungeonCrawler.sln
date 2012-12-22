@@ -2,8 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonCrawler", "DungeonCrawler\DungeonCrawler\DungeonCrawler.csproj", "{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F31E0CBE-3E8C-4C7F-9546-045BC49425F8} = {F31E0CBE-3E8C-4C7F-9546-045BC49425F8}
+	EndProjectSection
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "DungeonCrawlerContent", "DungeonCrawler\DungeonCrawlerContent\DungeonCrawlerContent.contentproj", "{ACEFC806-15F0-42C9-BBE2-3795F699F82D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonCrawlerContent", "DungeonCrawler\DungeonCrawlerContent\DungeonCrawlerContent.contentproj", "{ACEFC806-15F0-42C9-BBE2-3795F699F82D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonCrawlerContentPipeline", "DungeonCrawlerContentPipeline\DungeonCrawlerContentPipeline.csproj", "{8A5294B3-D184-4F4E-8DC7-1A621E89A761}"
 EndProject
