@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 using scott.dungeon;
+using System.Diagnostics;
 
 namespace scott.dungeon
 {
@@ -20,7 +21,7 @@ namespace scott.dungeon
     {
         GraphicsDeviceManager mGraphics;
         SpriteBatch mSpriteBatch;
-        Sprite mPlayerSprite;
+        GameObject mPlayer;
 
         public DungeonCrawler()
         {
@@ -48,7 +49,8 @@ namespace scott.dungeon
         protected override void LoadContent()
         {
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-            mPlayerSprite = new Sprite( Content.Load<scott.dungeon.SpriteData>( "maleplayer" ) );
+            Sprite playerSprite = new Sprite( Content.Load<scott.dungeon.SpriteData>( "maleplayer" ) );
+            mPlayer = new GameObject( playerSprite );
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace scott.dungeon
 
         protected override void BeginRun()
         {
-            mPlayerSprite.PlayAnimation( "WalkSouth" );
+            
         }
 
         /// <summary>
@@ -72,11 +74,34 @@ namespace scott.dungeon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            // Allows the game to exit
-            if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
-                this.Exit();
+            // Test user input
+            KeyboardState keyboard = Keyboard.GetState();
+            GamePadState gamepad = GamePad.GetState( PlayerIndex.One );
 
-            // TODO: Add your update logic here
+            if ( keyboard.IsKeyDown( Keys.Escape ) || gamepad.Buttons.Back == ButtonState.Pressed )
+            {
+                this.Exit();
+            }
+            else if ( keyboard.IsKeyDown( Keys.W ) )
+            {
+                mPlayer.Actor.Move( Direction.North, 50 );
+            }
+            else if ( keyboard.IsKeyDown( Keys.S ) )
+            {
+                mPlayer.Actor.Move( Direction.South, 50 );
+            }
+            else if ( keyboard.IsKeyDown( Keys.A ) )
+            {
+                mPlayer.Actor.Move( Direction.West, 50 );
+            }
+            else if ( keyboard.IsKeyDown( Keys.D ) )
+            {
+                mPlayer.Actor.Move( Direction.East, 50 );
+            }
+
+            // Update logic...
+            mPlayer.Actor.Update( gameTime );
+            mPlayer.Movement.Update( gameTime );
 
             base.Update( gameTime );
         }
@@ -90,14 +115,17 @@ namespace scott.dungeon
             GraphicsDevice.Clear( Color.CornflowerBlue );
 
             // Update animations on all of our sprites
-            mPlayerSprite.Update( gameTime );
+            Sprite playerSprite = mPlayer.Sprite;
+            Vector2 playerPosition = mPlayer.Position;
+            Debug.Assert( playerSprite != null, "Player should always have a sprite" );
+
+            playerSprite.Update( gameTime );
 
             // Draw everything
             mSpriteBatch.Begin();
- //           mSpriteBatch.Draw( mSpriteData.Texture, new Vector2( 0, 0 ), Color.White );
-            mSpriteBatch.Draw( mPlayerSprite.CurrentAtlasTexture,
-                               new Rectangle( 0, 0, mPlayerSprite.Width, mPlayerSprite.Height ),
-                               mPlayerSprite.CurrentAtlasOffset,
+            mSpriteBatch.Draw( playerSprite.CurrentAtlasTexture,
+                               playerPosition,
+                               playerSprite.CurrentAtlasOffset,
                                Color.White );
             mSpriteBatch.End();
 

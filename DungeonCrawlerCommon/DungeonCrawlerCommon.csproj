@@ -92,8 +92,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actor.cs" />
+    <Compile Include="CommonTypes.cs" />
     <Compile Include="Exceptions\AnimationException.cs" />
     <Compile Include="Exceptions\InvalidGameDataException.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="IGameObjectComponent.cs" />
+    <Compile Include="Movement.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="AnimationData.cs" />
     <Compile Include="SpriteData.cs" />
