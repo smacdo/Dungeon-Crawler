@@ -1,5 +1,0 @@
-This directory contains all files required for distributing a working copy
-of the game.
-
-(required by git to keep directory in version control)
-
