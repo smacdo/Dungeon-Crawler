@@ -6,7 +6,7 @@
   <animation name="StandWest">
     <frame x="0" y="64" />
   </animation>
-  <animation name="StandSouth">
+  <animation name="StandSouth" default="true">
     <frame x="0" y="128" />
   </animation>
   <animation name="StandEast">

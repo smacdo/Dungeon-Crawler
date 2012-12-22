@@ -28,6 +28,11 @@ namespace scott.dungeon
         public Dictionary<string, AnimationData> Animations { get; set; }
 
         /// <summary>
+        /// Name of the default animation for this sprite
+        /// </summary>
+        public string DefaultAnimationName { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the sprite</param>
@@ -51,6 +56,7 @@ namespace scott.dungeon
             string name        = input.ReadString();
             Texture2D atlas    = input.ReadExternalReference<Texture2D>();
             int animationCount = input.ReadInt32();
+            string defAnimName = input.ReadString();
  
             // Allocate a sprite data instance
             SpriteData spriteData = new SpriteData( name, atlas );
@@ -75,6 +81,7 @@ namespace scott.dungeon
                 spriteData.Animations.Add( animationName, animation );
             }
 
+            spriteData.DefaultAnimationName = defAnimName;
             return spriteData;
         }
     }

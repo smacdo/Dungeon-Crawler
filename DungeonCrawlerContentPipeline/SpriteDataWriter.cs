@@ -28,6 +28,12 @@ namespace scott.dungeon.pipeline
                 throw new InvalidContentException( "Texture atlas is missing for " + value.Name );
             }
 
+            // Make sure there's a valid default animation
+            if ( value.DefaultAnimationName == null || !value.Animations.ContainsKey( value.DefaultAnimationName ) )
+            {
+                throw new InvalidContentException( "Sprite is missing a default animation, or it is incorrectly named" );
+            }
+
             // Ensure there is at least one animation, and that every animation has at least one
             // frame of animation
             if ( value.Animations == null || value.Animations.Count < 1 )
@@ -51,6 +57,7 @@ namespace scott.dungeon.pipeline
             output.Write( value.Name );
             output.WriteExternalReference( value.Texture );
             output.Write( value.Animations.Count );
+            output.Write( value.DefaultAnimationName );
 
             // Now write the sprite's animations out
             foreach ( KeyValuePair<string,AnimationData> keyValue in value.Animations )

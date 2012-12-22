@@ -34,6 +34,11 @@ namespace scott.dungeon.pipeline
         public Dictionary<string, AnimationData> Animations { get; set; }
 
         /// <summary>
+        /// Name of the default animation for this sprite
+        /// </summary>
+        public string DefaultAnimationName { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the sprite</param>

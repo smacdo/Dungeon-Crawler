@@ -20,7 +20,7 @@ namespace scott.dungeon
     {
         GraphicsDeviceManager mGraphics;
         SpriteBatch mSpriteBatch;
-        SpriteData mSpriteData;
+        Sprite mPlayerSprite;
 
         public DungeonCrawler()
         {
@@ -48,7 +48,7 @@ namespace scott.dungeon
         protected override void LoadContent()
         {
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-            mSpriteData = Content.Load<scott.dungeon.SpriteData>( "maleplayer" );
+            mPlayerSprite = new Sprite( Content.Load<scott.dungeon.SpriteData>( "maleplayer" ) );
         }
 
         /// <summary>
@@ -58,6 +58,11 @@ namespace scott.dungeon
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+        }
+
+        protected override void BeginRun()
+        {
+            mPlayerSprite.PlayAnimation( "WalkSouth" );
         }
 
         /// <summary>
@@ -84,8 +89,16 @@ namespace scott.dungeon
         {
             GraphicsDevice.Clear( Color.CornflowerBlue );
 
+            // Update animations on all of our sprites
+            mPlayerSprite.Update( gameTime );
+
+            // Draw everything
             mSpriteBatch.Begin();
-            mSpriteBatch.Draw( mSpriteData.Texture, new Vector2( 0, 0 ), Color.White );
+ //           mSpriteBatch.Draw( mSpriteData.Texture, new Vector2( 0, 0 ), Color.White );
+            mSpriteBatch.Draw( mPlayerSprite.CurrentAtlasTexture,
+                               new Rectangle( 0, 0, mPlayerSprite.Width, mPlayerSprite.Height ),
+                               mPlayerSprite.CurrentAtlasOffset,
+                               Color.White );
             mSpriteBatch.End();
 
             base.Draw( gameTime );

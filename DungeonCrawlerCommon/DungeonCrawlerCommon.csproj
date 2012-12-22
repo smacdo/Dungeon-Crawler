@@ -92,7 +92,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InvalidGameDataException.cs" />
+    <Compile Include="Exceptions\AnimationException.cs" />
+    <Compile Include="Exceptions\InvalidGameDataException.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="AnimationData.cs" />
     <Compile Include="SpriteData.cs" />

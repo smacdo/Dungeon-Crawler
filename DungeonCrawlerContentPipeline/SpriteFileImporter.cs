@@ -45,12 +45,12 @@ namespace scott.dungeon.pipeline
             // Iterate through all the animation nodes, and process them
             foreach ( XmlNode animNode in animationNodes )
             {
-                string animationName =  animNode.Attributes["name"].Value;
+                string animationName    = animNode.Attributes["name"].Value;
                 AnimationData animation = new AnimationData( animationName );
 
-                XmlNodeList frameNodes = animNode.SelectNodes( "frame" );
-
                 // Iterate though all the frames in the animation
+                XmlNodeList frameNodes = animNode.SelectNodes( "frame" );
+                
                 foreach ( XmlNode frameNode in frameNodes )
                 {
                     int x = Convert.ToInt32( frameNode.Attributes["x"].Value );
@@ -59,6 +59,14 @@ namespace scott.dungeon.pipeline
                     animation.Frames.Add( new Rectangle( x, y, spriteWidth, spriteHeight ) );
                 }
 
+                // Is this the default animation?
+                bool hasDefaultAttribute = ( animNode.Attributes["default"] != null );
+                
+                if ( hasDefaultAttribute && Convert.ToBoolean( animNode.Attributes["default"].Value ) )
+                {
+                    sprite.DefaultAnimationName = animationName;
+                }
+               
                 // Add the animation to the sprite object
                 sprite.Animations.Add( animationName, animation );
             }

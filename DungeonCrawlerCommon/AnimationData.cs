@@ -22,6 +22,14 @@ namespace scott.dungeon
         /// </summary>
         public List<Rectangle> Frames { get; set; }
 
+        public int FrameCount
+        {
+            get
+            {
+                return Frames.Count;
+            }
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>
