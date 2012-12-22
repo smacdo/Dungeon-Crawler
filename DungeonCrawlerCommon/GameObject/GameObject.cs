@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace scott.dungeon
+namespace scott.dungeon.gameobject
 {
     /// <summary>
     /// Represents a physical object in the game world
@@ -19,7 +19,7 @@ namespace scott.dungeon
         /// <summary>
         /// Get the direciton this object is facing
         /// </summary>
-        public Direction Facing { get; set; }
+        public Direction Direction { get; set; }
 
         public Actor Actor { get; private set; }
         public Movement Movement { get; private set; }
@@ -31,7 +31,7 @@ namespace scott.dungeon
         public GameObject( Sprite sprite )
         {
             Position = new Vector2( 0, 0 );
-            Facing = Direction.South;
+            Direction = Direction.South;
 
             Actor = new Actor( this );
             Movement = new Movement( this );

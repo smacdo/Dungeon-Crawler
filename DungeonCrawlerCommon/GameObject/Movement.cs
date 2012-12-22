@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace scott.dungeon
+namespace scott.dungeon.gameobject
 {
     /// <summary>
     /// Tracks movement information
@@ -24,7 +24,7 @@ namespace scott.dungeon
         /// <summary>
         /// The direction that the movement is occurring
         /// </summary>
-        public Direction Heading { get; set; }
+        public Direction Direction { get; set; }
 
         public bool IsMoving
         {
@@ -41,7 +41,7 @@ namespace scott.dungeon
         {
             mGameObject = owner;
             Speed = 0;
-            Heading = Direction.South;
+            Direction = Direction.South;
         }
 
         /// <summary>
@@ -50,6 +50,8 @@ namespace scott.dungeon
         /// <param name="gameTime"></param>
         public void Update( GameTime gameTime )
         {
+            // Only perform the movement math and logic if we were actually requested
+            // to move.
             if ( Speed > 0 )
             {
                 float timeDelta = (float) gameTime.ElapsedGameTime.TotalSeconds;
@@ -57,7 +59,7 @@ namespace scott.dungeon
                 // Determine axis of motion
                 Vector2 movementAxis = Vector2.Zero;
 
-                switch ( Heading )
+                switch ( Direction )
                 {
                     case Direction.North:
                         movementAxis = new Vector2( 0, -1 );
@@ -77,9 +79,12 @@ namespace scott.dungeon
                 }
 
                 // Update the movement information
-                mGameObject.Facing = Heading;
+                mGameObject.Direction = Direction;
                 mGameObject.Position += movementAxis * Speed * timeDelta;
             }
+
+            // Reset movement back to zero for the next update cycle.
+            Speed = 0;
         }
     }
 }

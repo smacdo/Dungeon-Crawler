@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 using scott.dungeon;
+using scott.dungeon.gameobject;
 using System.Diagnostics;
 
 namespace scott.dungeon

@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace scott.dungeon
+namespace scott.dungeon.gameobject
 {
     /// <summary>
     /// The sprite class is the base class used for rendering animated 2d images on
