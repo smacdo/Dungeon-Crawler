@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Scott.Dungeon.ComponentModel;
+using Scott.Dungeon.Actor;
 
-namespace scott.dungeon.gameobject
+namespace Scott.Dungeon.AI
 {
     /// <summary>
     /// Does AI logic
@@ -76,7 +76,7 @@ namespace scott.dungeon.gameobject
         /// <param name="gameTime"></param>
         private void PerformIdleUpdate( GameTime gameTime )
         {
-            Actor actor = mGameObject.Actor;
+            ActorController actor = mGameObject.Actor;
 
             // Are we walking around or just standing?
             if ( actor.IsMoving )

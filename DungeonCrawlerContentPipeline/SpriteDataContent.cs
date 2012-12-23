@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scott.Dungeon.Data;
 
-namespace scott.dungeon.pipeline
+namespace Scott.Dungeon.Pipeline
 {
     /// <summary>
     /// Build time representation for the SpriteData class

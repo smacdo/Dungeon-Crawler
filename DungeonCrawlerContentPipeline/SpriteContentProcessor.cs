@@ -9,10 +9,10 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using System.IO;
 
 // TODO: replace these with the processor input and output types.
-using TInput = scott.dungeon.pipeline.SpriteDataContent;
-using TOutput = scott.dungeon.pipeline.SpriteDataContent;
+using TInput = Scott.Dungeon.Pipeline.SpriteDataContent;
+using TOutput = Scott.Dungeon.Pipeline.SpriteDataContent;
 
-namespace scott.dungeon.pipeline
+namespace Scott.Dungeon.Pipeline
 {
     /// <summary>
     /// Processes an imported sprite data by transforming it's atlas file path into a loaded external

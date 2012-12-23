@@ -1,6 +1,6 @@
 using System;
 
-namespace scott.dungeon
+namespace Scott.Dungeon.Game
 {
 #if WINDOWS || XBOX
     static class Program
@@ -10,7 +10,7 @@ namespace scott.dungeon
         /// </summary>
         static void Main(string[] args)
         {
-            using (DungeonCrawler game = new DungeonCrawler())
+            using ( DungeonCrawler game = new DungeonCrawler() )
             {
                 game.Run();
             }

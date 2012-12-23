@@ -9,11 +9,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-using scott.dungeon;
-using scott.dungeon.gameobject;
+using Scott.Dungeon;
+using Scott.Dungeon.ComponentModel;
+using Scott.Dungeon.Data;
+using Scott.Dungeon.Graphics;
+using Scott.Dungeon.Actor;
+using Scott.Dungeon.AI;
+
 using System.Diagnostics;
 
-namespace scott.dungeon
+namespace Scott.Dungeon.Game
 {
     /// <summary>
     /// This is the main type for your game
@@ -105,6 +110,10 @@ namespace scott.dungeon
             else if ( keyboard.IsKeyDown( Keys.D ) )
             {
                 mPlayer.Actor.Move( Direction.East, 50 );
+            }
+            else if ( keyboard.IsKeyDown( Keys.Space ) )
+            {
+                mPlayer.Actor.SlashAttack();
             }
 
             // Update logic...

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace scott.dungeon.gameobject
+namespace Scott.Dungeon.ComponentModel
 {
     /// <summary>
     /// Tracks movement information
@@ -48,7 +48,7 @@ namespace scott.dungeon.gameobject
         /// 
         /// </summary>
         /// <param name="gameTime"></param>
-        public void Update( Game game, GameTime gameTime )
+        public void Update( Scott.Dungeon.Game.DungeonCrawler game, GameTime gameTime )
         {
             // Only perform the movement math and logic if we were actually requested
             // to move.

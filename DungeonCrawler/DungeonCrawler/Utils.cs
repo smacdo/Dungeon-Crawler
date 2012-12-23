@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace scott.dungeon
+namespace Scott.Dungeon
 {
     /// <summary>
     /// Common functions

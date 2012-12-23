@@ -2,20 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using Scott.Dungeon.ComponentModel;
 
-namespace scott.dungeon.gameobject
+namespace Scott.Dungeon.Actor
 {
     /// <summary>
     /// Represents a interactive character
     /// </summary>
-    public class Actor
+    public class ActorController
     {
         /// <summary>
         /// The game object that this component belongs to
         /// </summary>
         private GameObject mGameObject;
+
+        /// <summary>
+        /// The current action that this actor is performing
+        /// </summary>
+        private ActionSlashAttack mCurrentAction;
 
         /// <summary>
         /// Flag if this actor was requested to move in the upcoming update call.
@@ -68,7 +72,7 @@ namespace scott.dungeon.gameobject
         /// <summary>
         /// Constructor
         /// </summary>
-        public Actor( GameObject gameObject )
+        public ActorController( GameObject gameObject )
         {
             mGameObject = gameObject;
             mMoveRequested = false;
@@ -103,13 +107,22 @@ namespace scott.dungeon.gameobject
         }
 
         /// <summary>
+        /// Perform a slashing attack in the direction this actor is facing
+        /// </summary>
+        public void SlashAttack()
+        {
+
+        }
+
+        /// <summary>
         /// Updates the state of the game actor
         /// </summary>
         /// <param name="gameTime"></param>
         public void Update( GameTime gameTime )
         {
-            // Do we need to perform movement logic this frame?
-            if ( mMoveRequested )
+            // Do we need to perform movement logic this frame? We shouldn't do this if
+            // there is another action requested on this update
+            if ( mMoveRequested && mCurrentAction == null )
             {
                 // Animation time! Are we starting an walk animation cycle, are we switching
                 // directions mid-walk, or should we just continue animating the current cycle?
@@ -146,6 +159,13 @@ namespace scott.dungeon.gameobject
                 // We've changed direction without actually moving
                 mGameObject.Sprite.PlayAnimation( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
                 mDirectionDuringLastCall = mRequestedMoveDirection;
+            }
+
+            // Check if there is an active action for this actor. If so, make sure it gets
+            // the chance to execute
+            if ( mCurrentAction != null )
+            {
+                mCurrentAction.Update( gameTime );
             }
         }
     }

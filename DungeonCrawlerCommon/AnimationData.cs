@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace scott.dungeon
+namespace Scott.Dungeon.Data
 {
     /// <summary>
     /// Information about a sprite animation

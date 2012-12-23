@@ -1,10 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Scott.Dungeon.Actor;
+using Scott.Dungeon.AI;
+using Scott.Dungeon.Graphics;
 
-namespace scott.dungeon.gameobject
+namespace Scott.Dungeon.ComponentModel
 {
     /// <summary>
     /// Represents a physical object in the game world
@@ -21,7 +22,7 @@ namespace scott.dungeon.gameobject
         /// </summary>
         public Direction Direction { get; set; }
 
-        public Actor Actor { get; set; }
+        public ActorController Actor { get; set; }
         public AiController AI { get; set; }
         public Movement Movement { get; set; }
         public Sprite Sprite { get; set; }
@@ -37,7 +38,7 @@ namespace scott.dungeon.gameobject
             Position = new Vector2( 0, 0 );
             Direction = Direction.South;
 
-            Actor = new Actor( this );
+            Actor = new ActorController( this );
             Movement = new Movement( this );
             Sprite = sprite;
 

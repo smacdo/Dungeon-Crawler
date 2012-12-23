@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace scott.dungeon
+namespace Scott.Dungeon.Data
 {
     /// <summary>
     /// Static information about a sprite and how to play it's animations. 

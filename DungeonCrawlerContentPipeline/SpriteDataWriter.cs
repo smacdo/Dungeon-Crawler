@@ -7,12 +7,12 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using scott.dungeon;
+using Scott.Dungeon.Data;
 
 // TODO: replace this with the type you want to write out.
-using TWrite = scott.dungeon.pipeline.SpriteDataContent;
+using TWrite = Scott.Dungeon.Pipeline.SpriteDataContent;
 
-namespace scott.dungeon.pipeline
+namespace Scott.Dungeon.Pipeline
 {
     /// <summary>
     /// Writes a sprite data out
@@ -91,12 +91,12 @@ namespace scott.dungeon.pipeline
 
         public override string GetRuntimeReader( TargetPlatform targetPlatform )
         {
-            return "scott.dungeon.SpriteDataReader, DungeonCrawlerCommon";
+            return "Scott.Dungeon.Data.SpriteDataReader, DungeonCrawlerCommon";
         }
 
         public override string GetRuntimeType( TargetPlatform targetPlatform )
         {
-            return "scott.dungeon.SpriteData, DungeonCrawlerCommon";
+            return "Scott.Dungeon.Data.SpriteData, DungeonCrawlerCommon";
         }
     }
 }

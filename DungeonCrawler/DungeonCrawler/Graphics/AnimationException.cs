@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using scott.dungeon.gameobject;
-
-namespace scott.dungeon
+namespace Scott.Dungeon.Graphics
 {
     /// <summary>
     /// An exception that happens during sprite animation

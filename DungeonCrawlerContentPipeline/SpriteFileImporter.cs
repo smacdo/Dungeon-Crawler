@@ -7,11 +7,12 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System.Xml;
 using System.IO;
+using Scott.Dungeon.Data;
 
 // TODO: replace this with the type you want to import.
-using TImport = scott.dungeon.pipeline.SpriteDataContent;
+using TImport = Scott.Dungeon.Pipeline.SpriteDataContent;
 
-namespace scott.dungeon.pipeline
+namespace Scott.Dungeon.Pipeline
 {
     /// <summary>
     /// Imports a sprite XML file
