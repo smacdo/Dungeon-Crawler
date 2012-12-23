@@ -54,7 +54,7 @@ namespace scott.dungeon
         {
             // Read the sprite header
             string name        = input.ReadString();
-            Texture2D atlas    = input.ReadExternalReference<Texture2D>();
+            Texture2D atlas    = input.ReadObject<Texture2D>();
             int animationCount = input.ReadInt32();
             string defAnimName = input.ReadString();
  

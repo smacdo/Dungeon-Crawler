@@ -51,8 +51,8 @@ namespace scott.dungeon
         protected override void LoadContent()
         {
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-            Sprite playerSprite = new Sprite( Content.Load<SpriteData>( "maleplayer" ) );
-            Sprite skeletonSprite = new Sprite( Content.Load<SpriteData>( "skeleton" ) );
+            Sprite playerSprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
+            Sprite skeletonSprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
             mPlayer = new GameObject( playerSprite );
             mEnemy = new GameObject( skeletonSprite );

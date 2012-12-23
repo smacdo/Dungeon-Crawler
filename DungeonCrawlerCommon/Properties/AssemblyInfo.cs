@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "DungeonCrawlerCommon" )]
-[assembly: AssemblyProduct( "DungeonCrawlerCommon" )]
-[assembly: AssemblyDescription( "" )]
-[assembly: AssemblyCompany( "" )]
-[assembly: AssemblyCopyright( "Copyright ©  2012" )]
+[assembly: AssemblyTitle( "Dungeon Crawler (Common code library)" )]
+[assembly: AssemblyProduct( "Dungeon Crawler" )]
+[assembly: AssemblyDescription( "A dungeon crawler roguelike with lots of random loot and action" )]
+[assembly: AssemblyCompany( "Scott MacDonald" )]
+[assembly: AssemblyCopyright( "Copyright ©  2012 Scott MacDonald" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 

@@ -3,10 +3,14 @@ from funcs import *
 
 # Atlas definitions go here
 Everything = [
+	#-----------------------------------------------------------------------------------------#
+	# Male player
+	#-----------------------------------------------------------------------------------------#
 	{
 		'sheetname': 'MalePlayer',
-		'spritewidth': 64,
-		'spriteheight': 64,
+		'default': 'IdleSouth',
+		'sprite_size': [ 64, 64 ],
+		'atlas_size': [ 1024, 1024 ],
 		'directional': [
 			{
 				'action': 'Idle',
@@ -58,10 +62,14 @@ Everything = [
 			}
 		]
 	},
+	#-----------------------------------------------------------------------------------------#
+	# Skeleton
+	#-----------------------------------------------------------------------------------------#
 	{
 		'sheetname': 'Skeleton',
-		'spritewidth': 64,
-		'spriteheight': 64,
+		'default': 'IdleSouth',
+		'sprite_size': [ 64, 64 ],
+		'atlas_size': [ 1024, 1024 ],
 		'directional': [
 			{
 				'action': 'Idle',
@@ -106,9 +114,28 @@ Everything = [
 							[ 5 * 64, 0 ] ]
 			}
 		]
+	},
+	#-----------------------------------------------------------------------------------------#
+	# Longsword
+	#-----------------------------------------------------------------------------------------#
+	{
+		'sheetname': 'Longsword',
+		'default': 'SlashSouth',
+		'sprite_size': [ 192, 192 ],
+		'atlas_size': [ 2048, 1024 ],
+		'directional': [
+			{
+				'action': 'Slash',
+				'start_col': 0,
+				'last_col': 6,
+				'file': 'slash.png'
+			},
+		],
+		'manual': [
+		]
 	}
 ]
 
 # Go through every atlas
 for o in Everything:
-	CreateAtlas( o['sheetname'], o['spritewidth'], o['spriteheight'], o['directional'], o['manual'] )
+	CreateAtlas( o['sheetname'], o['default'], o['sprite_size'], o['atlas_size'], o['directional'], o['manual'] )

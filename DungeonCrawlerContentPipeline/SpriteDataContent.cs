@@ -26,7 +26,7 @@ namespace scott.dungeon.pipeline
         /// <summary>
         /// The sprite's texture atlas
         /// </summary>
-        public ExternalReference<TextureContent> Texture { get; set; }
+        public TextureContent Texture { get; set; }
 
         /// <summary>
         /// List of animations for this sprite

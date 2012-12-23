@@ -55,7 +55,8 @@ namespace scott.dungeon.pipeline
 
             // Write a sprite header out
             output.Write( value.Name );
-            output.WriteExternalReference( value.Texture );
+            output.WriteObject<TextureContent>( value.Texture );
+//            output.WriteExternalReference( value.Texture );
             output.Write( value.Animations.Count );
             output.Write( value.DefaultAnimationName );
 

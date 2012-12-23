@@ -89,13 +89,138 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MalePlayer.sprite">
-      <Name>MalePlayer</Name>
+    <Compile Include="sprites\Back_Quiver.sprite">
+      <Name>Back_Quiver</Name>
       <Importer>SpriteFileImporter</Importer>
       <Processor>SpriteContentProcessor</Processor>
     </Compile>
-    <Compile Include="Skeleton.sprite">
-      <Name>Skeleton</Name>
+    <Compile Include="sprites\Belt_Leather.sprite">
+      <Name>Belt_Leather</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Belt_Rope.sprite">
+      <Name>Belt_Rope</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Bracer_Leather.sprite">
+      <Name>Bracer_Leather</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Feet_Shoes_Brown.sprite">
+      <Name>Feet_Shoes_Brown</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Feet_Shoes_Plate.sprite">
+      <Name>Feet_Shoes_Plate</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Hands_Plate.sprite">
+      <Name>Hands_Plate</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Head_Hair_Blonde.sprite">
+      <Name>Head_Hair_Blonde</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Head_Helmet_Chain.sprite">
+      <Name>Head_Helmet_Chain</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Head_Helmet_Leather.sprite">
+      <Name>Head_Helmet_Leather</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Head_Helmet_Plate.sprite">
+      <Name>Head_Helmet_Plate</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Head_Hood_Chain.sprite">
+      <Name>Head_Hood_Chain</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Head_Hood_Robe.sprite">
+      <Name>Head_Hood_Robe</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Humanoid_Male.sprite">
+      <Name>Humanoid_Male</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Humanoid_Skeleton.sprite">
+      <Name>Humanoid_Skeleton</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Legs_Pants_Green.sprite">
+      <Name>Legs_Pants_Green</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Legs_Pants_Plate.sprite">
+      <Name>Legs_Pants_Plate</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Legs_Skirt_Robe.sprite">
+      <Name>Legs_Skirt_Robe</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Shoulder_Leather.sprite">
+      <Name>Shoulder_Leather</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Shoulder_Plate.sprite">
+      <Name>Shoulder_Plate</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Torso_Armor_Chain.sprite">
+      <Name>Torso_Armor_Chain</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Torso_Armor_Leather.sprite">
+      <Name>Torso_Armor_Leather</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Torso_Armor_Plate.sprite">
+      <Name>Torso_Armor_Plate</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Torso_Armor_Purple.sprite">
+      <Name>Torso_Armor_Purple</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Torso_Shirt_Robe_Brown.sprite">
+      <Name>Torso_Shirt_Robe_Brown</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Torso_Shirt_White.sprite">
+      <Name>Torso_Shirt_White</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="sprites\Weapon_Longsword.sprite">
+      <Name>Weapon_Longsword</Name>
       <Importer>SpriteFileImporter</Importer>
       <Processor>SpriteContentProcessor</Processor>
     </Compile>
