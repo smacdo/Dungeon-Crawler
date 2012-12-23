@@ -36,6 +36,17 @@ namespace Scott.Dungeon.Graphics
         private TimeSpan mFrameStartTime;
 
         /// <summary>
+        /// True if an animation is being played, false if it is not. (False also means
+        /// a current animation is frozen).
+        /// </summary>
+        private bool mIsAnimating;
+
+        /// <summary>
+        /// Controls what happens when the current animation completes
+        /// </summary>
+        private AnimationEndingAction mAnimationEndingAction;
+
+        /// <summary>
         /// The current texture that should be displayed for the sprite
         /// </summary>
         public Texture2D CurrentAtlasTexture { get; private set; }
@@ -73,6 +84,7 @@ namespace Scott.Dungeon.Graphics
             mCurrentAnimation = spriteData.Animations[spriteData.DefaultAnimationName];
             mCurrentFrame     = 0;
             mFrameStartTime   = TimeSpan.MinValue;
+            mIsAnimating      = false;
 
             CurrentAtlasTexture = spriteData.Texture;
             CurrentAtlasOffset = mCurrentAnimation.Frames[0];
@@ -84,22 +96,43 @@ namespace Scott.Dungeon.Graphics
         /// <param name="gameTime">Current rendering time</param>
         public void Update( GameTime gameTime )
         {
-            TimeSpan frameTime = TimeSpan.FromSeconds( 0.1 );
+            TimeSpan frameTime = TimeSpan.FromSeconds( 0.1 );       // this needs to go.. should be read in via XML per animation
 
             // Check if this is the first time we've updated this sprite. If so, initialize our
             // animation values for the next call to update. Otherwise proceed as normal
-            if ( mFrameStartTime != TimeSpan.MinValue )
+            if ( mFrameStartTime == TimeSpan.MinValue )        // start the clock
             {
-                // Is it time to move to the next frame of animation?
-                if ( mFrameStartTime.Add( frameTime ) <= gameTime.TotalGameTime )
-                {
-                    mCurrentFrame      = ( mCurrentFrame + 1 ) % mCurrentAnimation.FrameCount;
-                    CurrentAtlasOffset = mCurrentAnimation.Frames[mCurrentFrame];
-                    mFrameStartTime    = gameTime.TotalGameTime;
-                }
+                mFrameStartTime = gameTime.TotalGameTime;
             }
-            else
+            else if ( mIsAnimating && mFrameStartTime.Add( frameTime ) <= gameTime.TotalGameTime )
             {
+                // Are we at the end of this animation?
+                if ( mCurrentFrame + 1 == mCurrentAnimation.FrameCount )
+                {
+                    switch ( mAnimationEndingAction )
+                    {
+                        case AnimationEndingAction.Loop:
+                            mCurrentFrame = 0;
+                            break;
+
+                        case AnimationEndingAction.Stop:
+                            mIsAnimating = false;
+                            break;
+
+                        case AnimationEndingAction.StopAndReset:
+                            mCurrentFrame = 0;
+                            mIsAnimating = false;
+                            break;
+                    }
+                }
+                else
+                {
+                    // We're not at the end... just increment the frame and continue
+                    mCurrentFrame++;
+                }
+
+                // Update state
+                CurrentAtlasOffset = mCurrentAnimation.Frames[mCurrentFrame];
                 mFrameStartTime = gameTime.TotalGameTime;
             }
         }
@@ -107,8 +140,9 @@ namespace Scott.Dungeon.Graphics
         /// <summary>
         /// Plays the requested animation
         /// </summary>
-        /// <param name="animationName"></param>
-        public void PlayAnimation( string animationName )
+        /// <param name="animationName">Name of the animation to play</param>
+        /// <param name="endingAction">Action to take when the animation ends</param>
+        public void PlayAnimation( string animationName, AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset )
         {
             AnimationData animation = null;
 
@@ -119,6 +153,8 @@ namespace Scott.Dungeon.Graphics
                 mFrameStartTime = TimeSpan.MinValue;
 
                 CurrentAtlasOffset = mCurrentAnimation.Frames[mCurrentFrame];
+                mAnimationEndingAction = endingAction;
+                mIsAnimating = true;
             }
             else
             {
@@ -127,6 +163,15 @@ namespace Scott.Dungeon.Graphics
                                               animationName,
                                               0 );
             }
+        }
+
+        /// <summary>
+        /// Play a requested animation and have it loop until interrupted
+        /// </summary>
+        /// <param name="animationName">Name of the animation to play</param>
+        public void PlayAnimationLooping( string animationName )
+        {
+            PlayAnimation( animationName, AnimationEndingAction.Loop );
         }
     }
 }

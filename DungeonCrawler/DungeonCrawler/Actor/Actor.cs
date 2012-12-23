@@ -14,7 +14,7 @@ namespace Scott.Dungeon.Actor
         /// <summary>
         /// The game object that this component belongs to
         /// </summary>
-        private GameObject mGameObject;
+        private GameObject mOwner;
 
         /// <summary>
         /// The current action that this actor is performing
@@ -74,7 +74,7 @@ namespace Scott.Dungeon.Actor
         /// </summary>
         public ActorController( GameObject gameObject )
         {
-            mGameObject = gameObject;
+            mOwner = gameObject;
             mMoveRequested = false;
             mWasMovingLastUpdateCall = false;
             mDirectionDuringLastCall = Direction.South;
@@ -111,7 +111,11 @@ namespace Scott.Dungeon.Actor
         /// </summary>
         public void SlashAttack()
         {
-
+            // Queue up a slash attack
+            if ( mCurrentAction == null )
+            {
+                mCurrentAction = new ActionSlashAttack( mOwner, mOwner.Direction );
+            }
         }
 
         /// <summary>
@@ -128,11 +132,11 @@ namespace Scott.Dungeon.Actor
                 // directions mid-walk, or should we just continue animating the current cycle?
                 if ( !mWasMovingLastUpdateCall || mRequestedMoveDirection != mDirectionDuringLastCall )
                 {
-                    mGameObject.Sprite.PlayAnimation( "Walk" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                    mOwner.Sprite.PlayAnimationLooping( "Walk" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
                 }
 
                 // Set up movement information so our actor actually does
-                Movement movement = mGameObject.Movement;
+                Movement movement = mOwner.Movement;
                 Debug.Assert( movement != null );
 
                 movement.Direction = mRequestedMoveDirection;
@@ -149,7 +153,7 @@ namespace Scott.Dungeon.Actor
             {
                 // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
                 // and being idle.
-                mGameObject.Sprite.PlayAnimation( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mOwner.Sprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
 
                 mWasMovingLastUpdateCall = false;
                 mDirectionDuringLastCall = mRequestedMoveDirection;
@@ -157,7 +161,7 @@ namespace Scott.Dungeon.Actor
             else if ( mRequestedMoveDirection != mDirectionDuringLastCall )
             {
                 // We've changed direction without actually moving
-                mGameObject.Sprite.PlayAnimation( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mOwner.Sprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
                 mDirectionDuringLastCall = mRequestedMoveDirection;
             }
 
@@ -166,6 +170,12 @@ namespace Scott.Dungeon.Actor
             if ( mCurrentAction != null )
             {
                 mCurrentAction.Update( gameTime );
+
+                // Cancel out the active action if it has completed
+                if ( mCurrentAction.IsFinished )
+                {
+                    mCurrentAction = null;
+                }
             }
         }
     }
