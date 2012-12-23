@@ -112,8 +112,10 @@
     <Compile Include="Ai\AiController.cs" />
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\Movement.cs" />
+    <Compile Include="GameRoot.cs" />
     <Compile Include="Graphics\AnimationException.cs" />
     <Compile Include="Graphics\CharacterSprite.cs" />
+    <Compile Include="Graphics\DebugRenderer.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

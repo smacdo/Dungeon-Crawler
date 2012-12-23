@@ -48,6 +48,8 @@ namespace Scott.Dungeon.Game
         protected override void Initialize()
         {
             base.Initialize();
+
+            GameRoot.Initialize( mGraphics.GraphicsDevice, Content );
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            GameRoot.Unload();
         }
 
         protected override void BeginRun()
@@ -153,6 +155,8 @@ namespace Scott.Dungeon.Game
         {
             GraphicsDevice.Clear( Color.CornflowerBlue );
 
+            GameRoot.Debug.DrawText( "Hello World", new Vector2( 75, 425 ) );
+
             // Update animations on all of our sprites and render them
             mSpriteBatch.Begin();
 
@@ -163,6 +167,8 @@ namespace Scott.Dungeon.Game
             DrawGameObject( mSpriteBatch, mEnemy );
 
             mSpriteBatch.End();
+
+            GameRoot.Debug.Update( gameTime );
 
             base.Draw( gameTime );
         }
