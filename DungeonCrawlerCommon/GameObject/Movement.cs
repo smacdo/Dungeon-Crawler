@@ -48,7 +48,7 @@ namespace scott.dungeon.gameobject
         /// 
         /// </summary>
         /// <param name="gameTime"></param>
-        public void Update( GameTime gameTime )
+        public void Update( Game game, GameTime gameTime )
         {
             // Only perform the movement math and logic if we were actually requested
             // to move.
@@ -78,9 +78,26 @@ namespace scott.dungeon.gameobject
                         break;
                 }
 
+                // Calculate the new position
+                Vector2 position = mGameObject.Position + ( movementAxis * Speed * timeDelta );
+
+                // Don't let the object go out of bounds (TODO: Do this smarter when we get real levels)
+                int screenWidth  = game.GraphicsDevice.Viewport.Width;
+                int screenHeight = game.GraphicsDevice.Viewport.Height;
+                int objectWidth  = mGameObject.Width;
+                int objectHeight = mGameObject.Height;
+
+                bool isOutOfBounds =
+                    position.X < 0 || position.X + mGameObject.Width > screenWidth ||
+                    position.Y < 0 || position.Y + mGameObject.Height > screenHeight;
+
                 // Update the movement information
-                mGameObject.Direction = Direction;
-                mGameObject.Position += movementAxis * Speed * timeDelta;
+                if ( !isOutOfBounds )
+                {
+                    mGameObject.Direction = Direction;
+                    mGameObject.Position = position;
+                }
+
             }
 
             // Reset movement back to zero for the next update cycle.

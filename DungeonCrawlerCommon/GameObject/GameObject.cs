@@ -21,9 +21,13 @@ namespace scott.dungeon.gameobject
         /// </summary>
         public Direction Direction { get; set; }
 
-        public Actor Actor { get; private set; }
-        public Movement Movement { get; private set; }
-        public Sprite Sprite { get; private set; }
+        public Actor Actor { get; set; }
+        public AiController AI { get; set; }
+        public Movement Movement { get; set; }
+        public Sprite Sprite { get; set; }
+
+        public int Width { get; set; }      // should we also adjust sprite width, or at least warn?
+        public int Height { get; set; }     // same question
 
         /// <summary>
         /// Constructor
@@ -36,6 +40,9 @@ namespace scott.dungeon.gameobject
             Actor = new Actor( this );
             Movement = new Movement( this );
             Sprite = sprite;
+
+            Width = sprite.Width;
+            Height = sprite.Height;     // whoops, probably find a better way
         }
     }
 }

@@ -1,0 +1,137 @@
+﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace scott.dungeon.gameobject
+{
+    /// <summary>
+    /// Does AI logic
+    /// </summary>
+    public class AiController
+    {
+        private const double CHANGE_DIRECTION_CHANCE = 0.05;
+        private const double START_WALKING_CHANCE = 0.15;
+        private const double STOP_WALKING_CHANCE = 0.05;
+
+        /// <summary>
+        /// The game object that this component belongs to
+        /// </summary>
+        private GameObject mGameObject;
+
+        /// <summary>
+        /// The last time this AI made a decision
+        /// </summary>
+        private TimeSpan mLastDecisionTime;
+
+        /// <summary>
+        /// Random generator for the AI controller
+        /// </summary>
+        private Random mRandom;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="owner">Game object who owns this AI controller</param>
+        public AiController( GameObject owner )
+        {
+            mGameObject = owner;
+            mLastDecisionTime = TimeSpan.MinValue;
+            mRandom = new Random();
+        }
+
+        /// <summary>
+        /// Updates the state of the game actor
+        /// </summary>
+        /// <param name="gameTime">Current simulation time</param>
+        public void Update( GameTime gameTime )
+        {
+            TimeSpan decisionTimeDelta = TimeSpan.FromSeconds( 0.25 );
+
+            // Is it time for us to make a decision?
+            if ( mLastDecisionTime.Add( decisionTimeDelta ) <= gameTime.TotalGameTime )
+            {
+                PerformIdleUpdate( gameTime );
+                mLastDecisionTime = gameTime.TotalGameTime;
+            }
+            else if ( mLastDecisionTime == TimeSpan.MinValue )
+            {
+                // First update call. Schedule an AI decision tick next frame
+                mLastDecisionTime = gameTime.TotalGameTime.Subtract( decisionTimeDelta );
+            }
+            else
+            {
+                // Keep doing whatever the heck we were doing
+                if ( mGameObject.Actor.IsMoving )
+                {
+                    mGameObject.Actor.Move( mGameObject.Direction, 50 );
+                }
+            }
+        }
+
+        /// <summary>
+        /// Idle AI logic
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void PerformIdleUpdate( GameTime gameTime )
+        {
+            Actor actor = mGameObject.Actor;
+
+            // Are we walking around or just standing?
+            if ( actor.IsMoving )
+            {
+                Console.WriteLine( "Walking" );
+
+                // Character is moving around... should they stop moving? Change direction mid walk?
+                if ( mRandom.NextDouble() <= STOP_WALKING_CHANCE )
+                {
+                    // nothing to do!
+                }
+                else
+                {
+                    // Should we change direction?
+                    Direction direction = mGameObject.Direction;
+
+                    if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
+                    {
+                        direction = (Direction) mRandom.Next( 0, 3 );
+                    }
+
+                    actor.Move( direction, 50 );
+                }
+            }
+            else
+            {
+                // Character is standing around. Should they start moving? Maybe change
+                // direction
+                if ( mRandom.NextDouble() <= START_WALKING_CHANCE )
+                {
+                    // Should we change direction when we start walking?
+                    Direction direction = mGameObject.Direction;
+
+                    if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
+                    {
+                        direction = (Direction) mRandom.Next( 0, 3 );
+                        Console.WriteLine( "Starting to walk" );
+                    }
+
+                    // Start walking now
+                    actor.Move( direction, 50 );
+                }
+                else
+                {
+                    // Maybe we should look around?
+                    if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
+                    {
+                        // Pick a new direction
+                        actor.ChangeDirection( (Direction) mRandom.Next( 0, 3 ) );
+                    }
+                }
+            }
+
+            // Should we change direction? (5% chance each frame)
+
+        }
+    }
+}

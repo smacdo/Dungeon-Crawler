@@ -55,6 +55,17 @@ namespace scott.dungeon.gameobject
         private int mRequestedMoveSpeed;
 
         /// <summary>
+        /// Checks if the actor is moving
+        /// </summary>
+        public bool IsMoving
+        {
+            get
+            {
+                return mWasMovingLastUpdateCall;
+            }
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public Actor( GameObject gameObject )
@@ -79,6 +90,16 @@ namespace scott.dungeon.gameobject
             mMoveRequested = true;
             mRequestedMoveDirection = direction;
             mRequestedMoveSpeed = speed;
+        }
+
+        /// <summary>
+        /// Makes the actor face a different direction. If they are moving, then they will move in
+        /// this direction
+        /// </summary>
+        /// <param name="direction">Direction to face</param>
+        public void ChangeDirection( Direction direction )
+        {
+            mRequestedMoveDirection = direction;
         }
 
         /// <summary>
@@ -116,7 +137,15 @@ namespace scott.dungeon.gameobject
                 // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
                 // and being idle.
                 mGameObject.Sprite.PlayAnimation( "Stand" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+
                 mWasMovingLastUpdateCall = false;
+                mDirectionDuringLastCall = mRequestedMoveDirection;
+            }
+            else if ( mRequestedMoveDirection != mDirectionDuringLastCall )
+            {
+                // We've changed direction without actually moving
+                mGameObject.Sprite.PlayAnimation( "Stand" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mDirectionDuringLastCall = mRequestedMoveDirection;
             }
         }
     }

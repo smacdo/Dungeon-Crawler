@@ -96,6 +96,7 @@
     <Compile Include="CommonTypes.cs" />
     <Compile Include="Exceptions\AnimationException.cs" />
     <Compile Include="Exceptions\InvalidGameDataException.cs" />
+    <Compile Include="GameObject\AiController.cs" />
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\IGameObjectComponent.cs" />
     <Compile Include="GameObject\Movement.cs" />

@@ -23,6 +23,7 @@ namespace scott.dungeon
         GraphicsDeviceManager mGraphics;
         SpriteBatch mSpriteBatch;
         GameObject mPlayer;
+        GameObject mEnemy;
 
         public DungeonCrawler()
         {
@@ -50,8 +51,14 @@ namespace scott.dungeon
         protected override void LoadContent()
         {
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-            Sprite playerSprite = new Sprite( Content.Load<scott.dungeon.SpriteData>( "maleplayer" ) );
+            Sprite playerSprite = new Sprite( Content.Load<SpriteData>( "maleplayer" ) );
+            Sprite skeletonSprite = new Sprite( Content.Load<SpriteData>( "skeleton" ) );
+
             mPlayer = new GameObject( playerSprite );
+            mEnemy = new GameObject( skeletonSprite );
+            mEnemy.AI = new AiController( mEnemy );
+
+            mEnemy.Position = new Vector2( 600, 250 );
         }
 
         /// <summary>
@@ -102,7 +109,12 @@ namespace scott.dungeon
 
             // Update logic...
             mPlayer.Actor.Update( gameTime );
-            mPlayer.Movement.Update( gameTime );
+
+            mEnemy.AI.Update( gameTime );
+            mEnemy.Actor.Update( gameTime );
+
+            mPlayer.Movement.Update( this, gameTime );
+            mEnemy.Movement.Update( this, gameTime );
 
             base.Update( gameTime );
         }
@@ -115,22 +127,26 @@ namespace scott.dungeon
         {
             GraphicsDevice.Clear( Color.CornflowerBlue );
 
-            // Update animations on all of our sprites
-            Sprite playerSprite = mPlayer.Sprite;
-            Vector2 playerPosition = mPlayer.Position;
-            Debug.Assert( playerSprite != null, "Player should always have a sprite" );
-
-            playerSprite.Update( gameTime );
-
-            // Draw everything
+            // Update animations on all of our sprites and render them
             mSpriteBatch.Begin();
-            mSpriteBatch.Draw( playerSprite.CurrentAtlasTexture,
-                               playerPosition,
-                               playerSprite.CurrentAtlasOffset,
-                               Color.White );
+
+            mPlayer.Sprite.Update( gameTime );
+            DrawGameObject( mSpriteBatch, mPlayer );
+
+            mEnemy.Sprite.Update( gameTime );
+            DrawGameObject( mSpriteBatch, mEnemy );
+
             mSpriteBatch.End();
 
             base.Draw( gameTime );
+        }
+
+        private void DrawGameObject( SpriteBatch spriteBatch, GameObject gameObject )
+        {
+            spriteBatch.Draw( gameObject.Sprite.CurrentAtlasTexture,
+                              gameObject.Position,
+                              gameObject.Sprite.CurrentAtlasOffset,
+                              Color.White );
         }
     }
 }
