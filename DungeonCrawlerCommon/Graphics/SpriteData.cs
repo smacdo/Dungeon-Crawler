@@ -55,7 +55,7 @@ namespace scott.dungeon
             // Read the sprite header
             string name        = input.ReadString();
             Texture2D atlas    = input.ReadObject<Texture2D>();
-            int animationCount = input.ReadInt32();
+            int animationCount = (int) input.ReadByte();
             string defAnimName = input.ReadString();
  
             // Allocate a sprite data instance
@@ -65,15 +65,15 @@ namespace scott.dungeon
             for ( int animationIndex = 0; animationIndex < animationCount; ++animationIndex )
             {
                 string animationName    = input.ReadString();
-                int frameCount          = input.ReadInt32();
+                int frameCount          = (int) input.ReadByte();
                 AnimationData animation = new AnimationData( animationName );
 
                 for ( int frameIndex = 0; frameIndex < frameCount; ++frameIndex )
                 {
-                    int x = input.ReadInt32();
-                    int y = input.ReadInt32();
-                    int w = input.ReadInt32();
-                    int h = input.ReadInt32();
+                    int x = (int) input.ReadUInt16();
+                    int y = (int) input.ReadUInt16();
+                    int w = (int) input.ReadUInt16();
+                    int h = (int) input.ReadUInt16();
 
                     animation.Frames.Add( new Rectangle( x, y, w, h ) );
                 }

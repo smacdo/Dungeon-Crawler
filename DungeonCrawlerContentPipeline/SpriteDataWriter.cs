@@ -34,6 +34,12 @@ namespace scott.dungeon.pipeline
                 throw new InvalidContentException( "Sprite is missing a default animation, or it is incorrectly named" );
             }
 
+            // Can't have too many animations in here
+            if ( value.Animations.Count > 255 )
+            {
+                throw new InvalidContentException( "Cannot have more than 255 animations for sprite " + value.Name );
+            }
+
             // Ensure there is at least one animation, and that every animation has at least one
             // frame of animation
             if ( value.Animations == null || value.Animations.Count < 1 )
@@ -50,14 +56,19 @@ namespace scott.dungeon.pipeline
                     {
                         throw new InvalidContentException( "Missing at least one frame for sprite " + value.Name + ", animation " + animation.Name );
                     }
+
+                    // Can't have too many frames in our animation
+                    if ( animation.FrameCount > 255 )
+                    {
+                        throw new InvalidContentException( "Animation cannot have more than 255 frames for sprite " + value.Name + ", animation " + animation.Name );
+                    }
                 }
             }
 
             // Write a sprite header out
             output.Write( value.Name );
             output.WriteObject<TextureContent>( value.Texture );
-//            output.WriteExternalReference( value.Texture );
-            output.Write( value.Animations.Count );
+            output.Write( (byte) value.Animations.Count );
             output.Write( value.DefaultAnimationName );
 
             // Now write the sprite's animations out
@@ -66,14 +77,14 @@ namespace scott.dungeon.pipeline
                 AnimationData animation = keyValue.Value;
 
                 output.Write( animation.Name );
-                output.Write( animation.Frames.Count );
+                output.Write( (byte) animation.Frames.Count );
 
                 foreach ( Rectangle rect in keyValue.Value.Frames )
                 {
-                    output.Write( rect.X );
-                    output.Write( rect.Y );
-                    output.Write( rect.Width );
-                    output.Write( rect.Height );
+                    output.Write( (ushort) rect.X );
+                    output.Write( (ushort) rect.Y );
+                    output.Write( (ushort) rect.Width );
+                    output.Write( (ushort) rect.Height );
                 }
             }
         }

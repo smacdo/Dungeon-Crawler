@@ -23,12 +23,10 @@ namespace scott.dungeon.pipeline
     {
         public override TOutput Process( TInput input, ContentProcessorContext context )
         {
-//            // Load the sprite's texture atlas and make sure it is built.
-//            ExternalReference<TextureContent> atlasReference = new ExternalReference<TextureContent>( input.TextureFilePath );
-//            input.Texture = context.BuildAsset<TextureContent, TextureContent>( atlasReference, "TextureProcessor" );
+
 
             ExternalReference<TextureContent> atlasReference = new ExternalReference<TextureContent>( input.TextureFilePath );
-            input.Texture = context.BuildAndLoadAsset<TextureContent, TextureContent>( atlasReference, "TextureProcessor" );
+            input.Texture = context.BuildAndLoadAsset<TextureContent, TextureContent>( atlasReference, "SpriteTextureProcessor" );
 
             // All done
             return input;
