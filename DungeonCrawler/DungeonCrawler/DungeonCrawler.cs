@@ -63,8 +63,6 @@ namespace Scott.Dungeon.Game
             Sprite playerWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
             CharacterSprite playerSprite = new CharacterSprite( playerBodySprite, playerWeaponSprite );
 
-            playerWeaponSprite.DrawOffset = new Vector2( -64, -64 );
-
             mPlayer = new GameObject( playerSprite );
 
             // Create the enemey character

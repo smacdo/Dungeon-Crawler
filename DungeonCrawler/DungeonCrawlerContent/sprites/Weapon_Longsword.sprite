@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sprite name="Weapon_Longsword" image="atlases/Weapon_Longsword.png" spriteWidth="192" spriteHeight="192">
+<sprite name="Weapon_Longsword" image="atlases/Weapon_Longsword.png" spriteWidth="192" spriteHeight="192" offsetX="-64" offsetY="-64">
   <animation name="SlashNorth">
    <frame x="0" y="0" />
    <frame x="192" y="0" />

@@ -43,6 +43,15 @@ namespace Scott.Dungeon.Pipeline
             // Generate a new sprite data object to store information from the imported XML file
             SpriteDataContent sprite = new SpriteDataContent( spriteName, fullImagePath );
 
+            // Does the sprite have an offset?
+            if ( spriteNode.Attributes["offsetX"] != null && spriteNode.Attributes["offsetY"] != null )
+            {
+                int offsetX = Convert.ToInt32( spriteNode.Attributes["offsetX"].Value );
+                int offsetY = Convert.ToInt32( spriteNode.Attributes["offsetY"].Value );
+
+                sprite.OriginOffset = new Vector2( offsetX, offsetY );
+            }
+
             // Iterate through all the animation nodes, and process them
             foreach ( XmlNode animNode in animationNodes )
             {

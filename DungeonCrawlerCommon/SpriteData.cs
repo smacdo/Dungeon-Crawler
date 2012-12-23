@@ -33,6 +33,11 @@ namespace Scott.Dungeon.Data
         public string DefaultAnimationName { get; set; }
 
         /// <summary>
+        /// Offset from local origin when rendering
+        /// </summary>
+        public Vector2 OriginOffset { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the sprite</param>
@@ -42,6 +47,7 @@ namespace Scott.Dungeon.Data
             Name = name;
             Texture = texture;
             Animations = new Dictionary<string, AnimationData>();
+            OriginOffset = Vector2.Zero;
         }
     }
 
@@ -57,9 +63,10 @@ namespace Scott.Dungeon.Data
             Texture2D atlas    = input.ReadObject<Texture2D>();
             int animationCount = (int) input.ReadByte();
             string defAnimName = input.ReadString();
+            Vector2 offset     = input.ReadVector2();
  
             // Allocate a sprite data instance
-            SpriteData spriteData = new SpriteData( name, atlas );
+            SpriteData spriteData   = new SpriteData( name, atlas );
 
             // Now read in all of the sprite's animations
             for ( int animationIndex = 0; animationIndex < animationCount; ++animationIndex )
@@ -81,6 +88,7 @@ namespace Scott.Dungeon.Data
                 spriteData.Animations.Add( animationName, animation );
             }
 
+            spriteData.OriginOffset = offset;
             spriteData.DefaultAnimationName = defAnimName;
             return spriteData;
         }

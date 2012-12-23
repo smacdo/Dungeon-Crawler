@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scott.Dungeon.Data;
+using Microsoft.Xna.Framework;
 
 namespace Scott.Dungeon.Pipeline
 {
@@ -40,6 +41,11 @@ namespace Scott.Dungeon.Pipeline
         public string DefaultAnimationName { get; set; }
 
         /// <summary>
+        /// Offset from origin
+        /// </summary>
+        public Vector2 OriginOffset { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the sprite</param>
@@ -49,6 +55,7 @@ namespace Scott.Dungeon.Pipeline
             Name = name;
             TextureFilePath = texturePath;
             Animations = new Dictionary<string, AnimationData>();
+            OriginOffset = Vector2.Zero;
         }
     }
 }

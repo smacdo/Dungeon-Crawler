@@ -60,8 +60,17 @@ namespace Scott.Dungeon.Graphics
         /// <summary>
         /// Offset from the standard top left origin
         /// </summary>
-        public Vector2 DrawOffset;
+        public Vector2 DrawOffset
+        {
+            get
+            {
+                return mSpriteData.OriginOffset;
+            }
+        }
 
+        /// <summary>
+        /// Width of the sprite
+        /// </summary>
         public int Width
         {
             get
@@ -70,6 +79,9 @@ namespace Scott.Dungeon.Graphics
             }
         }
 
+        /// <summary>
+        /// Height of the sprite
+        /// </summary>
         public int Height
         {
             get
@@ -98,7 +110,6 @@ namespace Scott.Dungeon.Graphics
 
             CurrentAtlasTexture = spriteData.Texture;
             CurrentAtlasOffset = mCurrentAnimation.Frames[0];
-            DrawOffset = Vector2.Zero;
             Visible = visible;
         }
 

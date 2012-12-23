@@ -70,6 +70,7 @@ namespace Scott.Dungeon.Pipeline
             output.WriteObject<TextureContent>( value.Texture );
             output.Write( (byte) value.Animations.Count );
             output.Write( value.DefaultAnimationName );
+            output.Write( value.OriginOffset );
 
             // Now write the sprite's animations out
             foreach ( KeyValuePair<string,AnimationData> keyValue in value.Animations )
