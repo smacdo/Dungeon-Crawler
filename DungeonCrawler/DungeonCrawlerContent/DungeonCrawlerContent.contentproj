@@ -57,14 +57,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="maleplayer.sprite">
-      <Name>maleplayer</Name>
-      <Importer>SpriteFileImporter</Importer>
-      <Processor>SpriteContentProcessor</Processor>
-      <SubType>Designer</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\DungeonCrawlerCommon\DungeonCrawlerCommon.csproj">
       <Project>{f31e0cbe-3e8c-4c7f-9546-045bc49425f8}</Project>
       <Name>DungeonCrawlerCommon</Name>
@@ -97,8 +89,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="skeleton.xml">
-      <Name>skeleton</Name>
+    <Compile Include="MalePlayer.sprite">
+      <Name>MalePlayer</Name>
+      <Importer>SpriteFileImporter</Importer>
+      <Processor>SpriteContentProcessor</Processor>
+    </Compile>
+    <Compile Include="Skeleton.sprite">
+      <Name>Skeleton</Name>
       <Importer>SpriteFileImporter</Importer>
       <Processor>SpriteContentProcessor</Processor>
     </Compile>

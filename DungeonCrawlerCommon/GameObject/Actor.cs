@@ -136,7 +136,7 @@ namespace scott.dungeon.gameobject
             {
                 // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
                 // and being idle.
-                mGameObject.Sprite.PlayAnimation( "Stand" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mGameObject.Sprite.PlayAnimation( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
 
                 mWasMovingLastUpdateCall = false;
                 mDirectionDuringLastCall = mRequestedMoveDirection;
@@ -144,7 +144,7 @@ namespace scott.dungeon.gameobject
             else if ( mRequestedMoveDirection != mDirectionDuringLastCall )
             {
                 // We've changed direction without actually moving
-                mGameObject.Sprite.PlayAnimation( "Stand" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mGameObject.Sprite.PlayAnimation( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
                 mDirectionDuringLastCall = mRequestedMoveDirection;
             }
         }
