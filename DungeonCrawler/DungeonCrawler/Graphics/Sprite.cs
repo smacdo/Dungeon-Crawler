@@ -57,6 +57,11 @@ namespace Scott.Dungeon.Graphics
         /// </summary>
         public Rectangle CurrentAtlasOffset { get; private set; }
 
+        /// <summary>
+        /// Offset from the standard top left origin
+        /// </summary>
+        public Vector2 DrawOffset;
+
         public int Width
         {
             get
@@ -73,12 +78,17 @@ namespace Scott.Dungeon.Graphics
             }
         }
 
+        /// <summary>
+        /// If the sprite should be animated and displayed
+        /// </summary>
+        public bool Visible { get; set; }
+
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="spriteData">The sprite data that this sprite will be rendering</param>
-        public Sprite( SpriteData spriteData )
+        public Sprite( SpriteData spriteData, bool visible = true )
         {
             mSpriteData       = spriteData;
             mCurrentAnimation = spriteData.Animations[spriteData.DefaultAnimationName];
@@ -88,6 +98,8 @@ namespace Scott.Dungeon.Graphics
 
             CurrentAtlasTexture = spriteData.Texture;
             CurrentAtlasOffset = mCurrentAnimation.Frames[0];
+            DrawOffset = Vector2.Zero;
+            Visible = visible;
         }
 
         /// <summary>
@@ -97,6 +109,12 @@ namespace Scott.Dungeon.Graphics
         public void Update( GameTime gameTime )
         {
             TimeSpan frameTime = TimeSpan.FromSeconds( 0.1 );       // this needs to go.. should be read in via XML per animation
+
+            // Don't update if we are not visible
+            if ( !Visible )
+            {
+                return;
+            }
 
             // Check if this is the first time we've updated this sprite. If so, initialize our
             // animation values for the next call to update. Otherwise proceed as normal
@@ -146,6 +164,14 @@ namespace Scott.Dungeon.Graphics
         {
             AnimationData animation = null;
 
+            // Do not animate if this sprite is not visible
+            if ( !Visible )
+            {
+                return;
+            }
+
+            // Attempt to retrieve the requested animation. If the animation exists, go ahead and
+            // start playing it
             if ( mSpriteData.Animations.TryGetValue( animationName, out animation ) )
             {
                 mCurrentAnimation = animation;
@@ -172,6 +198,11 @@ namespace Scott.Dungeon.Graphics
         public void PlayAnimationLooping( string animationName )
         {
             PlayAnimation( animationName, AnimationEndingAction.Loop );
+        }
+
+        public bool IsPlayingAnimation( string animationName )
+        {
+            return ( mCurrentAnimation != null && mCurrentAnimation.Name == animationName );
         }
     }
 }

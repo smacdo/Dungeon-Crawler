@@ -24,7 +24,7 @@ namespace Scott.Dungeon.Actor
         /// The actor that is performing the slash attack
         /// </summary>
         private ActorController mActor;
-        private Sprite mSprite;
+        private CharacterSprite mSprite;
 
         private Direction mDirection;
 
@@ -49,7 +49,7 @@ namespace Scott.Dungeon.Actor
         public ActionSlashAttack( GameObject owner, Direction direction )
         {
             mActor = owner.Actor;
-            mSprite = owner.Sprite;
+            mSprite = owner.CharacterSprite;
             mDirection = direction;
             mTimeStarted = TimeSpan.MinValue;
             mAttackStatus = ActionAttackStatus.NotStarted;
@@ -68,7 +68,11 @@ namespace Scott.Dungeon.Actor
                 case ActionAttackStatus.NotStarted:
                     mTimeStarted = gameTime.TotalGameTime;
                     mAttackStatus = ActionAttackStatus.InProgress;
+
+                    // Enable the weapon sprite, and animate the attack
+                    mSprite.WeaponSprite.Visible = true;
                     mSprite.PlayAnimation( "Slash" + Enum.GetName( typeof( Direction ), mDirection ) );
+
                     break;
 
                 case ActionAttackStatus.InProgress:
@@ -77,6 +81,8 @@ namespace Scott.Dungeon.Actor
                     // Have we finished the attack?
                     if ( mTimeStarted.Add( actionTimeSpan ) <= gameTime.TotalGameTime )
                     {
+                        // Disable the weapon sprite now that the attack has finished
+                        mSprite.WeaponSprite.Visible = false;
                         mAttackStatus = ActionAttackStatus.Finished;
                     }
                     break;

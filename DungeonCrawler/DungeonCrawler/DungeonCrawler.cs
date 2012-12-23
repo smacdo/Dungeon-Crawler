@@ -30,6 +30,9 @@ namespace Scott.Dungeon.Game
         GameObject mPlayer;
         GameObject mEnemy;
 
+        /// <summary>
+        /// Constructar
+        /// </summary>
         public DungeonCrawler()
         {
             mGraphics = new GraphicsDeviceManager( this );
@@ -44,8 +47,6 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -56,10 +57,24 @@ namespace Scott.Dungeon.Game
         protected override void LoadContent()
         {
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-            Sprite playerSprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
-            Sprite skeletonSprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
+
+            // Create the player character
+            Sprite playerBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
+            Sprite playerWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
+            CharacterSprite playerSprite = new CharacterSprite( playerBodySprite, playerWeaponSprite );
+
+            playerWeaponSprite.DrawOffset = new Vector2( -64, -64 );
 
             mPlayer = new GameObject( playerSprite );
+
+            // Create the enemey character
+            Sprite skeletonBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
+            Sprite skeletonWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
+
+            playerWeaponSprite.Visible = false;
+
+            CharacterSprite skeletonSprite = new CharacterSprite( skeletonBodySprite, skeletonWeaponSprite );
+
             mEnemy = new GameObject( skeletonSprite );
             mEnemy.AI = new AiController( mEnemy );
 
@@ -95,7 +110,9 @@ namespace Scott.Dungeon.Game
             {
                 this.Exit();
             }
-            else if ( keyboard.IsKeyDown( Keys.W ) )
+
+            // Actor movement
+            if ( keyboard.IsKeyDown( Keys.W ) )
             {
                 mPlayer.Actor.Move( Direction.North, 50 );
             }
@@ -111,7 +128,9 @@ namespace Scott.Dungeon.Game
             {
                 mPlayer.Actor.Move( Direction.East, 50 );
             }
-            else if ( keyboard.IsKeyDown( Keys.Space ) )
+            
+            // Actor actions
+            if ( keyboard.IsKeyDown( Keys.Space ) )
             {
                 mPlayer.Actor.SlashAttack();
             }
@@ -139,10 +158,10 @@ namespace Scott.Dungeon.Game
             // Update animations on all of our sprites and render them
             mSpriteBatch.Begin();
 
-            mPlayer.Sprite.Update( gameTime );
+            mPlayer.CharacterSprite.Update( gameTime );
             DrawGameObject( mSpriteBatch, mPlayer );
 
-            mEnemy.Sprite.Update( gameTime );
+            mEnemy.CharacterSprite.Update( gameTime );
             DrawGameObject( mSpriteBatch, mEnemy );
 
             mSpriteBatch.End();
@@ -150,12 +169,37 @@ namespace Scott.Dungeon.Game
             base.Draw( gameTime );
         }
 
+
+        // ------------ vvvv should be put into a renderer vvvv ----------------------------- //
         private void DrawGameObject( SpriteBatch spriteBatch, GameObject gameObject )
         {
-            spriteBatch.Draw( gameObject.Sprite.CurrentAtlasTexture,
-                              gameObject.Position,
-                              gameObject.Sprite.CurrentAtlasOffset,
-                              Color.White );
+//            if ( )
+            {
+                DrawCharacterSprite( spriteBatch, gameObject.Position,  gameObject.CharacterSprite );
+            }
+//            else
+//            {
+//                DrawSprite( spriteBatch, gameObject.Position, gameObject.Sprite );
+//            }
+        }
+
+        private void DrawCharacterSprite( SpriteBatch spriteBatch, Vector2 position, CharacterSprite sprite )
+        {
+            // TODO: Get an ordered list of sprites to draw
+            //  (for the moment this will work)
+            DrawSprite( spriteBatch, position, sprite.BodySprite );
+            DrawSprite( spriteBatch, position, sprite.WeaponSprite );
+        }
+
+        private void DrawSprite( SpriteBatch spriteBatch, Vector2 position, Sprite sprite )
+        {
+            if ( sprite.Visible )
+            {
+                spriteBatch.Draw( sprite.CurrentAtlasTexture,
+                                  position + sprite.DrawOffset,
+                                  sprite.CurrentAtlasOffset,
+                                  Color.White );
+            }
         }
     }
 }

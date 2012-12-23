@@ -25,7 +25,7 @@ namespace Scott.Dungeon.ComponentModel
         public ActorController Actor { get; set; }
         public AiController AI { get; set; }
         public Movement Movement { get; set; }
-        public Sprite Sprite { get; set; }
+        public CharacterSprite CharacterSprite { get; set; }
 
         public int Width { get; set; }      // should we also adjust sprite width, or at least warn?
         public int Height { get; set; }     // same question
@@ -33,17 +33,20 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Constructor
         /// </summary>
-        public GameObject( Sprite sprite )
+        public GameObject( CharacterSprite sprite )
         {
             Position = new Vector2( 0, 0 );
             Direction = Direction.South;
 
             Actor = new ActorController( this );
             Movement = new Movement( this );
-            Sprite = sprite;
+            CharacterSprite = sprite;
 
-            Width = sprite.Width;
-            Height = sprite.Height;     // whoops, probably find a better way
+            // TEMP HACK: Find a better way of specifying bounding boxes
+            Sprite tempHackSprite = CharacterSprite.BodySprite;
+
+            Width = tempHackSprite.Width;
+            Height = tempHackSprite.Height;     // whoops, probably find a better way
         }
     }
 }

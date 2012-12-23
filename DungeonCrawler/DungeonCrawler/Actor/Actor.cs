@@ -90,10 +90,21 @@ namespace Scott.Dungeon.Actor
         /// <param name="speed">Speed at which to move</param>
         public void Move( Direction direction, int speed )
         {
-            // Request a move
-            mMoveRequested = true;
-            mRequestedMoveDirection = direction;
-            mRequestedMoveSpeed = speed;
+            if ( mCurrentAction == null )
+            {
+                mMoveRequested = true;
+                mRequestedMoveDirection = direction;
+                mRequestedMoveSpeed = speed;
+            }
+
+        }
+
+        /// <summary>
+        /// Stops a queued move
+        /// </summary>
+        public void CancelMove()
+        {
+            mMoveRequested = false;
         }
 
         /// <summary>
@@ -111,9 +122,9 @@ namespace Scott.Dungeon.Actor
         /// </summary>
         public void SlashAttack()
         {
-            // Queue up a slash attack
             if ( mCurrentAction == null )
             {
+                CancelMove();
                 mCurrentAction = new ActionSlashAttack( mOwner, mOwner.Direction );
             }
         }
@@ -126,14 +137,36 @@ namespace Scott.Dungeon.Actor
         {
             // Do we need to perform movement logic this frame? We shouldn't do this if
             // there is another action requested on this update
-            if ( mMoveRequested && mCurrentAction == null )
+            if ( mCurrentAction == null )
+            {
+                UpdateWalkCycle( gameTime );
+            }
+            else
+            {
+                UpdateAction( gameTime );
+            }
+        }
+
+        /// <summary>
+        /// Updates the walk cycle, in lieu of another action to perform
+        /// </summary>
+        public void UpdateWalkCycle( GameTime gameTime )
+        {
+            if ( mMoveRequested )
             {
                 // Animation time! Are we starting an walk animation cycle, are we switching
                 // directions mid-walk, or should we just continue animating the current cycle?
-                if ( !mWasMovingLastUpdateCall || mRequestedMoveDirection != mDirectionDuringLastCall )
+                string animationName = "Walk" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection );
+
+                if ( !mOwner.CharacterSprite.IsPlayingAnimation( animationName ) )
                 {
-                    mOwner.Sprite.PlayAnimationLooping( "Walk" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                    mOwner.CharacterSprite.PlayAnimationLooping( animationName );
                 }
+
+//                if ( !mWasMovingLastUpdateCall || mRequestedMoveDirection != mDirectionDuringLastCall )
+//                {
+//                    mOwner.CharacterSprite.PlayAnimationLooping(  );
+//                }
 
                 // Set up movement information so our actor actually does
                 Movement movement = mOwner.Movement;
@@ -153,7 +186,7 @@ namespace Scott.Dungeon.Actor
             {
                 // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
                 // and being idle.
-                mOwner.Sprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mOwner.CharacterSprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
 
                 mWasMovingLastUpdateCall = false;
                 mDirectionDuringLastCall = mRequestedMoveDirection;
@@ -161,21 +194,23 @@ namespace Scott.Dungeon.Actor
             else if ( mRequestedMoveDirection != mDirectionDuringLastCall )
             {
                 // We've changed direction without actually moving
-                mOwner.Sprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                mOwner.CharacterSprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
                 mDirectionDuringLastCall = mRequestedMoveDirection;
             }
+        }
 
-            // Check if there is an active action for this actor. If so, make sure it gets
-            // the chance to execute
-            if ( mCurrentAction != null )
+        /// <summary>
+        /// Updates the current action
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void UpdateAction( GameTime gameTime )
+        {
+            mCurrentAction.Update( gameTime );
+
+            // Cancel out the active action if it has completed
+            if ( mCurrentAction.IsFinished )
             {
-                mCurrentAction.Update( gameTime );
-
-                // Cancel out the active action if it has completed
-                if ( mCurrentAction.IsFinished )
-                {
-                    mCurrentAction = null;
-                }
+                mCurrentAction = null;
             }
         }
     }
