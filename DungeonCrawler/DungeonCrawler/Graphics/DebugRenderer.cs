@@ -125,10 +125,15 @@ namespace Scott.Dungeon.Graphics
 
         public void DrawLine( Vector2 start, Vector2 end )
         {
-            DrawLine( start, end, Color.HotPink );
+            DrawLine( start, end, Color.HotPink, 1 );
         }
 
         public void DrawLine( Vector2 start, Vector2 end, Color color )
+        {
+            DrawLine( start, end, color, 1 );
+        }
+
+        public void DrawLine( Vector2 start, Vector2 end, Color color, int width )
         {
             DebugLine l = FindNextUnused<DebugLine>( mLinesToDraw );
 
@@ -136,6 +141,7 @@ namespace Scott.Dungeon.Graphics
             l.Start = start;
             l.Stop = end;
             l.Enabled = true;
+            l.Width = width;
         }
 
         public void DrawText( string text, Vector2 pos )
@@ -275,7 +281,7 @@ namespace Scott.Dungeon.Graphics
                 line.Color,
                 angle,
                 Vector2.Zero,
-                new Vector2( length, 1 ),
+                new Vector2( length, line.Width ),
                 SpriteEffects.None,
                 0 );
         }
@@ -391,6 +397,7 @@ namespace Scott.Dungeon.Graphics
             public Vector2 Start;
             public Vector2 Stop;
             public Color Color;
+            public int Width;
         }
 
         /// <summary>

@@ -114,10 +114,6 @@ namespace Scott.Dungeon.Actor
         /// </summary>
         private void DrawHitBox( GameTime gameTime )
         {
-            //Vector2 actorPos = mGameObject.Position;
-            //Vector2 weaponOffset = new Vector2( 44, 34 );
-            //Vector2 weaponSize = new Vector2( 55, 10 );
-
             double currentTime = gameTime.TotalGameTime.TotalSeconds;
             double startedAt   = mTimeStarted.TotalSeconds + WAIT_TIME;
             double finishedAt  = startedAt + ACTION_TIME - WAIT_TIME;
@@ -142,6 +138,18 @@ namespace Scott.Dungeon.Actor
                                                 //    new Vector2( 0.0f, 10.0f / 2.0f ) );
 
             GameRoot.Debug.DrawBoundingBox( bounds, Color.HotPink );
+
+
+            // now here's a static bounding box to test against
+            Rectangle staticInnerRect = new Rectangle( 75, 100, 40, 80 );
+            BoundingRect staticRect = new BoundingRect( staticInnerRect, MathHelper.ToRadians( 320 ) );
+            GameRoot.Debug.DrawBoundingBox( staticRect, Color.PowderBlue );
+
+            // lets see what happens
+            if ( bounds.Intersects( staticRect ) )
+            {
+                GameRoot.Debug.DrawFilledRect( staticInnerRect, Color.White );
+            }
         }
     }
 }
