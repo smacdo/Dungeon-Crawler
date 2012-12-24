@@ -21,7 +21,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>ProductVersion=0.1.0.0</DefineConstants>
+    <DefineConstants>build=Release</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Dialogs\BrowseDialog.wxs" />
