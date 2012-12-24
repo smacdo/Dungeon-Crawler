@@ -155,7 +155,7 @@ namespace Scott.Dungeon.Graphics
         /// </summary>
         /// <param name="bodySprite"></param>
         /// <param name="weaponSprite"></param>
-        public CharacterSprite( Sprite bodySprite, Sprite weaponSprite )
+        public CharacterSprite( Sprite bodySprite )
         {
             // Allocate a list of sprites to render, and set each entry to null
             int spriteIndex = (int) SubSpriteIndex.Max;
@@ -167,7 +167,6 @@ namespace Scott.Dungeon.Graphics
             }
 
             Body = bodySprite;
-            Weapon = weaponSprite;
         }
 
         /// <summary>

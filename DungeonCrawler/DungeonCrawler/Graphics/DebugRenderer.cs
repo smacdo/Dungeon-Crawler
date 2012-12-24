@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scott.Dungeon.Data;
+using System.Diagnostics;
 
 namespace Scott.Dungeon.Graphics
 {
@@ -81,6 +82,7 @@ namespace Scott.Dungeon.Graphics
         /// Draw a rectangle on the screen
         /// </summary>
         /// <param name="dimensions">Dimensions of rectangle</param>
+        [Conditional("DEBUG")]
         public void DrawRect( Rectangle dimensions )
         {
             DrawRect( dimensions, Color.HotPink );
@@ -91,6 +93,7 @@ namespace Scott.Dungeon.Graphics
         /// </summary>
         /// <param name="dimensions"></param>
         /// <param name="color"></param>
+        [Conditional( "DEBUG" )]
         public void DrawRect( Rectangle dimensions, Color color )
         {
             DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
@@ -101,6 +104,7 @@ namespace Scott.Dungeon.Graphics
             r.Enabled = true;
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawFilledRect( Rectangle dimensions, Color color )
         {
             DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
@@ -111,6 +115,7 @@ namespace Scott.Dungeon.Graphics
             r.Enabled = true;
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawBoundingBox( BoundingRect box, Color color )
         {
             DrawLine( box.UpperLeft, box.UpperRight, color );
@@ -123,16 +128,19 @@ namespace Scott.Dungeon.Graphics
             DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end )
         {
             DrawLine( start, end, Color.HotPink, 1 );
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end, Color color )
         {
             DrawLine( start, end, color, 1 );
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end, Color color, int width )
         {
             DebugLine l = FindNextUnused<DebugLine>( mLinesToDraw );
@@ -144,11 +152,13 @@ namespace Scott.Dungeon.Graphics
             l.Width = width;
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawText( string text, Vector2 pos )
         {
             DrawText( text, pos, Color.Black );
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawText( string text, Vector2 pos, Color color )
         {
             DebugText t = FindNextUnused<DebugText>( mTextToDraw );
@@ -160,6 +170,7 @@ namespace Scott.Dungeon.Graphics
             t.Enabled = true;
         }
 
+        [Conditional( "DEBUG" )]
         public void DrawTextBox( string text, Vector2 pos, Color textColor, Color backgroundColor )
         {
             DebugText t = FindNextUnused<DebugText>( mTextToDraw );
@@ -177,6 +188,7 @@ namespace Scott.Dungeon.Graphics
         /// before the next update cycle
         /// </summary>
         /// <param name="gameTime"></param>
+        [Conditional( "DEBUG" )]
         public void PreUpdate( GameTime gameTime )
         {
             PrunePrimitiveList<DebugRectangle>( mRectsToDraw, gameTime );
@@ -188,6 +200,7 @@ namespace Scott.Dungeon.Graphics
         /// Performs any queued debugging primitives
         /// </summary>
         /// <param name="gameTime"></param>
+        [Conditional( "DEBUG" )]
         public void Draw( GameTime gameTime )
         {
             mSpriteBatch.Begin();

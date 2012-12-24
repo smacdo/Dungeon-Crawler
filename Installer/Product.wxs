@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Dungeon Crawler" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Scott MacDonald" UpgradeCode="b06e3085-af7f-4280-b28a-f8316d137c93">
+		<Package Description="!(loc.Package_Description)" Comments="!(loc.Package_Comments)" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <Upgrade Id="!(loc.Property_UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
+      <UpgradeVersion Minimum="1.0.0" IncludeMinimum="yes" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
+    </Upgrade>
+
+    <PropertyRef Id="NETFRAMEWORK40CLIENT" />
+
+    <Property Id="XNAFRAMEWORK40" Secure="yes">
+      <RegistrySearch Id="XnaFramework40RegLocator" Root="HKLM" Key="SOFTWARE\Microsoft\XNA\Framework\v4.0" Name="Installed" Type="raw" />
+    </Property>
+
+    <CustomAction Id="CA_CheckForNetfx40" Error="!(loc.LaunchCondition_Netfx40)" />
+    <CustomAction Id="CA_CheckForXnafx40" Error="!(loc.LaunchCondition_Xnafx40)" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+    
+		<Feature Id="ProductFeature" Title="!(loc.Feature_Title)" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+    <InstallExecuteSequence>
+      <LaunchConditions After="AppSearch"/>
+      <Custom Action="CA_CheckForNetfx40" After="LaunchConditions">NOT NETFRAMEWORK40CLIENT AND NOT Installed</Custom>
+      <Custom Action="CA_CheckForXnafx40" After="CA_CheckForNetfx40">(NOT XNAFRAMEWORK40 = "#1") AND NOT Installed</Custom>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <LaunchConditions After="AppSearch"/>
+      <Custom Action="CA_CheckForNetfx40" After="LaunchConditions">NOT NETFRAMEWORK40CLIENT AND NOT Installed</Custom>
+      <Custom Action="CA_CheckForXnafx40" After="CA_CheckForNetfx40">(NOT XNAFRAMEWORK40 = "#1") AND NOT Installed</Custom>
+    </InstallUISequence>
+    
+
+    <Property Id="ARPHELPLINK" Value="!(loc.Property_ArpHelpLink)" />
+    <Property Id="ARPURLINFOABOUT" Value="!(loc.Property_ArpUrlInfoAbout)" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\docs\license.rtf" />
+  </Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="DungeonCrawler" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="DungeonCrawler.exe" Guid="91a2ae3a-394d-4065-9101-1bbb1513fd78">
+        <File Id="myapplication.exe" Source="..\DungeonCrawler\DungeonCrawler\bin\x86\Debug\DungeonCrawler.exe" KeyPath="yes" Checksum="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <ComponentRef Id="DungeonCrawler.exe" />
+		</ComponentGroup>
+	</Fragment>
+</Wix>

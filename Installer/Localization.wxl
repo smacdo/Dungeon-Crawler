@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="Feature_Title">Dungeon Crawler Game (PRE ALPHA) Installer</String>
+
+  <String Id="LaunchCondition_AdminPrivs">You must have Administrative rights on this machine to install [ProductName].</String>
+  <String Id="LaunchCondition_LaterVersion">A later version of [ProductName] is already installed.</String>
+  <String Id="LaunchCondition_Netfx40">[ProductName] requires the .NET Framework 4.0. Setup will now exit.</String>
+  <String Id="LaunchCondition_Xnafx40">[ProductName] requires the XNA Framework Redistribuable 4.0. Setup will now exit.</String>
+
+  <String Id="Property_ArpHelpLink">http://www.microsoft.com</String>
+  <String Id="Property_ArpUrlInfoAbout">http://www.microsoft.com</String>
+  <String Id="Property_ProductLanguage">1033</String>
+  <String Id="Property_ProductName">Dungeon Crawler Game Installer</String>
+  <String Id="Property_CompanyName">Scott MacDonald</String>
+
+  <String Id="Property_ProductCode">{F08B9EBE-246E-4B5A-BD3B-033AE0D8C69D}</String>
+  <String Id="Property_UpgradeCode">{62605B71-2128-45BF-BB66-0A126CBA855C}</String>
+
+  <String Id="Package_Description">Dungeon Crawler Game</String>
+  <String Id="Package_Comments">This installer database contains the logic and data required to install Dungeon Crawler Game.</String>
+</WixLocalization>

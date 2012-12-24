@@ -70,8 +70,7 @@ namespace Scott.Dungeon.Game
 
             // Create the player character
             Sprite playerBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
-            Sprite playerWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
-            CharacterSprite playerSprite = new CharacterSprite( playerBodySprite, playerWeaponSprite );
+            CharacterSprite playerSprite = new CharacterSprite( playerBodySprite );
 
 //            playerSprite.Back = new Sprite( Content.Load<SpriteData>( "sprites/Back_Quiver" ) );
             playerSprite.Torso = new Sprite( Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
@@ -81,6 +80,7 @@ namespace Scott.Dungeon.Game
             playerSprite.Hands = new Sprite( Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
             playerSprite.Shoulder = new Sprite( Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
             playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
+            playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false ); 
 
             mPlayer = new GameObject( playerSprite );
         }
@@ -91,14 +91,13 @@ namespace Scott.Dungeon.Game
         private void SpawnSkeleton()
         {
             Sprite skeletonBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
-            Sprite skeletonWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
-            CharacterSprite skeletonSprite = new CharacterSprite( skeletonBodySprite, skeletonWeaponSprite );
+            CharacterSprite skeletonSprite = new CharacterSprite( skeletonBodySprite );
 
             GameObject enemy = new GameObject( skeletonSprite );
 
             enemy.AI = new AiController( enemy );
-            enemy.Position = new Vector2( (int)(mRandom.NextDouble() * 640.0 ), (int)(mRandom.NextDouble() * 480.0) );
+            enemy.Position = new Vector2( (int)(mRandom.NextDouble() * 600 ), (int)(mRandom.NextDouble() * 400) );
 
             GameRoot.Enemies.Add( enemy );
         }
@@ -142,13 +141,13 @@ namespace Scott.Dungeon.Game
             // Spawn some stuff
             if ( mNextSpawnTime <= gameTime.TotalGameTime )
             {
-                if ( mRandom.NextDouble() < 0.2 || firstSpawn )
+                if ( mRandom.NextDouble() < 0.75 || firstSpawn )
                 {
                     SpawnSkeleton();
                     firstSpawn = false;
                 }
 
-                mNextSpawnTime = mNextSpawnTime.Add( TimeSpan.FromSeconds( 1.0 ) );
+                mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
             }
 
             // Actor movement
