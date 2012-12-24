@@ -140,15 +140,30 @@ namespace Scott.Dungeon.Actor
             GameRoot.Debug.DrawBoundingBox( bounds, Color.HotPink );
 
 
-            // now here's a static bounding box to test against
-            Rectangle staticInnerRect = new Rectangle( 75, 100, 40, 80 );
-            BoundingRect staticRect = new BoundingRect( staticInnerRect );
-            GameRoot.Debug.DrawBoundingBox( staticRect, Color.PowderBlue );
+            // Test all the other skeletons out there
+            List<GameObject> collisions = new List<GameObject>();
 
-            // lets see what happens
-            if ( bounds.Intersects( staticRect ) )
+            for ( int i = 0; i < GameRoot.Enemies.Count; ++i )
             {
-                GameRoot.Debug.DrawFilledRect( staticInnerRect, Color.White );
+                GameObject obj = GameRoot.Enemies[i];
+                Vector2 pos = obj.Position;
+
+                Rectangle staticInnerRect = new Rectangle( (int) pos.X, (int) pos.Y, 64, 64 );
+                BoundingRect staticRect = new BoundingRect( staticInnerRect );
+                GameRoot.Debug.DrawBoundingBox( staticRect, Color.PowderBlue );
+
+                // lets see what happens
+                if ( bounds.Intersects( staticRect ) )
+                {
+                    collisions.Add( obj );
+                    GameRoot.Debug.DrawFilledRect( staticInnerRect, Color.White );
+                }
+            }
+
+            // Delete the other colliding game objects
+            for ( int i = 0; i < collisions.Count; ++i )
+            {
+                GameRoot.Enemies.Remove( collisions[i] );
             }
         }
     }

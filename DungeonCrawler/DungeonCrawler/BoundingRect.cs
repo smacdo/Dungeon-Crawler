@@ -9,6 +9,9 @@ namespace Scott.Dungeon.Data
     /// <summary>
     /// A rotatable rectangular bounding box that is used for most objects in dungeon crawler.
     /// 
+    /// TODO: Do profiling to see if we should use a fitting rectangle as an early exit test
+    /// (A circle would probably be even better)
+    /// 
     /// HUGE HELP: http://www.metanetsoftware.com/technique/tutorialA.html
     /// </summary>
     public class BoundingRect

@@ -28,7 +28,7 @@ namespace Scott.Dungeon.Game
         GraphicsDeviceManager mGraphics;
         SpriteBatch mSpriteBatch;
         GameObject mPlayer;
-        GameObject mEnemy;
+        Random mRandom = new Random();
 
         /// <summary>
         /// A simple 1x1 texture that can be arbitrarily colored and stretched. Perfect for little boxes
@@ -52,12 +52,12 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize();
-
             mSinglePIxel = new Texture2D( GraphicsDevice, 1, 1 );
             mSinglePIxel.SetData( new[] { Color.White } );
 
             GameRoot.Initialize( mGraphics.GraphicsDevice, Content );
+
+            base.Initialize();
         }
 
         /// <summary>
@@ -83,19 +83,24 @@ namespace Scott.Dungeon.Game
             playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
 
             mPlayer = new GameObject( playerSprite );
+        }
 
-            // Create the enemey character
+        /// <summary>
+        /// TEMP HACK
+        /// </summary>
+        private void SpawnSkeleton()
+        {
             Sprite skeletonBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
             Sprite skeletonWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
-            playerWeaponSprite.Visible = false;
-
             CharacterSprite skeletonSprite = new CharacterSprite( skeletonBodySprite, skeletonWeaponSprite );
 
-            mEnemy = new GameObject( skeletonSprite );
-            mEnemy.AI = new AiController( mEnemy );
+            GameObject enemy = new GameObject( skeletonSprite );
 
-            mEnemy.Position = new Vector2( 600, 250 );
+            enemy.AI = new AiController( enemy );
+            enemy.Position = new Vector2( (int)(mRandom.NextDouble() * 640.0 ), (int)(mRandom.NextDouble() * 480.0) );
+
+            GameRoot.Enemies.Add( enemy );
         }
 
         /// <summary>
@@ -111,6 +116,9 @@ namespace Scott.Dungeon.Game
         {
             
         }
+
+        bool firstSpawn = true;
+        TimeSpan mNextSpawnTime = TimeSpan.Zero;
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -131,22 +139,34 @@ namespace Scott.Dungeon.Game
                 this.Exit();
             }
 
+            // Spawn some stuff
+            if ( mNextSpawnTime <= gameTime.TotalGameTime )
+            {
+                if ( mRandom.NextDouble() < 0.2 || firstSpawn )
+                {
+                    SpawnSkeleton();
+                    firstSpawn = false;
+                }
+
+                mNextSpawnTime = mNextSpawnTime.Add( TimeSpan.FromSeconds( 1.0 ) );
+            }
+
             // Actor movement
             if ( keyboard.IsKeyDown( Keys.W ) )
             {
-                mPlayer.Actor.Move( Direction.North, 50 );
+                mPlayer.Actor.Move( Direction.North, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.S ) )
             {
-                mPlayer.Actor.Move( Direction.South, 50 );
+                mPlayer.Actor.Move( Direction.South, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.A ) )
             {
-                mPlayer.Actor.Move( Direction.West, 50 );
+                mPlayer.Actor.Move( Direction.West, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.D ) )
             {
-                mPlayer.Actor.Move( Direction.East, 50 );
+                mPlayer.Actor.Move( Direction.East, 125 );
             }
             
             // Actor actions
@@ -155,14 +175,22 @@ namespace Scott.Dungeon.Game
                 mPlayer.Actor.SlashAttack();
             }
 
-            // Update logic...
+            // Update game ai and character actions
             mPlayer.Actor.Update( gameTime );
 
-            mEnemy.AI.Update( gameTime );
-            mEnemy.Actor.Update( gameTime );
+            foreach ( GameObject obj in GameRoot.Enemies )
+            {
+                obj.AI.Update( gameTime );
+                obj.Actor.Update( gameTime );
+            }
 
+            // Now update movement
             mPlayer.Movement.Update( this, gameTime );
-            mEnemy.Movement.Update( this, gameTime );
+
+            foreach ( GameObject obj in GameRoot.Enemies )
+            {
+                obj.Movement.Update( this, gameTime );
+            }
 
             base.Update( gameTime );
         }
@@ -180,8 +208,12 @@ namespace Scott.Dungeon.Game
             mPlayer.CharacterSprite.Update( gameTime );
             DrawGameObject( mSpriteBatch, mPlayer );
 
-            mEnemy.CharacterSprite.Update( gameTime );
-            DrawGameObject( mSpriteBatch, mEnemy );
+            foreach ( GameObject obj in GameRoot.Enemies )
+            {
+                obj.CharacterSprite.Update( gameTime );
+                DrawGameObject( mSpriteBatch, obj );
+            }
+
 
             mSpriteBatch.End();
 
