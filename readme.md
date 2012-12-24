@@ -12,7 +12,7 @@ THIS IS A PRE-RELEASE COPY OF DUNGEON CRAWLER. It is not even at alpha quality
 yet, so set your expectations accordingly. Please report any bugs via the
 project website's bug tracker.
 
-![Dungeon Crawler Screenshot](http://imgur.com/0rIBY)
+![Dungeon Crawler Screenshot](http://i.imgur.com/0rIBY.png)
 ![Dungeon Crawler Screenshot](http://i.imgur.com/8ODmQ.png)
 
 Overview
