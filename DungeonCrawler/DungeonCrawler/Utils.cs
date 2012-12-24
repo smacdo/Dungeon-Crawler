@@ -10,5 +10,9 @@ namespace Scott.Dungeon
     /// </summary>
     public static class Utils
     {
+        public static double FindOneZeroWeighting( double current, double min, double max )
+        {
+            return 1.0 - ( max - current ) / ( max - min ); 
+        }
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scott.Dungeon.Data;
 
 namespace Scott.Dungeon.Graphics
 {
@@ -110,6 +111,18 @@ namespace Scott.Dungeon.Graphics
             r.Enabled = true;
         }
 
+        public void DrawBoundingBox( BoundingRect box, Color color )
+        {
+            DrawLine( box.UpperLeft, box.UpperRight, color );
+            DrawLine( box.UpperLeft, box.LowerLeft, color );
+
+            DrawLine( box.LowerRight, box.UpperRight, color );
+            DrawLine( box.LowerRight, box.LowerLeft, color );
+
+            Vector2 origin = box.Origin;
+            DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
+        }
+
         public void DrawLine( Vector2 start, Vector2 end )
         {
             DrawLine( start, end, Color.HotPink );
@@ -154,10 +167,22 @@ namespace Scott.Dungeon.Graphics
         }
 
         /// <summary>
+        /// Called before the rest of the system starts updating. Cleans up junk debug primitives
+        /// before the next update cycle
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void PreUpdate( GameTime gameTime )
+        {
+            PrunePrimitiveList<DebugRectangle>( mRectsToDraw, gameTime );
+            PrunePrimitiveList<DebugLine>( mLinesToDraw, gameTime );
+            PrunePrimitiveList<DebugText>( mTextToDraw, gameTime );
+        }
+
+        /// <summary>
         /// Performs any queued debugging primitives
         /// </summary>
         /// <param name="gameTime"></param>
-        public void Update( GameTime gameTime )
+        public void Draw( GameTime gameTime )
         {
             mSpriteBatch.Begin();
 
@@ -166,12 +191,7 @@ namespace Scott.Dungeon.Graphics
             {
                 if ( rect.Enabled )
                 {
-                    DrawRect( rect );
-
-                    if ( rect.TimeToLive == TimeSpan.Zero || rect.TimeToLive >= gameTime.TotalGameTime )
-                    {
-                        rect.Enabled = false;
-                    }
+                    DrawItem( rect );
                 }
             }
 
@@ -179,12 +199,7 @@ namespace Scott.Dungeon.Graphics
             {
                 if ( line.Enabled )
                 {
-                    DrawLine( line );
-
-                    if ( line.TimeToLive == TimeSpan.Zero || line.TimeToLive >= gameTime.TotalGameTime )
-                    {
-                        line.Enabled = false;
-                    }
+                    DrawItem( line );
                 }
             }
 
@@ -192,23 +207,23 @@ namespace Scott.Dungeon.Graphics
             {
                 if ( text.Enabled )
                 {
-                    DrawText( text );
-
-                    if ( text.TimeToLive == TimeSpan.Zero || text.TimeToLive >= gameTime.TotalGameTime )
-                    {
-                        text.Enabled = false;
-                    }
+                    DrawItem( text );
                 }
             }
 
             mSpriteBatch.End();
         }
 
+        private void DrawItem( DebugPrimitive primitive )
+        {
+            Console.WriteLine( "This should never get called" );
+        }
+
         /// <summary>
         /// Draws a rectangle on the screen
         /// </summary>
         /// <param name="r">Rectangle to draw</param>
-        private void DrawRect( DebugRectangle r )
+        private void DrawItem( DebugRectangle r )
         {
             if ( r.Filled )
             {
@@ -248,7 +263,7 @@ namespace Scott.Dungeon.Graphics
         /// Draws a line on the screen
         /// </summary>
         /// <param name="line"></param>
-        private void DrawLine( DebugLine line )
+        private void DrawItem( DebugLine line )
         {
             float angle  = (float) Math.Atan2( line.Stop.Y - line.Start.Y, line.Stop.X - line.Start.X );
             float length = (float) Vector2.Distance( line.Start, line.Stop );
@@ -269,7 +284,7 @@ namespace Scott.Dungeon.Graphics
         /// Draws text on the screen
         /// </summary>
         /// <param name="text">Text on the screen</param>
-        private void DrawText( DebugText text )
+        private void DrawItem( DebugText text )
         {
             if ( text.DrawBackground )
             {
@@ -315,11 +330,38 @@ namespace Scott.Dungeon.Graphics
             // Did we find one? If not allocate a new one and add it to the list
             if ( item == null )
             {
+                if ( list.Count > 50 )
+                {
+                    Console.Out.WriteLine( "ITS HUGE" );
+                }
+
                 item = new T();
                 list.Add( item );
             }
 
             return item;
+        }
+
+        private void DrawPrimitivesInList<T>( List<T> list ) where T : DebugPrimitive
+        {
+            foreach ( T t in list )
+            {
+                if ( t.Enabled )
+                {
+                    DrawItem( t );
+                }
+            }
+        }
+
+        private void PrunePrimitiveList<T>( List<T> list, GameTime gameTime ) where T : DebugPrimitive
+        {
+            foreach ( T t in list )
+            {
+                if ( t.TimeToLive == TimeSpan.Zero || t.TimeToLive >= gameTime.TotalGameTime )
+                {
+                    t.Enabled = false;
+                }
+            }
         }
 
         /// <summary>

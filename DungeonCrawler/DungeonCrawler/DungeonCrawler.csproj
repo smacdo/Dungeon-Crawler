@@ -110,6 +110,7 @@
     <Compile Include="Actor\ActionSlashAttack.cs" />
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Ai\AiController.cs" />
+    <Compile Include="BoundingRect.cs" />
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\Movement.cs" />
     <Compile Include="GameRoot.cs" />

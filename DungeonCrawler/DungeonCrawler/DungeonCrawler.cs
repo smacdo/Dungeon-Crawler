@@ -31,6 +31,11 @@ namespace Scott.Dungeon.Game
         GameObject mEnemy;
 
         /// <summary>
+        /// A simple 1x1 texture that can be arbitrarily colored and stretched. Perfect for little boxes
+        /// </summary>
+        private Texture2D mSinglePIxel;
+
+        /// <summary>
         /// Constructar
         /// </summary>
         public DungeonCrawler()
@@ -48,6 +53,9 @@ namespace Scott.Dungeon.Game
         protected override void Initialize()
         {
             base.Initialize();
+
+            mSinglePIxel = new Texture2D( GraphicsDevice, 1, 1 );
+            mSinglePIxel.SetData( new[] { Color.White } );
 
             GameRoot.Initialize( mGraphics.GraphicsDevice, Content );
         }
@@ -102,6 +110,9 @@ namespace Scott.Dungeon.Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
+            // Allow game play systems to perform any pre-update logic that might be needed
+            GameRoot.Debug.PreUpdate( gameTime );
+
             // Test user input
             KeyboardState keyboard = Keyboard.GetState();
             GamePadState gamepad = GamePad.GetState( PlayerIndex.One );
@@ -154,12 +165,9 @@ namespace Scott.Dungeon.Game
         protected override void Draw( GameTime gameTime )
         {
             GraphicsDevice.Clear( Color.CornflowerBlue );
-
-            GameRoot.Debug.DrawText( "Hello World", new Vector2( 75, 425 ) );
-
-            // Update animations on all of our sprites and render them
             mSpriteBatch.Begin();
 
+            // Update animations on all of our sprites and render them
             mPlayer.CharacterSprite.Update( gameTime );
             DrawGameObject( mSpriteBatch, mPlayer );
 
@@ -168,8 +176,16 @@ namespace Scott.Dungeon.Game
 
             mSpriteBatch.End();
 
-            GameRoot.Debug.Update( gameTime );
+            GameRoot.Debug.Draw( gameTime );
 
+            // Detect if the game is running slowly, and if so draw an indicator
+            mSpriteBatch.Begin();
+            if ( gameTime.IsRunningSlowly )
+            {
+                mSpriteBatch.Draw( mSinglePIxel, new Rectangle( 0, 0, 20, 20 ), Color.Red );
+            }
+
+            mSpriteBatch.End();
             base.Draw( gameTime );
         }
 

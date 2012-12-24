@@ -81,8 +81,6 @@ namespace Scott.Dungeon.AI
             // Are we walking around or just standing?
             if ( actor.IsMoving )
             {
-                Console.WriteLine( "Walking" );
-
                 // Character is moving around... should they stop moving? Change direction mid walk?
                 if ( mRandom.NextDouble() <= STOP_WALKING_CHANCE )
                 {

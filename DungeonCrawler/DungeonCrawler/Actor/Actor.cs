@@ -163,11 +163,6 @@ namespace Scott.Dungeon.Actor
                     mOwner.CharacterSprite.PlayAnimationLooping( animationName );
                 }
 
-//                if ( !mWasMovingLastUpdateCall || mRequestedMoveDirection != mDirectionDuringLastCall )
-//                {
-//                    mOwner.CharacterSprite.PlayAnimationLooping(  );
-//                }
-
                 // Set up movement information so our actor actually does
                 Movement movement = mOwner.Movement;
                 Debug.Assert( movement != null );
