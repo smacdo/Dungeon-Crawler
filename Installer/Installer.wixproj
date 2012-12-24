@@ -14,9 +14,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;ProductVersion=0.1.0.0</DefineConstants>
+    <DefineConstants>Debug;build=debug</DefineConstants>
     <SuppressValidation>True</SuppressValidation>
-    <LinkerAdditionalOptions>-cultures:en-US -ext "WixUIExtension.dll"</LinkerAdditionalOptions>
+    <LinkerAdditionalOptions>-cultures:en-US</LinkerAdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -24,20 +24,38 @@
     <DefineConstants>ProductVersion=0.1.0.0</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Dialogs\BrowseDialog.wxs" />
+    <Compile Include="Dialogs\CancelDialog.wxs" />
+    <Compile Include="Dialogs\ErrorDialog.wxs" />
+    <Compile Include="Dialogs\ExitDialog.wxs" />
+    <Compile Include="Dialogs\FatalErrorDialog.wxs" />
+    <Compile Include="Dialogs\FilesInUseDialog.wxs" />
+    <Compile Include="Dialogs\OutOfDiskSpaceDialog.wxs" />
+    <Compile Include="Dialogs\OutOfRollbackDiskSpaceDialog.wxs" />
+    <Compile Include="Dialogs\PrerequisitesDialog.wxs" />
+    <Compile Include="Dialogs\ProgressDialog.wxs" />
+    <Compile Include="Dialogs\RequireDotNetDialog.wxs" />
+    <Compile Include="Dialogs\SelectFolderDialog.wxs" />
+    <Compile Include="Dialogs\ShaderWarningDialog.wxs" />
+    <Compile Include="Dialogs\UserExitDialog.wxs" />
+    <Compile Include="Dialogs\VerifyReadyDialog.wxs" />
+    <Compile Include="Dialogs\ViewLicenseAgreementDialog.wxs" />
+    <Compile Include="Dialogs\WelcomeDialog.wxs" />
+    <Compile Include="Dialogs\WrongOperatingSystemDialog.wxs" />
+    <Compile Include="EmbeddedPrerequisites.wxs" />
+    <Compile Include="Files.wxs" />
+    <Compile Include="NuclexSetupDetector.wxs" />
     <Compile Include="Product.wxs" />
-  </ItemGroup>
-  <ItemGroup>
-    <WixExtension Include="WixNetFxExtension">
-      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
-      <Name>WixNetFxExtension</Name>
-    </WixExtension>
-    <WixExtension Include="WixUIExtension">
-      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
-      <Name>WixUIExtension</Name>
-    </WixExtension>
+    <Compile Include="UserInterface.wxs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localization.wxl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config.wxi" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dialogs" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

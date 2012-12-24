@@ -6,6 +6,8 @@ DungeonCrawlerCommon/bin
 DungeonCrawlerCommon/obj
 DungeonCrawlerContentPipeline/bin
 DungeonCrawlerContentPipeline/obj
+Installer/bin
+Installer/obj
 *.cachefile
 *.csproj.user
 *.swp
