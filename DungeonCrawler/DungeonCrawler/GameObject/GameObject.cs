@@ -43,7 +43,7 @@ namespace Scott.Dungeon.ComponentModel
             CharacterSprite = sprite;
 
             // TEMP HACK: Find a better way of specifying bounding boxes
-            Sprite tempHackSprite = CharacterSprite.BodySprite;
+            Sprite tempHackSprite = CharacterSprite.Body;
 
             Width = tempHackSprite.Width;
             Height = tempHackSprite.Height;     // whoops, probably find a better way

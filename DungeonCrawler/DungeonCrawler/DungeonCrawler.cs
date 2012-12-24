@@ -73,6 +73,15 @@ namespace Scott.Dungeon.Game
             Sprite playerWeaponSprite = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
             CharacterSprite playerSprite = new CharacterSprite( playerBodySprite, playerWeaponSprite );
 
+//            playerSprite.Back = new Sprite( Content.Load<SpriteData>( "sprites/Back_Quiver" ) );
+            playerSprite.Torso = new Sprite( Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
+            playerSprite.Legs = new Sprite( Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
+            playerSprite.Feet = new Sprite( Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
+            playerSprite.Head = new Sprite( Content.Load<SpriteData>( "sprites/Head_Helmet_Chain" ) );
+            playerSprite.Hands = new Sprite( Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
+            playerSprite.Shoulder = new Sprite( Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
+            playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
+
             mPlayer = new GameObject( playerSprite );
 
             // Create the enemey character
@@ -207,8 +216,17 @@ namespace Scott.Dungeon.Game
         {
             // TODO: Get an ordered list of sprites to draw
             //  (for the moment this will work)
-            DrawSprite( spriteBatch, position, sprite.BodySprite );
-            DrawSprite( spriteBatch, position, sprite.WeaponSprite );
+            int spriteIndex = (int) CharacterSprite.SubSpriteIndex.Max;
+
+            for ( int i = 0; i < spriteIndex; ++i )
+            {
+                Sprite s = sprite.SubSprites[i];
+
+                if ( s != null )
+                {
+                    DrawSprite( spriteBatch, position, s );
+                }
+            }
         }
 
         private void DrawSprite( SpriteBatch spriteBatch, Vector2 position, Sprite sprite )

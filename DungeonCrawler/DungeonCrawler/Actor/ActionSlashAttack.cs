@@ -77,7 +77,7 @@ namespace Scott.Dungeon.Actor
                     mAttackStatus = ActionAttackStatus.StartingUp;
 
                     // Enable the weapon sprite, and animate the attack
-                    mSprite.WeaponSprite.Visible = true;
+                    mSprite.Weapon.Visible = true;
                     mSprite.PlayAnimation( "Slash" + Enum.GetName( typeof( Direction ), mDirection ) );
                     break;
 
@@ -94,7 +94,7 @@ namespace Scott.Dungeon.Actor
                     if ( mTimeStarted.Add( actionTimeSpan ) <= gameTime.TotalGameTime )
                     {
                         // Disable the weapon sprite now that the attack has finished
-                        mSprite.WeaponSprite.Visible = false;
+                        mSprite.Weapon.Visible = false;
                         mAttackStatus = ActionAttackStatus.Finished;
                     }
                     else
