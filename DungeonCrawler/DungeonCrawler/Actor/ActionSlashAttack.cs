@@ -142,7 +142,7 @@ namespace Scott.Dungeon.Actor
 
             // now here's a static bounding box to test against
             Rectangle staticInnerRect = new Rectangle( 75, 100, 40, 80 );
-            BoundingRect staticRect = new BoundingRect( staticInnerRect, MathHelper.ToRadians( 320 ) );
+            BoundingRect staticRect = new BoundingRect( staticInnerRect );
             GameRoot.Debug.DrawBoundingBox( staticRect, Color.PowderBlue );
 
             // lets see what happens

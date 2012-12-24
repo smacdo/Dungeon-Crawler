@@ -8,11 +8,27 @@ namespace Scott.Dungeon.Data
 {
     /// <summary>
     /// A rotatable rectangular bounding box that is used for most objects in dungeon crawler.
+    /// 
+    /// HUGE HELP: http://www.metanetsoftware.com/technique/tutorialA.html
     /// </summary>
     public class BoundingRect
     {
-        private Rectangle mDimensions;
-        private float mRotation;
+        /// <summary>
+        /// The original unrotated bounding rectangle.
+        /// </summary>
+        /// <remarks>
+        /// We hold onto the unrotated bounding rectangle, and re-rotate each time the
+        /// rotation is updated. Why? To prevent increasingly nasty floating point drift.
+        /// </remarks>
+        public Rectangle UnrotatedBoundingRect;
+
+        /// <summary>
+        /// Amount the bounding rectangle is rotated.
+        /// </summary>
+        /// <remarks>
+        /// We hold onto the unrotated bounding rectangle, and re-rotate each time the
+        /// rotation is updated. Why? To prevent increasingly nasty floating point drift.
+        /// </remarks>
         public Vector2 Origin { get; private set; }
 
         public Vector2 UpperLeft { get; private set; }
@@ -27,25 +43,22 @@ namespace Scott.Dungeon.Data
         public BoundingRect( Rectangle boundingBox )
             : this( boundingBox, 0.0f )
         {
-            UpdateCachedValues();
         }
 
         /// <summary>
         /// Bounding box constructor
         /// </summary>
         /// <param name="boundingBox">Original dimensions of bounding box</param>
-        /// <param name="rotation">Amount of rotation</param>
+        /// <param name="rotation">Amount of rotation (in radians)</param>
         public BoundingRect( Rectangle boundingBox, float rotation )
         {
-            mDimensions = boundingBox;
-            mRotation = rotation;
+            UnrotatedBoundingRect = boundingBox;
 
-            // Set the box origin (the point to pivot around) as the center of the collision
-            // box
-            Origin = new Vector2( (int) Math.Round( mDimensions.Width / 2.0f ) + mDimensions.X,
-                                   (int) Math.Round( mDimensions.Height / 2.0f ) + mDimensions.Y );
+            // Use the center of the bounding box as the pivot point
+            Vector2 origin = new Vector2( (int) Math.Round( UnrotatedBoundingRect.Width / 2.0f )  + UnrotatedBoundingRect.X,
+                                          (int) Math.Round( UnrotatedBoundingRect.Height / 2.0f ) + UnrotatedBoundingRect.Y );
 
-            UpdateCachedValues();
+            RecalculateCachedCorners( rotation, origin );
         }
 
         /// <summary>
@@ -56,11 +69,8 @@ namespace Scott.Dungeon.Data
         /// <param name="origin">Rotational pivot position. Top left is (0,0).</param>
         public BoundingRect( Rectangle boundingBox, float rotation, Vector2 origin )
         {
-            mDimensions = boundingBox;
-            mRotation = rotation;
-            Origin = origin;
-
-            UpdateCachedValues();
+            UnrotatedBoundingRect = boundingBox;
+            RecalculateCachedCorners( rotation, origin );
         }
 
         /// <summary>
@@ -88,17 +98,19 @@ namespace Scott.Dungeon.Data
         {
             // Project the four corners of the bounding box we are checking onto the axis,
             // and get a scalar value of that projection for comparison.
-            float a0 = GenerateProjectionScalar( otherRect.UpperLeft, axis );
-            float a1 = GenerateProjectionScalar( otherRect.UpperRight, axis );
-            float a2 = GenerateProjectionScalar( otherRect.LowerLeft, axis );
-            float a3 = GenerateProjectionScalar( otherRect.LowerRight, axis );
+            Vector2 axisNormalized = Vector2.Normalize( axis );
+
+            float a0 = Vector2.Dot( otherRect.UpperLeft, axisNormalized );
+            float a1 = Vector2.Dot( otherRect.UpperRight, axisNormalized );
+            float a2 = Vector2.Dot( otherRect.LowerLeft, axisNormalized );
+            float a3 = Vector2.Dot( otherRect.LowerRight, axisNormalized );
 
             // Project the four corners of our bounding rect onto the requested axis, and
             // get scalar values for those projections
-            float b0 = GenerateProjectionScalar( UpperLeft, axis );
-            float b1 = GenerateProjectionScalar( UpperRight, axis );
-            float b2 = GenerateProjectionScalar( LowerLeft, axis );
-            float b3 = GenerateProjectionScalar( LowerRight, axis );
+            float b0 = Vector2.Dot( UpperLeft, axisNormalized );
+            float b1 = Vector2.Dot( UpperRight, axisNormalized );
+            float b2 = Vector2.Dot( LowerLeft, axisNormalized );
+            float b3 = Vector2.Dot( LowerRight, axisNormalized );
 
             // Get the maximum and minimum scalar values for each of the rectangles
             float aMin = Math.Min( Math.Min( a0, a1 ), Math.Min( a2, a3 ) );
@@ -112,44 +124,28 @@ namespace Scott.Dungeon.Data
                    ( aMin <= bMax && aMax >= bMax );
         }
 
-        private float GenerateProjectionScalar( Vector2 rectCorner, Vector2 axis )
-        {
-            // Project the corner vector onto the generated axis
-            float numerator = ( rectCorner.X * axis.X ) + ( rectCorner.Y * axis.Y );
-            float denom = ( axis.X * axis.X ) + ( axis.Y * axis.Y );
-            float result = numerator / denom;
-
-            Vector2 projection = new Vector2( result * axis.X, result * axis.Y );
-
-            // Get the scalar
-            float scalar = ( axis.X * rectCorner.X ) + ( axis.Y * rectCorner.Y );
-            return scalar;
-        }
-
         /// <summary>
         /// Rotates the bounding box around our pivot axis, and then stores the rotated
         /// bounding points in Top/Left/Bottom/Right. This must be called anytime mRotation
         /// is changed!
         /// </summary>
-        private void UpdateCachedValues()
+        /// <param name="radians">Amount to rotate the rectangular bounding box</param>
+        /// <param name="pivot">Position (in world coordintes) of the rotational pivot point</param>
+        private void RecalculateCachedCorners( float radians, Vector2 pivot )
         {
+            Origin = pivot;
+
             // Find unrotated vertex points
-            Vector2 oUpperLeft  = new Vector2( mDimensions.Left, mDimensions.Top );
-            Vector2 oUpperRight = new Vector2( mDimensions.Right, mDimensions.Top );
-            Vector2 oLowerLeft  = new Vector2( mDimensions.Left, mDimensions.Bottom );
-            Vector2 oLowerRight = new Vector2( mDimensions.Right, mDimensions.Bottom );
+            Vector2 oUpperLeft  = new Vector2( UnrotatedBoundingRect.Left, UnrotatedBoundingRect.Top );
+            Vector2 oUpperRight = new Vector2( UnrotatedBoundingRect.Right, UnrotatedBoundingRect.Top );
+            Vector2 oLowerLeft  = new Vector2( UnrotatedBoundingRect.Left, UnrotatedBoundingRect.Bottom );
+            Vector2 oLowerRight = new Vector2( UnrotatedBoundingRect.Right, UnrotatedBoundingRect.Bottom );
 
             // Rotate and calculate our new rotated vertex points
-            UpperLeft  = RotatePoint( oUpperLeft, oUpperLeft + Origin, mRotation );
-            UpperRight = RotatePoint( oUpperRight, oUpperRight + new Vector2( -Origin.X, Origin.Y ), mRotation );
-            LowerLeft  = RotatePoint( oLowerLeft, oLowerLeft + new Vector2( Origin.X, -Origin.Y ), mRotation );
-            LowerRight = RotatePoint( oLowerRight, oLowerRight + new Vector2( -Origin.X, -Origin.Y ), mRotation );
-
-
-            UpperLeft = RotatePoint( oUpperLeft, Origin, mRotation );
-            UpperRight = RotatePoint( oUpperRight, Origin, mRotation );
-            LowerLeft = RotatePoint( oLowerLeft, Origin, mRotation );
-            LowerRight = RotatePoint( oLowerRight, Origin, mRotation );
+            UpperLeft = RotatePoint( oUpperLeft, pivot, radians );
+            UpperRight = RotatePoint( oUpperRight, pivot, radians );
+            LowerLeft = RotatePoint( oLowerLeft, pivot, radians );
+            LowerRight = RotatePoint( oLowerRight, pivot, radians );
         }
 
         /// <summary>
