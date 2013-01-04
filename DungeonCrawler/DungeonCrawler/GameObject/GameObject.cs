@@ -48,5 +48,11 @@ namespace Scott.Dungeon.ComponentModel
             Width = tempHackSprite.Width;
             Height = tempHackSprite.Height;     // whoops, probably find a better way
         }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException( "Need to implement this sucker" );
+            return base.GetHashCode();
+        }
     }
 }
