@@ -9,16 +9,11 @@ namespace Scott.Dungeon.AI
     /// <summary>
     /// Does AI logic
     /// </summary>
-    public class AiController
+    public class AiController : IGameObjectComponent
     {
         private const double CHANGE_DIRECTION_CHANCE = 0.05;
         private const double START_WALKING_CHANCE = 0.15;
         private const double STOP_WALKING_CHANCE = 0.05;
-
-        /// <summary>
-        /// The game object that this component belongs to
-        /// </summary>
-        private GameObject mGameObject;
 
         /// <summary>
         /// The last time this AI made a decision
@@ -34,9 +29,8 @@ namespace Scott.Dungeon.AI
         /// Constructor
         /// </summary>
         /// <param name="owner">Game object who owns this AI controller</param>
-        public AiController( GameObject owner )
+        public AiController()
         {
-            mGameObject = owner;
             mLastDecisionTime = TimeSpan.MinValue;
             mRandom = new Random();
         }
@@ -45,7 +39,7 @@ namespace Scott.Dungeon.AI
         /// Updates the state of the game actor
         /// </summary>
         /// <param name="gameTime">Current simulation time</param>
-        public void Update( GameTime gameTime )
+        public override void Update( GameTime gameTime )
         {
             TimeSpan decisionTimeDelta = TimeSpan.FromSeconds( 0.25 );
 
@@ -63,9 +57,9 @@ namespace Scott.Dungeon.AI
             else
             {
                 // Keep doing whatever the heck we were doing
-                if ( mGameObject.Actor.IsMoving )
+                if ( GameObject.Actor.IsMoving )
                 {
-                    mGameObject.Actor.Move( mGameObject.Direction, 50 );
+                    GameObject.Actor.Move( GameObject.Direction, 50 );
                 }
             }
         }
@@ -76,7 +70,7 @@ namespace Scott.Dungeon.AI
         /// <param name="gameTime"></param>
         private void PerformIdleUpdate( GameTime gameTime )
         {
-            ActorController actor = mGameObject.Actor;
+            ActorController actor = GameObject.Actor;
 
             // Are we walking around or just standing?
             if ( actor.IsMoving )
@@ -89,7 +83,7 @@ namespace Scott.Dungeon.AI
                 else
                 {
                     // Should we change direction?
-                    Direction direction = mGameObject.Direction;
+                    Direction direction = GameObject.Direction;
 
                     if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
@@ -106,7 +100,7 @@ namespace Scott.Dungeon.AI
                 if ( mRandom.NextDouble() <= START_WALKING_CHANCE )
                 {
                     // Should we change direction when we start walking?
-                    Direction direction = mGameObject.Direction;
+                    Direction direction = GameObject.Direction;
 
                     if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {

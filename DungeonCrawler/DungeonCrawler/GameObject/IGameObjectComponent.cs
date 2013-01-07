@@ -9,7 +9,7 @@ namespace Scott.Dungeon.ComponentModel
     /// <summary>
     /// Base class for all game object components
     /// </summary>
-    public class IGameObjectComponent
+    public abstract class IGameObjectComponent
     {
         private GameObject mGameObject;
 
@@ -54,10 +54,7 @@ namespace Scott.Dungeon.ComponentModel
         /// Updates the game component
         /// </summary>
         /// <param name="time">The current simulation time</param>
-        public virtual void Update( GameTime time )
-        {
-            return;
-        }
+        public abstract void Update( GameTime time );
 
         /// <summary>
         /// Resets the game component to a default state. The component is disabled and
@@ -72,7 +69,7 @@ namespace Scott.Dungeon.ComponentModel
         /// Resets the game component to a default state
         /// </summary>
         /// <param name="gameObject">The game object that owns this component</param>
-        /// <param name="enabled">Whether or not the game object is enabled for processing</param>
+        /// <param name="enabled">Whetehr</param>
         public void ResetComponent( GameObject gameObject, bool enabled )
         {
             GameObject = gameObject;

@@ -92,16 +92,16 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
-            GameObject enemy = mGameObjects.Create();
+            Vector2 position = new Vector2( (int) ( mRandom.NextDouble() * 600.0 ),
+                                            (int) ( mRandom.NextDouble() * 400.0 ) );
+            GameObject enemy = mGameObjects.Create( position, Direction.South, 32, 32 );
 
             CharacterSprite skeletonSprite = mGameObjects.CharacterSprites.Create( enemy );
             enemy.CharacterSprite = skeletonSprite; // XXX TEMP HACK
 
             skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
-            
 
-            enemy.AI = new AiController( enemy );
-            enemy.Position = new Vector2( (int)(mRandom.NextDouble() * 600 ), (int)(mRandom.NextDouble() * 400) );
+            AiController ai = mGameObjects.AiControllers.Create( enemy );
 
             GameRoot.Enemies.Add( enemy );
         }
@@ -179,11 +179,11 @@ namespace Scott.Dungeon.Game
             }
 
             // Update game ai and character actions
+            mGameObjects.AiControllers.Update( gameTime );
             mPlayer.Actor.Update( gameTime );
-
+            
             foreach ( GameObject obj in GameRoot.Enemies )
             {
-                obj.AI.Update( gameTime );
                 obj.Actor.Update( gameTime );
             }
 

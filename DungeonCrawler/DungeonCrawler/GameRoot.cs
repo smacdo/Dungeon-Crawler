@@ -15,7 +15,6 @@ namespace Scott.Dungeon
     /// </summary>
     public static class GameRoot
     {
-        private static bool mCreated = false;
         public static DebugRenderer Debug { get; private set; }
 
         /// <summary>
@@ -34,7 +33,6 @@ namespace Scott.Dungeon
         /// </summary>
         public static void Initialize( GraphicsDevice graphics, ContentManager content )
         {
-            mCreated = true;
             Enemies = new List<GameObject>();
             Debug = new DebugRenderer( graphics, content );
         }

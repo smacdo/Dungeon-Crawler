@@ -24,7 +24,6 @@ namespace Scott.Dungeon.ComponentModel
         public Direction Direction { get; set; }
 
         public ActorController Actor { get; set; }
-        public AiController AI { get; set; }
         public Movement Movement { get; set; }
         public CharacterSprite CharacterSprite { get; set; }
 
@@ -50,8 +49,8 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="height">Game object height</param>
         public GameObject( Vector2 position, Direction direction, int width, int height )
         {
-            Position = new Vector2( 0, 0 );
-            Direction = Direction.South;
+            Position = position;
+            Direction = direction;
 
             Actor = new ActorController( this );
             Movement = new Movement( this );

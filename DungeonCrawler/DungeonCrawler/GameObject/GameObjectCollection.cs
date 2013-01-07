@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Scott.Dungeon.AI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Scott.Dungeon.ComponentModel
     public class GameObjectCollection
     {
         public ComponentManager<CharacterSprite> CharacterSprites;
+        public ComponentManager<AiController> AiControllers;
 
         /// <summary>
         /// Constructor
@@ -20,6 +22,7 @@ namespace Scott.Dungeon.ComponentModel
         public GameObjectCollection()
         {
             CharacterSprites = new ComponentManager<CharacterSprite>();
+            AiControllers = new ComponentManager<AiController>();
         }
 
         /// <summary>
