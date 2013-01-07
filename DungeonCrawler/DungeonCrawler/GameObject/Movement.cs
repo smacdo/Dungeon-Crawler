@@ -9,13 +9,8 @@ namespace Scott.Dungeon.ComponentModel
     /// <summary>
     /// Tracks movement information
     /// </summary>
-    public class Movement
+    public class Movement : IGameObjectComponent
     {
-        /// <summary>
-        /// The game object that this component belongs to
-        /// </summary>
-        private GameObject mGameObject;
-
         /// <summary>
         /// The speed (in units/sec) that the movement is occurring
         /// </summary>
@@ -37,18 +32,17 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Constructor
         /// </summary>
-        public Movement( GameObject owner )
+        public Movement()
         {
-            mGameObject = owner;
             Speed = 0;
             Direction = Direction.South;
         }
 
         /// <summary>
-        /// 
+        /// Update movement game components
         /// </summary>
         /// <param name="gameTime"></param>
-        public void Update( Scott.Dungeon.Game.DungeonCrawler game, GameTime gameTime )
+        public override void Update( GameTime gameTime )
         {
             // Only perform the movement math and logic if we were actually requested
             // to move.
@@ -79,23 +73,23 @@ namespace Scott.Dungeon.ComponentModel
                 }
 
                 // Calculate the new position
-                Vector2 position = mGameObject.Position + ( movementAxis * Speed * timeDelta );
+                Vector2 position = GameObject.Position + ( movementAxis * Speed * timeDelta );
 
                 // Don't let the object go out of bounds (TODO: Do this smarter when we get real levels)
-                int screenWidth  = game.GraphicsDevice.Viewport.Width;
-                int screenHeight = game.GraphicsDevice.Viewport.Height;
-                int objectWidth  = mGameObject.Width;
-                int objectHeight = mGameObject.Height;
+                int screenWidth  = GameRoot.ViewportWidth;
+                int screenHeight = GameRoot.ViewportHeight;
+                int objectWidth  = GameObject.Width;
+                int objectHeight = GameObject.Height;
 
                 bool isOutOfBounds =
-                    position.X < 0 || position.X + mGameObject.Width > screenWidth ||
-                    position.Y < 0 || position.Y + mGameObject.Height > screenHeight;
+                    position.X < 0 || position.X + GameObject.Width > screenWidth ||
+                    position.Y < 0 || position.Y + GameObject.Height > screenHeight;
 
                 // Update the movement information
                 if ( !isOutOfBounds )
                 {
-                    mGameObject.Direction = Direction;
-                    mGameObject.Position = position;
+                    GameObject.Direction = Direction;
+                    GameObject.Position = position;
                 }
 
             }

@@ -85,6 +85,8 @@ namespace Scott.Dungeon.Game
             playerSprite.Shoulder = new Sprite( Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
             playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
             playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
+
+            mGameObjects.Movements.Create( mPlayer );
         }
 
         /// <summary>
@@ -101,7 +103,8 @@ namespace Scott.Dungeon.Game
 
             skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
-            AiController ai = mGameObjects.AiControllers.Create( enemy );
+            mGameObjects.AiControllers.Create( enemy );
+            mGameObjects.Movements.Create( enemy );
 
             GameRoot.Enemies.Add( enemy );
         }
@@ -188,12 +191,7 @@ namespace Scott.Dungeon.Game
             }
 
             // Now update movement
-            mPlayer.Movement.Update( this, gameTime );
-
-            foreach ( GameObject obj in GameRoot.Enemies )
-            {
-                obj.Movement.Update( this, gameTime );
-            }
+            mGameObjects.Movements.Update( gameTime );
 
             base.Update( gameTime );
         }

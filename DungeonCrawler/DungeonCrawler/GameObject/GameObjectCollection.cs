@@ -15,6 +15,7 @@ namespace Scott.Dungeon.ComponentModel
     {
         public ComponentManager<CharacterSprite> CharacterSprites;
         public ComponentManager<AiController> AiControllers;
+        public MovementManager Movements;
 
         /// <summary>
         /// Constructor
@@ -23,6 +24,7 @@ namespace Scott.Dungeon.ComponentModel
         {
             CharacterSprites = new ComponentManager<CharacterSprite>();
             AiControllers = new ComponentManager<AiController>();
+            Movements = new MovementManager();
         }
 
         /// <summary>

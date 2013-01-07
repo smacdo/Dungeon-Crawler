@@ -117,6 +117,7 @@
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\GameObjectException.cs" />
     <Compile Include="GameObject\Movement.cs" />
+    <Compile Include="GameObject\MovementManager.cs" />
     <Compile Include="GameRoot.cs" />
     <Compile Include="Graphics\AnimationException.cs" />
     <Compile Include="GameObject\CharacterSprite.cs" />

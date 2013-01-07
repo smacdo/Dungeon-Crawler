@@ -48,7 +48,7 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         /// <param name="owner">The game object that will own this instance</param>
         /// <returns>A newly create game component instance</returns>
-        public T Create( GameObject owner )
+        public virtual T Create( GameObject owner )
         {
             // [TODO: Should we force each game object to only have one component of each
             //        type?]
@@ -64,7 +64,7 @@ namespace Scott.Dungeon.ComponentModel
         /// Destroys a component
         /// </summary>
         /// <param name="component"></param>
-        public void Destroy( T instance )
+        public virtual void Destroy( T instance )
         {
             // Reset the component to it's default state, and then return it to the
             // component pool

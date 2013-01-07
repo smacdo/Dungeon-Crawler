@@ -53,7 +53,6 @@ namespace Scott.Dungeon.ComponentModel
             Direction = direction;
 
             Actor = new ActorController( this );
-            Movement = new Movement( this );
 
             Width = width;
             Height = height;

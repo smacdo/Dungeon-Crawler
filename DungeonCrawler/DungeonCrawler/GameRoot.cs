@@ -17,6 +17,22 @@ namespace Scott.Dungeon
     {
         public static DebugRenderer Debug { get; private set; }
 
+        public static int ViewportWidth
+        {
+            get
+            {
+                return mGraphicsDevice.Viewport.Width;
+            }
+        }
+
+        public static int ViewportHeight
+        {
+            get
+            {
+                return mGraphicsDevice.Viewport.Height;
+            }
+        }
+
         /// <summary>
         /// THIS IS A HUGE HACK THAT WAS ONLY PUT HERE SO WE CAN GET A FINAL BUILD
         /// DONE TONIGHT.
@@ -28,6 +44,8 @@ namespace Scott.Dungeon
         /// </summary>
         public static List<GameObject> Enemies { get; private set; }
 
+        private static GraphicsDevice mGraphicsDevice;
+
         /// <summary>
         /// Initialize the game root
         /// </summary>
@@ -35,6 +53,7 @@ namespace Scott.Dungeon
         {
             Enemies = new List<GameObject>();
             Debug = new DebugRenderer( graphics, content );
+            mGraphicsDevice = graphics;
         }
 
         public static void Unload()
