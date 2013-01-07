@@ -111,15 +111,15 @@
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Ai\AiController.cs" />
     <Compile Include="BoundingRect.cs" />
+    <Compile Include="GameObject\GameObjectCollection.cs" />
     <Compile Include="GameObject\IGameObjectComponent.cs" />
     <Compile Include="GameObject\ComponentManager.cs" />
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\GameObjectException.cs" />
     <Compile Include="GameObject\Movement.cs" />
-    <Compile Include="GameObject\MovementManager.cs" />
     <Compile Include="GameRoot.cs" />
     <Compile Include="Graphics\AnimationException.cs" />
-    <Compile Include="Graphics\CharacterSprite.cs" />
+    <Compile Include="GameObject\CharacterSprite.cs" />
     <Compile Include="Graphics\DebugRenderer.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="InstancePool.cs" />

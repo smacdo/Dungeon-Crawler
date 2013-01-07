@@ -29,6 +29,7 @@ namespace Scott.Dungeon.Game
         SpriteBatch mSpriteBatch;
         GameObject mPlayer;
         Random mRandom = new Random();
+        GameObjectCollection mGameObjects;
 
         /// <summary>
         /// A simple 1x1 texture that can be arbitrarily colored and stretched. Perfect for little boxes
@@ -41,6 +42,7 @@ namespace Scott.Dungeon.Game
         public DungeonCrawler()
         {
             mGraphics = new GraphicsDeviceManager( this );
+            mGameObjects = new GameObjectCollection();
             Content.RootDirectory = "Content";
         }
 
@@ -69,10 +71,12 @@ namespace Scott.Dungeon.Game
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             // Create the player character
-            Sprite playerBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
-            CharacterSprite playerSprite = new CharacterSprite( playerBodySprite );
+            mPlayer = mGameObjects.Create();
 
-//            playerSprite.Back = new Sprite( Content.Load<SpriteData>( "sprites/Back_Quiver" ) );
+            CharacterSprite playerSprite = mGameObjects.CharacterSprites.Create( mPlayer );
+            mPlayer.CharacterSprite = playerSprite; // XXX TEMP HACK
+
+            playerSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
             playerSprite.Torso = new Sprite( Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
             playerSprite.Legs = new Sprite( Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
             playerSprite.Feet = new Sprite( Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
@@ -80,9 +84,7 @@ namespace Scott.Dungeon.Game
             playerSprite.Hands = new Sprite( Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
             playerSprite.Shoulder = new Sprite( Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
             playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
-            playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false ); 
-
-            mPlayer = new GameObject( playerSprite );
+            playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
         }
 
         /// <summary>
@@ -90,11 +92,13 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
-            Sprite skeletonBodySprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
+            GameObject enemy = mGameObjects.Create();
 
-            CharacterSprite skeletonSprite = new CharacterSprite( skeletonBodySprite );
+            CharacterSprite skeletonSprite = mGameObjects.CharacterSprites.Create( enemy );
+            enemy.CharacterSprite = skeletonSprite; // XXX TEMP HACK
 
-            GameObject enemy = new GameObject( skeletonSprite );
+            skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
+            
 
             enemy.AI = new AiController( enemy );
             enemy.Position = new Vector2( (int)(mRandom.NextDouble() * 600 ), (int)(mRandom.NextDouble() * 400) );
@@ -204,12 +208,14 @@ namespace Scott.Dungeon.Game
             mSpriteBatch.Begin();
 
             // Update animations on all of our sprites and render them
-            mPlayer.CharacterSprite.Update( gameTime );
+//            mPlayer.CharacterSprite.Update( gameTime );
+            mGameObjects.CharacterSprites.Update( gameTime );
+
             DrawGameObject( mSpriteBatch, mPlayer );
 
             foreach ( GameObject obj in GameRoot.Enemies )
             {
-                obj.CharacterSprite.Update( gameTime );
+//                obj.CharacterSprite.Update( gameTime );
                 DrawGameObject( mSpriteBatch, obj );
             }
 

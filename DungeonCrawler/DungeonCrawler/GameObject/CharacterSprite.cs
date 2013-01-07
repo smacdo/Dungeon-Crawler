@@ -3,15 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scott.Dungeon.Graphics;
 
-namespace Scott.Dungeon.Graphics
+namespace Scott.Dungeon.ComponentModel
 {
     /// <summary>
     /// A character sprite is a complex collection of sprites that are designed to
     /// work together to provide a standard set of animations along with layered 
     /// equipment.
     /// </summary>
-    public class CharacterSprite
+    public class CharacterSprite : IGameObjectComponent
     {
         public enum SubSpriteIndex
         {
@@ -153,9 +154,7 @@ namespace Scott.Dungeon.Graphics
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="bodySprite"></param>
-        /// <param name="weaponSprite"></param>
-        public CharacterSprite( Sprite bodySprite )
+        public CharacterSprite()
         {
             // Allocate a list of sprites to render, and set each entry to null
             int spriteIndex = (int) SubSpriteIndex.Max;
@@ -165,8 +164,6 @@ namespace Scott.Dungeon.Graphics
             {
                 SubSprites.Add( null );
             }
-
-            Body = bodySprite;
         }
 
         /// <summary>
@@ -219,8 +216,14 @@ namespace Scott.Dungeon.Graphics
         /// Updates the sprite's animation
         /// </summary>
         /// <param name="gameTime">Current rendering time</param>
-        public void Update( GameTime gameTime )
+        public override void Update( GameTime gameTime )
         {
+            if ( !Enabled )
+            {
+                return;
+            }
+
+            // Update all sub-sprites
             for ( int i = 0; i < SubSprites.Count; ++i )
             {
                 Sprite s = SubSprites[i];

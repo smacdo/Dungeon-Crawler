@@ -50,16 +50,29 @@ namespace Scott.Dungeon.ComponentModel
             Enabled = false;
         }
 
+        /// <summary>
+        /// Updates the game component
+        /// </summary>
+        /// <param name="time">The current simulation time</param>
         public virtual void Update( GameTime time )
         {
             return;
         }
 
+        /// <summary>
+        /// Resets the game component to a default state. The component is disabled and
+        /// will have no game object owner until one is assigned.
+        /// </summary>
         public void ResetComponent()
         {
             ResetComponent( null, false );
         }
 
+        /// <summary>
+        /// Resets the game component to a default state
+        /// </summary>
+        /// <param name="gameObject">The game object that owns this component</param>
+        /// <param name="enabled">Whether or not the game object is enabled for processing</param>
         public void ResetComponent( GameObject gameObject, bool enabled )
         {
             GameObject = gameObject;

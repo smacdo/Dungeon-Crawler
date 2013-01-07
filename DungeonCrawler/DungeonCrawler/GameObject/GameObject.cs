@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Scott.Dungeon.Actor;
 using Scott.Dungeon.AI;
 using Scott.Dungeon.Graphics;
+using Scott.Dungeon.Data;
 
 namespace Scott.Dungeon.ComponentModel
 {
@@ -27,26 +28,36 @@ namespace Scott.Dungeon.ComponentModel
         public Movement Movement { get; set; }
         public CharacterSprite CharacterSprite { get; set; }
 
+        public BoundingRect Bounds;
+
         public int Width { get; set; }      // should we also adjust sprite width, or at least warn?
         public int Height { get; set; }     // same question
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public GameObject( CharacterSprite sprite )
+        public GameObject( int width, int height )
+            : this( new Vector2( 0, 0 ), Direction.South, 0, 0 )
+        {
+        }
+
+        /// <summary>
+        /// Game object constructor
+        /// </summary>
+        /// <param name="position">Position of the game object</param>
+        /// <param name="direction">Direction of the game object</param>
+        /// <param name="width">Game object width</param>
+        /// <param name="height">Game object height</param>
+        public GameObject( Vector2 position, Direction direction, int width, int height )
         {
             Position = new Vector2( 0, 0 );
             Direction = Direction.South;
 
             Actor = new ActorController( this );
             Movement = new Movement( this );
-            CharacterSprite = sprite;
 
-            // TEMP HACK: Find a better way of specifying bounding boxes
-            Sprite tempHackSprite = CharacterSprite.Body;
-
-            Width = tempHackSprite.Width;
-            Height = tempHackSprite.Height;     // whoops, probably find a better way
+            Width = width;
+            Height = height;
         }
 
         public override int GetHashCode()
