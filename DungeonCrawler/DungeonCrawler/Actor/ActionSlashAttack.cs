@@ -28,7 +28,6 @@ namespace Scott.Dungeon.Actor
         /// The actor that is performing the slash attack
         /// </summary>
         private GameObject mGameObject;
-        private CharacterSprite mSprite;
 
         private Direction mDirection;
 
@@ -53,7 +52,6 @@ namespace Scott.Dungeon.Actor
         public ActionSlashAttack( GameObject owner, Direction direction )
         {
             mGameObject = owner;
-            mSprite = owner.CharacterSprite;
             mDirection = direction;
             mTimeStarted = TimeSpan.MinValue;
             mAttackStatus = ActionAttackStatus.NotStarted;
@@ -65,6 +63,7 @@ namespace Scott.Dungeon.Actor
         /// <param name="gameTime">Current simulation time</param>
         public void Update( GameTime gameTime )
         {
+            CharacterSprite characterSprite = mGameObject.GetComponent<CharacterSprite>();
             TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
             TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
 
@@ -75,8 +74,8 @@ namespace Scott.Dungeon.Actor
                     mAttackStatus = ActionAttackStatus.StartingUp;
 
                     // Enable the weapon sprite, and animate the attack
-                    mSprite.Weapon.Visible = true;
-                    mSprite.PlayAnimation( "Slash" + Enum.GetName( typeof( Direction ), mDirection ) );
+                    characterSprite.Weapon.Visible = true;
+                    characterSprite.PlayAnimation( "Slash" + Enum.GetName( typeof( Direction ), mDirection ) );
                     break;
 
                 case ActionAttackStatus.StartingUp:
@@ -92,7 +91,7 @@ namespace Scott.Dungeon.Actor
                     if ( mTimeStarted.Add( actionTimeSpan ) <= gameTime.TotalGameTime )
                     {
                         // Disable the weapon sprite now that the attack has finished
-                        mSprite.Weapon.Visible = false;
+                        characterSprite.Weapon.Visible = false;
                         mAttackStatus = ActionAttackStatus.Finished;
                     }
                     else

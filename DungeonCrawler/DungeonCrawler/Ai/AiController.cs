@@ -42,7 +42,7 @@ namespace Scott.Dungeon.AI
         public override void Update( GameTime gameTime )
         {
             TimeSpan decisionTimeDelta = TimeSpan.FromSeconds( 0.25 );
-            ActorController actor = GameObject.GetComponent<ActorController>();
+            ActorController actor = Owner.GetComponent<ActorController>();
 
             // Is it time for us to make a decision?
             if ( mLastDecisionTime.Add( decisionTimeDelta ) <= gameTime.TotalGameTime )
@@ -60,7 +60,7 @@ namespace Scott.Dungeon.AI
                 // Keep doing whatever the heck we were doing
                 if ( actor.IsMoving )
                 {
-                    actor.Move( GameObject.Direction, 50 );
+                    actor.Move( Owner.Direction, 50 );
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace Scott.Dungeon.AI
         /// <param name="gameTime"></param>
         private void PerformIdleUpdate( GameTime gameTime )
         {
-            ActorController actor = GameObject.GetComponent<ActorController>();
+            ActorController actor = Owner.GetComponent<ActorController>();
 
             // Are we walking around or just standing?
             if ( actor.IsMoving )
@@ -84,7 +84,7 @@ namespace Scott.Dungeon.AI
                 else
                 {
                     // Should we change direction?
-                    Direction direction = GameObject.Direction;
+                    Direction direction = Owner.Direction;
 
                     if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
@@ -101,7 +101,7 @@ namespace Scott.Dungeon.AI
                 if ( mRandom.NextDouble() <= START_WALKING_CHANCE )
                 {
                     // Should we change direction when we start walking?
-                    Direction direction = GameObject.Direction;
+                    Direction direction = Owner.Direction;
 
                     if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {

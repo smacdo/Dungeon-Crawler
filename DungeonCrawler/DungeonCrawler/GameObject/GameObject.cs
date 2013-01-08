@@ -30,10 +30,7 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public Direction Direction { get; set; }
 
-        public Movement Movement { get; set; }
-        public CharacterSprite CharacterSprite { get; set; }
-
-        public BoundingRect Bounds;
+        public BoundingRect Bounds { get; private set; }
 
         public int Width { get; set; }      // should we also adjust sprite width, or at least warn?
         public int Height { get; set; }     // same question
@@ -138,12 +135,6 @@ namespace Scott.Dungeon.ComponentModel
                                   Direction.ToString(),
                                   Width,
                                   Height );
-        }
-
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException( "Need to implement this sucker" );
-            return base.GetHashCode();
         }
     }
 }

@@ -20,7 +20,6 @@ namespace Scott.Dungeon.ComponentModel
         public override Movement Create( GameObject owner )
         {
             Movement movement = base.Create( owner );
-            owner.Movement    = movement;
 
             return movement;
         }
@@ -31,7 +30,6 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="instance"></param>
         public override void Destroy( Movement instance )
         {
-            instance.GameObject.Movement = null;
             base.Destroy( instance );
         }
     }

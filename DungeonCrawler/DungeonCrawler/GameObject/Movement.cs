@@ -73,23 +73,23 @@ namespace Scott.Dungeon.ComponentModel
                 }
 
                 // Calculate the new position
-                Vector2 position = GameObject.Position + ( movementAxis * Speed * timeDelta );
+                Vector2 position = Owner.Position + ( movementAxis * Speed * timeDelta );
 
                 // Don't let the object go out of bounds (TODO: Do this smarter when we get real levels)
                 int screenWidth  = GameRoot.ViewportWidth;
                 int screenHeight = GameRoot.ViewportHeight;
-                int objectWidth  = GameObject.Width;
-                int objectHeight = GameObject.Height;
+                int objectWidth  = Owner.Width;
+                int objectHeight = Owner.Height;
 
                 bool isOutOfBounds =
-                    position.X < 0 || position.X + GameObject.Width > screenWidth ||
-                    position.Y < 0 || position.Y + GameObject.Height > screenHeight;
+                    position.X < 0 || position.X + Owner.Width > screenWidth ||
+                    position.Y < 0 || position.Y + Owner.Height > screenHeight;
 
                 // Update the movement information
                 if ( !isOutOfBounds )
                 {
-                    GameObject.Direction = Direction;
-                    GameObject.Position = position;
+                    Owner.Direction = Direction;
+                    Owner.Position = position;
                 }
 
             }

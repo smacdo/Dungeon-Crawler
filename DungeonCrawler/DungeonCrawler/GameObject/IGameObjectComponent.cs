@@ -18,26 +18,26 @@ namespace Scott.Dungeon.ComponentModel
     /// </summary>
     public abstract class IGameObjectComponent
     {
-        private GameObject mGameObject;
+        private GameObject mOwner;
 
         /// <summary>
         /// The game object that owns this components
         /// </summary>
-        public GameObject GameObject
+        public GameObject Owner
         {
             get
             {
-                return mGameObject;
+                return mOwner;
             }
             set
             {
-                if ( mGameObject != null )
+                if ( mOwner != null )
                 {
                     throw new NotSupportedException( "Reparenting game objects is not supported" );
                 }
                 else
                 {
-                    mGameObject = value;
+                    mOwner = value;
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public IGameObjectComponent()
         {
-            GameObject = null;
+            Owner = null;
             Enabled = false;
         }
 
@@ -79,7 +79,7 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="enabled">Whetehr</param>
         public void ResetComponent( GameObject gameObject, bool enabled )
         {
-            GameObject = gameObject;
+            Owner = gameObject;
             Enabled = enabled;
         }
 
@@ -89,10 +89,10 @@ namespace Scott.Dungeon.ComponentModel
         /// <returns></returns>
         public override string ToString()
         {
-            if ( GameObject != null )
+            if ( Owner != null )
             {
                 return String.Format( "{{ owner: \"{0}\", enabled: {1}, {2} }}",
-                                      GameObject.Name,
+                                      Owner.Name,
                                       Enabled,
                                       DumpDebugInfo() );
             }

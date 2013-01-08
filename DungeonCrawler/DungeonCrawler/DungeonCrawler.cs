@@ -63,7 +63,6 @@ namespace Scott.Dungeon.Game
             mPlayer = mGameObjects.Create( "Player" );
 
             CharacterSprite playerSprite = mGameObjects.CharacterSprites.Create( mPlayer );
-            mPlayer.CharacterSprite = playerSprite; // XXX TEMP HACK
 
             playerSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
             playerSprite.Torso = new Sprite( Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
@@ -92,7 +91,6 @@ namespace Scott.Dungeon.Game
                                                     32, 32 );
 
             CharacterSprite skeletonSprite = mGameObjects.CharacterSprites.Create( enemy );
-            enemy.CharacterSprite = skeletonSprite; // XXX TEMP HACK
 
             skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
