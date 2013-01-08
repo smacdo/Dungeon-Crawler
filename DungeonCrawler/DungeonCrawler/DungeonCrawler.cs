@@ -25,23 +25,17 @@ namespace Scott.Dungeon.Game
     /// </summary>
     public class DungeonCrawler : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager mGraphics;
-        SpriteBatch mSpriteBatch;
+        GraphicsDeviceManager mGraphicsDevice;
         GameObject mPlayer;
         Random mRandom = new Random();
         GameObjectCollection mGameObjects;
-
-        /// <summary>
-        /// A simple 1x1 texture that can be arbitrarily colored and stretched. Perfect for little boxes
-        /// </summary>
-        private Texture2D mSinglePIxel;
 
         /// <summary>
         /// Constructar
         /// </summary>
         public DungeonCrawler()
         {
-            mGraphics = new GraphicsDeviceManager( this );
+            mGraphicsDevice = new GraphicsDeviceManager( this );
             mGameObjects = new GameObjectCollection();
             Content.RootDirectory = "Content";
         }
@@ -54,11 +48,7 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void Initialize()
         {
-            mSinglePIxel = new Texture2D( GraphicsDevice, 1, 1 );
-            mSinglePIxel.SetData( new[] { Color.White } );
-
-            GameRoot.Initialize( mGraphics.GraphicsDevice, Content );
-
+            GameRoot.Initialize( mGraphicsDevice.GraphicsDevice, Content );
             base.Initialize();
         }
 
@@ -68,8 +58,6 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void LoadContent()
         {
-            mSpriteBatch = new SpriteBatch( GraphicsDevice );
-
             // Create the player character
             mPlayer = mGameObjects.Create();
 
@@ -202,77 +190,15 @@ namespace Scott.Dungeon.Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            GraphicsDevice.Clear( Color.CornflowerBlue );
-            mSpriteBatch.Begin();
-
-            // Update animations on all of our sprites and render them
-//            mPlayer.CharacterSprite.Update( gameTime );
+            // Update animations on all of our sprites and then have them sent to the
+            // sprite renderer for drawing
             mGameObjects.CharacterSprites.Update( gameTime );
 
-            DrawGameObject( mSpriteBatch, mPlayer );
-
-            foreach ( GameObject obj in GameRoot.Enemies )
-            {
-//                obj.CharacterSprite.Update( gameTime );
-                DrawGameObject( mSpriteBatch, obj );
-            }
-
-
-            mSpriteBatch.End();
-
+            // Draw all requested game sprites
+            GameRoot.Renderer.DrawScreen( gameTime );
             GameRoot.Debug.Draw( gameTime );
 
-            // Detect if the game is running slowly, and if so draw an indicator
-            mSpriteBatch.Begin();
-            if ( gameTime.IsRunningSlowly )
-            {
-                mSpriteBatch.Draw( mSinglePIxel, new Rectangle( 0, 0, 20, 20 ), Color.Red );
-            }
-
-            mSpriteBatch.End();
             base.Draw( gameTime );
-        }
-
-
-        // ------------ vvvv should be put into a renderer vvvv ----------------------------- //
-        private void DrawGameObject( SpriteBatch spriteBatch, GameObject gameObject )
-        {
-//            if ( )
-            {
-                DrawCharacterSprite( spriteBatch, gameObject.Position,  gameObject.CharacterSprite );
-            }
-//            else
-//            {
-//                DrawSprite( spriteBatch, gameObject.Position, gameObject.Sprite );
-//            }
-        }
-
-        private void DrawCharacterSprite( SpriteBatch spriteBatch, Vector2 position, CharacterSprite sprite )
-        {
-            // TODO: Get an ordered list of sprites to draw
-            //  (for the moment this will work)
-            int spriteIndex = (int) CharacterSprite.SubSpriteIndex.Max;
-
-            for ( int i = 0; i < spriteIndex; ++i )
-            {
-                Sprite s = sprite.SubSprites[i];
-
-                if ( s != null )
-                {
-                    DrawSprite( spriteBatch, position, s );
-                }
-            }
-        }
-
-        private void DrawSprite( SpriteBatch spriteBatch, Vector2 position, Sprite sprite )
-        {
-            if ( sprite.Visible )
-            {
-                spriteBatch.Draw( sprite.CurrentAtlasTexture,
-                                  position + sprite.DrawOffset,
-                                  sprite.CurrentAtlasOffset,
-                                  Color.White );
-            }
         }
     }
 }

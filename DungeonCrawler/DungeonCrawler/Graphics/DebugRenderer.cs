@@ -201,7 +201,7 @@ namespace Scott.Dungeon.Graphics
         /// </summary>
         /// <param name="gameTime"></param>
         [Conditional( "DEBUG" )]
-        public void Draw( GameTime gameTime )
+        public void Draw( GameTime renderTime )
         {
             mSpriteBatch.Begin();
 
@@ -227,6 +227,37 @@ namespace Scott.Dungeon.Graphics
                 if ( text.Enabled )
                 {
                     DrawItem( text );
+                }
+            }
+
+            mSpriteBatch.End();
+
+            // Detect if the game is running slowly, and if so draw an indicator
+            DrawSimulationTimeIndicator( renderTime );
+        }
+
+        /// <summary>
+        /// Tests how long the previous simulation update cycle took, and draws an angry square
+        /// indicator if exceeded the ideal maximum threshold.
+        /// </summary>
+        /// <param name="renderTime"></param>
+        private void DrawSimulationTimeIndicator( GameTime renderTime )
+        {
+            mSpriteBatch.Begin();
+
+            if ( renderTime.IsRunningSlowly )
+            {
+                mSpriteBatch.Draw( mWhitePixel, new Rectangle( 0, 0, 20, 20 ), Color.Red );
+            }
+            else
+            {
+                TimeSpan runningSlow = renderTime.ElapsedGameTime - TimeSpan.FromMilliseconds( 10.0 );
+
+                if ( runningSlow.TotalMilliseconds > 10.0 )
+                {
+                    // TODO: Actually calculate how close it is to 16ms and draw an appropriately
+                    // shaded color
+                    mSpriteBatch.Draw( mWhitePixel, new Rectangle( 0, 0, 20, 20 ), Color.Yellow );
                 }
             }
 

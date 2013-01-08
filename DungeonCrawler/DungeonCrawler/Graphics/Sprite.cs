@@ -166,6 +166,11 @@ namespace Scott.Dungeon.Graphics
             }
         }
 
+        public void Draw( Vector2 position )
+        {
+            GameRoot.Renderer.Draw( this, position );
+        }
+
         /// <summary>
         /// Plays the requested animation
         /// </summary>

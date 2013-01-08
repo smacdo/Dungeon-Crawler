@@ -122,6 +122,7 @@
     <Compile Include="Graphics\AnimationException.cs" />
     <Compile Include="GameObject\CharacterSprite.cs" />
     <Compile Include="Graphics\DebugRenderer.cs" />
+    <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="InstancePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

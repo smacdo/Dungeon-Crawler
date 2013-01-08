@@ -231,6 +231,7 @@ namespace Scott.Dungeon.ComponentModel
                 if ( s != null )
                 {
                     s.Update( gameTime );
+                    s.Draw( GameObject.Position );
                 }
             }
         }

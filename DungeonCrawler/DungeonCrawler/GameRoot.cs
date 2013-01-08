@@ -16,6 +16,7 @@ namespace Scott.Dungeon
     public static class GameRoot
     {
         public static DebugRenderer Debug { get; private set; }
+        public static Renderer Renderer { get; private set; }
 
         public static int ViewportWidth
         {
@@ -54,6 +55,7 @@ namespace Scott.Dungeon
             Enemies = new List<GameObject>();
             Debug = new DebugRenderer( graphics, content );
             mGraphicsDevice = graphics;
+            Renderer = new Renderer( graphics );
         }
 
         public static void Unload()
