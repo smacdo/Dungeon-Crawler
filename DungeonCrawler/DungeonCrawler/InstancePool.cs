@@ -20,6 +20,30 @@ namespace Scott.Dungeon
         private LinkedList<T> mActiveList;
         private Dictionary<T, LinkedListNode<T>> mActiveNodeTable;
 
+        public int TotalCount
+        {
+            get
+            {
+                return mCount;
+            }
+        }
+
+        public int FreeCount
+        {
+            get
+            {
+                return mFreeList.Count;
+            }
+        }
+
+        public int ActiveCount
+        {
+            get
+            {
+                return mActiveList.Count;
+            }
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>

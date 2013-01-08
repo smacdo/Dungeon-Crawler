@@ -71,5 +71,29 @@ namespace Scott.Dungeon.ComponentModel
             instance.ResetComponent();
             mComponentPool.Return( instance );
         }
+
+        public string DumpDebugDumpDebugInfoToString()
+        {
+            StringBuilder debugText = new StringBuilder();
+
+            debugText.Append( "{\n" );
+            debugText.Append( String.Format( "\tcomponent_manager: \"{0}\",\n", typeof( T ).Name ) );
+            debugText.Append( String.Format( "\tactive_instances: {0},\n", mComponentPool.ActiveCount ) );
+            debugText.Append( String.Format( "\tfree_instances: {0},\n", mComponentPool.FreeCount ) );
+            debugText.Append( String.Format( "\ttotal_instances: {0},\n", mComponentPool.TotalCount ) );
+            debugText.Append( "\tinstances: [\n" );
+
+            // Dump diagnostic information on active components only
+            foreach ( T instance in mComponentPool )
+            {
+                debugText.Append( "\t\t" );
+                debugText.Append( instance.ToString() );
+                debugText.Append( ",\n" );
+            }
+
+            debugText.Append( "\t]\n}\n" );
+            
+            return debugText.ToString();
+        }
     }
 }

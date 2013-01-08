@@ -13,6 +13,7 @@ namespace Scott.Dungeon.ComponentModel
     /// </summary>
     public class GameObjectCollection
     {
+        public List<GameObject> GameObjects;
         public ComponentManager<CharacterSprite> CharacterSprites;
         public ComponentManager<AiController> AiControllers;
         public MovementManager Movements;
@@ -22,6 +23,7 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public GameObjectCollection()
         {
+            GameObjects = new List<GameObject>( 4096 );
             CharacterSprites = new ComponentManager<CharacterSprite>();
             AiControllers = new ComponentManager<AiController>();
             Movements = new MovementManager();
@@ -32,9 +34,9 @@ namespace Scott.Dungeon.ComponentModel
         /// and updated until it is deleted from the collection.
         /// </summary>
         /// <returns>Copy of the newly created game object</returns>
-        public GameObject Create()
+        public GameObject Create( string name )
         {
-            return Create( Vector2.Zero, Direction.South, 0, 0 );
+            return Create( name, Vector2.Zero, Direction.South, 0, 0 );
         }
 
         /// <summary>
@@ -46,9 +48,47 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="width">Width of the game object</param>
         /// <param name="height">Height of the game object</param>
         /// <returns></returns>
-        public GameObject Create( Vector2 position, Direction direction, int width, int height )
+        public GameObject Create( string name, Vector2 position, Direction direction, int width, int height )
         {
-            return new GameObject( position, direction, width, height );
+            GameObject gameObject = new GameObject( name, position, direction, width, height );
+            GameObjects.Add( gameObject );
+
+            return gameObject; 
+        }
+
+       
+        /// <summary>
+        /// Dumps a debugging information about the current game object collection a string, suitable
+        /// for disable in a console or a text file.
+        /// </summary>
+        /// <returns></returns>
+        public string DumpDebugInfoToString()
+        {
+            StringBuilder debugText = new StringBuilder();
+
+            // First dump all created game objects to disk
+            debugText.Append( "GameObjects: [\n" );
+
+            foreach ( GameObject gameObject in GameObjects )
+            {
+                debugText.Append( "\t" );
+                debugText.Append( gameObject.DumpDebugInfoToString() );
+                debugText.Append( "\n" );
+            }
+
+            debugText.Append( "],\n\n" );
+
+            // Now dump our component managers to disk
+            debugText.Append( CharacterSprites.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            debugText.Append( AiControllers.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            debugText.Append( Movements.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            return debugText.ToString();
         }
     }
 }

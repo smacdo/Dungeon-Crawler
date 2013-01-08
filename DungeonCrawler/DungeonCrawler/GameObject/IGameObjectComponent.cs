@@ -75,5 +75,31 @@ namespace Scott.Dungeon.ComponentModel
             GameObject = gameObject;
             Enabled = enabled;
         }
+
+        /// <summary>
+        /// Writes the game component out to a stirng
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            if ( GameObject != null )
+            {
+                return String.Format( "{{ owner: \"{0}\", enabled: {1}, {2} }}",
+                                      GameObject.Name,
+                                      Enabled,
+                                      DumpDebugInfo() );
+            }
+            else
+            {
+                return String.Format( "{{ owner: 0, enabled: {1}, {2} }}",
+                                      Enabled,
+                                      DumpDebugInfo() );
+            }
+        }
+
+        public virtual string DumpDebugInfo()
+        {
+            return string.Empty;
+        }
     }
 }

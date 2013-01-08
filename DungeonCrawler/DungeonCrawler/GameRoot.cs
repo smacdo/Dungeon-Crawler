@@ -18,6 +18,9 @@ namespace Scott.Dungeon
         public static DebugRenderer Debug { get; private set; }
         public static Renderer Renderer { get; private set; }
 
+        /// <summary>
+        /// Width (in pixels) of the camera's visible area
+        /// </summary>
         public static int ViewportWidth
         {
             get
@@ -26,6 +29,9 @@ namespace Scott.Dungeon
             }
         }
 
+        /// <summary>
+        /// Height (in pixels) of the camera's visible area
+        /// </summary>
         public static int ViewportHeight
         {
             get
@@ -58,9 +64,14 @@ namespace Scott.Dungeon
             Renderer = new Renderer( graphics );
         }
 
+        /// <summary>
+        /// Unloads loaded systems... call when the game is about to be unloaded
+        /// </summary>
         public static void Unload()
         {
             Debug.Unload();
+            mGraphicsDevice = null;
+            Renderer = null;
             Debug = null;
         }
     }

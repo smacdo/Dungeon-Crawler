@@ -29,6 +29,7 @@ namespace Scott.Dungeon.Game
         GameObject mPlayer;
         Random mRandom = new Random();
         GameObjectCollection mGameObjects;
+        int mEnemyCount = 0;
 
         /// <summary>
         /// Constructar
@@ -59,7 +60,7 @@ namespace Scott.Dungeon.Game
         protected override void LoadContent()
         {
             // Create the player character
-            mPlayer = mGameObjects.Create();
+            mPlayer = mGameObjects.Create( "Player" );
 
             CharacterSprite playerSprite = mGameObjects.CharacterSprites.Create( mPlayer );
             mPlayer.CharacterSprite = playerSprite; // XXX TEMP HACK
@@ -84,7 +85,10 @@ namespace Scott.Dungeon.Game
         {
             Vector2 position = new Vector2( (int) ( mRandom.NextDouble() * 600.0 ),
                                             (int) ( mRandom.NextDouble() * 400.0 ) );
-            GameObject enemy = mGameObjects.Create( position, Direction.South, 32, 32 );
+            GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
+                                                    position,
+                                                    Direction.South,
+                                                    32, 32 );
 
             CharacterSprite skeletonSprite = mGameObjects.CharacterSprites.Create( enemy );
             enemy.CharacterSprite = skeletonSprite; // XXX TEMP HACK
@@ -95,6 +99,7 @@ namespace Scott.Dungeon.Game
             mGameObjects.Movements.Create( enemy );
 
             GameRoot.Enemies.Add( enemy );
+            mEnemyCount += 1;
         }
 
         /// <summary>
@@ -131,6 +136,13 @@ namespace Scott.Dungeon.Game
             if ( keyboard.IsKeyDown( Keys.Escape ) || gamepad.Buttons.Back == ButtonState.Pressed )
             {
                 this.Exit();
+            }
+
+            if ( keyboard.IsKeyDown( Keys.F2 ) )
+            {
+                Console.WriteLine( "Game Object Debugging Information" );
+                Console.WriteLine( "=================================" );
+                Console.WriteLine( mGameObjects.DumpDebugInfoToString() );
             }
 
             // Spawn some stuff
