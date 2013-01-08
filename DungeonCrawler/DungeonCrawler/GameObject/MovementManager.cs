@@ -7,6 +7,11 @@ namespace Scott.Dungeon.ComponentModel
 {
     public class MovementManager : ComponentManager<Movement>
     {
+        public MovementManager( int capacity )
+            : base( capacity )
+        {
+        }
+
         /// <summary>
         /// Create a new movement game component
         /// </summary>

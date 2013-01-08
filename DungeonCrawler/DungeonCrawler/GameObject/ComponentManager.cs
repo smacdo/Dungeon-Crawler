@@ -12,8 +12,6 @@ namespace Scott.Dungeon.ComponentModel
     /// </summary>
     public class ComponentManager<T> where T : IGameObjectComponent, new()
     {
-        private const int DEFAULT_CAPACITY = 4096;
-
         /// <summary>
         /// A pre-allocated pool of instances to speed up object creation and destruction
         /// </summary>
@@ -22,9 +20,9 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Constructor
         /// </summary>
-        public ComponentManager()
+        public ComponentManager( int capacity )
         {
-            mComponentPool = new InstancePool<T>( DEFAULT_CAPACITY );
+            mComponentPool = new InstancePool<T>( capacity );
         }
 
         /// <summary>
@@ -50,13 +48,12 @@ namespace Scott.Dungeon.ComponentModel
         /// <returns>A newly create game component instance</returns>
         public virtual T Create( GameObject owner )
         {
-            // [TODO: Should we force each game object to only have one component of each
-            //        type?]
-
             // Instantiate the game component and set it up
             T instance = mComponentPool.Take();
 
             instance.ResetComponent( owner, true );
+            owner.AddComponent<T>( instance );
+
             return instance;
         }
 

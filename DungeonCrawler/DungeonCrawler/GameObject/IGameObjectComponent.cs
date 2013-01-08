@@ -8,6 +8,13 @@ namespace Scott.Dungeon.ComponentModel
 {
     /// <summary>
     /// Base class for all game object components
+    /// 
+    /// NOTE: DO NOT STORE REFERENCES TO GAME COMPONENTS FOR MORE THAN ONE FRAME!
+    ///       Instead, re-request the reference from either the GameObjectCollection
+    ///       or the specific game object. This is to ensure we don't go crazy trying
+    ///       to figure out who is still holding references to deleted instances.
+    /// 
+    /// TODO: Explain this much better
     /// </summary>
     public abstract class IGameObjectComponent
     {

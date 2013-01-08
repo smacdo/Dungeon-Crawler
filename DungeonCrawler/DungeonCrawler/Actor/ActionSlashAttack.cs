@@ -28,7 +28,6 @@ namespace Scott.Dungeon.Actor
         /// The actor that is performing the slash attack
         /// </summary>
         private GameObject mGameObject;
-        private ActorController mActor;
         private CharacterSprite mSprite;
 
         private Direction mDirection;
@@ -54,7 +53,6 @@ namespace Scott.Dungeon.Actor
         public ActionSlashAttack( GameObject owner, Direction direction )
         {
             mGameObject = owner;
-            mActor = owner.Actor;
             mSprite = owner.CharacterSprite;
             mDirection = direction;
             mTimeStarted = TimeSpan.MinValue;

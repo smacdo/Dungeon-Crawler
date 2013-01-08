@@ -76,6 +76,7 @@ namespace Scott.Dungeon.Game
             playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
             mGameObjects.Movements.Create( mPlayer );
+            mGameObjects.ActorControllers.Create( mPlayer );
         }
 
         /// <summary>
@@ -95,6 +96,7 @@ namespace Scott.Dungeon.Game
 
             skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
+            mGameObjects.ActorControllers.Create( enemy );
             mGameObjects.AiControllers.Create( enemy );
             mGameObjects.Movements.Create( enemy );
 
@@ -157,38 +159,35 @@ namespace Scott.Dungeon.Game
                 mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
             }
 
-            // Actor movement
+            // Player movement
+            ActorController playerActor = mPlayer.GetComponent<ActorController>();
+
             if ( keyboard.IsKeyDown( Keys.W ) )
             {
-                mPlayer.Actor.Move( Direction.North, 125 );
+                playerActor.Move( Direction.North, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.S ) )
             {
-                mPlayer.Actor.Move( Direction.South, 125 );
+                playerActor.Move( Direction.South, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.A ) )
             {
-                mPlayer.Actor.Move( Direction.West, 125 );
+                playerActor.Move( Direction.West, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.D ) )
             {
-                mPlayer.Actor.Move( Direction.East, 125 );
+                playerActor.Move( Direction.East, 125 );
             }
             
             // Actor actions
             if ( keyboard.IsKeyDown( Keys.Space ) )
             {
-                mPlayer.Actor.SlashAttack();
+                playerActor.SlashAttack();
             }
 
             // Update game ai and character actions
             mGameObjects.AiControllers.Update( gameTime );
-            mPlayer.Actor.Update( gameTime );
-            
-            foreach ( GameObject obj in GameRoot.Enemies )
-            {
-                obj.Actor.Update( gameTime );
-            }
+            mGameObjects.ActorControllers.Update( gameTime );
 
             // Now update movement
             mGameObjects.Movements.Update( gameTime );

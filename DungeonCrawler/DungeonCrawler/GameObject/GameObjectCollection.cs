@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Scott.Dungeon.Actor;
 using Scott.Dungeon.AI;
 using System;
 using System.Collections.Generic;
@@ -13,20 +14,23 @@ namespace Scott.Dungeon.ComponentModel
     /// </summary>
     public class GameObjectCollection
     {
-        public List<GameObject> GameObjects;
-        public ComponentManager<CharacterSprite> CharacterSprites;
-        public ComponentManager<AiController> AiControllers;
-        public MovementManager Movements;
+        private const int DEFAULT_CAPACITY = 4096;
+        public List<GameObject> GameObjects { get; private set; }
+        public ComponentManager<CharacterSprite> CharacterSprites { get; private set; }
+        public ComponentManager<AiController> AiControllers { get; private set; }
+        public ComponentManager<ActorController> ActorControllers { get; private set; }
+        public MovementManager Movements { get; private set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public GameObjectCollection()
         {
-            GameObjects = new List<GameObject>( 4096 );
-            CharacterSprites = new ComponentManager<CharacterSprite>();
-            AiControllers = new ComponentManager<AiController>();
-            Movements = new MovementManager();
+            GameObjects = new List<GameObject>( DEFAULT_CAPACITY );
+            CharacterSprites = new ComponentManager<CharacterSprite>( DEFAULT_CAPACITY );
+            AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
+            ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
+            Movements = new MovementManager( DEFAULT_CAPACITY );
         }
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace Scott.Dungeon.ComponentModel
         /// <returns></returns>
         public GameObject Create( string name, Vector2 position, Direction direction, int width, int height )
         {
-            GameObject gameObject = new GameObject( name, position, direction, width, height );
+            GameObject gameObject = new GameObject( name, this, position, direction, width, height );
             GameObjects.Add( gameObject );
 
             return gameObject; 

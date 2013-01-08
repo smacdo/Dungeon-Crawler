@@ -42,6 +42,7 @@ namespace Scott.Dungeon.AI
         public override void Update( GameTime gameTime )
         {
             TimeSpan decisionTimeDelta = TimeSpan.FromSeconds( 0.25 );
+            ActorController actor = GameObject.GetComponent<ActorController>();
 
             // Is it time for us to make a decision?
             if ( mLastDecisionTime.Add( decisionTimeDelta ) <= gameTime.TotalGameTime )
@@ -57,9 +58,9 @@ namespace Scott.Dungeon.AI
             else
             {
                 // Keep doing whatever the heck we were doing
-                if ( GameObject.Actor.IsMoving )
+                if ( actor.IsMoving )
                 {
-                    GameObject.Actor.Move( GameObject.Direction, 50 );
+                    actor.Move( GameObject.Direction, 50 );
                 }
             }
         }
@@ -70,7 +71,7 @@ namespace Scott.Dungeon.AI
         /// <param name="gameTime"></param>
         private void PerformIdleUpdate( GameTime gameTime )
         {
-            ActorController actor = GameObject.Actor;
+            ActorController actor = GameObject.GetComponent<ActorController>();
 
             // Are we walking around or just standing?
             if ( actor.IsMoving )
