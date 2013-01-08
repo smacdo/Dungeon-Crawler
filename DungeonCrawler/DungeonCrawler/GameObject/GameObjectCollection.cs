@@ -15,11 +15,14 @@ namespace Scott.Dungeon.ComponentModel
     public class GameObjectCollection
     {
         private const int DEFAULT_CAPACITY = 4096;
+
         public List<GameObject> GameObjects { get; private set; }
         public ComponentManager<CharacterSprite> CharacterSprites { get; private set; }
         public ComponentManager<AiController> AiControllers { get; private set; }
         public ComponentManager<ActorController> ActorControllers { get; private set; }
-        public MovementManager Movements { get; private set; }
+        public ComponentManager<Movement> Movements { get; private set; }
+
+        private UniqueIdManager mIdManager;
 
         /// <summary>
         /// Constructor
@@ -30,7 +33,9 @@ namespace Scott.Dungeon.ComponentModel
             CharacterSprites = new ComponentManager<CharacterSprite>( DEFAULT_CAPACITY );
             AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
-            Movements = new MovementManager( DEFAULT_CAPACITY );
+            Movements = new ComponentManager<Movement>( DEFAULT_CAPACITY );
+
+            mIdManager = new UniqueIdManager();
         }
 
         /// <summary>
@@ -54,7 +59,13 @@ namespace Scott.Dungeon.ComponentModel
         /// <returns></returns>
         public GameObject Create( string name, Vector2 position, Direction direction, int width, int height )
         {
-            GameObject gameObject = new GameObject( name, this, position, direction, width, height );
+            GameObject gameObject = new GameObject( name,
+                                                    this,
+                                                    mIdManager.AllocateId(),
+                                                    position,
+                                                    direction,
+                                                    width,
+                                                    height );
             GameObjects.Add( gameObject );
 
             return gameObject; 
@@ -75,9 +86,7 @@ namespace Scott.Dungeon.ComponentModel
 
             foreach ( GameObject gameObject in GameObjects )
             {
-                debugText.Append( "\t" );
                 debugText.Append( gameObject.DumpDebugInfoToString() );
-                debugText.Append( "\n" );
             }
 
             debugText.Append( "],\n\n" );

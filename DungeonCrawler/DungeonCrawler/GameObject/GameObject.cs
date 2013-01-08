@@ -5,6 +5,7 @@ using Scott.Dungeon.Actor;
 using Scott.Dungeon.AI;
 using Scott.Dungeon.Graphics;
 using Scott.Dungeon.Data;
+using System.Text;
 
 namespace Scott.Dungeon.ComponentModel
 {
@@ -36,6 +37,7 @@ namespace Scott.Dungeon.ComponentModel
         public int Height { get; set; }     // same question
 
         private GameObjectCollection mParentCollection;
+        private ulong mId;
 
         /// <summary>
         /// TODO: THIS NEEDS TO BE COMMENTED AND EXPLAINED
@@ -45,8 +47,8 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Constructor
         /// </summary>
-        public GameObject( string name, GameObjectCollection parentCollection )
-            : this( name, parentCollection, new Vector2( 0, 0 ), Direction.South, 0, 0 )
+        public GameObject( string name, GameObjectCollection parentCollection, ulong id )
+            : this( name, parentCollection, id, new Vector2( 0, 0 ), Direction.South, 0, 0 )
         {
         }
 
@@ -60,6 +62,7 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="height">Game object height</param>
         public GameObject( string name,
                            GameObjectCollection parentCollection,
+                           ulong id,
                            Vector2 position,
                            Direction direction,
                            int width, int height )
@@ -73,6 +76,7 @@ namespace Scott.Dungeon.ComponentModel
 
             mParentCollection = parentCollection;
             mComponents = new Dictionary<Type, IGameObjectComponent>( DEFAULT_COMPONENT_COUNT );
+            mId = id;
         }
 
         /// <summary>
@@ -129,12 +133,29 @@ namespace Scott.Dungeon.ComponentModel
 
         public string DumpDebugInfoToString()
         {
-            return String.Format( "{{ name: \"{0}\", pos: {1}, dir: \"{2}\", w: {3}, h: {4} }}",
-                                  Name,
-                                  Position,
-                                  Direction.ToString(),
-                                  Width,
-                                  Height );
+            StringBuilder debugText = new StringBuilder();
+
+            debugText.Append(
+                String.Format( "\t{{ id: {0}, name: \"{1}\", pos: {2}, dir: \"{3}\", w: {4}, h: {5}, components: [\n",
+                               mId,
+                               Name,
+                               Position,
+                               Direction.ToString(),
+                               Width,
+                               Height ) );
+
+            // List the components attached to this game object (only the basics)
+            foreach ( KeyValuePair<System.Type, IGameObjectComponent> pair in mComponents )
+            {
+                debugText.Append(
+                    String.Format( "\t\t{{ type: \"{0}\", id: {1}, enabled: {2} }}\n",
+                                   pair.Value.GetType().Name,
+                                   pair.Value.Id,
+                                   pair.Value.Enabled ) );
+            }
+
+            debugText.Append( "\t]},\n" );
+            return debugText.ToString();
         }
     }
 }

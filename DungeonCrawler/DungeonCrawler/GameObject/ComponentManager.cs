@@ -16,6 +16,7 @@ namespace Scott.Dungeon.ComponentModel
         /// A pre-allocated pool of instances to speed up object creation and destruction
         /// </summary>
         private InstancePool<T> mComponentPool;
+        private UniqueIdManager mIdManager;
 
         /// <summary>
         /// Constructor
@@ -23,6 +24,7 @@ namespace Scott.Dungeon.ComponentModel
         public ComponentManager( int capacity )
         {
             mComponentPool = new InstancePool<T>( capacity );
+            mIdManager = new UniqueIdManager();
         }
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace Scott.Dungeon.ComponentModel
             // Instantiate the game component and set it up
             T instance = mComponentPool.Take();
 
-            instance.ResetComponent( owner, true );
+            instance.ResetComponent( owner, true, mIdManager.AllocateId() );
             owner.AddComponent<T>( instance );
 
             return instance;

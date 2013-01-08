@@ -19,6 +19,7 @@ namespace Scott.Dungeon.ComponentModel
     public abstract class IGameObjectComponent
     {
         private GameObject mOwner;
+        public ulong Id { get; private set; }
 
         /// <summary>
         /// The game object that owns this components
@@ -55,6 +56,7 @@ namespace Scott.Dungeon.ComponentModel
         {
             Owner = null;
             Enabled = false;
+            Id = 0;     // Zero is always an illegal uid
         }
 
         /// <summary>
@@ -69,7 +71,7 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public void ResetComponent()
         {
-            ResetComponent( null, false );
+            ResetComponent( null, false, 0 );   // Zero is always an invalid UID
         }
 
         /// <summary>
@@ -77,10 +79,11 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         /// <param name="gameObject">The game object that owns this component</param>
         /// <param name="enabled">Whetehr</param>
-        public void ResetComponent( GameObject gameObject, bool enabled )
+        public void ResetComponent( GameObject gameObject, bool enabled, ulong id )
         {
             Owner = gameObject;
             Enabled = enabled;
+            Id = id;
         }
 
         /// <summary>
@@ -91,14 +94,16 @@ namespace Scott.Dungeon.ComponentModel
         {
             if ( Owner != null )
             {
-                return String.Format( "{{ owner: \"{0}\", enabled: {1}, {2} }}",
+                return String.Format( "{{ id: {0}, owner: \"{1}\", enabled: {2}, {3} }}",
+                                      Id,
                                       Owner.Name,
                                       Enabled,
                                       DumpDebugInfo() );
             }
             else
             {
-                return String.Format( "{{ owner: 0, enabled: {1}, {2} }}",
+                return String.Format( "{{ id {0}, owner: 0, enabled: {1}, {2} }}",
+                                      Id,
                                       Enabled,
                                       DumpDebugInfo() );
             }
