@@ -29,19 +29,46 @@ namespace Scott.Dungeon.Data
         public Rectangle UnrotatedBoundingRect;
 
         /// <summary>
+        /// A  rectangle that tightly encompasses the rotated rectangle.
+        /// </summary>
+        public Rectangle AxisAlignedBoundingRect;
+
+        /// <summary>
         /// Amount the bounding rectangle is rotated.
         /// </summary>
-        /// <remarks>
-        /// We hold onto the unrotated bounding rectangle, and re-rotate each time the
-        /// rotation is updated. Why? To prevent increasingly nasty floating point drift.
-        /// </remarks>
-        public Vector2 Origin { get; private set; }
+        public Vector2 PivotOrigin { get; private set; }
 
+        /// <summary>
+        /// The rotated rectangle's upper left vertex. This is the original upper left vertex from
+        /// the unrotated rectangle, so this value may or may not actually be the upper left most
+        /// point.
+        /// </summary>
         public Vector2 UpperLeft { get; private set; }
+
+        /// <summary>
+        /// The rotated rectangle's upper right vertex. This is the original upper right vertex from
+        /// the unrotated rectangle, so this value may or may not actually be the upper right most
+        /// point.
+        /// </summary>
         public Vector2 UpperRight { get; private set; }
+
+        /// <summary>
+        /// The rotated rectangle's lower left vertex. This is the original lower left vertex from
+        /// the unrotated rectangle, so this value may or may not actually be the lower left most
+        /// point.
+        /// </summary>
         public Vector2 LowerLeft { get; private set; }
+
+        /// <summary>
+        /// The rotated rectangle's lower right vertex. This is the original lower right vertex from
+        /// the unrotated rectangle, so this value may or may not actually be the lower right most
+        /// point.
+        /// </summary>
         public Vector2 LowerRight { get; private set; }
 
+        /// <summary>
+        /// Width of the rotated bounding rectangle
+        /// </summary>
         public float Width
         {
             get
@@ -50,6 +77,9 @@ namespace Scott.Dungeon.Data
             }
         }
 
+        /// <summary>
+        /// Height of the rotated bounding rectangle
+        /// </summary>
         public float Height
         {
             get
@@ -169,7 +199,7 @@ namespace Scott.Dungeon.Data
         /// <param name="pivot">Position (in world coordintes) of the rotational pivot point</param>
         private void RecalculateCachedCorners( float radians, Vector2 pivot )
         {
-            Origin = pivot;
+            PivotOrigin = pivot;
 
             // Find unrotated vertex points
             Vector2 oUpperLeft  = new Vector2( UnrotatedBoundingRect.Left, UnrotatedBoundingRect.Top );

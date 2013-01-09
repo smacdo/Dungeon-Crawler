@@ -124,7 +124,7 @@ namespace Scott.Dungeon.Graphics
             DrawLine( box.LowerRight, box.UpperRight, color );
             DrawLine( box.LowerRight, box.LowerLeft, color );
 
-            Vector2 origin = box.Origin;
+            Vector2 origin = box.PivotOrigin;
             DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
         }
 
