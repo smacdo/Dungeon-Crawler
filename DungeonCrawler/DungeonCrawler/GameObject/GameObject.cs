@@ -17,20 +17,52 @@ namespace Scott.Dungeon.ComponentModel
         private const int DEFAULT_COMPONENT_COUNT = 7;
 
         /// <summary>
+        /// Parent of this game object
+        /// </summary>
+        public GameObject Parent
+        {
+            get
+            {
+                return mParent;
+            }
+            set
+            {
+                Reparent( value );
+            }
+        }
+
+        /// <summary>
+        /// List of children
+        /// </summary>
+        public List<GameObject> Children { get; private set; }
+
+        /// <summary>
         /// This game object's name
         /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
-        /// Location of the game object 
+        /// Location of the game object in world coordinates
         /// </summary>
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get
+            {
+                return mPosition;
+            }
+            set
+            {
+                SetPosition( value );
+            }
+        }
 
         /// <summary>
         /// Get the direciton this object is facing
         /// </summary>
         public Direction Direction { get; set; }
 
+        private GameObject mParent;
+        private Vector2 mPosition;
         private GameObjectCollection mParentCollection;
         private ulong mId;
 
@@ -62,8 +94,10 @@ namespace Scott.Dungeon.ComponentModel
                            Direction direction )
         {
             Name = name;
-            Position = position;
+            mPosition = position;
+            mParent = null;
             Direction = direction;
+            Children = new List<GameObject>();
 
             mParentCollection = parentCollection;
             mComponents = new Dictionary<Type, IGameObjectComponent>( DEFAULT_COMPONENT_COUNT );
@@ -120,6 +154,64 @@ namespace Scott.Dungeon.ComponentModel
             mComponents.TryGetValue( typeof( T ), out component );
 
             return (T) component;
+        }
+
+        /// <summary>
+        /// Set the position of the game object and updates the position of all it's children
+        /// game objects.
+        /// </summary>
+        /// <param name="position">The new position</param>
+        public void SetPosition( Vector2 position )
+        {
+            mPosition = position;
+
+            foreach ( GameObject child in Children )
+            {
+                child.UpdatePosition( mPosition );
+            }
+        }
+
+        /// <summary>
+        /// Update our children's position information
+        /// </summary>
+        /// <param name="parentPosition"></param>
+        private void UpdatePosition( Vector2 parentPosition )
+        {
+            mPosition = parentPosition + mPosition;
+        }
+
+        /// <summary>
+        /// Changes the parent of this game object
+        /// </summary>
+        /// <param name="newParent">Reference to the new parent (null for none)</param>
+        private void Reparent( GameObject newParent )
+        {
+            // We cannot parent to ourselves
+            if ( ReferenceEquals( this, newParent ) )
+            {
+                throw new GameObjectException( "Cannot set the parent to itself", this );
+            }
+
+            // Don't do anything special if we are not changing parents
+            if ( ReferenceEquals( mParent, newParent ) )
+            {
+                return;
+            }
+
+            // Do we need to remove ourself from the parent's children list?
+            if ( mParent != null )
+            {
+                mParent.Children.Remove( newParent );
+            }
+
+            // Do we need to add ourself as a child to this parent?
+            if ( newParent != null )
+            {
+                newParent.Children.Add( this );
+            }
+
+            // Save the new parent... and we're done!
+            mParent = newParent;
         }
 
         public string DumpDebugInfoToString()
