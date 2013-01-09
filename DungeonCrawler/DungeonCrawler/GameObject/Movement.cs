@@ -80,12 +80,12 @@ namespace Scott.Dungeon.ComponentModel
 
                 int screenWidth  = GameRoot.ViewportWidth;
                 int screenHeight = GameRoot.ViewportHeight;
-                int objectWidth  = (int) collider.Width;
-                int objectHeight = (int) collider.Height;
 
                 bool isOutOfBounds =
-                    position.X < 0 || position.X + (int) collider.Width > screenWidth ||
-                    position.Y < 0 || position.Y + (int) collider.Height > screenHeight;
+                    position.X + collider.UpperLeft.X  < 0           ||
+                    position.X + collider.UpperRight.X > screenWidth ||
+                    position.Y + collider.UpperLeft.Y  < 0 ||
+                    position.Y + collider.LowerRight.Y > screenHeight;
 
                 // Update the movement information
                 if ( !isOutOfBounds )
