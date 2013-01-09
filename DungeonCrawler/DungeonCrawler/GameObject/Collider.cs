@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Scott.Dungeon.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,34 +8,66 @@ using System.Text;
 namespace Scott.Dungeon.ComponentModel
 {
     /// <summary>
-    /// Interface for game object components
+    /// Game component that detects, resolves and handles collisions between game objects
     /// </summary>
-    public interface IGameObjectComponent
+    public class Collider : BoundingRect, IGameObjectComponent
     {
-        ulong Id { get; }
-        GameObject Owner { get; set; }
-        bool Enabled { get; set; }
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public Collider()
+            : this( new Rectangle( 0, 0, 0, 0 ), 0 )
+        {
 
-        void Update( GameTime time );
+        }
 
-        void ResetComponent( GameObject gameObject, bool enabled, ulong id );
+        /// <summary>
+        /// Bounding box constructor
+        /// </summary>
+        /// <param name="boundingBox">Bounding box dimensions</param>
+        public Collider( Rectangle boundingBox )
+            : this( boundingBox, 0, Vector2.Zero )
+        {
+        }
 
-        string ToString();
-        string DumpDebugInfo();
-    }
+        /// <summary>
+        /// Bounding box constructor
+        /// </summary>
+        /// <param name="boundingBox">Original dimensions of bounding box</param>
+        /// <param name="rotation">Amount of rotation (in radians)</param>
+        public Collider( Rectangle boundingBox, float rotation )
+            : this( boundingBox, rotation, Vector2.Zero )
+        {
+        }
 
-    /// <summary>
-    /// Base class for all game object components
-    /// 
-    /// NOTE: DO NOT STORE REFERENCES TO GAME COMPONENTS FOR MORE THAN ONE FRAME!
-    ///       Instead, re-request the reference from either the GameObjectCollection
-    ///       or the specific game object. This is to ensure we don't go crazy trying
-    ///       to figure out who is still holding references to deleted instances.
-    /// 
-    /// TODO: Explain this much better
-    /// </summary>
-    public abstract class AbstractGameObjectComponent : IGameObjectComponent
-    {
+        /// <summary>
+        /// Bounding box constructor
+        /// </summary>
+        /// <param name="boundingBox">Original dimensions of bounding box</param>
+        /// <param name="rotation">Amount of rotation</param>
+        /// <param name="origin">Rotational pivot position. Top left is (0,0).</param>
+        public Collider( Rectangle boundingBox, float rotation, Vector2 origin )
+            : base( boundingBox, rotation, origin )
+        {
+            Owner = null;
+            Enabled = false;
+            Id = 0;     // Zero is always an illegal uid
+        }
+
+        /// <summary>
+        /// Perform update computations
+        /// </summary>
+        /// <param name="time"></param>
+        public void Update( GameTime time )
+        {
+            Rectangle worldCollisionRect = new Rectangle( (int) Owner.Position.X + UnrotatedBoundingRect.X,
+                                                          (int) Owner.Position.Y + UnrotatedBoundingRect.Y,
+                                                          (int) this.Width,
+                                                          (int) this.Height );
+
+            GameRoot.Debug.DrawRect( worldCollisionRect, Color.Green );
+        }
+
         private GameObject mOwner;
         public ulong Id { get; private set; }
 
@@ -65,22 +98,6 @@ namespace Scott.Dungeon.ComponentModel
         /// be updated or displayed.
         /// </summary>
         public bool Enabled { get; set; }
-
-        /// <summary>
-        /// Component constructor
-        /// </summary>
-        public AbstractGameObjectComponent()
-        {
-            Owner = null;
-            Enabled = false;
-            Id = 0;     // Zero is always an illegal uid
-        }
-
-        /// <summary>
-        /// Updates the game component
-        /// </summary>
-        /// <param name="time">The current simulation time</param>
-        public abstract void Update( GameTime time );
 
         /// <summary>
         /// Resets the game component to a default state

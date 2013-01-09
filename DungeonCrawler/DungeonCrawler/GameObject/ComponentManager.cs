@@ -67,7 +67,7 @@ namespace Scott.Dungeon.ComponentModel
         {
             // Reset the component to it's default state, and then return it to the
             // component pool
-            instance.ResetComponent();
+            instance.ResetComponent( null, false, 0 );
             mComponentPool.Return( instance );
         }
 

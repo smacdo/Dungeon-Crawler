@@ -12,7 +12,7 @@ namespace Scott.Dungeon.ComponentModel
     /// work together to provide a standard set of animations along with layered 
     /// equipment.
     /// </summary>
-    public class CharacterSprite : IGameObjectComponent
+    public class CharacterSprite : AbstractGameObjectComponent
     {
         public enum SubSpriteIndex
         {

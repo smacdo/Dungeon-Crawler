@@ -31,11 +31,6 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public Direction Direction { get; set; }
 
-        public BoundingRect Bounds { get; private set; }
-
-        public int Width { get; set; }      // should we also adjust sprite width, or at least warn?
-        public int Height { get; set; }     // same question
-
         private GameObjectCollection mParentCollection;
         private ulong mId;
 
@@ -48,7 +43,7 @@ namespace Scott.Dungeon.ComponentModel
         /// Constructor
         /// </summary>
         public GameObject( string name, GameObjectCollection parentCollection, ulong id )
-            : this( name, parentCollection, id, new Vector2( 0, 0 ), Direction.South, 0, 0 )
+            : this( name, parentCollection, id, new Vector2( 0, 0 ), Direction.South )
         {
         }
 
@@ -64,15 +59,11 @@ namespace Scott.Dungeon.ComponentModel
                            GameObjectCollection parentCollection,
                            ulong id,
                            Vector2 position,
-                           Direction direction,
-                           int width, int height )
+                           Direction direction )
         {
             Name = name;
             Position = position;
             Direction = direction;
-
-            Width = width;
-            Height = height;
 
             mParentCollection = parentCollection;
             mComponents = new Dictionary<Type, IGameObjectComponent>( DEFAULT_COMPONENT_COUNT );
@@ -102,7 +93,7 @@ namespace Scott.Dungeon.ComponentModel
         /// Removes the requested game component
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void DeleteComponent<T>() where T : IGameObjectComponent
+        public void DeleteComponent<T>() where T : AbstractGameObjectComponent
         {
             // Make sure the game component actually exists
             if ( mComponents.ContainsKey( typeof( T ) ) )
@@ -136,13 +127,11 @@ namespace Scott.Dungeon.ComponentModel
             StringBuilder debugText = new StringBuilder();
 
             debugText.Append(
-                String.Format( "\t{{ id: {0}, name: \"{1}\", pos: {2}, dir: \"{3}\", w: {4}, h: {5}, components: [\n",
+                String.Format( "\t{{ id: {0}, name: \"{1}\", pos: {2}, dir: \"{3}\", components: [\n",
                                mId,
                                Name,
                                Position,
-                               Direction.ToString(),
-                               Width,
-                               Height ) );
+                               Direction.ToString() ) );
 
             // List the components attached to this game object (only the basics)
             foreach ( KeyValuePair<System.Type, IGameObjectComponent> pair in mComponents )

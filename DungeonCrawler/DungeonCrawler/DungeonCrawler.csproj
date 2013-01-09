@@ -111,6 +111,7 @@
     <Compile Include="Actor\ActorController.cs" />
     <Compile Include="Ai\AiController.cs" />
     <Compile Include="BoundingRect.cs" />
+    <Compile Include="GameObject\Collider.cs" />
     <Compile Include="GameObject\GameObjectCollection.cs" />
     <Compile Include="GameObject\IGameObjectComponent.cs" />
     <Compile Include="GameObject\ComponentManager.cs" />
@@ -133,6 +134,7 @@
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
+    <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DungeonCrawlerCommon\DungeonCrawlerCommon.csproj">

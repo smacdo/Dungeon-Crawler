@@ -9,7 +9,7 @@ namespace Scott.Dungeon.Actor
     /// <summary>
     /// Represents a interactive character
     /// </summary>
-    public class ActorController : IGameObjectComponent
+    public class ActorController : AbstractGameObjectComponent
     {
         /// <summary>
         /// The current action that this actor is performing

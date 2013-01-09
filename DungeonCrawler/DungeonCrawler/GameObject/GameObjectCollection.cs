@@ -21,6 +21,7 @@ namespace Scott.Dungeon.ComponentModel
         public ComponentManager<AiController> AiControllers { get; private set; }
         public ComponentManager<ActorController> ActorControllers { get; private set; }
         public ComponentManager<Movement> Movements { get; private set; }
+        public ComponentManager<Collider> Colliders { get; private set; }
 
         private UniqueIdManager mIdManager;
 
@@ -34,6 +35,7 @@ namespace Scott.Dungeon.ComponentModel
             AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
             Movements = new ComponentManager<Movement>( DEFAULT_CAPACITY );
+            Colliders = new ComponentManager<Collider>( DEFAULT_CAPACITY );
 
             mIdManager = new UniqueIdManager();
         }
@@ -45,7 +47,7 @@ namespace Scott.Dungeon.ComponentModel
         /// <returns>Copy of the newly created game object</returns>
         public GameObject Create( string name )
         {
-            return Create( name, Vector2.Zero, Direction.South, 0, 0 );
+            return Create( name, Vector2.Zero, Direction.South );
         }
 
         /// <summary>
@@ -57,15 +59,13 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="width">Width of the game object</param>
         /// <param name="height">Height of the game object</param>
         /// <returns></returns>
-        public GameObject Create( string name, Vector2 position, Direction direction, int width, int height )
+        public GameObject Create( string name, Vector2 position, Direction direction )
         {
             GameObject gameObject = new GameObject( name,
                                                     this,
                                                     mIdManager.AllocateId(),
                                                     position,
-                                                    direction,
-                                                    width,
-                                                    height );
+                                                    direction );
             GameObjects.Add( gameObject );
 
             return gameObject; 
@@ -99,6 +99,9 @@ namespace Scott.Dungeon.ComponentModel
             debugText.Append( "\n\n" );
 
             debugText.Append( Movements.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            debugText.Append( Colliders.DumpDebugDumpDebugInfoToString() );
             debugText.Append( "\n\n" );
 
             return debugText.ToString();

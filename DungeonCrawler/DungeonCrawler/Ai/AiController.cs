@@ -9,7 +9,7 @@ namespace Scott.Dungeon.AI
     /// <summary>
     /// Does AI logic
     /// </summary>
-    public class AiController : IGameObjectComponent
+    public class AiController : AbstractGameObjectComponent
     {
         private const double CHANGE_DIRECTION_CHANCE = 0.05;
         private const double START_WALKING_CHANCE = 0.15;

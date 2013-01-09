@@ -12,6 +12,9 @@ namespace Scott.Dungeon.Data
     /// TODO: Do profiling to see if we should use a fitting rectangle as an early exit test
     /// (A circle would probably be even better)
     /// 
+    /// TODO: Transition this to local space collision detection (currently in world space)
+    /// TODO: Unit test
+    /// 
     /// HUGE HELP: http://www.metanetsoftware.com/technique/tutorialA.html
     /// </summary>
     public class BoundingRect
@@ -38,6 +41,22 @@ namespace Scott.Dungeon.Data
         public Vector2 UpperRight { get; private set; }
         public Vector2 LowerLeft { get; private set; }
         public Vector2 LowerRight { get; private set; }
+
+        public float Width
+        {
+            get
+            {
+                return UnrotatedBoundingRect.Width;
+            }
+        }
+
+        public float Height
+        {
+            get
+            {
+                return UnrotatedBoundingRect.Height;
+            }
+        }
 
         /// <summary>
         /// Bounding box constructor
@@ -71,6 +90,20 @@ namespace Scott.Dungeon.Data
         /// <param name="rotation">Amount of rotation</param>
         /// <param name="origin">Rotational pivot position. Top left is (0,0).</param>
         public BoundingRect( Rectangle boundingBox, float rotation, Vector2 origin )
+        {
+            UnrotatedBoundingRect = boundingBox;
+            RecalculateCachedCorners( rotation, origin );
+        }
+
+        public void Set( Rectangle boundingBox )
+        {
+            Vector2 origin = new Vector2( (int) Math.Round( UnrotatedBoundingRect.Width / 2.0f ) + UnrotatedBoundingRect.X,
+                                (int) Math.Round( UnrotatedBoundingRect.Height / 2.0f ) + UnrotatedBoundingRect.Y );
+
+            Set( boundingBox, 0.0f, origin );
+        }
+
+        public void Set( Rectangle boundingBox, float rotation, Vector2 origin )
         {
             UnrotatedBoundingRect = boundingBox;
             RecalculateCachedCorners( rotation, origin );

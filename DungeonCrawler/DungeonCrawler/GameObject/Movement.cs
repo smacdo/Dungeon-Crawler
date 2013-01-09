@@ -9,7 +9,7 @@ namespace Scott.Dungeon.ComponentModel
     /// <summary>
     /// Tracks movement information
     /// </summary>
-    public class Movement : IGameObjectComponent
+    public class Movement : AbstractGameObjectComponent
     {
         /// <summary>
         /// The speed (in units/sec) that the movement is occurring
@@ -76,14 +76,16 @@ namespace Scott.Dungeon.ComponentModel
                 Vector2 position = Owner.Position + ( movementAxis * Speed * timeDelta );
 
                 // Don't let the object go out of bounds (TODO: Do this smarter when we get real levels)
+                Collider collider = Owner.GetComponent<Collider>();
+
                 int screenWidth  = GameRoot.ViewportWidth;
                 int screenHeight = GameRoot.ViewportHeight;
-                int objectWidth  = Owner.Width;
-                int objectHeight = Owner.Height;
+                int objectWidth  = (int) collider.Width;
+                int objectHeight = (int) collider.Height;
 
                 bool isOutOfBounds =
-                    position.X < 0 || position.X + Owner.Width > screenWidth ||
-                    position.Y < 0 || position.Y + Owner.Height > screenHeight;
+                    position.X < 0 || position.X + (int) collider.Width > screenWidth ||
+                    position.Y < 0 || position.Y + (int) collider.Height > screenHeight;
 
                 // Update the movement information
                 if ( !isOutOfBounds )
