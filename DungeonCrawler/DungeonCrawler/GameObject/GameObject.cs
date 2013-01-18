@@ -182,6 +182,11 @@ namespace Scott.Dungeon.ComponentModel
             mPosition = parentPosition + mPosition;
         }
 
+        public void AddChild( GameObject child )
+        {
+            child.Reparent( this );
+        }
+
         /// <summary>
         /// Changes the parent of this game object
         /// </summary>

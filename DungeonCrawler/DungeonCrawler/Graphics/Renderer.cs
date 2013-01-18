@@ -48,6 +48,14 @@ namespace Scott.Dungeon.Graphics
             mSinglePIxel.SetData( new[] { Color.White } );
         }
 
+        /// <summary>
+        /// Clear any pending items that are still queued for drawing
+        /// </summary>
+        public void ClearQueuedItems()
+        {
+            mSpritesToDraw.Clear();
+        }
+
         public void Draw( Sprite sprite, Vector2 position )
         {
             mSpritesToDraw.Add( new SpriteRenderInfo( sprite, position ) );

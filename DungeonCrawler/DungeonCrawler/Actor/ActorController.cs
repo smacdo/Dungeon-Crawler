@@ -146,7 +146,7 @@ namespace Scott.Dungeon.Actor
         /// </summary>
         public void UpdateWalkCycle( GameTime gameTime )
         {
-            CharacterSprite characterSprite = Owner.GetComponent<CharacterSprite>();
+            AnimationComponent animation = Owner.GetComponent<AnimationComponent>();
 
             if ( mMoveRequested )
             {
@@ -154,9 +154,9 @@ namespace Scott.Dungeon.Actor
                 // directions mid-walk, or should we just continue animating the current cycle?
                 string animationName = "Walk" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection );
 
-                if ( !characterSprite.IsPlayingAnimation( animationName ) )
+                if ( !animation.IsPlayingAnimation( animationName ) )
                 {
-                    characterSprite.PlayAnimationLooping( animationName );
+                    animation.PlayAnimationLooping( animationName );
                 }
 
                 // Set up movement information so our actor actually does
@@ -177,7 +177,7 @@ namespace Scott.Dungeon.Actor
             {
                 // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
                 // and being idle.
-                characterSprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                animation.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
 
                 mWasMovingLastUpdateCall = false;
                 mDirectionDuringLastCall = mRequestedMoveDirection;
@@ -185,7 +185,7 @@ namespace Scott.Dungeon.Actor
             else if ( mRequestedMoveDirection != mDirectionDuringLastCall )
             {
                 // We've changed direction without actually moving
-                characterSprite.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
+                animation.PlayAnimationLooping( "Idle" + Enum.GetName( typeof( Direction ), mRequestedMoveDirection ) );
                 mDirectionDuringLastCall = mRequestedMoveDirection;
             }
         }

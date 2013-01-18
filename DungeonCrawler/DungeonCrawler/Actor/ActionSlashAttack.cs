@@ -63,10 +63,10 @@ namespace Scott.Dungeon.Actor
         /// <param name="gameTime">Current simulation time</param>
         public void Update( GameTime gameTime )
         {
-            CharacterSprite characterSprite = mGameObject.GetComponent<CharacterSprite>();
+            AnimationComponent characterSprite = mGameObject.GetComponent<AnimationComponent>();
             TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
             TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
-
+/*
             switch ( mAttackStatus )
             {
                 case ActionAttackStatus.NotStarted:
@@ -103,7 +103,7 @@ namespace Scott.Dungeon.Actor
 
                 case ActionAttackStatus.Finished:
                     break;
-            }
+            }*/
         }
 
         /// <summary>

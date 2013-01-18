@@ -18,10 +18,11 @@ namespace Scott.Dungeon.ComponentModel
         private const int DEFAULT_CAPACITY = 4096;
 
         public List<GameObject> GameObjects { get; private set; }
-        public ComponentManager<CharacterSprite> CharacterSprites { get; private set; }
         public ComponentManager<AiController> AiControllers { get; private set; }
         public ComponentManager<ActorController> ActorControllers { get; private set; }
         public ComponentManager<Movement> Movements { get; private set; }
+        public ComponentManager<SpriteComponent> Sprites { get; private set; }
+        public ComponentManager<AnimationComponent> Animations { get; private set; }
 
         private UniqueIdManager mIdManager;
 
@@ -31,13 +32,14 @@ namespace Scott.Dungeon.ComponentModel
         public GameObjectCollection()
         {
             GameObjects = new List<GameObject>( DEFAULT_CAPACITY );
-            CharacterSprites = new ComponentManager<CharacterSprite>( DEFAULT_CAPACITY );
             AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
             Movements = new ComponentManager<Movement>( DEFAULT_CAPACITY );
-
+            Sprites = new ComponentManager<SpriteComponent>( DEFAULT_CAPACITY );
+            Animations = new ComponentManager<AnimationComponent>( DEFAULT_CAPACITY );
             mIdManager = new UniqueIdManager();
         }
+
 
         /// <summary>
         /// Creates and returns a new game object instance. This game object is tracked
@@ -91,13 +93,19 @@ namespace Scott.Dungeon.ComponentModel
             debugText.Append( "],\n\n" );
 
             // Now dump our component managers to disk
-            debugText.Append( CharacterSprites.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
             debugText.Append( AiControllers.DumpDebugDumpDebugInfoToString() );
             debugText.Append( "\n\n" );
 
+            debugText.Append( ActorControllers.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
             debugText.Append( Movements.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            debugText.Append( Sprites.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            debugText.Append( Animations.DumpDebugDumpDebugInfoToString() );
             debugText.Append( "\n\n" );
 
             return debugText.ToString();

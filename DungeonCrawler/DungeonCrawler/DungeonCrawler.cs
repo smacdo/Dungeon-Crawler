@@ -53,6 +53,22 @@ namespace Scott.Dungeon.Game
             base.Initialize();
         }
 
+        private GameObject CreateBodyPart( string name, string spriteName, bool visible = true )
+        {
+            GameObject go = mGameObjects.Create( name );
+            AddSprite( go, spriteName, visible );
+
+            return go;
+        }
+
+        private void AddSprite( GameObject go, string spriteName, bool visible = true )
+        {
+            SpriteComponent sprite       = mGameObjects.Sprites.Create( go );
+            AnimationComponent animation = mGameObjects.Animations.Create( go );
+
+            sprite.Sprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ), visible );
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -63,17 +79,16 @@ namespace Scott.Dungeon.Game
             mPlayer = mGameObjects.Create( "Player" );
             mPlayer.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
 
-            CharacterSprite playerSprite = mGameObjects.CharacterSprites.Create( mPlayer );
+            AddSprite( mPlayer, "sprites/Humanoid_Male" );
 
-            playerSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
-            playerSprite.Torso = new Sprite( Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
-            playerSprite.Legs = new Sprite( Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
-            playerSprite.Feet = new Sprite( Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
-            playerSprite.Head = new Sprite( Content.Load<SpriteData>( "sprites/Head_Helmet_Chain" ) );
-            playerSprite.Hands = new Sprite( Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
-            playerSprite.Shoulder = new Sprite( Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
-            playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
-            playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
+            mPlayer.AddChild( CreateBodyPart( "Body",      "sprites/Torso_Armor_Leather" ) );
+            mPlayer.AddChild( CreateBodyPart( "Legs",      "sprites/Legs_Pants_Green" ) );
+            mPlayer.AddChild( CreateBodyPart( "Feet",      "sprites/Feet_Shoes_Brown" ) );
+            mPlayer.AddChild( CreateBodyPart( "Head",      "sprites/Head_Helmet_Chain" ) );
+            mPlayer.AddChild( CreateBodyPart( "Hands",     "sprites/Bracer_Leather" ) );
+            mPlayer.AddChild( CreateBodyPart( "Shoulders", "sprites/Shoulder_Leather" ) );
+            mPlayer.AddChild( CreateBodyPart( "Belt",      "sprites/Belt_Leather" ) );
+            mPlayer.AddChild( CreateBodyPart( "Weapon",    "sprites/Weapon_Longsword", false ) );
 
             mGameObjects.Movements.Create( mPlayer );
             mGameObjects.ActorControllers.Create( mPlayer );
@@ -91,14 +106,14 @@ namespace Scott.Dungeon.Game
 
             Vector2 position = new Vector2( (int) ( mRandom.NextDouble() * 600.0 ),
                                             (int) ( mRandom.NextDouble() * 400.0 ) );
+
             GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
                                                     position,
                                                     Direction.South );
 
             enemy.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
 
-            CharacterSprite skeletonSprite = mGameObjects.CharacterSprites.Create( enemy );
-            skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
+            AddSprite( enemy, "sprites/Humanoid_Skeleton" );
 
             mGameObjects.ActorControllers.Create( enemy );
             mGameObjects.AiControllers.Create( enemy );
@@ -133,6 +148,7 @@ namespace Scott.Dungeon.Game
         protected override void Update( GameTime gameTime )
         {
             // Allow game play systems to perform any pre-update logic that might be needed
+            GameRoot.Renderer.ClearQueuedItems();
             GameRoot.Debug.PreUpdate( gameTime );
 
             // Test user input
@@ -196,6 +212,10 @@ namespace Scott.Dungeon.Game
             // Now update movement
             mGameObjects.Movements.Update( gameTime );
 
+            // Make sure animations are primed and updated (we need to trigger the
+            // correct animation events even if we are not drawwing)
+            mGameObjects.Animations.Update( gameTime );
+
             base.Update( gameTime );
         }
 
@@ -205,9 +225,8 @@ namespace Scott.Dungeon.Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            // Update animations on all of our sprites and then have them sent to the
-            // sprite renderer for drawing
-            mGameObjects.CharacterSprites.Update( gameTime );
+            // Walk through the game scene and collect all sprites
+            mGameObjects.Sprites.Update( gameTime );
 
             // Draw all requested game sprites
             GameRoot.Renderer.DrawScreen( gameTime );

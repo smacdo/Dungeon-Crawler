@@ -112,6 +112,7 @@
     <Compile Include="Ai\AiController.cs" />
     <Compile Include="BoundingRect.cs" />
     <Compile Include="GameObject\BoundingArea.cs" />
+    <Compile Include="GameObject\SpriteComponent.cs" />
     <Compile Include="Physics\Collider.cs" />
     <Compile Include="GameObject\GameObjectCollection.cs" />
     <Compile Include="GameObject\IGameObjectComponent.cs" />
@@ -122,7 +123,7 @@
     <Compile Include="GameObject\UniqueIdManager.cs" />
     <Compile Include="GameRoot.cs" />
     <Compile Include="Graphics\AnimationException.cs" />
-    <Compile Include="GameObject\CharacterSprite.cs" />
+    <Compile Include="GameObject\AnimationComponent.cs" />
     <Compile Include="Graphics\DebugRenderer.cs" />
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Graphics\Sprite.cs" />
