@@ -66,7 +66,7 @@ namespace Scott.Dungeon.Game
             SpriteComponent sprite       = mGameObjects.Sprites.Create( go );
             AnimationComponent animation = mGameObjects.Animations.Create( go );
 
-            animation.AssignAnimationData( Content.Load<SpriteData>( spriteName ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( spriteName ) );
 
             if ( !visible )
             {
@@ -84,16 +84,19 @@ namespace Scott.Dungeon.Game
             mPlayer = mGameObjects.Create( "Player" );
             mPlayer.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
 
-            AddSprite( mPlayer, "sprites/Humanoid_Male" );
+            SpriteComponent sprite = mGameObjects.Sprites.Create( mPlayer );
+            AnimationComponent animation = mGameObjects.Animations.Create( mPlayer );
 
-            mPlayer.AddChild( CreateBodyPart( "Body",      "sprites/Torso_Armor_Leather" ) );
-            mPlayer.AddChild( CreateBodyPart( "Legs",      "sprites/Legs_Pants_Green" ) );
-            mPlayer.AddChild( CreateBodyPart( "Feet",      "sprites/Feet_Shoes_Brown" ) );
-            mPlayer.AddChild( CreateBodyPart( "Head",      "sprites/Head_Helmet_Chain" ) );
-            mPlayer.AddChild( CreateBodyPart( "Hands",     "sprites/Bracer_Leather" ) );
-            mPlayer.AddChild( CreateBodyPart( "Shoulders", "sprites/Shoulder_Leather" ) );
-            mPlayer.AddChild( CreateBodyPart( "Belt",      "sprites/Belt_Leather" ) );
-            mPlayer.AddChild( CreateBodyPart( "Weapon",    "sprites/Weapon_Longsword", false ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
+
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Head_Helmet_Chain" ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
+ //           mPlayer.AddChild( CreateBodyPart( "Weapon",    "sprites/Weapon_Longsword", false ) );
 
             mGameObjects.Movements.Create( mPlayer );
             mGameObjects.ActorControllers.Create( mPlayer );
@@ -118,7 +121,10 @@ namespace Scott.Dungeon.Game
 
             enemy.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
 
-            AddSprite( enemy, "sprites/Humanoid_Skeleton" );
+            SpriteComponent sprite = mGameObjects.Sprites.Create( enemy );
+            AnimationComponent animation = mGameObjects.Animations.Create( enemy );
+
+            animation.AddSpriteAnimation( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
             mGameObjects.ActorControllers.Create( enemy );
             mGameObjects.AiControllers.Create( enemy );

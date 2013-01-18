@@ -5,6 +5,7 @@ using System.Text;
 using Scott.Dungeon.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Scott.Dungeon.Data;
 
 namespace Scott.Dungeon.ComponentModel
 {
@@ -14,55 +15,62 @@ namespace Scott.Dungeon.ComponentModel
     public class SpriteComponent : AbstractGameObjectComponent
     {
         /// <summary>
-        /// The current texture that should be displayed for the sprite
+        /// Represents a sprite that needs to be drawn
         /// </summary>
-        public Texture2D AtlasTexture { get; set; }
+        private class SpriteItem
+        {
+            /// <summary>
+            /// The current texture that should be displayed for the sprite
+            /// </summary>
+            public Texture2D AtlasTexture;
 
-        /// <summary>
-        /// A rectangle describing the offset and dimensions of the current animation frame
-        /// inside of the texture atlas
-        /// </summary>
-        public Rectangle AtlasSpriteRect { get; set; }
+            /// <summary>
+            /// A rectangle describing the offset and dimensions of the current animation frame
+            /// inside of the texture atlas
+            /// </summary>
+            public Rectangle AtlasSpriteRect;
 
-        /// <summary>
-        /// Offset from the standard top left origin
-        ///   SpriteData.OriginOffset
-        /// </summary>
-        public Vector2 DrawOffset { get; set; }
+            /// <summary>
+            /// Offset from the standard top left origin
+            ///   SpriteData.OriginOffset
+            /// </summary>
+            public Vector2 DrawOffset;
 
+        }
+
+        private List<SpriteItem> mItems;
         public Layer Layer { get; set; }
-
-        /// <summary>
-        /// Width of the sprite
-        /// </summary>
-        public int Width
-        {
-            get
-            {
-                return AtlasSpriteRect.Width;
-            }
-        }
-
-        /// <summary>
-        /// Height of the sprite
-        /// </summary>
-        public int Height
-        {
-            get
-            {
-                return AtlasSpriteRect.Height;
-            }
-        }
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public SpriteComponent()
         {
-            AtlasTexture    = null;
-            AtlasSpriteRect = new Rectangle( 0, 0, 0, 0 );
-            DrawOffset      = Vector2.Zero;
-            Layer           = Layer.Default;
+            mItems = new List<SpriteItem>( 1 );
+            Layer  = Layer.Default;
+        }
+
+        public int AddSprite( SpriteData sprite )
+        {
+            SpriteItem item = new SpriteItem();
+
+            item.AtlasTexture    = sprite.Texture;
+            item.AtlasSpriteRect = new Rectangle( 0, 0, sprite.Texture.Width, sprite.Texture.Height );
+            item.DrawOffset      = sprite.OriginOffset;
+
+            mItems.Add( item );
+
+            return mItems.Count - 1;
+        }
+
+        public void SetLayer( int layerIndex,
+                              Texture2D atlasTexture,
+                              Rectangle atlasSpriteRect,
+                              Vector2 drawOffset )
+        {
+            mItems[layerIndex].AtlasTexture = atlasTexture;
+            mItems[layerIndex].AtlasSpriteRect = atlasSpriteRect;
+            mItems[layerIndex].DrawOffset = drawOffset;
         }
 
         /// <summary>
@@ -73,7 +81,14 @@ namespace Scott.Dungeon.ComponentModel
         {
             if ( Enabled )
             {
-                GameRoot.Renderer.Draw( Layer, AtlasTexture, AtlasSpriteRect, DrawOffset + Owner.Position );
+                for ( int i = 0; i < mItems.Count; ++i )
+                {
+                    GameRoot.Renderer.Draw( Layer,
+                                            mItems[i].AtlasTexture,
+                                            mItems[i].AtlasSpriteRect,
+                                            mItems[i].DrawOffset + Owner.Position );
+                }
+                
 
                 if ( Owner.Bounds != null )
                 {

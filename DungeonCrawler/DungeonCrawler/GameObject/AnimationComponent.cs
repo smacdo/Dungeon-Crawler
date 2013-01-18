@@ -6,6 +6,7 @@ using System.Text;
 using System.Diagnostics;
 using Scott.Dungeon.Graphics;
 using Scott.Dungeon.Data;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Scott.Dungeon.ComponentModel
 {
@@ -17,11 +18,9 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Sprite data that this sprite is using
         /// </summary>
-        private SpriteData mSpriteData;
+        private SpriteData mRootSpriteAnimation;        // TODO: Redo this class
+        private List<SpriteData> mSpriteAnimations;
 
-        /// <summary>
-        /// The animation that is currently playing
-        /// </summary>
         private AnimationData mCurrentAnimation;
 
         /// <summary>
@@ -53,28 +52,34 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public AnimationComponent()
         {
-            mSpriteData = null;
-            mCurrentAnimation = null;
+            Reset();
+        }
+
+        private void Reset()
+        {
+            mRootSpriteAnimation = null;
+            mSpriteAnimations = new List<SpriteData>();
             mCurrentFrame = 0;
-            mFrameStartTime = TimeSpan.Zero;
+            mFrameStartTime = TimeSpan.MinValue;
             mIsAnimating = false;
             mAnimationEndingAction = AnimationEndingAction.Stop;
         }
 
-        public void AssignAnimationData( SpriteData spriteData )
+        public void AddSpriteAnimation( SpriteData spriteData )
         {
-            mSpriteData = spriteData;
-            
-            mCurrentAnimation = spriteData.Animations[spriteData.DefaultAnimationName];
-            mCurrentFrame = 0;
-            mFrameStartTime = TimeSpan.Zero;
-            mIsAnimating = false;
-            mAnimationEndingAction = AnimationEndingAction.StopAndReset;
-
-            if ( spriteData != null )
+            // Mark the root sprite
+            if ( mRootSpriteAnimation == null )
             {
-                UpdateSpriteComponent();
+                mRootSpriteAnimation = spriteData;
             }
+
+            mSpriteAnimations.Add( spriteData );
+
+            // Update the sprite component with our new animation
+            SpriteComponent sprite = Owner.GetComponent<SpriteComponent>();
+            Debug.Assert( sprite != null, "GameObject must have a sprite component" );
+
+            sprite.AddSprite( spriteData );
         }
 
         private void UpdateSpriteComponent()
@@ -83,9 +88,19 @@ namespace Scott.Dungeon.ComponentModel
             SpriteComponent sprite = Owner.GetComponent<SpriteComponent>();
             Debug.Assert( sprite != null, "GameObject must have a sprite component" );
 
-            sprite.AtlasTexture = mSpriteData.Texture;
-            sprite.DrawOffset   = mSpriteData.OriginOffset;
-            sprite.AtlasSpriteRect = mCurrentAnimation.Frames[mCurrentFrame];
+            // Apply current animation to all our sprites
+            if ( mRootSpriteAnimation != null )
+            {
+                string animation = ( mCurrentAnimation == null ? mRootSpriteAnimation.DefaultAnimationName : mCurrentAnimation.Name );
+
+                for ( int layer = 0; layer < mSpriteAnimations.Count; ++layer )
+                {
+                    sprite.SetLayer( layer,
+                                     mSpriteAnimations[layer].Texture,
+                                     mSpriteAnimations[layer].Animations[animation].Frames[mCurrentFrame],
+                                     mSpriteAnimations[layer].OriginOffset );
+                }
+            }
         }
 
         /// <summary>
@@ -97,18 +112,19 @@ namespace Scott.Dungeon.ComponentModel
                                    Direction direction,
                                    AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset )
         {
-            SpriteComponent sprite = Owner.GetComponent<SpriteComponent>();
             string animationName    = baseAnimationName + Enum.GetName( typeof( Direction ), direction );
             AnimationData animation = null;
 
             // Attempt to retrieve the requested animation. If the animation exists, go ahead and
             // start playing it
-            if ( mSpriteData.Animations.TryGetValue( animationName, out animation ) )
+            Debug.Assert( mRootSpriteAnimation != null, "Missing sprite aniation data" );
+
+            if ( mRootSpriteAnimation.Animations.TryGetValue( animationName, out animation ) )
             {
-                mCurrentAnimation = animation;
-                mCurrentFrame = 0;
-                mFrameStartTime = TimeSpan.MinValue;
-                CurrentBaseAnimationName = baseAnimationName;
+                mCurrentAnimation         = animation;
+                mCurrentFrame             = 0;
+                mFrameStartTime           = TimeSpan.MinValue;
+                CurrentBaseAnimationName  = baseAnimationName;
                 CurrentAnimationDirection = direction;
                 
                 mAnimationEndingAction = endingAction;
@@ -119,7 +135,7 @@ namespace Scott.Dungeon.ComponentModel
             else
             {
                 throw new AnimationException( "Failed to find animation named " + animationName,
-                                              mSpriteData.Name,
+                                              mRootSpriteAnimation.Name,
                                               animationName,
                                               0 );
             }
