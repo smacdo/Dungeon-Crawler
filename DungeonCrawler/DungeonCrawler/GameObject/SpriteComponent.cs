@@ -14,11 +14,55 @@ namespace Scott.Dungeon.ComponentModel
     public class SpriteComponent : AbstractGameObjectComponent
     {
         /// <summary>
+        /// The current texture that should be displayed for the sprite
+        /// </summary>
+        public Texture2D AtlasTexture { get; set; }
+
+        /// <summary>
+        /// A rectangle describing the offset and dimensions of the current animation frame
+        /// inside of the texture atlas
+        /// </summary>
+        public Rectangle AtlasSpriteRect { get; set; }
+
+        /// <summary>
+        /// Offset from the standard top left origin
+        ///   SpriteData.OriginOffset
+        /// </summary>
+        public Vector2 DrawOffset { get; set; }
+
+        public Layer Layer { get; set; }
+
+        /// <summary>
+        /// Width of the sprite
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                return AtlasSpriteRect.Width;
+            }
+        }
+
+        /// <summary>
+        /// Height of the sprite
+        /// </summary>
+        public int Height
+        {
+            get
+            {
+                return AtlasSpriteRect.Height;
+            }
+        }
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         public SpriteComponent()
         {
-            Sprite = null;
+            AtlasTexture    = null;
+            AtlasSpriteRect = new Rectangle( 0, 0, 0, 0 );
+            DrawOffset      = Vector2.Zero;
+            Layer           = Layer.Default;
         }
 
         /// <summary>
@@ -29,7 +73,7 @@ namespace Scott.Dungeon.ComponentModel
         {
             if ( Enabled )
             {
-                Sprite.Draw( Owner.Position );
+                GameRoot.Renderer.Draw( Layer, AtlasTexture, AtlasSpriteRect, DrawOffset + Owner.Position );
 
                 if ( Owner.Bounds != null )
                 {

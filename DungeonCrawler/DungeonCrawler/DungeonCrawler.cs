@@ -66,7 +66,12 @@ namespace Scott.Dungeon.Game
             SpriteComponent sprite       = mGameObjects.Sprites.Create( go );
             AnimationComponent animation = mGameObjects.Animations.Create( go );
 
-            sprite.Sprite = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ), visible );
+            animation.AssignAnimationData( Content.Load<SpriteData>( spriteName ) );
+
+            if ( !visible )
+            {
+                go.Enabled = false;
+            }
         }
 
         /// <summary>

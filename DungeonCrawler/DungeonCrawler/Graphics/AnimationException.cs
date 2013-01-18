@@ -10,14 +10,14 @@ namespace Scott.Dungeon.Graphics
     /// </summary>
     public class AnimationException : Exception
     {
-        public Sprite Sprite { get; private set; }
+        public string SpriteName { get; private set; }
         public string AnimationName { get; private set; }
         public int AnimationFrame { get; private set; }
 
-        public AnimationException( string message, Sprite sprite, string animationName, int animationFrame )
+        public AnimationException( string message, string spriteName, string animationName, int animationFrame )
             : base( message )
         {
-            Sprite = sprite;
+            SpriteName = spriteName;
             AnimationName = animationName;
             AnimationFrame = animationFrame;
         }

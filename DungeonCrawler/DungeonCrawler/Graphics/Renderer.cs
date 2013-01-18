@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -17,19 +18,21 @@ namespace Scott.Dungeon.Graphics
         /// </summary>
         private struct SpriteRenderInfo
         {
-            public Sprite Sprite;
+            public Texture2D TextureAtlas;
+            public Rectangle OffsetRect;
             public Vector2 Position;
 
-            public SpriteRenderInfo( Sprite sprite, Vector2 position )
+            public SpriteRenderInfo( Texture2D atlas, Rectangle offset, Vector2 pos )
                 : this()
             {
-                Sprite = sprite;
-                Position = position;
+                TextureAtlas = atlas;
+                OffsetRect = offset;
+                Position = pos;
             }
         }
 
         private GraphicsDevice mGraphicsDevice;
-        private List<SpriteRenderInfo> mSpritesToDraw;
+        private List< List<SpriteRenderInfo> > mSpritesToDraw;
         private SpriteBatch mSpriteBatch;
 
         /// <summary>
@@ -40,7 +43,14 @@ namespace Scott.Dungeon.Graphics
         public Renderer( GraphicsDevice graphics )
         {
             mGraphicsDevice = graphics;
-            mSpritesToDraw = new List<SpriteRenderInfo>( 4096 );
+//            mSpritesToDraw = new List<SpriteRenderInfo>( 4096 );
+
+            mSpritesToDraw = new List<List<SpriteRenderInfo>>( (int) Layer.Count );
+
+            for ( int i = 0; i < (int) Layer.Count; ++i )
+            {
+                mSpritesToDraw.Add( new List<SpriteRenderInfo>( 4096 ) );
+            }
 
             mSpriteBatch = new SpriteBatch( mGraphicsDevice );
 
@@ -53,12 +63,18 @@ namespace Scott.Dungeon.Graphics
         /// </summary>
         public void ClearQueuedItems()
         {
-            mSpritesToDraw.Clear();
+            foreach ( List<SpriteRenderInfo> list in mSpritesToDraw )
+            {
+                list.Clear();
+            }
         }
 
-        public void Draw( Sprite sprite, Vector2 position )
+        public void Draw( Layer layer, Texture2D atlas, Rectangle offset, Vector2 position )
         {
-            mSpritesToDraw.Add( new SpriteRenderInfo( sprite, position ) );
+            Debug.Assert( atlas != null, "Texture must be valid" );
+            Debug.Assert( mSpritesToDraw.Count > (int) layer, "There is so such layer" );
+
+            mSpritesToDraw[(int)layer].Add( new SpriteRenderInfo( atlas, offset, position ) );
         }
 
         public void DrawScreen( GameTime renderTime )
@@ -68,18 +84,20 @@ namespace Scott.Dungeon.Graphics
             // Draw all requested sprites
             mSpriteBatch.Begin();
 
-            foreach ( SpriteRenderInfo renderInfo in mSpritesToDraw )
+            for ( int i = (int) Layer.Count - 1; i >= 0; --i )
             {
-                Sprite sprite = renderInfo.Sprite;
+                List<SpriteRenderInfo> sprites = mSpritesToDraw[i];
 
-                if ( sprite.Visible )
+                foreach ( SpriteRenderInfo info in sprites )
                 {
-                    mSpriteBatch.Draw( sprite.CurrentAtlasTexture,
-                                       sprite.DrawOffset + renderInfo.Position,
-                                       sprite.CurrentAtlasOffset,
+                    mSpriteBatch.Draw( info.TextureAtlas,
+                                       info.Position,
+                                       info.OffsetRect,
                                        Color.White );
                 }
             }
+
+
 
             mSpriteBatch.End();
 
@@ -89,7 +107,7 @@ namespace Scott.Dungeon.Graphics
 
         private void PostDrawScreen()
         {
-            mSpritesToDraw.Clear();
+            ClearQueuedItems();
         }
     }
 }

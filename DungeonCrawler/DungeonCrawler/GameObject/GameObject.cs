@@ -58,6 +58,8 @@ namespace Scott.Dungeon.ComponentModel
 
         public BoundingArea Bounds { get; set; }
 
+        public bool Enabled { get; set; }
+
         /// <summary>
         /// Get the direciton this object is facing
         /// </summary>
@@ -100,6 +102,7 @@ namespace Scott.Dungeon.ComponentModel
             mParent = null;
             Direction = direction;
             Children = new List<GameObject>();
+            Enabled = true;
 
             mParentCollection = parentCollection;
             mComponents = new Dictionary<Type, IGameObjectComponent>( DEFAULT_COMPONENT_COUNT );
@@ -165,21 +168,13 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="position">The new position</param>
         public void SetPosition( Vector2 position )
         {
-            mPosition = position;
+            Vector2 delta = position - mPosition;
+            mPosition     = position;
 
             foreach ( GameObject child in Children )
             {
-                child.UpdatePosition( mPosition );
+                child.Position += delta;
             }
-        }
-
-        /// <summary>
-        /// Update our children's position information
-        /// </summary>
-        /// <param name="parentPosition"></param>
-        private void UpdatePosition( Vector2 parentPosition )
-        {
-            mPosition = parentPosition + mPosition;
         }
 
         public void AddChild( GameObject child )
