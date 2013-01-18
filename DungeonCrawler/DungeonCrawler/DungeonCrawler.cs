@@ -61,6 +61,7 @@ namespace Scott.Dungeon.Game
         {
             // Create the player character
             mPlayer = mGameObjects.Create( "Player" );
+            mPlayer.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
 
             CharacterSprite playerSprite = mGameObjects.CharacterSprites.Create( mPlayer );
 
@@ -74,9 +75,6 @@ namespace Scott.Dungeon.Game
             playerSprite.Belt = new Sprite( Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
             playerSprite.Weapon = new Sprite( Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
-            Collider collider = mGameObjects.Colliders.Create( mPlayer );
-            collider.Set( new Rectangle( 16, 8, 32, 52 ) );
-
             mGameObjects.Movements.Create( mPlayer );
             mGameObjects.ActorControllers.Create( mPlayer );
         }
@@ -86,18 +84,21 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
+            if ( mEnemyCount > 128 )
+            {
+                return;
+            }
+
             Vector2 position = new Vector2( (int) ( mRandom.NextDouble() * 600.0 ),
                                             (int) ( mRandom.NextDouble() * 400.0 ) );
             GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
                                                     position,
                                                     Direction.South );
 
+            enemy.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
+
             CharacterSprite skeletonSprite = mGameObjects.CharacterSprites.Create( enemy );
-
             skeletonSprite.Body = new Sprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
-
-            Collider collider = mGameObjects.Colliders.Create( enemy );
-            collider.Set( new Rectangle( 16, 8, 32, 52 ) );
 
             mGameObjects.ActorControllers.Create( enemy );
             mGameObjects.AiControllers.Create( enemy );
@@ -194,9 +195,6 @@ namespace Scott.Dungeon.Game
 
             // Now update movement
             mGameObjects.Movements.Update( gameTime );
-
-            // Resolve collisions
-            mGameObjects.Colliders.Update( gameTime );
 
             base.Update( gameTime );
         }

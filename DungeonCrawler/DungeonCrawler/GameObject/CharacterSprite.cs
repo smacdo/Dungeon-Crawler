@@ -234,6 +234,12 @@ namespace Scott.Dungeon.ComponentModel
                     s.Draw( Owner.Position );
                 }
             }
+
+            // Draw bounding box
+            if ( Owner.Bounds != null )
+            {
+                GameRoot.Debug.DrawBoundingArea( Owner.Bounds );
+            }
         }
     }
 }

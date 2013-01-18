@@ -76,16 +76,19 @@ namespace Scott.Dungeon.ComponentModel
                 Vector2 position = Owner.Position + ( movementAxis * Speed * timeDelta );
 
                 // Don't let the object go out of bounds (TODO: Do this smarter when we get real levels)
-                Collider collider = Owner.GetComponent<Collider>();
+                BoundingArea bounds = Owner.Bounds;
+                bool isOutOfBounds  = false;
 
-                int screenWidth  = GameRoot.ViewportWidth;
-                int screenHeight = GameRoot.ViewportHeight;
+                if ( bounds != null )
+                {
+                    int screenWidth  = GameRoot.ViewportWidth;
+                    int screenHeight = GameRoot.ViewportHeight;
 
-                bool isOutOfBounds =
-                    position.X + collider.UpperLeft.X  < 0           ||
-                    position.X + collider.UpperRight.X > screenWidth ||
-                    position.Y + collider.UpperLeft.Y  < 0 ||
-                    position.Y + collider.LowerRight.Y > screenHeight;
+                    isOutOfBounds = position.X + bounds.UpperLeft.X  < 0           ||
+                                    position.X + bounds.UpperRight.X > screenWidth ||
+                                    position.Y + bounds.UpperLeft.Y  < 0           ||
+                                    position.Y + bounds.LowerRight.Y > screenHeight;
+                }
 
                 // Update the movement information
                 if ( !isOutOfBounds )

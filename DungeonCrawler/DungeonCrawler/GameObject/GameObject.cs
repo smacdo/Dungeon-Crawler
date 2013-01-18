@@ -56,6 +56,8 @@ namespace Scott.Dungeon.ComponentModel
             }
         }
 
+        public BoundingArea Bounds { get; set; }
+
         /// <summary>
         /// Get the direciton this object is facing
         /// </summary>

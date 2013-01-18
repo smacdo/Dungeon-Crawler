@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Scott.Dungeon.Actor;
 using Scott.Dungeon.AI;
+using Scott.Dungeon.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,6 @@ namespace Scott.Dungeon.ComponentModel
         public ComponentManager<AiController> AiControllers { get; private set; }
         public ComponentManager<ActorController> ActorControllers { get; private set; }
         public ComponentManager<Movement> Movements { get; private set; }
-        public ComponentManager<Collider> Colliders { get; private set; }
 
         private UniqueIdManager mIdManager;
 
@@ -35,7 +35,6 @@ namespace Scott.Dungeon.ComponentModel
             AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
             Movements = new ComponentManager<Movement>( DEFAULT_CAPACITY );
-            Colliders = new ComponentManager<Collider>( DEFAULT_CAPACITY );
 
             mIdManager = new UniqueIdManager();
         }
@@ -99,9 +98,6 @@ namespace Scott.Dungeon.ComponentModel
             debugText.Append( "\n\n" );
 
             debugText.Append( Movements.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
-            debugText.Append( Colliders.DumpDebugDumpDebugInfoToString() );
             debugText.Append( "\n\n" );
 
             return debugText.ToString();

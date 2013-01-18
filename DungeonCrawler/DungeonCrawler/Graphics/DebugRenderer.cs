@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Scott.Dungeon.Data;
 using System.Diagnostics;
+using Scott.Dungeon.ComponentModel;
 
 namespace Scott.Dungeon.Graphics
 {
@@ -113,6 +114,27 @@ namespace Scott.Dungeon.Graphics
             r.Filled = true;
             r.Dimensions = dimensions;
             r.Enabled = true;
+        }
+
+        [Conditional( "DEBUG" )]
+        public void DrawBoundingArea( BoundingArea bounds )
+        {
+            // Draw the outer bounding box
+            DrawRect( bounds.BroadPhaseRectangle, Color.Green );
+
+            // Draw the bounding box that is possibly rotated
+            if ( bounds.Rotation != 0.0f )
+            {
+                DrawLine( bounds.UpperLeft, bounds.UpperRight, Color.Purple );
+                DrawLine( bounds.UpperLeft, bounds.LowerLeft, Color.Purple );
+
+                DrawLine( bounds.LowerRight, bounds.UpperRight, Color.Purple );
+                DrawLine( bounds.LowerRight, bounds.LowerLeft, Color.Purple );
+            }
+
+            // Draw the pivot origin
+            Vector2 origin = bounds.PivotOrigin;
+            DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
         }
 
         [Conditional( "DEBUG" )]

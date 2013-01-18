@@ -111,7 +111,8 @@
     <Compile Include="Actor\ActorController.cs" />
     <Compile Include="Ai\AiController.cs" />
     <Compile Include="BoundingRect.cs" />
-    <Compile Include="GameObject\Collider.cs" />
+    <Compile Include="GameObject\BoundingArea.cs" />
+    <Compile Include="Physics\Collider.cs" />
     <Compile Include="GameObject\GameObjectCollection.cs" />
     <Compile Include="GameObject\IGameObjectComponent.cs" />
     <Compile Include="GameObject\ComponentManager.cs" />
