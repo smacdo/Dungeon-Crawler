@@ -29,6 +29,9 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public int mCurrentFrame { get; private set; }
 
+        public string CurrentBaseAnimationName { get; private set; }
+        public Direction CurrentAnimationDirection { get; private set; }
+
         /// <summary>
         /// The time that the current frame was first displayed
         /// </summary>
@@ -90,9 +93,12 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         /// <param name="animationName">Name of the animation to play</param>
         /// <param name="endingAction">Action to take when the animation ends</param>
-        public void PlayAnimation( string animationName, AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset )
+        public void PlayAnimation( string baseAnimationName,
+                                   Direction direction,
+                                   AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset )
         {
             SpriteComponent sprite = Owner.GetComponent<SpriteComponent>();
+            string animationName    = baseAnimationName + Enum.GetName( typeof( Direction ), direction );
             AnimationData animation = null;
 
             // Attempt to retrieve the requested animation. If the animation exists, go ahead and
@@ -102,6 +108,8 @@ namespace Scott.Dungeon.ComponentModel
                 mCurrentAnimation = animation;
                 mCurrentFrame = 0;
                 mFrameStartTime = TimeSpan.MinValue;
+                CurrentBaseAnimationName = baseAnimationName;
+                CurrentAnimationDirection = direction;
                 
                 mAnimationEndingAction = endingAction;
                 mIsAnimating = true;
@@ -122,10 +130,10 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Play a requested animation and have it loop until interrupted
         /// </summary>
-        /// <param name="animationName">Name of the animation to play</param>
-        public void PlayAnimationLooping( string animationName )
+        /// <param name="baseAnimationName">Name of the animation to play</param>
+        public void PlayAnimationLooping( string baseAnimationName, Direction direction )
         {
-            PlayAnimation( animationName, AnimationEndingAction.Loop );
+            PlayAnimation( baseAnimationName, direction, AnimationEndingAction.Loop );
         }
 
         /// <summary>
@@ -135,7 +143,12 @@ namespace Scott.Dungeon.ComponentModel
         /// <returns></returns>
         public bool IsPlayingAnimation( string animationName )
         {
-            return ( mCurrentAnimation != null && mCurrentAnimation.Name == animationName );
+            return ( CurrentBaseAnimationName == animationName );
+        }
+
+        public bool IsPlayingAnimation( string animationName, Direction direction )
+        {
+            return ( CurrentBaseAnimationName == animationName && CurrentAnimationDirection == direction );
         }
 
         /// <summary>

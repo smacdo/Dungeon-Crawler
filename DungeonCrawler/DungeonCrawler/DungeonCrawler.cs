@@ -185,23 +185,24 @@ namespace Scott.Dungeon.Game
             }
 
             // Player movement
+            MovementComponent movement = mPlayer.GetComponent<MovementComponent>();
             ActorController playerActor = mPlayer.GetComponent<ActorController>();
 
             if ( keyboard.IsKeyDown( Keys.W ) )
             {
-                playerActor.Move( Direction.North, 125 );
+                movement.Move( Direction.North, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.S ) )
             {
-                playerActor.Move( Direction.South, 125 );
+                movement.Move( Direction.South, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.A ) )
             {
-                playerActor.Move( Direction.West, 125 );
+                movement.Move( Direction.West, 125 );
             }
             else if ( keyboard.IsKeyDown( Keys.D ) )
             {
-                playerActor.Move( Direction.East, 125 );
+                movement.Move( Direction.East, 125 );
             }
             
             // Actor actions

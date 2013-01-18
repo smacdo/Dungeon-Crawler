@@ -20,7 +20,7 @@ namespace Scott.Dungeon.ComponentModel
         public List<GameObject> GameObjects { get; private set; }
         public ComponentManager<AiController> AiControllers { get; private set; }
         public ComponentManager<ActorController> ActorControllers { get; private set; }
-        public ComponentManager<Movement> Movements { get; private set; }
+        public ComponentManager<MovementComponent> Movements { get; private set; }
         public ComponentManager<SpriteComponent> Sprites { get; private set; }
         public ComponentManager<AnimationComponent> Animations { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Scott.Dungeon.ComponentModel
             GameObjects = new List<GameObject>( DEFAULT_CAPACITY );
             AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
-            Movements = new ComponentManager<Movement>( DEFAULT_CAPACITY );
+            Movements = new ComponentManager<MovementComponent>( DEFAULT_CAPACITY );
             Sprites = new ComponentManager<SpriteComponent>( DEFAULT_CAPACITY );
             Animations = new ComponentManager<AnimationComponent>( DEFAULT_CAPACITY );
             mIdManager = new UniqueIdManager();

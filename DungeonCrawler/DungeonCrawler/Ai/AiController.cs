@@ -43,6 +43,7 @@ namespace Scott.Dungeon.AI
         {
             TimeSpan decisionTimeDelta = TimeSpan.FromSeconds( 0.25 );
             ActorController actor = Owner.GetComponent<ActorController>();
+            MovementComponent movement = Owner.GetComponent<MovementComponent>();
 
             // Is it time for us to make a decision?
             if ( mLastDecisionTime.Add( decisionTimeDelta ) <= gameTime.TotalGameTime )
@@ -58,9 +59,9 @@ namespace Scott.Dungeon.AI
             else
             {
                 // Keep doing whatever the heck we were doing
-                if ( actor.IsMoving )
+                if ( movement.IsMoving )
                 {
-                    actor.Move( Owner.Direction, 50 );
+                    movement.Move( Owner.Direction, 50 );
                 }
             }
         }
@@ -72,9 +73,10 @@ namespace Scott.Dungeon.AI
         private void PerformIdleUpdate( GameTime gameTime )
         {
             ActorController actor = Owner.GetComponent<ActorController>();
+            MovementComponent movement = Owner.GetComponent<MovementComponent>();
 
             // Are we walking around or just standing?
-            if ( actor.IsMoving )
+            if ( movement.IsMoving )
             {
                 // Character is moving around... should they stop moving? Change direction mid walk?
                 if ( mRandom.NextDouble() <= STOP_WALKING_CHANCE )
@@ -91,7 +93,7 @@ namespace Scott.Dungeon.AI
                         direction = (Direction) mRandom.Next( 0, 3 );
                     }
 
-                    actor.Move( direction, 50 );
+                    movement.Move( direction, 50 );
                 }
             }
             else
@@ -110,7 +112,7 @@ namespace Scott.Dungeon.AI
                     }
 
                     // Start walking now
-                    actor.Move( direction, 50 );
+                    movement.Move( direction, 50 );
                 }
                 else
                 {
@@ -118,7 +120,7 @@ namespace Scott.Dungeon.AI
                     if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
                         // Pick a new direction
-                        actor.ChangeDirection( (Direction) mRandom.Next( 0, 3 ) );
+                        movement.ChangeDirection( (Direction) mRandom.Next( 0, 3 ) );
                     }
                 }
             }
