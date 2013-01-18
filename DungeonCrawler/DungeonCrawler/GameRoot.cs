@@ -17,6 +17,7 @@ namespace Scott.Dungeon
     {
         public static DebugRenderer Debug { get; private set; }
         public static Renderer Renderer { get; private set; }
+        public static Random Random { get; private set; }
 
         /// <summary>
         /// Width (in pixels) of the camera's visible area
@@ -62,6 +63,7 @@ namespace Scott.Dungeon
             Debug = new DebugRenderer( graphics, content );
             mGraphicsDevice = graphics;
             Renderer = new Renderer( graphics );
+            Random = new Random();
         }
 
         /// <summary>

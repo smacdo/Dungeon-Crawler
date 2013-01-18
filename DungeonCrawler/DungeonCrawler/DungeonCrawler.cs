@@ -27,7 +27,6 @@ namespace Scott.Dungeon.Game
     {
         GraphicsDeviceManager mGraphicsDevice;
         GameObject mPlayer;
-        Random mRandom = new Random();
         GameObjectCollection mGameObjects;
         int mEnemyCount = 0;
 
@@ -51,27 +50,6 @@ namespace Scott.Dungeon.Game
         {
             GameRoot.Initialize( mGraphicsDevice.GraphicsDevice, Content );
             base.Initialize();
-        }
-
-        private GameObject CreateBodyPart( string name, string spriteName, bool visible = true )
-        {
-            GameObject go = mGameObjects.Create( name );
-            AddSprite( go, spriteName, visible );
-
-            return go;
-        }
-
-        private void AddSprite( GameObject go, string spriteName, bool visible = true )
-        {
-            SpriteComponent sprite       = mGameObjects.Sprites.Create( go );
-            AnimationComponent animation = mGameObjects.Animations.Create( go );
-
-            animation.AddSpriteAnimation( Content.Load<SpriteData>( spriteName ) );
-
-            if ( !visible )
-            {
-                go.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -112,8 +90,8 @@ namespace Scott.Dungeon.Game
                 return;
             }
 
-            Vector2 position = new Vector2( (int) ( mRandom.NextDouble() * 600.0 ),
-                                            (int) ( mRandom.NextDouble() * 400.0 ) );
+            Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * 600.0 ),
+                                            (int) ( GameRoot.Random.NextDouble() * 400.0 ) );
 
             GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
                                                     position,
@@ -141,11 +119,6 @@ namespace Scott.Dungeon.Game
         protected override void UnloadContent()
         {
             GameRoot.Unload();
-        }
-
-        protected override void BeginRun()
-        {
-            
         }
 
         bool firstSpawn = true;
@@ -181,7 +154,7 @@ namespace Scott.Dungeon.Game
             // Spawn some stuff
             if ( mNextSpawnTime <= gameTime.TotalGameTime )
             {
-                if ( mRandom.NextDouble() < 0.75 || firstSpawn )
+                if ( GameRoot.Random.NextDouble() < 0.75 || firstSpawn )
                 {
                     SpawnSkeleton();
                     firstSpawn = false;

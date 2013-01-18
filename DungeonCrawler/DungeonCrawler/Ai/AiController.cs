@@ -21,18 +21,12 @@ namespace Scott.Dungeon.AI
         private TimeSpan mLastDecisionTime;
 
         /// <summary>
-        /// Random generator for the AI controller
-        /// </summary>
-        private Random mRandom;
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="owner">Game object who owns this AI controller</param>
         public AiController()
         {
             mLastDecisionTime = TimeSpan.MinValue;
-            mRandom = new Random();
         }
 
         /// <summary>
@@ -79,7 +73,7 @@ namespace Scott.Dungeon.AI
             if ( movement.IsMoving )
             {
                 // Character is moving around... should they stop moving? Change direction mid walk?
-                if ( mRandom.NextDouble() <= STOP_WALKING_CHANCE )
+                if ( GameRoot.Random.NextDouble() <= STOP_WALKING_CHANCE )
                 {
                     // nothing to do!
                 }
@@ -88,9 +82,9 @@ namespace Scott.Dungeon.AI
                     // Should we change direction?
                     Direction direction = Owner.Direction;
 
-                    if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
+                    if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
-                        direction = (Direction) mRandom.Next( 0, 3 );
+                        direction = (Direction) GameRoot.Random.Next( 0, 3 );
                     }
 
                     movement.Move( direction, 50 );
@@ -100,14 +94,14 @@ namespace Scott.Dungeon.AI
             {
                 // Character is standing around. Should they start moving? Maybe change
                 // direction
-                if ( mRandom.NextDouble() <= START_WALKING_CHANCE )
+                if ( GameRoot.Random.NextDouble() <= START_WALKING_CHANCE )
                 {
                     // Should we change direction when we start walking?
                     Direction direction = Owner.Direction;
 
-                    if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
+                    if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
-                        direction = (Direction) mRandom.Next( 0, 3 );
+                        direction = (Direction) GameRoot.Random.Next( 0, 3 );
                         Console.WriteLine( "Starting to walk" );
                     }
 
@@ -117,10 +111,10 @@ namespace Scott.Dungeon.AI
                 else
                 {
                     // Maybe we should look around?
-                    if ( mRandom.NextDouble() <= CHANGE_DIRECTION_CHANCE )
+                    if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
                         // Pick a new direction
-                        movement.ChangeDirection( (Direction) mRandom.Next( 0, 3 ) );
+                        movement.ChangeDirection( (Direction) GameRoot.Random.Next( 0, 3 ) );
                     }
                 }
             }
