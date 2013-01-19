@@ -36,9 +36,14 @@ namespace Scott.Dungeon.Pipeline
         public Dictionary<string, AnimationData> Animations { get; set; }
 
         /// <summary>
-        /// Name of the default animation for this sprite
+        /// The default animation name for this sprite
         /// </summary>
         public string DefaultAnimationName { get; set; }
+
+        /// <summary>
+        /// Direction for the default animation
+        /// </summary>
+        public Direction DefaultAnimationDirection { get; set; }
 
         /// <summary>
         /// Offset from origin
@@ -54,7 +59,10 @@ namespace Scott.Dungeon.Pipeline
         {
             Name = name;
             TextureFilePath = texturePath;
+            Texture = null;
             Animations = new Dictionary<string, AnimationData>();
+            DefaultAnimationName = String.Empty;
+            DefaultAnimationDirection = Direction.South;
             OriginOffset = Vector2.Zero;
         }
     }

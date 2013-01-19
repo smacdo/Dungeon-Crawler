@@ -52,11 +52,6 @@ namespace Scott.Dungeon.Pipeline
                 {
                     AnimationData animation = keyValue.Value;
 
-                    if ( animation.Frames == null || animation.Frames.Count < 1 )
-                    {
-                        throw new InvalidContentException( "Missing at least one frame for sprite " + value.Name + ", animation " + animation.Name );
-                    }
-
                     // Can't have too many frames in our animation
                     if ( animation.FrameCount > 255 )
                     {
@@ -70,6 +65,7 @@ namespace Scott.Dungeon.Pipeline
             output.WriteObject<TextureContent>( value.Texture );
             output.Write( (byte) value.Animations.Count );
             output.Write( value.DefaultAnimationName );
+            output.Write( (byte) value.DefaultAnimationDirection );
             output.Write( value.OriginOffset );
 
             // Now write the sprite's animations out
@@ -77,15 +73,23 @@ namespace Scott.Dungeon.Pipeline
             {
                 AnimationData animation = keyValue.Value;
 
+                // Animation header
                 output.Write( animation.Name );
-                output.Write( (byte) animation.Frames.Count );
+                output.Write( animation.FrameTime );
+                output.Write( (byte) animation.FrameCount );
 
-                foreach ( Rectangle rect in keyValue.Value.Frames )
+                // Write out each of the four animatable directions
+                for ( int dirIndex = 0; dirIndex < Constants.DIRECTION_COUNT; ++dirIndex )
                 {
-                    output.Write( (ushort) rect.X );
-                    output.Write( (ushort) rect.Y );
-                    output.Write( (ushort) rect.Width );
-                    output.Write( (ushort) rect.Height );
+                    for ( int i = 0; i < animation.FrameCount; ++i )
+                    {
+                        Rectangle rect = animation.GetSpriteRectFor( (Direction) dirIndex, i );
+
+                        output.Write( (ushort) rect.X );
+                        output.Write( (ushort) rect.Y );
+                        output.Write( (ushort) rect.Width );
+                        output.Write( (ushort) rect.Height );
+                    }
                 }
             }
         }

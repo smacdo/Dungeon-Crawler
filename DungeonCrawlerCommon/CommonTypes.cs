@@ -5,6 +5,11 @@ using System.Text;
 
 namespace Scott.Dungeon
 {
+    public static class Constants
+    {
+        public const int DIRECTION_COUNT = 4;
+    }
+
     public enum Direction
     {
         North,

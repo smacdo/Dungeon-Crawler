@@ -27,10 +27,17 @@ namespace Scott.Dungeon.Data
         /// </summary>
         public Dictionary<string, AnimationData> Animations { get; set; }
 
+        public AnimationData DefaultAnimation { get; private set; }
+
         /// <summary>
-        /// Name of the default animation for this sprite
+        /// The default animation name for this sprite
         /// </summary>
-        public string DefaultAnimationName { get; set; }
+        public string DefaultAnimationName{ get; set; }
+
+        /// <summary>
+        /// Direction for the default animation
+        /// </summary>
+        public Direction DefaultAnimationDirection { get; set; }
 
         /// <summary>
         /// Offset from local origin when rendering
@@ -42,17 +49,34 @@ namespace Scott.Dungeon.Data
         /// </summary>
         /// <param name="name">Name of the sprite</param>
         /// <param name="texture">Texture atlas that contains this sprite</param>
-        public SpriteData( string name, Texture2D texture )
+        /// <param name="defaultAnimation">Default animation name</param>
+        /// <param name="defaultDirection">Default direction to use when animating without a direction</param>
+        public SpriteData( string name,
+                           Texture2D texture,
+                           string defaultAnimation,
+                           Direction defaultDirection,
+                           List<AnimationData> animationList )
         {
             Name = name;
             Texture = texture;
-            Animations = new Dictionary<string, AnimationData>();
+            
+            // Copy animations
+            Animations = new Dictionary<string, AnimationData>( animationList.Count );
+
+            foreach ( AnimationData animation in animationList )
+            {
+                Animations.Add( animation.Name, animation );
+            }
+
+            DefaultAnimationName = defaultAnimation;
+            DefaultAnimationDirection = defaultDirection;
+            DefaultAnimation = Animations[DefaultAnimationName];
             OriginOffset = Vector2.Zero;
         }
     }
 
     /// <summary>
-    /// Loads a sprite data
+    /// Loads sprite data from a content file
     /// </summary>
     public class SpriteDataReader : ContentTypeReader<SpriteData>
     {
@@ -63,33 +87,44 @@ namespace Scott.Dungeon.Data
             Texture2D atlas    = input.ReadObject<Texture2D>();
             int animationCount = (int) input.ReadByte();
             string defAnimName = input.ReadString();
+            Direction defDir   = (Direction) input.ReadByte();
             Vector2 offset     = input.ReadVector2();
- 
-            // Allocate a sprite data instance
-            SpriteData spriteData   = new SpriteData( name, atlas );
 
             // Now read in all of the sprite's animations
+            List<AnimationData> animations = new List<AnimationData>();
+
             for ( int animationIndex = 0; animationIndex < animationCount; ++animationIndex )
             {
-                string animationName    = input.ReadString();
-                int frameCount          = (int) input.ReadByte();
-                AnimationData animation = new AnimationData( animationName );
+                string animationName = input.ReadString();
+                float frameTime      = input.ReadSingle();
+                int frameCount       = (int) input.ReadByte();
 
-                for ( int frameIndex = 0; frameIndex < frameCount; ++frameIndex )
+                List<List<Rectangle>> allFrames = new List<List<Rectangle>>( Constants.DIRECTION_COUNT );
+
+                // Read in each of the animation's four animatable directions
+                for ( int dirIndex = 0; dirIndex < Constants.DIRECTION_COUNT; ++dirIndex )
                 {
-                    int x = (int) input.ReadUInt16();
-                    int y = (int) input.ReadUInt16();
-                    int w = (int) input.ReadUInt16();
-                    int h = (int) input.ReadUInt16();
+                    allFrames.Add( new List<Rectangle>( frameCount ) );
 
-                    animation.Frames.Add( new Rectangle( x, y, w, h ) );
+                    for ( int frameIndex = 0; frameIndex < frameCount; ++frameIndex )
+                    {
+                        int x = (int) input.ReadUInt16();
+                        int y = (int) input.ReadUInt16();
+                        int w = (int) input.ReadUInt16();
+                        int h = (int) input.ReadUInt16();
+
+                        allFrames[dirIndex].Add( new Rectangle( x, y, w, h ) );
+                    }
                 }
 
-                spriteData.Animations.Add( animationName, animation );
+                // Construct the sprite animation data instance
+                animations.Add( new AnimationData( animationName, frameTime, allFrames ) );
             }
 
+            // Allocate a sprite data instance
+            SpriteData spriteData   = new SpriteData( name, atlas, defAnimName, defDir, animations );
             spriteData.OriginOffset = offset;
-            spriteData.DefaultAnimationName = defAnimName;
+
             return spriteData;
         }
     }

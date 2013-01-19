@@ -11,22 +11,36 @@ namespace Scott.Dungeon.Data
     /// </summary>
     public class AnimationData
     {
+        private const int DIRECTION_COUNT = 4;
+        private const float DEFAULT_FRAME_TIME = 0.1f;
+
         /// <summary>
         /// Name of the animation
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// A list of the frames that should be played for this animation. Each
-        /// frame is a rectangle offset to the sprite's texture atlas.
+        /// Amount of time to play each frame in the animation
         /// </summary>
-        public List<Rectangle> Frames { get; set; }
+        public float FrameTime { get; set; }
 
+        /// <summary>
+        /// A list of animation directions. Each direction contains a list of rectangles that
+        /// specify the offset for each sprite frame in the animation.
+        /// 
+        /// Each direction is assumed to have the same number of sprite frames. If this not the
+        /// case then undefined results may occur!
+        /// </summary>
+        public List< List<Rectangle> > Directions;
+
+        /// <summary>
+        /// The number of frames in an animation.
+        /// </summary>
         public int FrameCount
         {
             get
             {
-                return Frames.Count;
+                return Directions[0].Count;
             }
         }
 
@@ -34,10 +48,40 @@ namespace Scott.Dungeon.Data
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the animation</param>
-        public AnimationData( string name )
+        /// <param name="frameTime">Amount of time to display each frame</param>
+        public AnimationData( string name, float frameTime, List<List<Rectangle>> directions )
         {
             Name = name;
-            Frames = new List<Rectangle>();
+            FrameTime = frameTime;
+
+            Directions = new List<List<Rectangle>>( DIRECTION_COUNT );
+
+            // Copy all of the animations for each direction
+            for ( int i = 0; i < DIRECTION_COUNT; ++i )
+            {
+                Directions.Add( new List<Rectangle>( directions[i] ) );
+            }
+        }
+
+        /// <summary>
+        /// Returns the requested sprite frame
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="frame"></param>
+        /// <returns></returns>
+        public Rectangle GetSpriteRectFor( Direction direction, int frame )
+        {
+            return Directions[(int) direction][frame];
+        }
+
+        public List<Rectangle> GetFramesList( Direction direction )
+        {
+            return new List<Rectangle>( Directions[(int) direction] );
+        }
+
+        public List<Rectangle>.Enumerator GetFramesEnumerator( Direction direction )
+        {
+            return Directions[(int) direction].GetEnumerator();
         }
     }
 }
