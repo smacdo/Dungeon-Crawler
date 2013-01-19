@@ -22,7 +22,6 @@ namespace Scott.Dungeon.ComponentModel
         public ComponentManager<ActorController> ActorControllers { get; private set; }
         public ComponentManager<MovementComponent> Movements { get; private set; }
         public ComponentManager<SpriteComponent> Sprites { get; private set; }
-        public ComponentManager<AnimationComponent> Animations { get; private set; }
 
         private UniqueIdManager mIdManager;
 
@@ -36,7 +35,6 @@ namespace Scott.Dungeon.ComponentModel
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
             Movements = new ComponentManager<MovementComponent>( DEFAULT_CAPACITY );
             Sprites = new ComponentManager<SpriteComponent>( DEFAULT_CAPACITY );
-            Animations = new ComponentManager<AnimationComponent>( DEFAULT_CAPACITY );
             mIdManager = new UniqueIdManager();
         }
 
@@ -103,9 +101,6 @@ namespace Scott.Dungeon.ComponentModel
             debugText.Append( "\n\n" );
 
             debugText.Append( Sprites.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
-            debugText.Append( Animations.DumpDebugDumpDebugInfoToString() );
             debugText.Append( "\n\n" );
 
             return debugText.ToString();

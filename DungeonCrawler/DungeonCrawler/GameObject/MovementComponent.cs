@@ -153,24 +153,24 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         public void UpdateAnimation( GameTime gameTime )
         {
-            AnimationComponent animation = Owner.GetComponent<AnimationComponent>();
+            SpriteComponent sprite = Owner.GetComponent<SpriteComponent>();
 
             if ( Speed > 0.0f )
             {
                 // Animation time! Are we starting an walk animation cycle, are we switching
                 // directions mid-walk, or should we just continue animating the current cycle?
-                if ( !animation.IsPlayingAnimation( "Walk", Direction ) )
+                if ( !sprite.IsPlayingAnimation( "Walk", Direction ) )
                 {
-                    animation.PlayAnimationLooping( "Walk", Direction );
+                    sprite.PlayAnimationLooping( "Walk", Direction );
                 }
             }
             else if ( LastSpeed > 0.0f )
             {
                 // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
                 // and being idle.
-                if ( animation.IsPlayingAnimation( "Walk", Direction ) )
+                if ( sprite.IsPlayingAnimation( "Walk", Direction ) )
                 {
-                    animation.PlayAnimationLooping( "Idle", Direction );
+                    sprite.PlayAnimationLooping( "Idle", Direction );
                 }
             }
         }
@@ -187,19 +187,15 @@ namespace Scott.Dungeon.ComponentModel
             {
                 case Direction.North:
                     return new Vector2( 0, -1 );
-                    break;
 
                 case Direction.South:
                     return new Vector2( 0, 1 );
-                    break;
 
                 case Direction.West:
                     return new Vector2( -1, 0 );
-                    break;
 
                 case Direction.East:
                     return new Vector2( 1, 0 );
-                    break;
 
                 default:
                     return Vector2.Zero;

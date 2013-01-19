@@ -10,7 +10,7 @@ namespace Scott.Dungeon.ComponentModel
     /// Takes care of component life cycle management in addition to processing update
     /// cycles.
     /// </summary>
-    public class ComponentManager<T> where T : IGameObjectComponent, new()
+    public class ComponentManager<T> : IEnumerable<T> where T : IGameObjectComponent, new()
     {
         /// <summary>
         /// A pre-allocated pool of instances to speed up object creation and destruction
@@ -93,6 +93,21 @@ namespace Scott.Dungeon.ComponentModel
             debugText.Append( "\t]\n}\n" );
             
             return debugText.ToString();
+        }
+
+        public LinkedList<T>.Enumerator GetEnumerator()
+        {
+            return mComponentPool.GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return mComponentPool.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return mComponentPool.GetEnumerator();
         }
     }
 }
