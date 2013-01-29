@@ -230,24 +230,26 @@ namespace Scott.Dungeon.ComponentModel
         {
             StringBuilder debugText = new StringBuilder();
 
-            debugText.Append(
-                String.Format( "\t{{ id: {0}, name: \"{1}\", pos: {2}, dir: \"{3}\", components: [\n",
-                               Id,
-                               Name,
-                               Position,
-                               Direction.ToString() ) );
+            debugText.Append( "\t{\n" );
+            debugText.Append( String.Format( "\t\tid:     {0}\n",     Id ) );
+            debugText.Append( String.Format( "\t\tname:   \"{0}\"\n", Name ) );
+            debugText.Append( String.Format( "\t\tpos:    {0}\n",     Position ) );
+            debugText.Append( String.Format( "\t\tbounds: {0}\n",     Bounds.ToString() ) );
+            debugText.Append( String.Format( "\t\tdir:    \"{0}\"\n", Direction.ToString() ) );
+            debugText.Append( "\t\tcomponents: [\n" );
 
             // List the components attached to this game object (only the basics)
             foreach ( KeyValuePair<System.Type, IGameObjectComponent> pair in mComponents )
             {
                 debugText.Append(
-                    String.Format( "\t\t{{ type: \"{0}\", id: {1}, enabled: {2} }}\n",
+                    String.Format( "\t\t\t{{ type: \"{0}\", id: {1}, enabled: {2} }}\n",
                                    pair.Value.GetType().Name,
                                    pair.Value.Id,
                                    pair.Value.Enabled ) );
             }
 
-            debugText.Append( "\t]},\n" );
+            debugText.Append( "\t\t]\n" );
+            debugText.Append( "\t},\n" );
             return debugText.ToString();
         }
     }

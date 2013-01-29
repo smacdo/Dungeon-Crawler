@@ -119,19 +119,13 @@ namespace Scott.Dungeon.Graphics
         [Conditional( "DEBUG" )]
         public void DrawBoundingArea( BoundingArea bounds )
         {
-            // Draw the outer bounding box
-            Vector2 pos     = bounds.WorldPosition;
-            Rectangle broad = new Rectangle( (int) Math.Round( bounds.WorldPosition.X ),
-                                             (int) Math.Round( bounds.WorldPosition.Y ),
-                                             (int) Math.Round( bounds.Width ),
-                                             (int) Math.Round( bounds.Height ) );
-
-
-            DrawRect( broad, Color.Green );
+            DrawRect( bounds.BroadPhaseRectangle, Color.Green );
 
             // Draw the bounding box that is possibly rotated
             if ( bounds.Rotation != 0.0f )
             {
+                Vector2 pos = bounds.WorldPosition;
+
                 DrawLine( bounds.UpperLeft + pos, bounds.UpperRight + pos, Color.Purple );
                 DrawLine( bounds.UpperLeft + pos, bounds.LowerLeft + pos, Color.Purple );
 

@@ -20,6 +20,7 @@ namespace Scott.Dungeon.ComponentModel
         public ComponentManager<AiController> AiControllers { get; private set; }
         public ComponentManager<ActorController> ActorControllers { get; private set; }
         public ComponentManager<MovementComponent> Movements { get; private set; }
+        public ComponentManager<ColliderComponent> Colliders { get; private set; }
         public ComponentManager<SpriteComponent> Sprites { get; private set; }
 
         /// <summary>
@@ -31,9 +32,9 @@ namespace Scott.Dungeon.ComponentModel
             AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
             Movements = new ComponentManager<MovementComponent>( DEFAULT_CAPACITY );
+            Colliders = new ComponentManager<ColliderComponent>( DEFAULT_CAPACITY );
             Sprites = new ComponentManager<SpriteComponent>( DEFAULT_CAPACITY );
         }
-
 
         /// <summary>
         /// Creates and returns a new game object instance. This game object is tracked
@@ -65,6 +66,69 @@ namespace Scott.Dungeon.ComponentModel
             return gameObject; 
         }
 
+        public void Update( GameTime simulationTime )
+        {
+            // We resolve movement and collision first, before the player or AI gets chance
+            // to do anything. Hence the current position of all objects (and collision)
+            // that is displayed is actually one frame BEFORE this update
+            Movements.Update( simulationTime );
+            PerformCollisionDetection();
+
+            Colliders.Update( simulationTime );
+
+            // Update game ai and character actions
+            AiControllers.Update( simulationTime );
+            ActorControllers.Update( simulationTime );
+
+            // Make sure animations are primed and updated (we need to trigger the
+            // correct animation events even if we are not drawwing)
+            Sprites.Update( simulationTime );
+        }
+
+        /// <summary>
+        /// TODO: Handle things htat move really fast and wouldn't get detected in this fashion
+        /// (eg, need to do movements together with collision detection... and calculate where
+        /// they are ending up)
+        /// </summary>
+        /// <param name="simulationTime"></param>
+        private void PerformCollisionDetection()
+        {
+            // this is deliciously horrible
+            foreach ( GameObject outterObject in GameObjects )
+            {
+                // Reject objects that do not have boundaries or are not set up to receive
+                // collisions
+                ColliderComponent collider = outterObject.GetComponent<ColliderComponent>();
+
+                if ( collider == null || outterObject.Bounds == null )
+                {
+                    continue;
+                }
+                else
+                {
+                    // Unmark any collisions that happened on the last update cycle
+                    collider.HadCollision = false;
+                }
+
+                // Test this object against all the other game objects in this scene
+                foreach ( GameObject innerObject in GameObjects )
+                {
+                    // don't test if this object does not have bounds, or is the same
+                    // object
+                    if ( innerObject.Bounds == null || innerObject == outterObject )
+                    {
+                        continue;
+                    }
+
+                    // do they collide with each other?
+                    if ( outterObject.Bounds.Intersects( innerObject.Bounds ) )
+                    {
+                        collider.HadCollision = true;
+                    }
+                }
+            }
+        }
+
        
         /// <summary>
         /// Dumps a debugging information about the current game object collection a string, suitable
@@ -93,6 +157,9 @@ namespace Scott.Dungeon.ComponentModel
             debugText.Append( "\n\n" );
 
             debugText.Append( Movements.DumpDebugDumpDebugInfoToString() );
+            debugText.Append( "\n\n" );
+
+            debugText.Append( Colliders.DumpDebugDumpDebugInfoToString() );
             debugText.Append( "\n\n" );
 
             debugText.Append( Sprites.DumpDebugDumpDebugInfoToString() );

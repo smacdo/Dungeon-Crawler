@@ -77,6 +77,7 @@ namespace Scott.Dungeon.Game
 
             mGameObjects.Movements.Create( mPlayer );
             mGameObjects.ActorControllers.Create( mPlayer );
+            mGameObjects.Colliders.Create( mPlayer );
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
-            if ( mEnemyCount > 256 )
+            if ( mEnemyCount > 0 )
             {
                 return;
             }
@@ -188,16 +189,8 @@ namespace Scott.Dungeon.Game
                 playerActor.SlashAttack();
             }
 
-            // Update game ai and character actions
-            mGameObjects.AiControllers.Update( gameTime );
-            mGameObjects.ActorControllers.Update( gameTime );
-
-            // Now update movement
-            mGameObjects.Movements.Update( gameTime );
-
-            // Make sure animations are primed and updated (we need to trigger the
-            // correct animation events even if we are not drawwing)
-            mGameObjects.Sprites.Update( gameTime );
+            // Update the world
+            mGameObjects.Update( gameTime );
 
             base.Update( gameTime );
         }

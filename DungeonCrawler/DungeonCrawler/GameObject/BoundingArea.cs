@@ -114,6 +114,9 @@ namespace Scott.Dungeon.ComponentModel
         public void Move( Vector2 delta )
         {
             WorldPosition += delta;
+
+            BroadPhaseRectangle.Y = (int) WorldPosition.Y;
+            BroadPhaseRectangle.X = (int) WorldPosition.X;
         }
 
         /// <summary>
@@ -121,8 +124,14 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public bool Intersects( BoundingRect area )
+        public bool Intersects( BoundingArea area )
         {
+            // Quick check
+            if ( BroadPhaseRectangle.Intersects( area.BroadPhaseRectangle ) )
+            {
+                return true;
+            }
+
             // Generate the potential seperating axis vectors between our bounding rect
             // and the provided rect. We avoid the use of arrays here so we can avoid
             // garbage collection
@@ -137,7 +146,7 @@ namespace Scott.Dungeon.ComponentModel
                      IsAxisCollision( area, v3 ) );
         }
 
-        private bool IsAxisCollision( BoundingRect otherRect, Vector2 axis )
+        private bool IsAxisCollision( BoundingArea otherRect, Vector2 axis )
         {
             // Project the four corners of the bounding box we are checking onto the axis,
             // and get a scalar value of that projection for comparison.
@@ -216,6 +225,15 @@ namespace Scott.Dungeon.ComponentModel
                 return new Vector2( (float) ( origin.X + ( vector.X - origin.X ) * Math.Cos( amount ) - ( vector.Y - origin.Y ) * Math.Sin( amount ) ),
                                     (float) ( origin.Y + ( vector.Y - origin.Y ) * Math.Cos( amount ) + ( vector.X - origin.X ) * Math.Sin( amount ) ) );
             }
+        }
+
+        public override string ToString()
+        {
+            return String.Format( "{{ x: {0}, y: {1}, w: {2}, h: {3} }}",
+                                  BroadPhaseRectangle.X,
+                                  BroadPhaseRectangle.Y,
+                                  BroadPhaseRectangle.Width,
+                                  BroadPhaseRectangle.Height );
         }
     }
 }

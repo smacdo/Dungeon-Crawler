@@ -112,6 +112,7 @@
     <Compile Include="Ai\AiController.cs" />
     <Compile Include="BoundingRect.cs" />
     <Compile Include="GameObject\BoundingArea.cs" />
+    <Compile Include="GameObject\ColliderComponent.cs" />
     <Compile Include="GameObject\SpriteComponent.cs" />
     <Compile Include="GameObject\GameObjectCollection.cs" />
     <Compile Include="GameObject\IGameObjectComponent.cs" />
