@@ -22,8 +22,6 @@ namespace Scott.Dungeon.ComponentModel
         public ComponentManager<MovementComponent> Movements { get; private set; }
         public ComponentManager<SpriteComponent> Sprites { get; private set; }
 
-        private UniqueIdManager mIdManager;
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -34,7 +32,6 @@ namespace Scott.Dungeon.ComponentModel
             ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
             Movements = new ComponentManager<MovementComponent>( DEFAULT_CAPACITY );
             Sprites = new ComponentManager<SpriteComponent>( DEFAULT_CAPACITY );
-            mIdManager = new UniqueIdManager();
         }
 
 
@@ -61,7 +58,6 @@ namespace Scott.Dungeon.ComponentModel
         {
             GameObject gameObject = new GameObject( name,
                                                     this,
-                                                    mIdManager.AllocateId(),
                                                     position,
                                                     direction );
             GameObjects.Add( gameObject );

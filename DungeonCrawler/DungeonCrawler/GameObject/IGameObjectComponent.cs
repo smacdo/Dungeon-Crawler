@@ -11,13 +11,13 @@ namespace Scott.Dungeon.ComponentModel
     /// </summary>
     public interface IGameObjectComponent
     {
-        ulong Id { get; }
+        Guid Id { get; }
         GameObject Owner { get; set; }
         bool Enabled { get; set; }
 
         void Update( GameTime time );
 
-        void ResetComponent( GameObject gameObject, bool enabled, ulong id );
+        void ResetComponent( GameObject gameObject, bool enabled );
 
         string ToString();
         string DumpDebugInfo();
@@ -36,7 +36,7 @@ namespace Scott.Dungeon.ComponentModel
     public abstract class AbstractGameObjectComponent : IGameObjectComponent
     {
         private GameObject mOwner;
-        public ulong Id { get; private set; }
+        public Guid Id { get; private set; }
 
         /// <summary>
         /// The game object that owns this components
@@ -73,7 +73,7 @@ namespace Scott.Dungeon.ComponentModel
         {
             Owner = null;
             Enabled = false;
-            Id = 0;     // Zero is always an illegal uid
+            Id = Guid.Empty;
         }
 
         /// <summary>
@@ -87,11 +87,11 @@ namespace Scott.Dungeon.ComponentModel
         /// </summary>
         /// <param name="gameObject">The game object that owns this component</param>
         /// <param name="enabled">Whetehr</param>
-        public void ResetComponent( GameObject gameObject, bool enabled, ulong id )
+        public void ResetComponent( GameObject gameObject, bool enabled )
         {
             Owner = gameObject;
             Enabled = enabled;
-            Id = id;
+            Id = Guid.NewGuid();
         }
 
         /// <summary>

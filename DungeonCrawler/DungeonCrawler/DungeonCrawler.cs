@@ -84,7 +84,7 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
-            if ( mEnemyCount > 0 )
+            if ( mEnemyCount > 256 )
             {
                 return;
             }

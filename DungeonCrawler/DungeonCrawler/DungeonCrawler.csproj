@@ -119,7 +119,6 @@
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\GameObjectException.cs" />
     <Compile Include="GameObject\MovementComponent.cs" />
-    <Compile Include="GameObject\UniqueIdManager.cs" />
     <Compile Include="GameRoot.cs" />
     <Compile Include="Graphics\AnimationException.cs" />
     <Compile Include="GameObject\AnimationComponent.cs" />

@@ -42,6 +42,11 @@ namespace Scott.Dungeon.ComponentModel
         public string Name { get; private set; }
 
         /// <summary>
+        /// Unique identifier for this game object
+        /// </summary>
+        public Guid Id { get; private set; }
+
+        /// <summary>
         /// Location of the game object in world coordinates
         /// </summary>
         public Vector2 Position
@@ -68,7 +73,6 @@ namespace Scott.Dungeon.ComponentModel
         private GameObject mParent;
         private Vector2 mPosition;
         private GameObjectCollection mParentCollection;
-        private ulong mId;
 
         /// <summary>
         /// TODO: THIS NEEDS TO BE COMMENTED AND EXPLAINED
@@ -78,8 +82,8 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Constructor
         /// </summary>
-        public GameObject( string name, GameObjectCollection parentCollection, ulong id )
-            : this( name, parentCollection, id, new Vector2( 0, 0 ), Direction.South )
+        public GameObject( string name, GameObjectCollection parentCollection )
+            : this( name, parentCollection, new Vector2( 0, 0 ), Direction.South )
         {
         }
 
@@ -93,7 +97,6 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="height">Game object height</param>
         public GameObject( string name,
                            GameObjectCollection parentCollection,
-                           ulong id,
                            Vector2 position,
                            Direction direction )
         {
@@ -106,7 +109,7 @@ namespace Scott.Dungeon.ComponentModel
 
             mParentCollection = parentCollection;
             mComponents = new Dictionary<Type, IGameObjectComponent>( DEFAULT_COMPONENT_COUNT );
-            mId = id;
+            Id = Guid.NewGuid();
         }
 
         /// <summary>
@@ -229,7 +232,7 @@ namespace Scott.Dungeon.ComponentModel
 
             debugText.Append(
                 String.Format( "\t{{ id: {0}, name: \"{1}\", pos: {2}, dir: \"{3}\", components: [\n",
-                               mId,
+                               Id,
                                Name,
                                Position,
                                Direction.ToString() ) );
