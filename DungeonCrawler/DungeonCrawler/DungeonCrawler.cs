@@ -60,7 +60,7 @@ namespace Scott.Dungeon.Game
         {
             // Create the player character
             mPlayer = mGameObjects.Create( "Player" );
-            mPlayer.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
+            mPlayer.Bounds = new BoundingArea( mPlayer.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
             SpriteComponent sprite = mGameObjects.Sprites.Create( mPlayer );
 
@@ -84,7 +84,7 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
-            if ( mEnemyCount > 128 )
+            if ( mEnemyCount > 0 )
             {
                 return;
             }
@@ -96,7 +96,7 @@ namespace Scott.Dungeon.Game
                                                     position,
                                                     Direction.South );
 
-            enemy.Bounds = new BoundingArea( new Rectangle( 16, 8, 32, 52 ) );
+            enemy.Bounds = new BoundingArea( enemy.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
             SpriteComponent sprite = mGameObjects.Sprites.Create( enemy );
 

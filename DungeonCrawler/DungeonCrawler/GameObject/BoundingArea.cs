@@ -22,33 +22,16 @@ namespace Scott.Dungeon.ComponentModel
     /// </summary>
     public class BoundingArea
     {
-        /// <summary>
-        /// Top left corner world position
-        /// </summary>
-        public Vector2 Position { get; private set; }
-
         public float Width { get; private set; }
         public float Height { get; private set; }
         public float Rotation { get; private set; }
+        public Vector2 WorldPosition { get; private set; }
+        public Vector2 LocalOffset { get; private set; }
 
         /// <summary>
-        /// The original unrotated bounding rectangle.
-        /// </summary>
-        /// <remarks>
-        /// We hold onto the unrotated bounding rectangle, and re-rotate each time the
-        /// rotation is updated. Why? To prevent increasingly nasty floating point drift.
-        /// </remarks>
-        public Rectangle UnrotatedBoundingRect;
-
-        /// <summary>
-        /// A  rectangle that tightly encompasses the rotated rectangle.
+        /// A rectangle that tightly encompasses the rotated rectangle.
         /// </summary>
         public Rectangle BroadPhaseRectangle;
-
-        /// <summary>
-        /// Amount the bounding rectangle is rotated.
-        /// </summary>
-        public Vector2 PivotOrigin { get; private set; }
 
         /// <summary>
         /// The rotated rectangle's upper left vertex. This is the original upper left vertex from
@@ -81,43 +64,34 @@ namespace Scott.Dungeon.ComponentModel
         /// <summary>
         /// Bounding box constructor
         /// </summary>
-        /// <param name="boundingBox">Bounding box dimensions</param>
-        public BoundingArea( Rectangle boundingBox )
-            : this( boundingBox, 0.0f, CalculateCenterPoint( boundingBox ) )
+        /// <param name="dimensions">Bounding box dimensions</param>
+        public BoundingArea( Vector2 topLeft, Vector2 dimensions )
+            : this( topLeft, dimensions, Vector2.Zero )
         {
         }
 
         /// <summary>
         /// Bounding box constructor
         /// </summary>
-        /// <param name="boundingBox">Original dimensions of bounding box</param>
-        /// <param name="rotation">Amount of rotation (in radians)</param>
-        public BoundingArea( Rectangle boundingBox, float rotation )
-            : this( boundingBox, rotation, CalculateCenterPoint( boundingBox ) )
+        /// <param name="dimensions">Original dimensions of bounding box</param>
+        public BoundingArea( Vector2 topLeft, Vector2 dimensions, Vector2 offset )
         {
-        }
+            Width         = dimensions.X;
+            Height        = dimensions.Y;
+            Rotation      = 0.0f;
+            WorldPosition = topLeft + offset;
+            LocalOffset   = offset;
 
-        /// <summary>
-        /// Bounding box constructor
-        /// </summary>
-        /// <param name="boundingBox">Original dimensions of bounding box</param>
-        /// <param name="rotation">Amount of rotation</param>
-        /// <param name="origin">Rotational pivot position. Top left is (0,0).</param>
-        public BoundingArea( Rectangle boundingBox, float rotation, Vector2 origin )
-        {
-            UnrotatedBoundingRect = boundingBox;
-            PivotOrigin = origin;
-
-            RecalculateCachedCorners( rotation, origin );
+            RecalculateCachedCorners( Rotation, dimensions / 2.0f );
         }
 
         /// <summary>
         /// Sets the collision bounding box with new values
         /// </summary>
         /// <param name="boundingBox"></param>
-        public void Set( Rectangle boundingBox )
+        public void Set( Vector2 topLeft, Vector2 dimensions )
         {
-            Set( boundingBox, 0.0f, CalculateCenterPoint( boundingBox ) );
+            Set( topLeft, dimensions, Vector2.Zero );
         }
 
         /// <summary>
@@ -126,33 +100,41 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="boundingBox"></param>
         /// <param name="rotation"></param>
         /// <param name="origin"></param>
-        public void Set( Rectangle boundingBox, float rotation, Vector2 origin )
+        public void Set( Vector2 topLeft, Vector2 dimensions, Vector2 offset )
         {
-            UnrotatedBoundingRect = boundingBox;
-            PivotOrigin = origin;
+            Width         = dimensions.X;
+            Height        = dimensions.Y;
+            Rotation      = 0.0f;
+            WorldPosition = topLeft + offset;
+            LocalOffset   = offset;
 
-            RecalculateCachedCorners( rotation, origin );
+            RecalculateCachedCorners( Rotation, dimensions / 2.0f );
+        }
+
+        public void Move( Vector2 delta )
+        {
+            WorldPosition += delta;
         }
 
         /// <summary>
         /// Check if the bounding rectangle intersects this bounding rectangle.
         /// </summary>
-        /// <param name="otherRect"></param>
+        /// <param name="area"></param>
         /// <returns></returns>
-        public bool Intersects( BoundingRect otherRect )
+        public bool Intersects( BoundingRect area )
         {
             // Generate the potential seperating axis vectors between our bounding rect
             // and the provided rect. We avoid the use of arrays here so we can avoid
             // garbage collection
-            Vector2 v0 = UpperRight - UpperLeft;
-            Vector2 v1 = UpperRight - LowerRight;
-            Vector2 v2 = otherRect.UpperLeft - otherRect.LowerLeft;
-            Vector2 v3 = otherRect.UpperLeft - otherRect.UpperRight;
+            Vector2 v0 = UpperRight - UpperLeft + WorldPosition;
+            Vector2 v1 = UpperRight - LowerRight + WorldPosition;
+            Vector2 v2 = area.UpperLeft - area.LowerLeft + WorldPosition;
+            Vector2 v3 = area.UpperLeft - area.UpperRight + WorldPosition;
 
-            return ( IsAxisCollision( otherRect, v0 ) &&
-                     IsAxisCollision( otherRect, v1 ) &&
-                     IsAxisCollision( otherRect, v2 ) &&
-                     IsAxisCollision( otherRect, v3 ) );
+            return ( IsAxisCollision( area, v0 ) &&
+                     IsAxisCollision( area, v1 ) &&
+                     IsAxisCollision( area, v2 ) &&
+                     IsAxisCollision( area, v3 ) );
         }
 
         private bool IsAxisCollision( BoundingRect otherRect, Vector2 axis )
@@ -194,24 +176,26 @@ namespace Scott.Dungeon.ComponentModel
         /// <param name="pivot">Position (in world coordintes) of the rotational pivot point</param>
         private void RecalculateCachedCorners( float radians, Vector2 pivot )
         {
-            PivotOrigin = pivot;
             Rotation    = MathHelper.WrapAngle( radians );
 
             // Find unrotated vertex points
-            Vector2 oUpperLeft  = new Vector2( UnrotatedBoundingRect.Left, UnrotatedBoundingRect.Top );
-            Vector2 oUpperRight = new Vector2( UnrotatedBoundingRect.Right, UnrotatedBoundingRect.Top );
-            Vector2 oLowerLeft  = new Vector2( UnrotatedBoundingRect.Left, UnrotatedBoundingRect.Bottom );
-            Vector2 oLowerRight = new Vector2( UnrotatedBoundingRect.Right, UnrotatedBoundingRect.Bottom );
+            Vector2 oUpperLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y );
+            Vector2 oUpperRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y );
+            Vector2 oLowerLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y + Height );
+            Vector2 oLowerRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y + Height );
 
             // Rotate and calculate our new rotated vertex points
-            UpperLeft = RotatePoint( oUpperLeft, pivot, radians );
+            UpperLeft  = RotatePoint( oUpperLeft, pivot, radians );
             UpperRight = RotatePoint( oUpperRight, pivot, radians );
-            LowerLeft = RotatePoint( oLowerLeft, pivot, radians );
+            LowerLeft  = RotatePoint( oLowerLeft, pivot, radians );
             LowerRight = RotatePoint( oLowerRight, pivot, radians );
 
             // Calculate a broad phase bounding box
             //  XXX: Do this better
-            BroadPhaseRectangle = UnrotatedBoundingRect;
+            BroadPhaseRectangle = new Rectangle( (int) Math.Round( WorldPosition.X ),
+                                                 (int) Math.Round( WorldPosition.Y ),
+                                                 (int) Math.Round( Width ),
+                                                 (int) Math.Round( Height ) );
         }
 
         /// <summary>
@@ -232,17 +216,6 @@ namespace Scott.Dungeon.ComponentModel
                 return new Vector2( (float) ( origin.X + ( vector.X - origin.X ) * Math.Cos( amount ) - ( vector.Y - origin.Y ) * Math.Sin( amount ) ),
                                     (float) ( origin.Y + ( vector.Y - origin.Y ) * Math.Cos( amount ) + ( vector.X - origin.X ) * Math.Sin( amount ) ) );
             }
-        }
-
-        /// <summary>
-        /// Takes an axis aligned rectangle, and returns it's center position
-        /// </summary>
-        /// <param name="unrotatedRect">Axis aligned rectangle</param>
-        /// <returns>Center point of rectangle</returns>
-        private static Vector2 CalculateCenterPoint( Rectangle unrotatedRect )
-        {
-            return new Vector2( unrotatedRect.Width / 2.0f + (float) unrotatedRect.X,
-                                unrotatedRect.Height / 2.0f + (float) unrotatedRect.Y );
         }
     }
 }

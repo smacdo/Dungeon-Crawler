@@ -120,21 +120,28 @@ namespace Scott.Dungeon.Graphics
         public void DrawBoundingArea( BoundingArea bounds )
         {
             // Draw the outer bounding box
-            DrawRect( bounds.BroadPhaseRectangle, Color.Green );
+            Vector2 pos     = bounds.WorldPosition;
+            Rectangle broad = new Rectangle( (int) Math.Round( bounds.WorldPosition.X ),
+                                             (int) Math.Round( bounds.WorldPosition.Y ),
+                                             (int) Math.Round( bounds.Width ),
+                                             (int) Math.Round( bounds.Height ) );
+
+
+            DrawRect( broad, Color.Green );
 
             // Draw the bounding box that is possibly rotated
             if ( bounds.Rotation != 0.0f )
             {
-                DrawLine( bounds.UpperLeft, bounds.UpperRight, Color.Purple );
-                DrawLine( bounds.UpperLeft, bounds.LowerLeft, Color.Purple );
+                DrawLine( bounds.UpperLeft + pos, bounds.UpperRight + pos, Color.Purple );
+                DrawLine( bounds.UpperLeft + pos, bounds.LowerLeft + pos, Color.Purple );
 
-                DrawLine( bounds.LowerRight, bounds.UpperRight, Color.Purple );
-                DrawLine( bounds.LowerRight, bounds.LowerLeft, Color.Purple );
+                DrawLine( bounds.LowerRight + pos, bounds.UpperRight + pos, Color.Purple );
+                DrawLine( bounds.LowerRight + pos, bounds.LowerLeft + pos, Color.Purple );
             }
 
             // Draw the pivot origin
-            Vector2 origin = bounds.PivotOrigin;
-            DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
+//            Vector2 origin = bounds.PivotOrigin + bounds.WorldPosition;
+//            DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
         }
 
         [Conditional( "DEBUG" )]

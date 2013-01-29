@@ -171,6 +171,13 @@ namespace Scott.Dungeon.ComponentModel
             Vector2 delta = position - mPosition;
             mPosition     = position;
 
+            // Update our bounding area with the new position
+            if ( Bounds != null )
+            {
+                Bounds.Move( delta );
+            }
+
+            // Update any attached child game objects with our changed position
             foreach ( GameObject child in Children )
             {
                 child.Position += delta;

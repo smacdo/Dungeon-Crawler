@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Scott.Dungeon.Actor;
 using Scott.Dungeon.AI;
-using Scott.Dungeon.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
