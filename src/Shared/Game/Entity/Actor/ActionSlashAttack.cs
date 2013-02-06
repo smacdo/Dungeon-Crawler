@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Scott.GameContent;
 using Scott.Common;
 using Scott.Game.Entity.Graphics;
+using Scott.Geometry;
 
 namespace Scott.Game.Entity.Actor
 {

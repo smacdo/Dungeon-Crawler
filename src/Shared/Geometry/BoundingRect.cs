@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scott.Common
+namespace Scott.Geometry
 {
     /// <summary>
     /// A rotatable rectangular bounding box that is used for most objects in dungeon crawler.
