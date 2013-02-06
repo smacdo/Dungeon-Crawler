@@ -8,6 +8,9 @@ DungeonCrawlerContentPipeline/bin
 DungeonCrawlerContentPipeline/obj
 Installer/bin
 Installer/obj
+TestResults
+DungeonCrawler.VisualState.xml
+TestResult.xml
 *.cachefile
 *.csproj.user
 *.swp

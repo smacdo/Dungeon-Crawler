@@ -1,0 +1,7 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" processModel="Default" domainUsage="Single" />
+  <Config name="Debug" binpathtype="Auto" runtimeFramework="v4.0.30319">
+    <assembly path="build\Debug\ScottCommon.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto" />
+</NUnitProject>
