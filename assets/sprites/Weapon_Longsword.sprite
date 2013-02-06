@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sprite name="Weapon_Longsword">
+  <atlas image="atlases/Weapon_Longsword.png" spriteWidth="192" spriteHeight="192" />
+  <default animation="Slash" direction="South" />
+  <originOffset x="0" y="0" />
+  
+  <animation name="Slash" frameTime="0.1">
+    <frames direction="North">
+      <frame x="0" y="0" />
+      <frame x="192" y="0" />
+      <frame x="384" y="0" />
+      <frame x="576" y="0" />
+      <frame x="768" y="0" />
+      <frame x="960" y="0" />
+      <frame x="1152" y="0" />
+    </frames>
+    <frames direction="West">
+      <frame x="1344" y="0" />
+      <frame x="1536" y="0" />
+      <frame x="1728" y="0" />
+      <frame x="0" y="192" />
+      <frame x="192" y="192" />
+      <frame x="384" y="192" />
+      <frame x="576" y="192" />
+    </frames>
+    <frames direction="South">
+      <frame x="768" y="192" />
+      <frame x="960" y="192" />
+      <frame x="1152" y="192" />
+      <frame x="1344" y="192" />
+      <frame x="1536" y="192" />
+      <frame x="1728" y="192" />
+      <frame x="0" y="384" />
+    </frames>
+    <frames direction="East">
+      <frame x="192" y="384" />
+      <frame x="384" y="384" />
+      <frame x="576" y="384" />
+      <frame x="768" y="384" />
+      <frame x="960" y="384" />
+      <frame x="1152" y="384" />
+      <frame x="1344" y="384" />
+    </frames>
+  </animation>
+</sprite>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sprite name="Head_Hood_Chain">
+  <atlas image="atlases/Head_Hood_Chain.png" spriteWidth="64" spriteHeight="64" />
+  <default animation="Idle" direction="South" />
+  <originOffset x="0" y="0" />
+  
+  <animation name="Idle" frameTime="0.1">
+    <frames direction="North">
+      <frame x="0" y="0" />
+    </frames>
+    <frames direction="West">
+      <frame x="64" y="0" />
+    </frames>
+    <frames direction="South">
+      <frame x="128" y="0" />
+    </frames>
+    <frames direction="East">
+      <frame x="192" y="0" />
+    </frames>
+  </animation>
+  <animation name="Walk" frameTime="0.1">
+    <frames direction="North">
+      <frame x="256" y="0" />
+      <frame x="320" y="0" />
+      <frame x="384" y="0" />
+      <frame x="448" y="0" />
+      <frame x="512" y="0" />
+      <frame x="576" y="0" />
+      <frame x="640" y="0" />
+      <frame x="704" y="0" />
+    </frames>
+    <frames direction="West">
+      <frame x="768" y="0" />
+      <frame x="832" y="0" />
+      <frame x="896" y="0" />
+      <frame x="960" y="0" />
+      <frame x="0" y="64" />
+      <frame x="64" y="64" />
+      <frame x="128" y="64" />
+      <frame x="192" y="64" />
+    </frames>
+    <frames direction="South">
+      <frame x="256" y="64" />
+      <frame x="320" y="64" />
+      <frame x="384" y="64" />
+      <frame x="448" y="64" />
+      <frame x="512" y="64" />
+      <frame x="576" y="64" />
+      <frame x="640" y="64" />
+      <frame x="704" y="64" />
+    </frames>
+    <frames direction="East">
+      <frame x="768" y="64" />
+      <frame x="832" y="64" />
+      <frame x="896" y="64" />
+      <frame x="960" y="64" />
+      <frame x="0" y="128" />
+      <frame x="64" y="128" />
+      <frame x="128" y="128" />
+      <frame x="192" y="128" />
+    </frames>
+  </animation>
+  <animation name="Thrust" frameTime="0.1">
+    <frames direction="North">
+      <frame x="256" y="128" />
+      <frame x="320" y="128" />
+      <frame x="384" y="128" />
+      <frame x="448" y="128" />
+      <frame x="512" y="128" />
+      <frame x="576" y="128" />
+      <frame x="640" y="128" />
+      <frame x="704" y="128" />
+    </frames>
+    <frames direction="West">
+      <frame x="768" y="128" />
+      <frame x="832" y="128" />
+      <frame x="896" y="128" />
+      <frame x="960" y="128" />
+      <frame x="0" y="192" />
+      <frame x="64" y="192" />
+      <frame x="128" y="192" />
+      <frame x="192" y="192" />
+    </frames>
+    <frames direction="South">
+      <frame x="256" y="192" />
+      <frame x="320" y="192" />
+      <frame x="384" y="192" />
+      <frame x="448" y="192" />
+      <frame x="512" y="192" />
+      <frame x="576" y="192" />
+      <frame x="640" y="192" />
+      <frame x="704" y="192" />
+    </frames>
+    <frames direction="East">
+      <frame x="768" y="192" />
+      <frame x="832" y="192" />
+      <frame x="896" y="192" />
+      <frame x="960" y="192" />
+      <frame x="0" y="256" />
+      <frame x="64" y="256" />
+      <frame x="128" y="256" />
+      <frame x="192" y="256" />
+    </frames>
+  </animation>
+  <animation name="Slash" frameTime="0.1">
+    <frames direction="North">
+      <frame x="256" y="256" />
+      <frame x="320" y="256" />
+      <frame x="384" y="256" />
+      <frame x="448" y="256" />
+      <frame x="512" y="256" />
+      <frame x="576" y="256" />
+    </frames>
+    <frames direction="West">
+      <frame x="640" y="256" />
+      <frame x="704" y="256" />
+      <frame x="768" y="256" />
+      <frame x="832" y="256" />
+      <frame x="896" y="256" />
+      <frame x="960" y="256" />
+    </frames>
+    <frames direction="South">
+      <frame x="0" y="320" />
+      <frame x="64" y="320" />
+      <frame x="128" y="320" />
+      <frame x="192" y="320" />
+      <frame x="256" y="320" />
+      <frame x="320" y="320" />
+    </frames>
+    <frames direction="East">
+      <frame x="384" y="320" />
+      <frame x="448" y="320" />
+      <frame x="512" y="320" />
+      <frame x="576" y="320" />
+      <frame x="640" y="320" />
+      <frame x="704" y="320" />
+    </frames>
+  </animation>
+  <animation name="Spell" frameTime="0.1">
+    <frames direction="North">
+      <frame x="768" y="320" />
+      <frame x="832" y="320" />
+      <frame x="896" y="320" />
+      <frame x="960" y="320" />
+      <frame x="0" y="384" />
+      <frame x="64" y="384" />
+      <frame x="128" y="384" />
+    </frames>
+    <frames direction="West">
+      <frame x="192" y="384" />
+      <frame x="256" y="384" />
+      <frame x="320" y="384" />
+      <frame x="384" y="384" />
+      <frame x="448" y="384" />
+      <frame x="512" y="384" />
+      <frame x="576" y="384" />
+    </frames>
+    <frames direction="South">
+      <frame x="640" y="384" />
+      <frame x="704" y="384" />
+      <frame x="768" y="384" />
+      <frame x="832" y="384" />
+      <frame x="896" y="384" />
+      <frame x="960" y="384" />
+      <frame x="0" y="448" />
+    </frames>
+    <frames direction="East">
+      <frame x="64" y="448" />
+      <frame x="128" y="448" />
+      <frame x="192" y="448" />
+      <frame x="256" y="448" />
+      <frame x="320" y="448" />
+      <frame x="384" y="448" />
+      <frame x="448" y="448" />
+    </frames>
+  </animation>
+  <animation name="Bow" frameTime="0.1">
+    <frames direction="North">
+      <frame x="512" y="448" />
+      <frame x="576" y="448" />
+      <frame x="640" y="448" />
+      <frame x="704" y="448" />
+      <frame x="768" y="448" />
+      <frame x="832" y="448" />
+      <frame x="896" y="448" />
+      <frame x="960" y="448" />
+      <frame x="0" y="512" />
+      <frame x="64" y="512" />
+      <frame x="128" y="512" />
+      <frame x="192" y="512" />
+      <frame x="256" y="512" />
+    </frames>
+    <frames direction="West">
+      <frame x="320" y="512" />
+      <frame x="384" y="512" />
+      <frame x="448" y="512" />
+      <frame x="512" y="512" />
+      <frame x="576" y="512" />
+      <frame x="640" y="512" />
+      <frame x="704" y="512" />
+      <frame x="768" y="512" />
+      <frame x="832" y="512" />
+      <frame x="896" y="512" />
+      <frame x="960" y="512" />
+      <frame x="0" y="576" />
+      <frame x="64" y="576" />
+    </frames>
+    <frames direction="South">
+      <frame x="128" y="576" />
+      <frame x="192" y="576" />
+      <frame x="256" y="576" />
+      <frame x="320" y="576" />
+      <frame x="384" y="576" />
+      <frame x="448" y="576" />
+      <frame x="512" y="576" />
+      <frame x="576" y="576" />
+      <frame x="640" y="576" />
+      <frame x="704" y="576" />
+      <frame x="768" y="576" />
+      <frame x="832" y="576" />
+      <frame x="896" y="576" />
+    </frames>
+    <frames direction="East">
+      <frame x="960" y="576" />
+      <frame x="0" y="640" />
+      <frame x="64" y="640" />
+      <frame x="128" y="640" />
+      <frame x="192" y="640" />
+      <frame x="256" y="640" />
+      <frame x="320" y="640" />
+      <frame x="384" y="640" />
+      <frame x="448" y="640" />
+      <frame x="512" y="640" />
+      <frame x="576" y="640" />
+      <frame x="640" y="640" />
+      <frame x="704" y="640" />
+    </frames>
+  </animation>
+  <animation name="Hurt" frameTime="0.1">
+    <frames direction="*">
+      <frame x="768" y="640" />
+      <frame x="832" y="640" />
+      <frame x="896" y="640" />
+      <frame x="960" y="640" />
+      <frame x="0" y="704" />
+      <frame x="64" y="704" />
+    </frames>
+  </animation>
+</sprite>

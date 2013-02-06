@@ -1,0 +1,7 @@
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\obj\x86\Release\Dungeon Crawler Shared.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\bin\x86\Release\ScottCommon.dll
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\bin\x86\Release\ScottCommon.pdb
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\bin\x86\Release\GameContentLib.dll
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\bin\x86\Release\GameContentLib.pdb
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\obj\x86\Release\ScottCommon.dll
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\obj\x86\Release\ScottCommon.pdb

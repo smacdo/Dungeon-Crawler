@@ -1,0 +1,6 @@
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\ContentPipelineLib\obj\x86\Release\Game Content Lib.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\ContentPipelineLib\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\ContentPipelineLib\bin\x86\Release\GameContentLib.dll
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\ContentPipelineLib\bin\x86\Release\GameContentLib.pdb
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\ContentPipelineLib\obj\x86\Release\GameContentLib.dll
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\ContentPipelineLib\obj\x86\Release\GameContentLib.pdb

@@ -1,0 +1,2 @@
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Client\obj\x86\Release\Dungeon Crawler Client.csprojResolveAssemblyReference.cache
+C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Client\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
