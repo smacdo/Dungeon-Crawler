@@ -14,12 +14,9 @@ namespace Scott.Common
     public class InstancePool<T> : IEnumerable<T>
         where T : IRecyclable, new()
     {
-        private int mCount;
-
-        private Queue<T> mFreeList;
-        private LinkedList<T> mActiveList;
-        private Dictionary<T, LinkedListNode<T>> mActiveNodeTable;
-
+        /// <summary>
+        ///  Total number of objects in the instance pool.
+        /// </summary>
         public int TotalCount
         {
             get
@@ -28,6 +25,9 @@ namespace Scott.Common
             }
         }
 
+        /// <summary>
+        ///  Number of objects that are available for use.
+        /// </summary>
         public int FreeCount
         {
             get
@@ -36,6 +36,9 @@ namespace Scott.Common
             }
         }
 
+        /// <summary>
+        ///  Number of objects that are in use.
+        /// </summary>
         public int ActiveCount
         {
             get
@@ -43,6 +46,12 @@ namespace Scott.Common
                 return mActiveList.Count;
             }
         }
+
+        private int mCount = 0;
+
+        private Queue<T> mFreeList;
+        private LinkedList<T> mActiveList;
+        private Dictionary<T, LinkedListNode<T>> mActiveNodeTable;
 
         /// <summary>
         /// Constructor

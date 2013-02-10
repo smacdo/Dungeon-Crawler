@@ -68,6 +68,7 @@
     <Compile Include="Common\IRecyclable.cs" />
     <Compile Include="Common\ParentableNode.cs" />
     <Compile Include="Common\ParentingException.cs" />
+    <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />
     <Compile Include="Game\Entity\IGameObject.cs" />
