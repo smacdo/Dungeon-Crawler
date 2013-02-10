@@ -10,7 +10,7 @@ namespace Scott.Game.Entity.Actor
     /// <summary>
     /// Represents a interactive character
     /// </summary>
-    public class ActorController : AbstractGameObjectComponent
+    public class ActorController : Component
     {
         /// <summary>
         /// The current action that this actor is performing
@@ -34,7 +34,7 @@ namespace Scott.Game.Entity.Actor
                 MovementComponent movement = Owner.GetComponent<MovementComponent>();
                 movement.CancelMove();
                
-                mCurrentAction = new ActionSlashAttack( Owner, Owner.Direction );
+ //               mCurrentAction = new ActionSlashAttack( Owner, Owner.Direction );
             }
         }
 

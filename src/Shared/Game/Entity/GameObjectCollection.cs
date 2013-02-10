@@ -13,19 +13,16 @@ using System.Text;
 namespace Scott.Game.Entity
 {
     /// <summary>
-    /// Manages the creation, destruction and execution of multiple game objects and their
-    /// components.
+    ///  Manages the creation, destruction and execution of multiple game objects and their
+    ///  components.
     /// </summary>
     public class GameObjectCollection
     {
         private const int DEFAULT_CAPACITY = 4096;
 
         public List<GameObject> GameObjects { get; private set; }
-        public ComponentManager<AiController> AiControllers { get; private set; }
-        public ComponentManager<ActorController> ActorControllers { get; private set; }
-        public ComponentManager<MovementComponent> Movements { get; private set; }
-        public ComponentManager<ColliderComponent> Colliders { get; private set; }
-        public ComponentManager<SpriteComponent> Sprites { get; private set; }
+
+        public Dictionary<Type, IComponentCollection> mComponentProviders;
 
         /// <summary>
         /// Constructor
@@ -33,18 +30,51 @@ namespace Scott.Game.Entity
         public GameObjectCollection()
         {
             GameObjects = new List<GameObject>( DEFAULT_CAPACITY );
-            AiControllers = new ComponentManager<AiController>( DEFAULT_CAPACITY );
-            ActorControllers = new ComponentManager<ActorController>( DEFAULT_CAPACITY );
-            Movements = new ComponentManager<MovementComponent>( DEFAULT_CAPACITY );
-            Colliders = new ComponentManager<ColliderComponent>( DEFAULT_CAPACITY );
-            Sprites = new ComponentManager<SpriteComponent>( DEFAULT_CAPACITY );
+            mComponentProviders = new Dictionary<Type, IComponentCollection>();
+
+            AddComponentProvider( typeof( AiController ), typeof( ComponentCollection<AiController> ) );
+            AddComponentProvider( typeof( ActorController ), typeof( ComponentCollection<ActorController> ) );
+            AddComponentProvider( typeof( MovementComponent ), typeof( ComponentCollection<MovementComponent> ) );
+
+            AddComponentProvider( typeof( ColliderComponent ), typeof( ComponentCollection<ColliderComponent> ) );
+            AddComponentProvider( typeof( SpriteComponent ), typeof( ComponentCollection<SpriteComponent> ) );
         }
 
         /// <summary>
-        /// Creates and returns a new game object instance. This game object is tracked
-        /// and updated until it is deleted from the collection.
+        ///  Adds a new component type of component that can be added to game objects in this
+        ///  collection.
+        ///  
+        ///  TODO: Create a new version of the component collection
         /// </summary>
-        /// <returns>Copy of the newly created game object</returns>
+        /// <typeparam name="T"></typeparam>
+        public void AddComponentProvider( Type componentType, Type componentCollectionType )
+        {
+            // Create a new instance of the component collection
+            IComponentCollection provider =
+                (IComponentCollection) Activator.CreateInstance( componentCollectionType );
+
+            // Register it in our list of providers
+            mComponentProviders.Add( componentType, provider );
+        }
+
+        /// <summary>
+        ///  Create a new component and attach it to the game object.
+        /// </summary>
+        /// <typeparam name="T">Component type to create.</typeparam>
+        /// <param name="gameObject">Game object to attach the game object to.</param>
+        /// <returns>Reference to the component if it needs to be configured.</returns>
+        public T Attach<T>( IGameObject gameObject ) where T : class, IComponent
+        {
+            IComponentCollection collection = mComponentProviders[typeof( T )];
+            return collection.Create( gameObject ) as T;
+        }
+
+        /// <summary>
+        /// Creates and returns a new game object instance. This game object is tracked by this 
+        /// collection until removed.
+        /// </summary>
+        /// <param name="name">Unique name for the game object.</param>
+        /// <returns>Reference to the newly created game object.</returns>
         public GameObject Create( string name )
         {
             return Create( name, Vector2.Zero, Direction.South );
@@ -70,23 +100,28 @@ namespace Scott.Game.Entity
             return gameObject; 
         }
 
-        public void Update( GameTime simulationTime )
+        public void Update<T>( GameTime simulationTime ) where T : IComponent
         {
-            // We resolve movement and collision first, before the player or AI gets chance
-            // to do anything. Hence the current position of all objects (and collision)
-            // that is displayed is actually one frame BEFORE this update
-            Movements.Update( simulationTime );
-            PerformCollisionDetection();
+            IComponentCollection collection = mComponentProviders[typeof( T )];
+            collection.Update( simulationTime );
 
-            Colliders.Update( simulationTime );
+            // ok this is just a terrible hack. but i'll fix it once everything is unbroken
+            if ( typeof( T ) == typeof( MovementComponent ) )
+            {
+                PerformCollisionDetection();
+            }
+        }
 
-            // Update game ai and character actions
-            AiControllers.Update( simulationTime );
-            ActorControllers.Update( simulationTime );
+        public void Draw<T>( GameTime gameTime ) where T : IComponent
+        {
+            // TODO: Horrible hack that needs to get fixed correctly.
+            IComponentCollection collection = mComponentProviders[typeof( T )];
+            ComponentCollection<SpriteComponent> drawables = (ComponentCollection<SpriteComponent>) collection;
 
-            // Make sure animations are primed and updated (we need to trigger the
-            // correct animation events even if we are not drawwing)
-            Sprites.Update( simulationTime );
+            foreach ( SpriteComponent sprite in drawables )
+            {
+                sprite.Draw( gameTime );
+            }
         }
 
         /// <summary>
@@ -154,20 +189,11 @@ namespace Scott.Game.Entity
             debugText.Append( "],\n\n" );
 
             // Now dump our component managers to disk
-            debugText.Append( AiControllers.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
-            debugText.Append( ActorControllers.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
-            debugText.Append( Movements.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
-            debugText.Append( Colliders.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
-
-            debugText.Append( Sprites.DumpDebugDumpDebugInfoToString() );
-            debugText.Append( "\n\n" );
+            foreach ( KeyValuePair<Type, IComponentCollection> pair in mComponentProviders )
+            {
+                debugText.Append( pair.Value.DumpDebugDumpDebugInfoToString() );
+                debugText.Append( "\n\n" );
+            }
 
             return debugText.ToString();
         }

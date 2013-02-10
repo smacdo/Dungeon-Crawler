@@ -9,7 +9,7 @@ namespace Scott.Game.Entity.Movement
     /// <summary>
     /// An animation component manages a sprite's animation
     /// </summary>
-    public class ColliderComponent : AbstractGameObjectComponent
+    public class ColliderComponent : Component
     {
         /// <summary>
         /// Checks if this collider component had a collision on the current update cycle

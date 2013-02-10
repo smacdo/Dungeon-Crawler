@@ -20,6 +20,7 @@ using System.Diagnostics;
 using Scott.Geometry;
 using Scott.Game.Entity.Graphics;
 using Scott.Game.Entity.Movement;
+using Scott.Game.Entity.AI;
 
 namespace Scott.Dungeon.Game
 {
@@ -65,7 +66,7 @@ namespace Scott.Dungeon.Game
             mPlayer = mGameObjects.Create( "Player" );
             mPlayer.Bounds = new BoundingArea( mPlayer.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
-            SpriteComponent sprite = mGameObjects.Sprites.Create( mPlayer );
+            SpriteComponent sprite = mGameObjects.Attach<SpriteComponent>( mPlayer ); // mGameObjects.Sprites.Create( mPlayer );
 
             sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
 
@@ -78,9 +79,9 @@ namespace Scott.Dungeon.Game
             sprite.AddSprite( "Belt",     Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
  //           mPlayer.AddChild( CreateBodyPart( "Weapon",    "sprites/Weapon_Longsword", false ) );
 
-            mGameObjects.Movements.Create( mPlayer );
-            mGameObjects.ActorControllers.Create( mPlayer );
-            mGameObjects.Colliders.Create( mPlayer );
+            mGameObjects.Attach<MovementComponent>( mPlayer );
+            mGameObjects.Attach<ActorController>( mPlayer );
+            mGameObjects.Attach<ColliderComponent>( mPlayer );
         }
 
         /// <summary>
@@ -102,13 +103,13 @@ namespace Scott.Dungeon.Game
 
             enemy.Bounds = new BoundingArea( enemy.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
-            SpriteComponent sprite = mGameObjects.Sprites.Create( enemy );
+            SpriteComponent sprite = mGameObjects.Attach<SpriteComponent>( enemy );
 
             sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
-            mGameObjects.ActorControllers.Create( enemy );
-            mGameObjects.AiControllers.Create( enemy );
-            mGameObjects.Movements.Create( enemy );
+            mGameObjects.Attach<ActorController>( enemy );
+            mGameObjects.Attach<AiController>( enemy );
+            mGameObjects.Attach<MovementComponent>( enemy );
 
             GameRoot.Enemies.Add( enemy );
             mEnemyCount += 1;
@@ -192,8 +193,20 @@ namespace Scott.Dungeon.Game
                 playerActor.SlashAttack();
             }
 
-            // Update the world
-            mGameObjects.Update( gameTime );
+            // Update the world //////////////////////////////
+            // We resolve movement and collision first, before the player or AI gets chance
+            // to do anything. Hence the current position of all objects (and collision)
+            // that is displayed is actually one frame BEFORE this update
+            mGameObjects.Update<MovementComponent>( gameTime );
+            mGameObjects.Update<ColliderComponent>( gameTime );
+
+            // Update game ai and character actions
+            mGameObjects.Update<AiController>( gameTime );
+            mGameObjects.Update<ActorController>( gameTime );
+
+            // Make sure animations are primed and updated (we need to trigger the
+            // correct animation events even if we are not drawwing)
+            mGameObjects.Update<SpriteComponent>( gameTime );   // TODO: Remove this and have an animation component
 
             base.Update( gameTime );
         }
@@ -205,12 +218,7 @@ namespace Scott.Dungeon.Game
         protected override void Draw( GameTime gameTime )
         {
             // Walk through the game scene and collect all sprites for drawing
-            mGameObjects.Sprites.Update( gameTime );
-
-            foreach ( SpriteComponent sprite in mGameObjects.Sprites )
-            {
-                sprite.Draw( gameTime );
-            }
+            mGameObjects.Draw<SpriteComponent>( gameTime );
 
             // Draw all requested game sprites
             GameRoot.Renderer.DrawScreen( gameTime );

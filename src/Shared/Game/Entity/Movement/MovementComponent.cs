@@ -13,7 +13,7 @@ namespace Scott.Game.Entity.Movement
     /// <summary>
     /// Tracks movement information
     /// </summary>
-    public class MovementComponent : AbstractGameObjectComponent
+    public class MovementComponent : Component
     {
         /// <summary>
         /// Direction that the player (or another controller) is requesting us to move in.

@@ -13,7 +13,7 @@ namespace Scott.Game.Entity.Graphics
     /// <summary>
     /// The sprite component represents a sprite visible to the camera
     /// </summary>
-    public class SpriteComponent : AbstractGameObjectComponent
+    public class SpriteComponent : Component, IDrawable
     {
         /// <summary>
         /// The animation that is currently playing

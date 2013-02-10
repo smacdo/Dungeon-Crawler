@@ -11,7 +11,7 @@ namespace Scott.Game.Entity.AI
     /// <summary>
     /// Does AI logic
     /// </summary>
-    public class AiController : AbstractGameObjectComponent
+    public class AiController : Component
     {
         private const double CHANGE_DIRECTION_CHANCE = 0.05;
         private const double START_WALKING_CHANCE = 0.15;

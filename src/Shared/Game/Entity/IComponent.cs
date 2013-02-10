@@ -7,17 +7,15 @@ using System.Text;
 namespace Scott.Game.Entity
 {
     /// <summary>
-    /// Interface for game object components
+    ///  Interface for game object components
     /// </summary>
-    public interface IGameObjectComponent
+    public interface IComponent
     {
-        Guid Id { get; }
-        GameObject Owner { get; set; }
+        Guid Id { get; set; }
+        IGameObject Owner { get; set; }
         bool Enabled { get; set; }
 
-        void Update( GameTime time );
-
-        void ResetComponent( GameObject gameObject, bool enabled );
+        void Update( GameTime simulationTime );
 
         string ToString();
         string DumpDebugInfo();

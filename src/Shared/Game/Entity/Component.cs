@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Scott.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,15 +17,38 @@ namespace Scott.Game.Entity
     /// 
     /// TODO: Explain this much better
     /// </summary>
-    public abstract class AbstractGameObjectComponent : IGameObjectComponent
+    public abstract class Component : IComponent, IRecyclable
     {
-        private GameObject mOwner;
-        public Guid Id { get; private set; }
+        private IGameObject mOwner;
+        private Guid mId;
+
+        /// <summary>
+        ///  Gets or sets the component's unique identifier.
+        /// </summary>
+        public Guid Id
+        {
+            get
+            {
+                return mId;
+            }
+            set
+            {
+                // only set the id if it is empty
+                if ( mId == Guid.Empty )
+                {
+                    mId = value;
+                }
+                else
+                {
+                    throw new InvalidOperationException( "Cannot reassign component id once oen has been assigned" );
+                }
+            }
+        }
 
         /// <summary>
         /// The game object that owns this components
         /// </summary>
-        public GameObject Owner
+        public IGameObject Owner
         {
             get
             {
@@ -52,11 +76,9 @@ namespace Scott.Game.Entity
         /// <summary>
         /// Component constructor
         /// </summary>
-        public AbstractGameObjectComponent()
+        public Component()
         {
-            Owner = null;
-            Enabled = false;
-            Id = Guid.Empty;
+            Recycle();
         }
 
         /// <summary>
@@ -66,26 +88,33 @@ namespace Scott.Game.Entity
         public abstract void Update( GameTime time );
 
         /// <summary>
-        /// Resets the game component to a default state
+        ///  Resets the component's state back to it's default state.
         /// </summary>
-        /// <param name="gameObject">The game object that owns this component</param>
-        /// <param name="enabled">Whetehr</param>
-        public void ResetComponent( GameObject gameObject, bool enabled )
+        public void Recycle()
         {
-            Owner = gameObject;
-            Enabled = enabled;
-            Id = Guid.NewGuid();
+            mOwner = null;
+            mId = Guid.Empty;
+            Enabled = false;
         }
 
         /// <summary>
-        /// Writes the game component out to a stirng
+        ///  Writes the game component out to a stirng
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
+            return String.Format( "Component type: {1}, id: {1}", GetType().Name, mId ); 
+        }
+
+        /// <summary>
+        ///  Returns a string containing information on this component instance.
+        /// </summary>
+        /// <returns></returns>
+        public string DumpDebugInfo()
+        {
             if ( Owner != null )
             {
-                return String.Format( "{{ id: {0}, owner: \"{1}\", enabled: {2}, {3} }}",
+                return String.Format( "{{ id: \"{0}\", owner: \"{1}\", enabled: {2} }}",
                                       Id,
                                       Owner.Name,
                                       Enabled,
@@ -93,16 +122,11 @@ namespace Scott.Game.Entity
             }
             else
             {
-                return String.Format( "{{ id {0}, owner: 0, enabled: {1}, {2} }}",
+                return String.Format( "{{ id \"{0}\", owner: 0, enabled: {1} }}",
                                       Id,
                                       Enabled,
                                       DumpDebugInfo() );
-            }
-        }
-
-        public virtual string DumpDebugInfo()
-        {
-            return string.Empty;
+            }           
         }
     }
 }

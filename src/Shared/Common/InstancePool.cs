@@ -12,7 +12,7 @@ namespace Scott.Common
     /// re-used.
     /// </summary>
     public class InstancePool<T> : IEnumerable<T>
-        where T : new()
+        where T : IRecyclable, new()
     {
         private int mCount;
 
@@ -79,6 +79,7 @@ namespace Scott.Common
         {
             T instance = default(T);
 
+            // Grab a free instance from the pool of instances
             if ( mFreeList.Count > 0 )
             {
                 // Get a free instance
@@ -94,6 +95,10 @@ namespace Scott.Common
                 throw new OverflowException( "No more free instances are available for allocation from this pool" );
             }
 
+            // Make sure the instance has been "recycled" so it is starting from a clean state
+            instance.Recycle();
+
+            // Let the caller have it
             return instance;
         }
 

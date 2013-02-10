@@ -11,39 +11,31 @@ namespace Scott.Game.Entity
     /// <summary>
     /// Represents a physical object in the game world
     /// </summary>
-    public class GameObject
+    public class GameObject : Scott.Game.Entity.IGameObject
     {
         private const int DEFAULT_COMPONENT_COUNT = 7;
 
         /// <summary>
-        /// Parent of this game object
+        /// This game object's name
         /// </summary>
-        public GameObject Parent
+        public string Name
         {
             get
             {
-                return mParent;
-            }
-            set
-            {
-                Reparent( value );
+                return mName;
             }
         }
 
         /// <summary>
-        /// List of children
-        /// </summary>
-        public List<GameObject> Children { get; private set; }
-
-        /// <summary>
-        /// This game object's name
-        /// </summary>
-        public string Name { get; private set; }
-
-        /// <summary>
         /// Unique identifier for this game object
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id
+        {
+            get
+            {
+                return mId;
+            }
+        }
 
         /// <summary>
         /// Location of the game object in world coordinates
@@ -60,23 +52,69 @@ namespace Scott.Game.Entity
             }
         }
 
-        public BoundingArea Bounds { get; set; }
+        /// <summary>
+        ///  Bounding area for the game object.
+        ///   TODO: Remove this and put it into another component.
+        /// </summary>
+        public BoundingArea Bounds
+        {
+            get
+            {
+                return mBoundingArea;
+            }
+            set
+            {
+                mBoundingArea = value;
+            }
+        }
 
-        public bool Enabled { get; set; }
+        /// <summary>
+        ///  Check if game object is enabled or disabled;
+        /// </summary>
+        public bool Enabled
+        {
+            get
+            {
+                return mEnabled;
+            }
+            set
+            {
+                mEnabled = false;
+                // TODO: something?
+            }
+        }
 
         /// <summary>
         /// Get the direciton this object is facing
         /// </summary>
-        public Direction Direction { get; set; }
+        public Direction Direction
+        {
+            get
+            {
+                return mDirection;
+            }
+            set
+            {
+                mDirection = value;
+            }
+        }
 
+        private string mName = String.Empty;
+        private Guid mId = Guid.Empty;
         private GameObject mParent;
         private Vector2 mPosition;
-        private GameObjectCollection mParentCollection;
+        private BoundingArea mBoundingArea = null;
+        private bool mEnabled = false;
+        private Direction mDirection = Direction.South;
+        private GameObjectCollection mCollection;
+        private Dictionary< System.Type, IComponent > mComponents = new Dictionary<Type, IComponent>( DEFAULT_COMPONENT_COUNT );
 
         /// <summary>
-        /// TODO: THIS NEEDS TO BE COMMENTED AND EXPLAINED
+        ///  Creates a new empty game object that is not associated with any collection.
         /// </summary>
-        private Dictionary< System.Type, IGameObjectComponent > mComponents;
+        public GameObject()
+        {
+        }
 
         /// <summary>
         /// Constructor
@@ -99,23 +137,21 @@ namespace Scott.Game.Entity
                            Vector2 position,
                            Direction direction )
         {
-            Name = name;
+            mName = name;
             mPosition = position;
             mParent = null;
-            Direction = direction;
-            Children = new List<GameObject>();
-            Enabled = true;
+            mDirection = direction;
+            mEnabled = true;
 
-            mParentCollection = parentCollection;
-            mComponents = new Dictionary<Type, IGameObjectComponent>( DEFAULT_COMPONENT_COUNT );
-            Id = Guid.NewGuid();
+            mCollection = parentCollection;
+            mId = Guid.NewGuid();
         }
 
         /// <summary>
         /// Adds a game component to this game object
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void AddComponent<T>( T instance ) where T : IGameObjectComponent
+        public void AddComponent<T>( T instance ) where T : IComponent
         {
             // Make sure the game component isn't already added
             if ( mComponents.ContainsKey( typeof( T ) ) )
@@ -134,7 +170,7 @@ namespace Scott.Game.Entity
         /// Removes the requested game component
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void DeleteComponent<T>() where T : AbstractGameObjectComponent
+        public void DeleteComponent<T>() where T : Component
         {
             // Make sure the game component actually exists
             if ( mComponents.ContainsKey( typeof( T ) ) )
@@ -155,9 +191,9 @@ namespace Scott.Game.Entity
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetComponent<T>() where T : IGameObjectComponent
+        public T GetComponent<T>() where T : IComponent
         {
-            IGameObjectComponent component = null;
+            IComponent component = null;
             mComponents.TryGetValue( typeof( T ), out component );
 
             return (T) component;
@@ -178,51 +214,6 @@ namespace Scott.Game.Entity
             {
                 Bounds.Move( delta );
             }
-
-            // Update any attached child game objects with our changed position
-            foreach ( GameObject child in Children )
-            {
-                child.Position += delta;
-            }
-        }
-
-        public void AddChild( GameObject child )
-        {
-            child.Reparent( this );
-        }
-
-        /// <summary>
-        /// Changes the parent of this game object
-        /// </summary>
-        /// <param name="newParent">Reference to the new parent (null for none)</param>
-        private void Reparent( GameObject newParent )
-        {
-            // We cannot parent to ourselves
-            if ( ReferenceEquals( this, newParent ) )
-            {
-                throw new GameObjectException( "Cannot set the parent to itself", this );
-            }
-
-            // Don't do anything special if we are not changing parents
-            if ( ReferenceEquals( mParent, newParent ) )
-            {
-                return;
-            }
-
-            // Do we need to remove ourself from the parent's children list?
-            if ( mParent != null )
-            {
-                mParent.Children.Remove( newParent );
-            }
-
-            // Do we need to add ourself as a child to this parent?
-            if ( newParent != null )
-            {
-                newParent.Children.Add( this );
-            }
-
-            // Save the new parent... and we're done!
-            mParent = newParent;
         }
 
         public string DumpDebugInfoToString()
@@ -238,7 +229,7 @@ namespace Scott.Game.Entity
             debugText.Append( "\t\tcomponents: [\n" );
 
             // List the components attached to this game object (only the basics)
-            foreach ( KeyValuePair<System.Type, IGameObjectComponent> pair in mComponents )
+            foreach ( KeyValuePair<System.Type, IComponent> pair in mComponents )
             {
                 debugText.Append(
                     String.Format( "\t\t\t{{ type: \"{0}\", id: {1}, enabled: {2} }}\n",
