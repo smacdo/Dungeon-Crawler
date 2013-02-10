@@ -20,9 +20,11 @@ namespace Scott.Game.Entity.Tests
         /// </summary>
         public class TestComponent : Component
         {
+            public int UpdateCounter = 0;
+
             public override void Update( Microsoft.Xna.Framework.GameTime time )
             {
-                // empty
+                UpdateCounter++;
             }
         }
 
@@ -79,6 +81,32 @@ namespace Scott.Game.Entity.Tests
             TestComponent testC = c as TestComponent;
 
             Assert.IsNotNull( testC );
+        }
+
+        [Test]
+        public void TestUpdateLoop()
+        {
+            ComponentCollection<TestComponent> collection = new ComponentCollection<TestComponent>();
+
+            // Create a game object
+            TestComponent a = collection.Create( gameObject );
+            TestComponent b = collection.Create( new GameObject() );
+
+            // Make sure they ahve no updates
+            Assert.AreEqual( 0, a.UpdateCounter );
+            Assert.AreEqual( 0, b.UpdateCounter );
+
+            // Update the collection and see if they got an update
+            collection.Update( new Microsoft.Xna.Framework.GameTime() );
+
+            Assert.AreEqual( 1, a.UpdateCounter );
+            Assert.AreEqual( 1, b.UpdateCounter );
+
+            // Update the collection and see if they got an update
+            collection.Update( new Microsoft.Xna.Framework.GameTime() );
+
+            Assert.AreEqual( 2, a.UpdateCounter );
+            Assert.AreEqual( 2, b.UpdateCounter );
         }
     }
 }

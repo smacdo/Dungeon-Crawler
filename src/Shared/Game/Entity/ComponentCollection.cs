@@ -31,21 +31,6 @@ namespace Scott.Game.Entity
         }
 
         /// <summary>
-        /// Updates all active game components managed by this component manager
-        /// </summary>
-        /// <param name="gameTime">The current game time</param>
-        public virtual void Update( GameTime gameTime )
-        {
-            foreach ( T instance in mComponentPool )
-            {
-                if ( instance.Enabled )
-                {
-                    instance.Update( gameTime );
-                }
-            }
-        }
-
-        /// <summary>
         /// Creates a new component for the requested game object instance
         /// </summary>
         /// <param name="owner">The game object that will own this instance</param>
@@ -81,8 +66,22 @@ namespace Scott.Game.Entity
         {
             // Reset the component to it's default state, and then return it to the
             // component pool
-            instance.Recycle();
             mComponentPool.Return( instance );
+        }
+
+        /// <summary>
+        /// Updates all active game components managed by this component manager
+        /// </summary>
+        /// <param name="gameTime">The current game time</param>
+        public virtual void Update( GameTime gameTime )
+        {
+            foreach ( T instance in mComponentPool )
+            {
+                if ( instance.Enabled )
+                {
+                    instance.Update( gameTime );
+                }
+            }
         }
 
         /// <summary>
