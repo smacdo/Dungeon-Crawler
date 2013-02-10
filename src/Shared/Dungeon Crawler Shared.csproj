@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ParentableNode.cs" />
+    <Compile Include="Common\ParentingException.cs" />
+    <Compile Include="Common\Tests\ParentableNodeTests.cs" />
     <Compile Include="Geometry\BoundingRect.cs" />
     <Compile Include="Game\Entity\AbstractGameObject.cs" />
     <Compile Include="Game\Entity\Actor\ActionSlashAttack.cs" />
@@ -96,6 +99,9 @@
       <Project>{f31e0cbe-3e8c-4c7f-9546-045bc49425f8}</Project>
       <Name>Game Content Lib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Support\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
