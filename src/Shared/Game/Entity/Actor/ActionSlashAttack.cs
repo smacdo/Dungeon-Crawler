@@ -114,7 +114,7 @@ namespace Scott.Game.Entity.Actor
             double currentTime = gameTime.TotalGameTime.TotalSeconds;
             double startedAt   = mTimeStarted.TotalSeconds + WAIT_TIME;
             double finishedAt  = startedAt + ACTION_TIME - WAIT_TIME;
-            double weightedAmount = Utils.FindOneZeroWeighting( currentTime, startedAt, finishedAt );
+            double weightedAmount = MathUtil.NormalizeToZeroOneRange( currentTime, startedAt, finishedAt );
             
             float angleDeg = MathHelper.Lerp( 170.0f, 10.0f, (float) weightedAmount );
             float radians = MathHelper.ToRadians( angleDeg );

@@ -101,7 +101,7 @@
     <Compile Include="Geometry\Tests\RectangleFTests.cs" />
     <Compile Include="Common\InstancePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\Utils.cs" />
+    <Compile Include="Common\MathUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContentPipelineLib\Game Content Lib.csproj">
