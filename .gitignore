@@ -1,16 +1,12 @@
-DungeonCrawler/DungeonCrawler/bin
-DungeonCrawler/DungeonCrawler/obj
-DungeonCrawler/DungeonCrawlerContent/bin
-DungeonCrawler/DungeonCrawlerContent/obj
-DungeonCrawlerCommon/bin
-DungeonCrawlerCommon/obj
-DungeonCrawlerContentPipeline/bin
-DungeonCrawlerContentPipeline/obj
-Installer/bin
-Installer/obj
-TestResults
-DungeonCrawler.VisualState.xml
-TestResult.xml
+# Build artifacts
+build/
+
+# Installer build artifacts
+installer/bin
+installer/obj
+
+# Random things
+*.VisualState.xml
 *.cachefile
 *.csproj.user
 *.swp

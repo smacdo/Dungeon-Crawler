@@ -1,1 +1,0 @@
-C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\src\Shared\obj\Release\Dungeon Crawler Shared.csprojResolveAssemblyReference.cache
