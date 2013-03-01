@@ -1,5 +1,9 @@
 # Build artifacts
-build/
+build
+src/Client/obj
+src/ContentPipeline/obj
+src/ContentPipelineLib/obj
+src/Shared/obj
 
 # Installer build artifacts
 installer/bin
