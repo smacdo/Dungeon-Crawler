@@ -6,7 +6,7 @@
     public static class MathUtil
     {
         /// <summary>
-        ///  Normalize a value in the [min,max] range to [0.0,1.0].
+        ///  Normalize a value in the [min,max] range to [0.0,1.0]. Range must be zero or greater.
         /// </summary>
         /// <param name="v">The value to normalize.</param>
         /// <param name="min">Minimum value in the current range.</param>
@@ -18,7 +18,7 @@
         }
 
         /// <summary>
-        ///  Normalize a value in the [min,max] range to [0.0,1.0].
+        ///  Normalize a value in the [min,max] range to [0.0,1.0]. Range must be zero or greater.
         /// </summary>
         /// <param name="v">The value to normalize.</param>
         /// <param name="min">Minimum value in the current range.</param>
@@ -30,7 +30,7 @@
         }
 
         /// <summary>
-        ///  Clamps a value that is in the [min,max] range to [-1,1].
+        ///  Clamps a value that is in the [min,max] range to [-1,1]. Range must be zero or greater.
         /// </summary>
         /// <param name="v">The value to normalize.</param>
         /// <param name="min">Minimum value in the current range.</param>
@@ -42,7 +42,7 @@
         }
 
         /// <summary>
-        ///  Clamps a value that is in the [min,max] range to [-1,1].
+        ///  Clamps a value that is in the [min,max] range to [-1,1]. Range must be zero or greater.
         /// </summary>
         /// <param name="v">The value to normalize.</param>
         /// <param name="min">Minimum value in the current range.</param>

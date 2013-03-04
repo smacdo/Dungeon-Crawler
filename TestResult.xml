@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\DungeonCrawler.nunit" total="67" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2013-02-28" time="19:50:40">
+  <environment nunit-version="2.6.2.12296" clr-version="2.0.50727.6400" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Program Files (x86)\NUnit 2.6.2\bin" machine-name="SCOTTPC" user="Scott" user-domain="SCOTTPC" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\DungeonCrawler.nunit" executed="True" result="Success" success="True" time="0.256" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Users\Scott\Documents\GitHub\Dungeon-Crawler\build\Debug\ScottCommon.dll" executed="True" result="Success" success="True" time="0.250" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="Scott" executed="True" result="Success" success="True" time="0.249" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Common" executed="True" result="Success" success="True" time="0.080" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.080" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="InstancePoolTests" executed="True" result="Success" success="True" time="0.055" asserts="0">
+                        <categories>
+                          <category name="Common" />
+                        </categories>
+                        <results>
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.CreateSmallInstancePool" executed="True" result="Success" success="True" time="0.018" asserts="3" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.ReturnRecycle" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.ReturnTheInstanceTwice" executed="True" result="Success" success="True" time="0.003" asserts="0" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.ReturnTheWrongInstance" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.TakeAndReturnAndTakeAgain" executed="True" result="Success" success="True" time="0.005" asserts="5" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.TakeAndReturnInDifferentOrder" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.TakeAndReturnOneInstance" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.TakeOneInstance" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                          <test-case name="Scott.Common.Tests.InstancePoolTests.TakeTooManyInstances" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="MathUtilTests" executed="True" result="Success" success="True" time="0.006" asserts="0">
+                        <results>
+                          <test-case name="Scott.Common.Tests.MathUtilTests.NormalizeToZeroOneRange_Double" executed="True" result="Success" success="True" time="0.001" asserts="6" />
+                          <test-case name="Scott.Common.Tests.MathUtilTests.NormalizeToZeroOneRange_Float" executed="True" result="Success" success="True" time="0.002" asserts="6" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="ParentableNodeTests" executed="True" result="Success" success="True" time="0.014" asserts="0">
+                        <categories>
+                          <category name="Common" />
+                        </categories>
+                        <results>
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestChildrenProperty" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestConstructorWithParent" executed="True" result="Success" success="True" time="0.003" asserts="15" />
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestDefaultConstructor" executed="True" result="Success" success="True" time="0.001" asserts="7" />
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestFirstChildProperty" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestLastChildProperty" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestNextPreviousSiblingProperty" executed="True" result="Success" success="True" time="0.000" asserts="16" />
+                          <test-case name="Scott.Common.Tests.ParentableNodeTests.TestParentProperty" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+              <test-suite type="Namespace" name="Game" executed="True" result="Success" success="True" time="0.066" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="Entity" executed="True" result="Success" success="True" time="0.066" asserts="0">
+                    <results>
+                      <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.065" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="ComponentCollectionTests" executed="True" result="Success" success="True" time="0.015" asserts="0">
+                            <categories>
+                              <category name="Entity" />
+                            </categories>
+                            <results>
+                              <test-case name="Scott.Game.Entity.Tests.ComponentCollectionTests.TestCreateComponentCollection" executed="True" result="Success" success="True" time="0.002" asserts="0" />
+                              <test-case name="Scott.Game.Entity.Tests.ComponentCollectionTests.TestCreateSingleComponent" executed="True" result="Success" success="True" time="0.003" asserts="4" />
+                              <test-case name="Scott.Game.Entity.Tests.ComponentCollectionTests.TestCreateUsingIComponentInterface" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+                              <test-case name="Scott.Game.Entity.Tests.ComponentCollectionTests.TestUpdateLoop" executed="True" result="Success" success="True" time="0.004" asserts="6" />
+                            </results>
+                          </test-suite>
+                          <test-suite type="TestFixture" name="ComponentTests" executed="True" result="Success" success="True" time="0.034" asserts="0">
+                            <categories>
+                              <category name="Entity" />
+                            </categories>
+                            <results>
+                              <test-case name="Scott.Game.Entity.Tests.ComponentTests.TestCreateComponent" executed="True" result="Success" success="True" time="0.001" asserts="3" />
+                              <test-case name="Scott.Game.Entity.Tests.ComponentTests.TestRecycleComponent" executed="True" result="Success" success="True" time="0.031" asserts="6" />
+                            </results>
+                          </test-suite>
+                          <test-suite type="TestFixture" name="GameObjectCollectionTests" executed="True" result="Success" success="True" time="0.007" asserts="0">
+                            <categories>
+                              <category name="Entity" />
+                            </categories>
+                            <results>
+                              <test-case name="Scott.Game.Entity.Tests.GameObjectCollectionTests.CreateNewCollection" executed="True" result="Success" success="True" time="0.006" asserts="0" />
+                            </results>
+                          </test-suite>
+                          <test-suite type="TestFixture" name="GameObjectTests" executed="True" result="Inconclusive" success="False" time="0.000" asserts="0">
+                            <categories>
+                              <category name="Entity" />
+                            </categories>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+              <test-suite type="Namespace" name="Geometry" executed="True" result="Success" success="True" time="0.084" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.084" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="RectangleFTests" executed="True" result="Success" success="True" time="0.083" asserts="0">
+                        <categories>
+                          <category name="Common/Geometry" />
+                        </categories>
+                        <results>
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Bottom" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.DefaultRectIsEmpty" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.EmptyRectFieldIsEmpty" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Height" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.IsRectEmpty" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Left" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Right" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.SetHeight" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.SetWidth" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.SetX" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.SetY" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestBottomLeft" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestBottomRight" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestCenter" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestContainsRectangle" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestContainsVector2" executed="True" result="Success" success="True" time="0.001" asserts="12" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestContainsXY" executed="True" result="Success" success="True" time="0.001" asserts="16" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestCopyConstructor" executed="True" result="Success" success="True" time="0.001" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestDefaultConstructor" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestEquals" executed="True" result="Success" success="True" time="0.000" asserts="8" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestEqualsOperator" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestHashCode" executed="True" result="Success" success="True" time="0.001" asserts="6" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestInflate" executed="True" result="Success" success="True" time="0.001" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestIntersection" executed="True" result="Success" success="True" time="0.001" asserts="5" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestIntersectionAreaReturned" executed="True" result="Success" success="True" time="0.001" asserts="5" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestLocation" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestNotEqualsOperator" executed="True" result="Success" success="True" time="0.001" asserts="5" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestOffsetVector" executed="True" result="Success" success="True" time="0.001" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestOffsetXY" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestSerialization" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestSize" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestTopLeft" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestTopRight" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestToRectangle" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestToString" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestXnaRectangleConstructor" executed="True" result="Success" success="True" time="0.001" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestXnaVectorsConstructor" executed="True" result="Success" success="True" time="0.001" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.TestXYWidthHeightConstructor" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Top" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Width" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.X" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="Scott.Geometry.Tests.RectangleFTests.Y" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

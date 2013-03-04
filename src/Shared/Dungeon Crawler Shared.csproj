@@ -69,6 +69,7 @@
     <Compile Include="Common\ParentableNode.cs" />
     <Compile Include="Common\ParentingException.cs" />
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
+    <Compile Include="Common\Tests\MathUtilTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />
     <Compile Include="Game\Entity\IGameObject.cs" />
@@ -101,7 +102,7 @@
     <Compile Include="Geometry\Tests\RectangleFTests.cs" />
     <Compile Include="Common\InstancePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\MathUtils.cs" />
+    <Compile Include="Common\MathUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContentPipelineLib\Game Content Lib.csproj">
