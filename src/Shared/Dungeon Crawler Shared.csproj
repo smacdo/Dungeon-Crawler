@@ -68,6 +68,7 @@
     <Compile Include="Common\IRecyclable.cs" />
     <Compile Include="Common\ParentableNode.cs" />
     <Compile Include="Common\ParentingException.cs" />
+    <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\MathUtilTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
@@ -82,7 +83,11 @@
     <Compile Include="Game\Entity\Actor\ActionSlashAttack.cs" />
     <Compile Include="Game\Entity\Actor\ActorController.cs" />
     <Compile Include="Game\Entity\Ai\AiController.cs" />
+    <Compile Include="Game\GameEngineException.cs" />
     <Compile Include="Game\GameRoot.cs" />
+    <Compile Include="Game\Graphics\Screen.cs" />
+    <Compile Include="Game\Input\InputException.cs" />
+    <Compile Include="Game\Input\InputManager.cs" />
     <Compile Include="Geometry\BoundingArea.cs" />
     <Compile Include="Game\Entity\ComponentCollection.cs" />
     <Compile Include="Game\Entity\GameObject.cs" />

@@ -20,28 +20,6 @@ namespace Scott.Game
         public static Random Random { get; private set; }
 
         /// <summary>
-        /// Width (in pixels) of the camera's visible area
-        /// </summary>
-        public static int ViewportWidth
-        {
-            get
-            {
-                return mGraphicsDevice.Viewport.Width;
-            }
-        }
-
-        /// <summary>
-        /// Height (in pixels) of the camera's visible area
-        /// </summary>
-        public static int ViewportHeight
-        {
-            get
-            {
-                return mGraphicsDevice.Viewport.Height;
-            }
-        }
-
-        /// <summary>
         /// THIS IS A HUGE HACK THAT WAS ONLY PUT HERE SO WE CAN GET A FINAL BUILD
         /// DONE TONIGHT.
         /// 

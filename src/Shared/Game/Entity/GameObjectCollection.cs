@@ -100,6 +100,11 @@ namespace Scott.Game.Entity
             return gameObject; 
         }
 
+        /// <summary>
+        ///  Updates all components of the requested type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="simulationTime"></param>
         public void Update<T>( GameTime simulationTime ) where T : IComponent
         {
             IComponentCollection collection = mComponentProviders[typeof( T )];

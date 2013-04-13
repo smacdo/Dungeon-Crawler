@@ -21,21 +21,32 @@ using Scott.Geometry;
 using Scott.Game.Entity.Graphics;
 using Scott.Game.Entity.Movement;
 using Scott.Game.Entity.AI;
+using Scott.Game.Input;
 
 namespace Scott.Dungeon.Game
 {
     /// <summary>
-    /// This is the main type for your game
+    ///  This is the main class for Dungeon Crawler. It is responsible for running the game loop,
+    ///  responding to external events and managing content loading/unloading.
     /// </summary>
     public class DungeonCrawler : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager mGraphicsDevice;
-        GameObject mPlayer;
-        GameObjectCollection mGameObjects;
+        enum InputAction
+        {
+            ExitGame,
+            PrintDebugInfo,
+            Move,
+            Attack
+        }
+
+        private GraphicsDeviceManager mGraphicsDevice;
+        private GameObject mPlayer;
+        private GameObjectCollection mGameObjects;
+        private InputManager<InputAction> mInputManager = new InputManager<InputAction>();
         int mEnemyCount = 0;
 
         /// <summary>
-        /// Constructar
+        ///  Constructor.
         /// </summary>
         public DungeonCrawler()
         {
@@ -52,8 +63,21 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void Initialize()
         {
-            GameRoot.Initialize( mGraphicsDevice.GraphicsDevice, Content );
+            // Let XNA engine initialize first.
             base.Initialize();
+            
+            // Initialize systems.
+            GameRoot.Initialize( mGraphicsDevice.GraphicsDevice, Content );
+            Screen.Initialize( mGraphicsDevice.GraphicsDevice );
+
+            // Initialize input system with default settings.
+            mInputManager.AddAction( InputAction.ExitGame, Keys.Escape );
+            mInputManager.AddAction( InputAction.PrintDebugInfo, Keys.F2 );
+            mInputManager.AddAction( InputAction.Attack, Keys.Space );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.W, Direction.North );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.D, Direction.East );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.S, Direction.South );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.A, Direction.West );
         }
 
         /// <summary>
@@ -62,7 +86,7 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void LoadContent()
         {
-            // Create the player character
+            // Create the player blue print.
             mPlayer = mGameObjects.Create( "Player" );
             mPlayer.Bounds = new BoundingArea( mPlayer.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
@@ -77,7 +101,6 @@ namespace Scott.Dungeon.Game
             sprite.AddSprite( "Bracer",   Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
             sprite.AddSprite( "Shoulder", Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
             sprite.AddSprite( "Belt",     Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
- //           mPlayer.AddChild( CreateBodyPart( "Weapon",    "sprites/Weapon_Longsword", false ) );
 
             mGameObjects.Attach<MovementComponent>( mPlayer );
             mGameObjects.Attach<ActorController>( mPlayer );
@@ -94,8 +117,8 @@ namespace Scott.Dungeon.Game
                 return;
             }
 
-            Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * 600.0 ),
-                                            (int) ( GameRoot.Random.NextDouble() * 400.0 ) );
+            Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * Screen.Width ),
+                                            (int) ( GameRoot.Random.NextDouble() * Screen.Height ) );
 
             GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
                                                     position,
@@ -138,20 +161,34 @@ namespace Scott.Dungeon.Game
             GameRoot.Renderer.ClearQueuedItems();
             GameRoot.Debug.PreUpdate( gameTime );
 
-            // Test user input
-            KeyboardState keyboard = Keyboard.GetState();
-            GamePadState gamepad = GamePad.GetState( PlayerIndex.One );
+            // Perform any requested actions based on user input.
+            mInputManager.Update();
 
-            if ( keyboard.IsKeyDown( Keys.Escape ) || gamepad.Buttons.Back == ButtonState.Pressed )
+            if ( mInputManager.WasTriggered( InputAction.ExitGame ) )
             {
                 this.Exit();
             }
 
-            if ( keyboard.IsKeyDown( Keys.F2 ) )
+            if ( mInputManager.WasTriggered( InputAction.PrintDebugInfo ) )
             {
                 Console.WriteLine( "Game Object Debugging Information" );
                 Console.WriteLine( "=================================" );
                 Console.WriteLine( mGameObjects.DumpDebugInfoToString() );
+            }
+
+            // Player movement.
+            MovementComponent movement = mPlayer.GetComponent<MovementComponent>();
+            ActorController playerActor = mPlayer.GetComponent<ActorController>();
+            Direction playerDirection;
+
+            if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
+            {
+                movement.Move( playerDirection, 125 );
+            }
+
+            if ( mInputManager.WasTriggered( InputAction.Attack ) )
+            {
+                playerActor.SlashAttack();
             }
 
             // Spawn some stuff
@@ -164,33 +201,6 @@ namespace Scott.Dungeon.Game
                 }
 
                 mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
-            }
-
-            // Player movement
-            MovementComponent movement = mPlayer.GetComponent<MovementComponent>();
-            ActorController playerActor = mPlayer.GetComponent<ActorController>();
-
-            if ( keyboard.IsKeyDown( Keys.W ) )
-            {
-                movement.Move( Direction.North, 125 );
-            }
-            else if ( keyboard.IsKeyDown( Keys.S ) )
-            {
-                movement.Move( Direction.South, 125 );
-            }
-            else if ( keyboard.IsKeyDown( Keys.A ) )
-            {
-                movement.Move( Direction.West, 125 );
-            }
-            else if ( keyboard.IsKeyDown( Keys.D ) )
-            {
-                movement.Move( Direction.East, 125 );
-            }
-            
-            // Actor actions
-            if ( keyboard.IsKeyDown( Keys.Space ) )
-            {
-                playerActor.SlashAttack();
             }
 
             // Update the world //////////////////////////////
@@ -209,6 +219,9 @@ namespace Scott.Dungeon.Game
             mGameObjects.Update<SpriteComponent>( gameTime );   // TODO: Remove this and have an animation component
 
             base.Update( gameTime );
+
+            // Post update
+            mInputManager.ClearState();
         }
 
         /// <summary>
