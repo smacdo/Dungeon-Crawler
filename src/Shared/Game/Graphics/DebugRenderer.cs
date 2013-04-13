@@ -12,9 +12,7 @@ using System.Diagnostics;
 namespace Scott.Game.Graphics
 {
     /// <summary>
-    /// Assists in drawing debug objects. Makes debugging stuff MUCH easier
-    ///  
-    /// TODO: Don't allocate nearly as much as we are. Cache stuff like crazy
+    /// Assists in drawing debug objects. Makes debugging stuff MUCH easier.
     /// </summary>
     public class DebugRenderer
     {
@@ -62,9 +60,11 @@ namespace Scott.Game.Graphics
 
             mSpriteBatch = new SpriteBatch( graphics );
 
-            mRectsToDraw = new List<DebugRectangle>( 100 );
-            mLinesToDraw = new List<DebugLine>( 100 );
-            mTextToDraw = new List<DebugText>( 100 );
+            mRectsToDraw = new List<DebugRectangle>( 250 );
+            mLinesToDraw = new List<DebugLine>( 250 );
+            mTextToDraw = new List<DebugText>( 250 );
+
+            PreAllocate( 50 );
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Scott.Game.Graphics
         }
 
         /// <summary>
-        /// Draw a rectangle on the screen
+        ///  Draws a debugging rectangle on the screen.
         /// </summary>
         /// <param name="dimensions"></param>
         /// <param name="color"></param>
@@ -105,6 +105,11 @@ namespace Scott.Game.Graphics
             r.Enabled = true;
         }
 
+        /// <summary>
+        ///  Draws a a filled debugging rectangle on the screen.
+        /// </summary>
+        /// <param name="dimensions">Size of the rectangle.</param>
+        /// <param name="color">Color of the rectangle.</param>
         [Conditional( "DEBUG" )]
         public void DrawFilledRect( Rectangle dimensions, Color color )
         {
@@ -116,6 +121,10 @@ namespace Scott.Game.Graphics
             r.Enabled = true;
         }
 
+        /// <summary>
+        ///  Draws a bounding area on the screen for debugging.
+        /// </summary>
+        /// <param name="bounds">Size of the bounding area.</param>
         [Conditional( "DEBUG" )]
         public void DrawBoundingArea( BoundingArea bounds )
         {
@@ -132,24 +141,39 @@ namespace Scott.Game.Graphics
                 DrawLine( bounds.LowerRight + pos, bounds.UpperRight + pos, Color.Purple );
                 DrawLine( bounds.LowerRight + pos, bounds.LowerLeft + pos, Color.Purple );
             }
-
-            // Draw the pivot origin
-//            Vector2 origin = bounds.PivotOrigin + bounds.WorldPosition;
-//            DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
         }
 
+        /// <summary>
+        ///  Draws a line segment on the screen for debugging.
+        /// </summary>
+        /// <param name="start">Start of the line in screen space.</param>
+        /// <param name="end">End of the line in screen space.</param>
         [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end )
         {
             DrawLine( start, end, Color.HotPink, 1 );
         }
 
+        /// <summary>
+        ///  Draws a line segment on the screen for debugging.
+        /// </summary>
+        /// <param name="start">Start of the line in screen space.</param>
+        /// <param name="end">End of the line in screen space.</param>
+        /// <param name="color">Color of the line.</param>
         [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end, Color color )
         {
             DrawLine( start, end, color, 1 );
         }
 
+
+        /// <summary>
+        ///  Draws a line segment on the screen for debugging.
+        /// </summary>
+        /// <param name="start">Start of the line in screen space.</param>
+        /// <param name="end">End of the line in screen space.</param>
+        /// <param name="color">Color of the line.</param>
+        /// <param name="width">Width of the line.</param>
         [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end, Color color, int width )
         {
@@ -162,12 +186,23 @@ namespace Scott.Game.Graphics
             l.Width = width;
         }
 
+        /// <summary>
+        ///  Draws text on the screen for debugging.
+        /// </summary>
+        /// <param name="text">Text to draw on the screen.</param>
+        /// <param name="pos">Postion to draw the text in screen space coordinates.</param>
         [Conditional( "DEBUG" )]
         public void DrawText( string text, Vector2 pos )
         {
             DrawText( text, pos, Color.Black );
         }
 
+        /// <summary>
+        ///  Draws text on the screen for debugging.
+        /// </summary>
+        /// <param name="text">Text to draw on the screen.</param>
+        /// <param name="pos">Postion to draw the text in screen space coordinates.</param>
+        /// <param name="color">Color to draw the text.</param>
         [Conditional( "DEBUG" )]
         public void DrawText( string text, Vector2 pos, Color color )
         {
@@ -180,6 +215,13 @@ namespace Scott.Game.Graphics
             t.Enabled = true;
         }
 
+        /// <summary>
+        ///  Draws text on the screen for debugging.
+        /// </summary>
+        /// <param name="text">Text to draw on the screen.</param>
+        /// <param name="pos">Postion to draw the text in screen space coordinates.</param>
+        /// <param name="color">Color to draw the text.</param>
+        /// <param name="backgroundColor">Text rectangle background color.</param>
         [Conditional( "DEBUG" )]
         public void DrawTextBox( string text, Vector2 pos, Color textColor, Color backgroundColor )
         {
@@ -194,10 +236,13 @@ namespace Scott.Game.Graphics
         }
 
         /// <summary>
-        /// Called before the rest of the system starts updating. Cleans up junk debug primitives
-        /// before the next update cycle
+        ///  This should be called at the start of each update cycle, which allows the debug
+        ///  manager to reset geometry primitives. If this is not called often enough before a draw
+        ///  call then the manager will run out of geometry primitives.
+        ///  
+        ///  Best avoided by simply calling this method once at the start of every Update() call.
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime">The current game time.</param>
         [Conditional( "DEBUG" )]
         public void PreUpdate( GameTime gameTime )
         {
@@ -207,38 +252,18 @@ namespace Scott.Game.Graphics
         }
 
         /// <summary>
-        /// Performs any queued debugging primitives
+        ///  Draws all queued debug draws.
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime">The current game time.</param>
         [Conditional( "DEBUG" )]
         public void Draw( GameTime renderTime )
         {
             mSpriteBatch.Begin();
 
             // Draw our debugging primitives.
-            foreach ( DebugRectangle rect in mRectsToDraw )
-            {
-                if ( rect.Enabled )
-                {
-                    DrawItem( rect );
-                }
-            }
-
-            foreach ( DebugLine line in mLinesToDraw )
-            {
-                if ( line.Enabled )
-                {
-                    DrawItem( line );
-                }
-            }
-
-            foreach ( DebugText text in mTextToDraw )
-            {
-                if ( text.Enabled )
-                {
-                    DrawItem( text );
-                }
-            }
+            DrawPrimitivesInList( mRectsToDraw );
+            DrawPrimitivesInList( mLinesToDraw );
+            DrawPrimitivesInList( mTextToDraw );
 
             mSpriteBatch.End();
 
@@ -274,97 +299,6 @@ namespace Scott.Game.Graphics
             mSpriteBatch.End();
         }
 
-        private void DrawItem( DebugPrimitive primitive )
-        {
-            Console.WriteLine( "This should never get called" );
-        }
-
-        /// <summary>
-        /// Draws a rectangle on the screen
-        /// </summary>
-        /// <param name="r">Rectangle to draw</param>
-        private void DrawItem( DebugRectangle r )
-        {
-            if ( r.Filled )
-            {
-                mSpriteBatch.Draw( mWhitePixel,
-                                   r.Dimensions,
-                                   r.Color );
-            }
-            else
-            {
-                int left = r.Dimensions.X;
-                int top = r.Dimensions.Y;
-                int right = r.Dimensions.X + r.Dimensions.Width;
-                int bottom = r.Dimensions.Y + r.Dimensions.Height;
-                int width = r.Dimensions.Width;
-                int height = r.Dimensions.Height;
-
-                mSpriteBatch.Draw( mWhitePixel,
-                                   new Rectangle( left, top, width, 1 ),
-                                   r.Color );
-
-                mSpriteBatch.Draw( mWhitePixel,
-                                   new Rectangle( left, top, 1, height ),
-                                   r.Color );
-
-                mSpriteBatch.Draw( mWhitePixel,
-                                   new Rectangle( left, bottom, width, 1 ),
-                                   r.Color );
-
-                mSpriteBatch.Draw( mWhitePixel,
-                                   new Rectangle( right, top, 1, height ),
-                                   r.Color );
-            }
-
-        }
-
-        /// <summary>
-        /// Draws a line on the screen
-        /// </summary>
-        /// <param name="line"></param>
-        private void DrawItem( DebugLine line )
-        {
-            float angle  = (float) Math.Atan2( line.Stop.Y - line.Start.Y, line.Stop.X - line.Start.X );
-            float length = (float) Vector2.Distance( line.Start, line.Stop );
-
-            mSpriteBatch.Draw(
-                mWhitePixel,
-                line.Start,
-                null,
-                line.Color,
-                angle,
-                Vector2.Zero,
-                new Vector2( length, line.Width ),
-                SpriteEffects.None,
-                0 );
-        }
-
-        /// <summary>
-        /// Draws text on the screen
-        /// </summary>
-        /// <param name="text">Text on the screen</param>
-        private void DrawItem( DebugText text )
-        {
-            if ( text.DrawBackground )
-            {
-                // how big is this string?
-                Vector2 size = mFont.MeasureString( text.Text );
-
-                // Draw a rectangle filler that is slightly larger
-                Rectangle dims = new Rectangle( (int) ( text.Position.X - 2.0f ),
-                                                (int) ( text.Position.Y - 2.0f ),
-                                                (int) ( size.X + 4.0f ),
-                                                (int) ( size.Y + 4.0f ) );
-
-                mSpriteBatch.Draw( mWhitePixel,
-                                   dims,
-                                   text.BackgroundColor );
-            }
-
-            mSpriteBatch.DrawString( mFont, text.Text, text.Position, text.Color );
-        }
-
         /// <summary>
         /// Finds the next unused (disabled) primitive in a list of debugging primtives. This
         /// allows use to cache the creation of primitives and avoid tons of allocations per
@@ -390,10 +324,7 @@ namespace Scott.Game.Graphics
             // Did we find one? If not allocate a new one and add it to the list
             if ( item == null )
             {
-                if ( list.Count > 50 )
-                {
-                    Console.Out.WriteLine( "ITS HUGE" );
-                }
+                Debug.Assert( list.Count < 500 );
 
                 item = new T();
                 list.Add( item );
@@ -402,17 +333,28 @@ namespace Scott.Game.Graphics
             return item;
         }
 
+        /// <summary>
+        ///  Draws all enabled debug primitives in the given list.
+        /// </summary>
+        /// <typeparam name="T">Debug primtive type.</typeparam>
+        /// <param name="list">The primtive list to render from.</param>
         private void DrawPrimitivesInList<T>( List<T> list ) where T : DebugPrimitive
         {
             foreach ( T t in list )
             {
                 if ( t.Enabled )
                 {
-                    DrawItem( t );
+                    t.Draw( mSpriteBatch, mWhitePixel, mFont );
                 }
             }
         }
 
+        /// <summary>
+        ///  Disables all primitives that should not be active any longer.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="gameTime"></param>
         private void PrunePrimitiveList<T>( List<T> list, GameTime gameTime ) where T : DebugPrimitive
         {
             foreach ( T t in list )
@@ -425,12 +367,35 @@ namespace Scott.Game.Graphics
         }
 
         /// <summary>
+        ///  Pre-allocate the requested number of primitives, so we don't have to create them one
+        ///  at a time.
+        /// </summary>
+        /// <param name="size">Number to preallocate</param>
+        private void PreAllocate( int size )
+        {
+            for ( int i = 0; i < size; ++i )
+            {
+                mRectsToDraw.Add( new DebugRectangle() );
+                mLinesToDraw.Add( new DebugLine() );
+                mTextToDraw.Add( new DebugText() );
+            }
+        }
+
+        /// <summary>
         /// Debugging primitive
         /// </summary>
-        class DebugPrimitive
+        abstract class DebugPrimitive
         {
             public bool Enabled = false;
             public TimeSpan TimeToLive = TimeSpan.Zero;
+
+            /// <summary>
+            ///  Draw the primitive onto the screen.
+            /// </summary>
+            /// <param name="spriteBatch"></param>
+            /// <param name="pixel"></param>
+            /// <param name="font"></param>
+            public abstract void Draw( SpriteBatch spriteBatch, Texture2D pixel, SpriteFont font );
         }
         
         /// <summary>
@@ -441,6 +406,28 @@ namespace Scott.Game.Graphics
             public Rectangle Dimensions;
             public Color Color;
             public bool Filled;
+
+            public override void Draw( SpriteBatch spriteBatch, Texture2D pixel, SpriteFont font )
+            {
+                if ( Filled )
+                {
+                    spriteBatch.Draw( pixel, Dimensions, Color );
+                }
+                else
+                {
+                    int left = Dimensions.X;
+                    int top = Dimensions.Y;
+                    int right = Dimensions.X + Dimensions.Width;
+                    int bottom = Dimensions.Y + Dimensions.Height;
+                    int width = Dimensions.Width;
+                    int height = Dimensions.Height;
+
+                    spriteBatch.Draw( pixel, new Rectangle( left, top, width, 1 ), Color );
+                    spriteBatch.Draw( pixel, new Rectangle( left, top, 1, height ), Color );
+                    spriteBatch.Draw( pixel, new Rectangle( left, bottom, width, 1 ), Color );
+                    spriteBatch.Draw( pixel, new Rectangle( right, top, 1, height ), Color );
+                }
+            }
         }
 
         /// <summary>
@@ -452,6 +439,23 @@ namespace Scott.Game.Graphics
             public Vector2 Stop;
             public Color Color;
             public int Width;
+
+            public override void Draw( SpriteBatch spriteBatch, Texture2D pixel, SpriteFont font )
+            {
+                float angle  = (float) Math.Atan2( Stop.Y - Start.Y, Stop.X - Start.X );
+                float length = (float) Vector2.Distance( Start, Stop );
+
+                spriteBatch.Draw(
+                    pixel,
+                    Start,
+                    null,
+                    Color,
+                    angle,
+                    Vector2.Zero,
+                    new Vector2( length, Width ),
+                    SpriteEffects.None,
+                    0 );
+            }
         }
 
         /// <summary>
@@ -464,6 +468,25 @@ namespace Scott.Game.Graphics
             public Color Color;
             public Color BackgroundColor;
             public bool DrawBackground;
+
+            public override void Draw( SpriteBatch spriteBatch, Texture2D pixel, SpriteFont font )
+            {
+                if ( DrawBackground )
+                {
+                    // how big is this string?
+                    Vector2 size = font.MeasureString( Text );
+
+                    // Draw a rectangle filler that is slightly larger
+                    Rectangle dims = new Rectangle( (int) ( Position.X - 2.0f ),
+                                                    (int) ( Position.Y - 2.0f ),
+                                                    (int) ( size.X + 4.0f ),
+                                                    (int) ( size.Y + 4.0f ) );
+
+                    spriteBatch.Draw( pixel, dims, BackgroundColor );
+                }
+
+                spriteBatch.DrawString( font, Text, Position, Color );
+            }
         }
     }
 }
