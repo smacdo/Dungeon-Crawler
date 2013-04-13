@@ -88,7 +88,7 @@ namespace Scott.Game.Entity
         ///  Generate formatted text output detailing the state of this component collection.
         /// </summary>
         /// <returns>Debugging information.</returns>
-        public string DumpDebugDumpDebugInfoToString()
+        public string DumpDebugInfoToString()
         {
             StringBuilder debugText = new StringBuilder();
 

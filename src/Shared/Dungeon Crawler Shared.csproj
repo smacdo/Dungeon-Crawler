@@ -72,7 +72,9 @@
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\MathUtilTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
+    <Compile Include="Game\Entity\Actor\ActorAction.cs" />
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />
+    <Compile Include="Game\Entity\Graphics\SpriteException.cs" />
     <Compile Include="Game\Entity\IGameObject.cs" />
     <Compile Include="Game\Entity\Tests\ComponentCollectionTests.cs" />
     <Compile Include="Game\Entity\Tests\ComponentTests.cs" />
@@ -80,7 +82,6 @@
     <Compile Include="Game\Entity\Tests\GameObjectTests.cs" />
     <Compile Include="Game\Entity\IComponentCollection.cs" />
     <Compile Include="Game\Entity\Component.cs" />
-    <Compile Include="Game\Entity\Actor\ActionSlashAttack.cs" />
     <Compile Include="Game\Entity\Actor\ActorController.cs" />
     <Compile Include="Game\Entity\Ai\AiController.cs" />
     <Compile Include="Game\GameEngineException.cs" />

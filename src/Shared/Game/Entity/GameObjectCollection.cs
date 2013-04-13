@@ -116,7 +116,6 @@ namespace Scott.Game.Entity
                 PerformCollisionDetection();
             }
         }
-
         public void Draw<T>( GameTime gameTime ) where T : IComponent
         {
             // TODO: Horrible hack that needs to get fixed correctly.
@@ -196,7 +195,7 @@ namespace Scott.Game.Entity
             // Now dump our component managers to disk
             foreach ( KeyValuePair<Type, IComponentCollection> pair in mComponentProviders )
             {
-                debugText.Append( pair.Value.DumpDebugDumpDebugInfoToString() );
+                debugText.Append( pair.Value.DumpDebugInfoToString() );
                 debugText.Append( "\n\n" );
             }
 

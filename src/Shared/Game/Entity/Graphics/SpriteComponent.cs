@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Scott.GameContent;
 using System.Diagnostics;
 using Scott.Game.Graphics;
+using Scott.Common;
 
 namespace Scott.Game.Entity.Graphics
 {
@@ -93,15 +94,49 @@ namespace Scott.Game.Entity.Graphics
                                              CurrentFrame ) );
         }
 
-        public void AddSprite( string name, SpriteData spriteData )
+
+        /// <summary>
+        ///  Adds a child sprite to this sprite.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="spriteData"></param>
+        public void AddLayer( string layerName, SpriteData spriteData )
         {
-            SpriteItem item    = new SpriteItem( spriteData,
-                                                 CurrentAnimationDirection,
-                                                 CurrentAnimationName,
-                                                 CurrentFrame );
+            AddLayer( layerName, spriteData, true );
+        }
+
+        /// <summary>
+        ///  Adds a child sprite to this sprite.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="spriteData"></param>
+        public void AddLayer( string layerName, SpriteData spriteData, bool enabled )
+        {
+            SpriteItem item = new SpriteItem( spriteData );
+            item.Enabled = enabled;
 
             mSpriteList.Add( item );
-            mSpriteTable.Add( name, item );
+            mSpriteTable.Add( layerName, item );
+
+            SyncAllSprites();
+        }
+
+        /// <summary>
+        ///  Enables or disables a sprite layer.
+        /// </summary>
+        /// <param name="layerName"></param>
+        public void EnableLayer( string layerName, bool isEnabled )
+        {
+            SpriteItem item = null;
+
+            if ( mSpriteTable.TryGetValue( layerName, out item ) )
+            {
+                item.Enabled = isEnabled;
+            }
+            else
+            {
+                throw new SpriteException( "No such sprite layer {0}".With( layerName ) );
+            }
         }
 
         /// <summary>
@@ -233,8 +268,11 @@ namespace Scott.Game.Entity.Graphics
         {
             foreach ( SpriteItem item in mSpriteList )
             {
-                AnimationData animation = item.SourceSprite.Animations[CurrentAnimationName];
-                item.AtlasSpriteRect = animation.GetSpriteRectFor( CurrentAnimationDirection, CurrentFrame );
+                if ( item.Enabled )
+                {
+                    AnimationData animation = item.SourceSprite.Animations[CurrentAnimationName];
+                    item.AtlasSpriteRect = animation.GetSpriteRectFor( CurrentAnimationDirection, CurrentFrame );
+                }
             }
         }
 
@@ -249,6 +287,11 @@ namespace Scott.Game.Entity.Graphics
                 for ( int i = 0; i < mSpriteList.Count; ++i )
                 {
                     SpriteItem item = mSpriteList[i];
+
+                    if ( !item.Enabled )
+                    {
+                        continue;
+                    }
 
                     GameRoot.Renderer.Draw( Layer.Default,
                                             item.AtlasTexture,
@@ -270,6 +313,16 @@ namespace Scott.Game.Entity.Graphics
             public Texture2D AtlasTexture;
             public Rectangle AtlasSpriteRect;
             public Vector2 OriginOffset;
+            public bool Enabled;
+
+
+            public SpriteItem( SpriteData sprite )
+            {
+                SourceSprite = sprite;
+                AtlasTexture = sprite.Texture;
+                OriginOffset = sprite.OriginOffset;
+                Enabled = false;
+            }
 
             public SpriteItem( SpriteData sprite,
                                Direction currentDirection,
@@ -282,6 +335,7 @@ namespace Scott.Game.Entity.Graphics
                 AtlasTexture    = sprite.Texture;
                 AtlasSpriteRect = animation.GetSpriteRectFor( currentDirection, currentFrame );
                 OriginOffset    = sprite.OriginOffset;
+                Enabled         = true;
             }
         }
     }

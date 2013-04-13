@@ -22,6 +22,7 @@ using Scott.Game.Entity.Graphics;
 using Scott.Game.Entity.Movement;
 using Scott.Game.Entity.AI;
 using Scott.Game.Input;
+using Scott.Dungeon.Actions;
 
 namespace Scott.Dungeon.Game
 {
@@ -36,7 +37,9 @@ namespace Scott.Dungeon.Game
             ExitGame,
             PrintDebugInfo,
             Move,
-            Attack
+            MeleeAttack,
+            RangedAttack,
+            CastSpell
         }
 
         private GraphicsDeviceManager mGraphicsDevice;
@@ -73,7 +76,9 @@ namespace Scott.Dungeon.Game
             // Initialize input system with default settings.
             mInputManager.AddAction( InputAction.ExitGame, Keys.Escape );
             mInputManager.AddAction( InputAction.PrintDebugInfo, Keys.F2 );
-            mInputManager.AddAction( InputAction.Attack, Keys.Space );
+            mInputManager.AddAction( InputAction.MeleeAttack, Keys.Space );
+            mInputManager.AddAction( InputAction.RangedAttack, Keys.E );
+            mInputManager.AddAction( InputAction.CastSpell, Keys.Q );
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.W, Direction.North );
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.D, Direction.East );
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.S, Direction.South );
@@ -94,13 +99,14 @@ namespace Scott.Dungeon.Game
 
             sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
 
-            sprite.AddSprite( "Torso",    Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
-            sprite.AddSprite( "Legs",     Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
-            sprite.AddSprite( "Feet",     Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
-            sprite.AddSprite( "Head",     Content.Load<SpriteData>( "sprites/Head_Helmet_Chain" ) );
-            sprite.AddSprite( "Bracer",   Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
-            sprite.AddSprite( "Shoulder", Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
-            sprite.AddSprite( "Belt",     Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
+            sprite.AddLayer( "Torso",    Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
+            sprite.AddLayer( "Legs",     Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
+            sprite.AddLayer( "Feet",     Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
+            sprite.AddLayer( "Head",     Content.Load<SpriteData>( "sprites/Head_Helmet_Chain" ) );
+            sprite.AddLayer( "Bracer",   Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
+            sprite.AddLayer( "Shoulder", Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
+            sprite.AddLayer( "Belt",     Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
+            sprite.AddLayer( "Weapon",   Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
             mGameObjects.Attach<MovementComponent>( mPlayer );
             mGameObjects.Attach<ActorController>( mPlayer );
@@ -177,18 +183,25 @@ namespace Scott.Dungeon.Game
             }
 
             // Player movement.
-            MovementComponent movement = mPlayer.GetComponent<MovementComponent>();
             ActorController playerActor = mPlayer.GetComponent<ActorController>();
             Direction playerDirection;
 
             if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
             {
-                movement.Move( playerDirection, 125 );
+                playerActor.Move( playerDirection, 125 );
             }
 
-            if ( mInputManager.WasTriggered( InputAction.Attack ) )
+            if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
-                playerActor.SlashAttack();
+                playerActor.Perform( new ActionSlashAttack() );
+            }
+            else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
+            {
+                playerActor.Perform( new ActionRangedAttack() );
+            }
+            else if ( mInputManager.WasTriggered( InputAction.CastSpell ) )
+            {
+                playerActor.Perform( new ActionCastSpell() );
             }
 
             // Spawn some stuff
