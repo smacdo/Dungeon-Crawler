@@ -111,7 +111,7 @@ namespace Scott.Game.Entity.Actor
         /// </summary>
         private void DrawHitBox( GameTime gameTime )
         {
-            double currentTime = gameTime.TotalGameTime.TotalSeconds;
+/*            double currentTime = gameTime.TotalGameTime.TotalSeconds;
             double startedAt   = mTimeStarted.TotalSeconds + WAIT_TIME;
             double finishedAt  = startedAt + ACTION_TIME - WAIT_TIME;
             double weightedAmount = MathUtil.NormalizeToZeroOneRange( currentTime, startedAt, finishedAt );
@@ -161,7 +161,7 @@ namespace Scott.Game.Entity.Actor
             for ( int i = 0; i < collisions.Count; ++i )
             {
                 GameRoot.Enemies.Remove( collisions[i] );
-            }
+            }*/
         }
     }
 }

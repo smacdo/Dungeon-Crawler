@@ -17,8 +17,13 @@ namespace Scott.Geometry
     /// 
     /// TODO: Transition this to local space collision detection (currently in world space)
     /// TODO: Unit test
+    /// TODO: Make this cleaner.
     /// 
     /// HUGE HELP: http://www.metanetsoftware.com/technique/tutorialA.html
+    /// 
+    /// TESTS NEEDED:
+    ///   Rotation
+    ///   LocalOffset
     /// </summary>
     public class BoundingArea
     {
@@ -32,6 +37,8 @@ namespace Scott.Geometry
         /// A rectangle that tightly encompasses the rotated rectangle.
         /// </summary>
         public Rectangle BroadPhaseRectangle;
+
+        public Vector2 Size { get { return new Vector2( Width, Height ); } }
 
         /// <summary>
         /// The rotated rectangle's upper left vertex. This is the original upper left vertex from
@@ -86,31 +93,9 @@ namespace Scott.Geometry
         }
 
         /// <summary>
-        /// Sets the collision bounding box with new values
+        ///  Moves the bounding box.
         /// </summary>
-        /// <param name="boundingBox"></param>
-        public void Set( Vector2 topLeft, Vector2 dimensions )
-        {
-            Set( topLeft, dimensions, Vector2.Zero );
-        }
-
-        /// <summary>
-        /// Sets the collision bounding box with new values
-        /// </summary>
-        /// <param name="boundingBox"></param>
-        /// <param name="rotation"></param>
-        /// <param name="origin"></param>
-        public void Set( Vector2 topLeft, Vector2 dimensions, Vector2 offset )
-        {
-            Width         = dimensions.X;
-            Height        = dimensions.Y;
-            Rotation      = 0.0f;
-            WorldPosition = topLeft + offset;
-            LocalOffset   = offset;
-
-            RecalculateCachedCorners( Rotation, dimensions / 2.0f );
-        }
-
+        /// <param name="delta">Distance to move the bounding box.</param>
         public void Move( Vector2 delta )
         {
             WorldPosition += delta;

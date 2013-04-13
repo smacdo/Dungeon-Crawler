@@ -78,7 +78,6 @@
     <Compile Include="Game\Entity\Tests\GameObjectCollectionTests.cs" />
     <Compile Include="Game\Entity\Tests\GameObjectTests.cs" />
     <Compile Include="Game\Entity\IComponentCollection.cs" />
-    <Compile Include="Geometry\BoundingRect.cs" />
     <Compile Include="Game\Entity\Component.cs" />
     <Compile Include="Game\Entity\Actor\ActionSlashAttack.cs" />
     <Compile Include="Game\Entity\Actor\ActorController.cs" />
@@ -99,6 +98,7 @@
     <Compile Include="Game\Graphics\Renderer.cs" />
     <Compile Include="Game\Graphics\Layer.cs" />
     <Compile Include="Geometry\RectangleF.cs" />
+    <Compile Include="Geometry\Tests\BoundingAreaTests.cs" />
     <Compile Include="Geometry\Tests\RectangleFTests.cs" />
     <Compile Include="Common\InstancePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

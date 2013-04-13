@@ -139,19 +139,6 @@ namespace Scott.Game.Graphics
         }
 
         [Conditional( "DEBUG" )]
-        public void DrawBoundingBox( BoundingRect box, Color color )
-        {
-            DrawLine( box.UpperLeft, box.UpperRight, color );
-            DrawLine( box.UpperLeft, box.LowerLeft, color );
-
-            DrawLine( box.LowerRight, box.UpperRight, color );
-            DrawLine( box.LowerRight, box.LowerLeft, color );
-
-            Vector2 origin = box.PivotOrigin;
-            DrawFilledRect( new Rectangle( (int) origin.X - 3, (int) origin.Y - 3, 6, 6 ), Color.Red );
-        }
-
-        [Conditional( "DEBUG" )]
         public void DrawLine( Vector2 start, Vector2 end )
         {
             DrawLine( start, end, Color.HotPink, 1 );
