@@ -34,7 +34,7 @@ namespace Scott.Game.Entity
 
             AddComponentProvider( typeof( AiController ), typeof( ComponentCollection<AiController> ) );
             AddComponentProvider( typeof( ActorController ), typeof( ComponentCollection<ActorController> ) );
-            AddComponentProvider( typeof( MovementComponent ), typeof( ComponentCollection<MovementComponent> ) );
+            AddComponentProvider( typeof( MovementComponent ), typeof( MovementProvider ) );
 
             AddComponentProvider( typeof( ColliderComponent ), typeof( ComponentCollection<ColliderComponent> ) );
             AddComponentProvider( typeof( SpriteComponent ), typeof( ComponentCollection<SpriteComponent> ) );
@@ -109,13 +109,8 @@ namespace Scott.Game.Entity
         {
             IComponentCollection collection = mComponentProviders[typeof( T )];
             collection.Update( simulationTime );
-
-            // ok this is just a terrible hack. but i'll fix it once everything is unbroken
-            if ( typeof( T ) == typeof( MovementComponent ) )
-            {
-                PerformCollisionDetection();
-            }
         }
+
         public void Draw<T>( GameTime gameTime ) where T : IComponent
         {
             // TODO: Horrible hack that needs to get fixed correctly.

@@ -76,6 +76,7 @@
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />
     <Compile Include="Game\Entity\Graphics\SpriteException.cs" />
     <Compile Include="Game\Entity\IGameObject.cs" />
+    <Compile Include="Game\Entity\Movement\MovementProvider.cs" />
     <Compile Include="Game\Entity\Tests\ComponentCollectionTests.cs" />
     <Compile Include="Game\Entity\Tests\ComponentTests.cs" />
     <Compile Include="Game\Entity\Tests\GameObjectCollectionTests.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Game\Entity\Ai\AiController.cs" />
     <Compile Include="Game\GameEngineException.cs" />
     <Compile Include="Game\GameRoot.cs" />
+    <Compile Include="Game\GameUtil.cs" />
     <Compile Include="Game\Graphics\Screen.cs" />
     <Compile Include="Game\Input\InputException.cs" />
     <Compile Include="Game\Input\InputManager.cs" />

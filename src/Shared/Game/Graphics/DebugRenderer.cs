@@ -95,6 +95,22 @@ namespace Scott.Game.Graphics
         /// <param name="dimensions"></param>
         /// <param name="color"></param>
         [Conditional( "DEBUG" )]
+        public void DrawRect( RectangleF dimensions, Color color )
+        {
+            DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
+
+            r.Color = color;
+            r.Filled = false;
+            r.Dimensions = dimensions.ToRectangle();
+            r.Enabled = true;
+        }
+
+        /// <summary>
+        ///  Draws a debugging rectangle on the screen.
+        /// </summary>
+        /// <param name="dimensions"></param>
+        /// <param name="color"></param>
+        [Conditional( "DEBUG" )]
         public void DrawRect( Rectangle dimensions, Color color )
         {
             DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );

@@ -108,7 +108,9 @@ namespace Scott.Dungeon.Game
             sprite.AddLayer( "Belt",     Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
             sprite.AddLayer( "Weapon",   Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
-            mGameObjects.Attach<MovementComponent>( mPlayer );
+            MovementComponent movement =  mGameObjects.Attach<MovementComponent>( mPlayer );
+            movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
+
             mGameObjects.Attach<ActorController>( mPlayer );
             mGameObjects.Attach<ColliderComponent>( mPlayer );
         }
@@ -138,7 +140,9 @@ namespace Scott.Dungeon.Game
 
             mGameObjects.Attach<ActorController>( enemy );
             mGameObjects.Attach<AiController>( enemy );
-            mGameObjects.Attach<MovementComponent>( enemy );
+
+            MovementComponent movement =  mGameObjects.Attach<MovementComponent>( enemy );
+            movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
             GameRoot.Enemies.Add( enemy );
             mEnemyCount += 1;

@@ -53,7 +53,7 @@ namespace Scott.Geometry.Tests
         [Test]
         public void TestXnaVectorsConstructor()
         {
-            RectangleF rect = new RectangleF( new Vector2( 2.5f, 3.0f ), new Vector2( 7.0f, 9.2f ) );
+            RectangleF rect = new RectangleF( new Vector2( 2.5f, 3.0f ), new Vector2( 4.5f, 6.2f ) );
 
             Assert.AreEqual( 2.5f, rect.X );
             Assert.AreEqual( 3.0f, rect.Y );

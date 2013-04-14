@@ -298,12 +298,6 @@ namespace Scott.Game.Entity.Graphics
                                             item.AtlasSpriteRect,
                                             item.OriginOffset + Owner.Position );
                 }
-                
-
-                if ( Owner.Bounds != null )
-                {
-                    GameRoot.Debug.DrawBoundingArea( Owner.Bounds );
-                }
             }
         }
 

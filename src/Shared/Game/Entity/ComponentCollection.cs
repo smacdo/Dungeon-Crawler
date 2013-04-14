@@ -15,12 +15,15 @@ namespace Scott.Game.Entity
     public class ComponentCollection<T> : IComponentCollection, IEnumerable<T>
         where T : IComponent, IRecyclable, new()
     {
+        /// <summary>
+        ///  The number of components that should be created initially for improved performance.
+        /// </summary>
         public const int DEFAULT_CAPACITY = 100;
 
         /// <summary>
         /// A pre-allocated pool of instances to speed up object creation and destruction
         /// </summary>
-        private InstancePool<T> mComponentPool;
+        protected InstancePool<T> mComponentPool;
 
         /// <summary>
         /// Constructor
@@ -44,6 +47,7 @@ namespace Scott.Game.Entity
             instance.Id = Guid.NewGuid();
 
             owner.AddComponent<T>( instance );
+            OnComponentCreated( instance );
 
             return instance;
         }
@@ -64,9 +68,9 @@ namespace Scott.Game.Entity
         /// <param name="component"></param>
         public virtual void Destroy( T instance )
         {
-            // Reset the component to it's default state, and then return it to the
-            // component pool
-            mComponentPool.Return( instance );
+            // Reset to component's default state, and then return it to the component pool.
+            OnComponentDestroyed( instance );
+            mComponentPool.Return( instance );       
         }
 
         /// <summary>
@@ -137,6 +141,24 @@ namespace Scott.Game.Entity
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return mComponentPool.GetEnumerator();
+        }
+
+        /// <summary>
+        ///  Called after a component is created.
+        /// </summary>
+        /// <param name="Component"></param>
+        protected virtual void OnComponentCreated( T Component )
+        {
+            // Empty
+        }
+
+        /// <summary>
+        ///  Called immediately prior to a c component being recycled.
+        /// </summary>
+        /// <param name="Component"></param>
+        protected virtual void OnComponentDestroyed( T Component )
+        {
+            // empty
         }
     }
 }

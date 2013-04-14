@@ -188,14 +188,14 @@ namespace Scott.Geometry
         ///  Rectangle constructor.
         /// </summary>
         /// <param name="topLeft">Top left position of the rectangle</param>
-        /// <param name="bottomRight">Width and height of the rectangle</param>
-        public RectangleF( Vector2 topLeft, Vector2 bottomRight )
+        /// <param name="size">Width and height of the rectangle</param>
+        public RectangleF( Vector2 topLeft, Vector2 size )
             : this()
         {
             X = topLeft.X;
             Y = topLeft.Y;
-            Width = bottomRight.X - topLeft.X;
-            Height = bottomRight.Y - topLeft.Y;
+            Width = size.X;
+            Height = size.Y;
         }
 
         /// <summary>
