@@ -16,36 +16,45 @@ namespace Scott.Game.Entity.Graphics
     /// </summary>
     public class SpriteComponent : Component, IDrawable
     {
-        /// <summary>
-        /// The animation that is currently playing
-        /// </summary>
-        public AnimationData CurrentAnimation { get; set; }
-
-        /// <summary>
-        /// The current frame being animated
-        /// </summary>
-        public int CurrentFrame { get; private set; }
-
-        /// <summary>
-        /// Name of the animation that is currently playing
-        /// </summary>
-        public string CurrentAnimationName
+        class AnimationState
         {
-            get
+            public int Frame;
+            public string Name;
+            public AnimationData Data;
+            public Direction Direction;
+            public TimeSpan FrameStart;
+            public AnimationEndingAction Ending;
+
+            public AnimationState()
             {
-                return CurrentAnimation.Name;
+            }
+
+            public void SwitchTo( AnimationData data,
+                                  string animationName,
+                                  Direction dir,
+                                  AnimationEndingAction action )
+            {
+                Reset();
+
+                Name = animationName;
+                Data = data;
+                Direction = dir;
+                Ending = action;
+                FrameStart = TimeSpan.MinValue;
+            }
+
+            public void Reset()
+            {
+                Name = String.Empty;
+                Frame = 0;
+                FrameStart = TimeSpan.MinValue;
             }
         }
 
-        /// <summary>
-        /// Direction of the animation that is currently playing
-        /// </summary>
-        public Direction CurrentAnimationDirection { get; private set; }
+        private AnimationState CurrentAnimation;
+        private bool mIsIdleAnimation = false;
 
-        /// <summary>
-        /// The time that the current frame was first displayed
-        /// </summary>
-        public TimeSpan FrameStartTime { get; private set; }
+        private string mDefaultAnimationName;
 
         /// <summary>
         /// True if an animation is being played, false if it is not. (False also means
@@ -53,15 +62,11 @@ namespace Scott.Game.Entity.Graphics
         /// </summary>
         public bool IsAnimating { get; private set; }
 
-        /// <summary>
-        /// Controls what happens when the current animation completes
-        /// </summary>
-        public AnimationEndingAction AnimationEndingAction { get; private set; }
 
         /// <summary>
         /// Sprite data that this sprite is using
         /// </summary>
-        private SpriteData mRootSpriteAnimation;
+        private SpriteData mRootSprite;
 
         private List<SpriteItem> mSpriteList;
         private Dictionary<string, SpriteItem> mSpriteTable;
@@ -71,34 +76,31 @@ namespace Scott.Game.Entity.Graphics
         /// </summary>
         public SpriteComponent()
         {
+            CurrentAnimation = new AnimationState();
+
+            mSpriteList = new List<SpriteItem>( 1 );
+            mSpriteTable = new Dictionary<string, SpriteItem>();
         }
 
         public void AssignRootSprite( SpriteData spriteData )
         {
-            CurrentAnimation = spriteData.Animations[spriteData.DefaultAnimationName];
-            CurrentFrame = 0;
-            CurrentAnimationDirection = spriteData.DefaultAnimationDirection;
-            FrameStartTime = TimeSpan.MinValue;
-            IsAnimating = false;
-            AnimationEndingAction = AnimationEndingAction.Stop;
+            mDefaultAnimationName = spriteData.DefaultAnimationName;
+            mRootSprite           = spriteData;
 
-            mRootSpriteAnimation = spriteData;
-
-            mSpriteList = new List<SpriteItem>( 1 );
-            mSpriteTable = new Dictionary<string, SpriteItem>();
+            CurrentAnimation.SwitchTo(
+                spriteData.Animations[mDefaultAnimationName],
+                mDefaultAnimationName,
+                spriteData.DefaultAnimationDirection,
+                AnimationEndingAction.StopAndReset  );
 
             // Add the initial root sprite
-            mSpriteList.Add( new SpriteItem( spriteData,
-                                             CurrentAnimationDirection,
-                                             CurrentAnimationName,
-                                             CurrentFrame ) );
+            mSpriteList.Add( new SpriteItem( spriteData ) );
         }
-
 
         /// <summary>
         ///  Adds a child sprite to this sprite.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="layerName"></param>
         /// <param name="spriteData"></param>
         public void AddLayer( string layerName, SpriteData spriteData )
         {
@@ -108,7 +110,7 @@ namespace Scott.Game.Entity.Graphics
         /// <summary>
         ///  Adds a child sprite to this sprite.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="layerName"></param>
         /// <param name="spriteData"></param>
         public void AddLayer( string layerName, SpriteData spriteData, bool enabled )
         {
@@ -148,27 +150,29 @@ namespace Scott.Game.Entity.Graphics
                                    Direction direction,
                                    AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset )
         {
-            AnimationData animation = null;
+            AnimationData data = null;
+
+            // Are we about to abort a currently playing animation?
+            if ( IsAnimating )
+            {
+                AbortCurrentAnimation( false );
+            }
 
             // Attempt to retrieve the requested animation. If the animation exists, go ahead and
             // start playing it
-            Debug.Assert( mRootSpriteAnimation != null, "Missing sprite animation data" );
+            Debug.Assert( mRootSprite != null, "Missing sprite animation data" );
 
-            if ( mRootSpriteAnimation.Animations.TryGetValue( animationName, out animation ) )
+            if ( mRootSprite.Animations.TryGetValue( animationName, out data ) )
             {
-                CurrentAnimation          = animation;
-                CurrentFrame              = 0;
-                CurrentAnimationDirection = direction;
-                FrameStartTime            = TimeSpan.MinValue;
-                IsAnimating               = true;
-                AnimationEndingAction     = endingAction;
+                CurrentAnimation.SwitchTo( data, animationName, direction, endingAction );
+                IsAnimating = true;
 
                 SyncAllSprites();
             }
             else
             {
                 throw new AnimationException( "Failed to find animation named " + animationName,
-                                              mRootSpriteAnimation.Name,
+                                              mRootSprite.Name,
                                               animationName,
                                               0 );
             }
@@ -190,7 +194,7 @@ namespace Scott.Game.Entity.Graphics
         /// <returns></returns>
         public bool IsPlayingAnimation( string animationName )
         {
-            return CurrentAnimationName == animationName;
+            return ( IsAnimating && animationName == CurrentAnimation.Name );
         }
 
         /// <summary>
@@ -201,7 +205,9 @@ namespace Scott.Game.Entity.Graphics
         /// <returns></returns>
         public bool IsPlayingAnimation( string animationName, Direction direction )
         {
-            return ( CurrentAnimationName == animationName && CurrentAnimationDirection == direction );
+            return ( IsAnimating &&
+                     animationName == CurrentAnimation.Name &&
+                     direction == CurrentAnimation.Direction );
         }
 
         /// <summary>
@@ -210,53 +216,60 @@ namespace Scott.Game.Entity.Graphics
         /// <param name="gameTime">Current rendering time</param>
         public override void Update( GameTime gameTime )
         {
-            // Don't update if we are not visible
-            if ( !Enabled )
+            // Don't update if we are not visible or not playing an animation.
+            if ( !Enabled || !IsAnimating )
             {
                 return;
             }
 
-            // How long does each frame last?
-            TimeSpan frameTime = TimeSpan.FromSeconds( CurrentAnimation.FrameTime );
-
             // Check if this is the first time we've updated this sprite. If so, initialize our
             // animation values for the next call to update. Otherwise proceed as normal
-            if ( FrameStartTime == TimeSpan.MinValue )        // start the clock
+            if ( CurrentAnimation.FrameStart == TimeSpan.MinValue )        // start the clock
             {
-                FrameStartTime = gameTime.TotalGameTime;
+                CurrentAnimation.FrameStart = gameTime.TotalGameTime;
             }
-            else if ( IsAnimating && FrameStartTime.Add( frameTime ) <= gameTime.TotalGameTime )
+
+            // How long does each frame last? When did we last flip a frame?
+            TimeSpan lastFrameTime = CurrentAnimation.FrameStart;
+            TimeSpan lengthOfFrame = TimeSpan.FromSeconds( CurrentAnimation.Data.FrameTime );
+
+            // Update the current frame index by seeing how much time has passed, and then
+            // moving to the correct frame.
+            lastFrameTime = lastFrameTime.Add( lengthOfFrame );     // account for the current frame.
+
+            while ( lastFrameTime <= gameTime.TotalGameTime )
             {
+                // Move to the next frame.
+                CurrentAnimation.Frame += 1;
+
                 // Are we at the end of this animation?
-                if ( CurrentFrame + 1 == CurrentAnimation.FrameCount )
+                if ( CurrentAnimation.Frame == CurrentAnimation.Data.FrameCount )
                 {
-                    switch ( AnimationEndingAction )
+                    switch ( CurrentAnimation.Ending )
                     {
                         case AnimationEndingAction.Loop:
-                            CurrentFrame = 0;
+                            CurrentAnimation.Frame = 0;
+                            OnAnimationLooped( CurrentAnimation );
                             break;
 
                         case AnimationEndingAction.Stop:
                             IsAnimating = false;
+                            OnAnimationComplete( CurrentAnimation );
                             break;
 
                         case AnimationEndingAction.StopAndReset:
-                            CurrentFrame = 0;
                             IsAnimating = false;
+                            OnAnimationComplete( CurrentAnimation );
                             break;
                     }
                 }
-                else
-                {
-                    // We're not at the end... just increment the frame and continue
-                    CurrentFrame++;
-                }
 
-                // Update all of the sprite items to reflect our new animation frame
+                // Update all of the sprites to reflect our new animation frame
                 SyncAllSprites();
 
                 // Update the time when this animation frame was first displayed
-                FrameStartTime = gameTime.TotalGameTime;
+                CurrentAnimation.FrameStart = gameTime.TotalGameTime;
+                lastFrameTime = lastFrameTime.Add( lengthOfFrame ); 
             }
         }
 
@@ -266,12 +279,16 @@ namespace Scott.Game.Entity.Graphics
         /// </summary>
         private void SyncAllSprites()
         {
+            int frameIndex      = CurrentAnimation.Frame;
+            Direction direction = CurrentAnimation.Direction;
+            string name         = CurrentAnimation.Name;
+
             foreach ( SpriteItem item in mSpriteList )
             {
                 if ( item.Enabled )
                 {
-                    AnimationData animation = item.SourceSprite.Animations[CurrentAnimationName];
-                    item.AtlasSpriteRect = animation.GetSpriteRectFor( CurrentAnimationDirection, CurrentFrame );
+                    AnimationData animation = item.SpriteData.Animations[name];
+                    item.AtlasRect = animation.GetSpriteRectFor( direction, frameIndex );
                 }
             }
         }
@@ -294,42 +311,75 @@ namespace Scott.Game.Entity.Graphics
                     }
 
                     GameRoot.Renderer.Draw( Layer.Default,
-                                            item.AtlasTexture,
-                                            item.AtlasSpriteRect,
+                                            item.Texture,
+                                            item.AtlasRect,
                                             item.OriginOffset + Owner.Transform.Position );
                 }
             }
         }
 
+        /// <summary>
+        ///  Kills the current animation.
+        /// </summary>
+        /// <param name="shouldSwitchToIdle"></param>
+        private void AbortCurrentAnimation( bool shouldSwitchToIdle )
+        {
+            IsAnimating = false;
+            OnAnimationAborted( CurrentAnimation );
+        }
+
+        /// <summary>
+        ///  Called when an animation starts playing.
+        /// </summary>
+        /// <param name="animation"></param>
+        private void OnAnimationStarted( AnimationState animation )
+        {
+
+        }
+
+        /// <summary>
+        ///  Called if an animation is terminated before it normally completes.
+        /// </summary>
+        /// <param name="animation"></param>
+        private void OnAnimationAborted( AnimationState animation )
+        {
+
+        }
+
+        /// <summary>
+        ///  Called when an animation completes a cycles and is about to begin animating in a loop
+        ///  again.
+        /// </summary>
+        /// <param name="animation"></param>
+        private void OnAnimationLooped( AnimationState animation )
+        {
+
+        }
+
+        /// <summary>
+        ///  Called when an animation completes.
+        /// </summary>
+        /// <param name="animation"></param>
+        private void OnAnimationComplete( AnimationState animation )
+        {
+            // Start our idle animation.
+            PlayAnimationLooping( mDefaultAnimationName, CurrentAnimation.Direction );
+        }
+
         private class SpriteItem
         {
-            public SpriteData SourceSprite;
-            public Texture2D AtlasTexture;
-            public Rectangle AtlasSpriteRect;
+            public SpriteData SpriteData;
+            public Texture2D Texture;
+            public Rectangle AtlasRect;
             public Vector2 OriginOffset;
             public bool Enabled;
 
-
             public SpriteItem( SpriteData sprite )
             {
-                SourceSprite = sprite;
-                AtlasTexture = sprite.Texture;
+                SpriteData  = sprite;
+                Texture      = sprite.Texture;
                 OriginOffset = sprite.OriginOffset;
-                Enabled = false;
-            }
-
-            public SpriteItem( SpriteData sprite,
-                               Direction currentDirection,
-                               string currentAnimation,
-                               int currentFrame )
-            {
-                AnimationData animation = sprite.Animations[currentAnimation];
-
-                SourceSprite    = sprite;
-                AtlasTexture    = sprite.Texture;
-                AtlasSpriteRect = animation.GetSpriteRectFor( currentDirection, currentFrame );
-                OriginOffset    = sprite.OriginOffset;
-                Enabled         = true;
+                Enabled      = true;
             }
         }
     }

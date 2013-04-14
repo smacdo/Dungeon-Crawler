@@ -27,18 +27,16 @@ namespace Scott.Game.Entity.Movement
             // Perform movement logic for each movement component.
             foreach ( MovementComponent movement in mComponentPool )
             {
+                movement.Update( time );
+
                 // Only update when component is enabled.
                 if ( movement.Enabled )
                 {
                     // Update the component
                     IGameObject owner = movement.Owner;
 
-                    UpdateMovement( time, owner, movement );
                     UpdateAnimation( owner, movement );
-
-                    // Reset movement back to zero for the next update cycle.
-                    movement.LastSpeed = movement.Speed;
-                    movement.Speed = 0;
+                    UpdateMovement( time, owner, movement );
                 }
             }
         }
@@ -52,8 +50,24 @@ namespace Scott.Game.Entity.Movement
                                      IGameObject owner,
                                      MovementComponent movement )
         {
+            // Is the new position OK? If not, revert back to the old position.
+            Vector2 position = movement.Position;
+            RectangleF moveBox = movement.MoveBox;
+
+            moveBox.Offset( position );
+
+            if ( IsInLevelBounds( moveBox ) && !IsCollidingWithSomething( movement, moveBox ) )
+            {
+                owner.Transform.Direction = movement.Direction;
+                owner.Transform.Position  = position;
+            }
+
+            // Debugging aid to help visualize the movebox.
+            GameRoot.Debug.DrawRect( moveBox, Color.Yellow );
+
+            /*
             float timeDelta  = (float) time.ElapsedGameTime.TotalSeconds;
-            float speed      = movement.Speed;
+            float speed      = movement.Velocity;
             Vector2 position = owner.Transform.Position;
 
             if ( speed > 0.0f )
@@ -75,7 +89,7 @@ namespace Scott.Game.Entity.Movement
                     owner.Transform.Direction = movement.Direction;
                     owner.Transform.Position  = newPosition;
                 }
-            }
+            }*/
         }
 
 
@@ -86,26 +100,19 @@ namespace Scott.Game.Entity.Movement
         {
             SpriteComponent sprite = owner.GetComponent<SpriteComponent>();
             Direction direction    = movement.Direction;
-            float speed            = movement.Speed;
-            float lastSpeed        = movement.LastSpeed;
+            float speed            = movement.Velocity;
 
-            if ( speed > 0.0f )
+            if ( movement.StartedMovingThisFrame )
             {
-                // Animation time! Are we starting an walk animation cycle, are we switching
-                // directions mid-walk, or should we just continue animating the current cycle?
-                if ( !sprite.IsPlayingAnimation( "Walk", direction ) )
-                {
-                    sprite.PlayAnimationLooping( "Walk", direction );
-                }
+                sprite.PlayAnimationLooping( "Walk", direction );
             }
-            else if ( lastSpeed > 0.0f )
+            else if ( movement.IsMoving && movement.ChangedDirectionThisFrame )
             {
-                // Looks like we've stopped walking. Update our sprite so that we're facing the right direction
-                // and being idle.
-                if ( sprite.IsPlayingAnimation( "Walk", direction ) )
-                {
-                    sprite.PlayAnimationLooping( "Idle", direction );
-                }
+                sprite.PlayAnimationLooping( "Walk", direction );
+            }
+            else if ( movement.StoppedMovingThisFrame )
+            {
+                sprite.PlayAnimationLooping( "Idle", direction );
             }
         }
 

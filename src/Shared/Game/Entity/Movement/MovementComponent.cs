@@ -16,11 +16,30 @@ namespace Scott.Game.Entity.Movement
     /// </summary>
     public class MovementComponent : Component
     {
+        private float mVelocity = 0.0f;
+        private float mLastVelocity = 0.0f;
+        private Direction mDirection = Direction.East;
+        private Direction mLastDirection = Direction.East;
+        private Vector2 mPosition = Vector2.Zero;
+        private Vector2 mLastPosition = Vector2.Zero;
+
         /// <summary>
-        /// The speed (in units/sec) that the movement is occurring
+        /// Constructor
         /// </summary>
-        public float Speed { get; set; }
-        public float LastSpeed { get; set; }
+        public MovementComponent()
+        {
+            // Empty;
+        }
+
+        /// <summary>
+        ///  The speed (in units/sec) that the movement is occurring
+        /// </summary>
+        public float Velocity { get { return mVelocity; } set { mVelocity = value; } }
+
+        /// <summary>
+        ///  The direction that this component is moving.
+        /// </summary>
+        public Direction Direction { get { return mDirection; } set { mDirection = value; } }
 
         /// <summary>
         ///  Rectangle defining which part of the game object is used for movement related
@@ -29,38 +48,55 @@ namespace Scott.Game.Entity.Movement
         public RectangleF MoveBox { get; set; }
 
         /// <summary>
-        /// The direction that the movement is occurring
+        ///  Is this component moving?
         /// </summary>
-        public Direction Direction { get; set; }
-
         public bool IsMoving
         {
             get
             {
-                return ( Speed < 1 );
+                return ( Math.Abs( mVelocity ) < 0.1f );
             }
         }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public MovementComponent()
+        public Vector2 Position
         {
-            Speed = 0.0f;
-            LastSpeed = 0.0f;
-            Direction = Direction.South;
+            get
+            {
+                return mPosition;
+            }
+            set
+            {
+                mPosition = value;
+            }
         }
+
+        public Vector2 LastPosition { get { return mLastPosition; } }
+
+        /// <summary>
+        ///  True if this is the update call that started the component moving.
+        /// </summary>
+        public bool StartedMovingThisFrame { get; private set; }
+
+        /// <summary>
+        ///  True if this is the update call that started the component moving.
+        /// </summary>
+        public bool StoppedMovingThisFrame { get; private set; }
+
+        /// <summary>
+        ///  True if this is the update call that started the component moving.
+        /// </summary>
+        public bool ChangedDirectionThisFrame { get; private set; }
 
         /// <summary>
         /// Requests the actor to move in a specified direction for the duration of this update
         /// cycle
         /// </summary>
         /// <param name="direction">Direction to move in</param>
-        /// <param name="speed">Speed at which to move</param>
-        public void Move( Direction direction, int speed )
+        /// <param name="velocity">Speed at which to move</param>
+        public void Move( Direction direction, float velocity )
         {
-            Direction = direction;
-            Speed = speed;
+            mVelocity = velocity;
+            mDirection = direction;
         }
 
         /// <summary>
@@ -68,14 +104,9 @@ namespace Scott.Game.Entity.Movement
         /// </summary>
         public void CancelMove()
         {
-            Speed = 0.0f;
+            mVelocity = 0.0f;
         }
 
-        /// <summary>
-        /// Makes the actor face a different direction. If they are moving, then they will move in
-        /// this direction
-        /// </summary>
-        /// <param name="direction">Direction to face</param>
         public void ChangeDirection( Direction direction )
         {
             Direction = direction;
@@ -85,9 +116,32 @@ namespace Scott.Game.Entity.Movement
         /// Update movement game components
         /// </summary>
         /// <param name="gameTime"></param>
-        public override void Update( GameTime gameTime )
+        public override void Update( GameTime time )
         {
-        }
+            float timeDelta  = (float) time.ElapsedGameTime.TotalSeconds;
+            Vector2 position = Owner.Transform.Position;
 
+            // Calculate our new position.
+            Vector2 movementAxis = GameUtil.GetMovementVector( Direction );
+            Vector2 newPosition  = position + ( movementAxis * mVelocity * timeDelta );
+
+            // Did we start or stop moving this frame?
+            StartedMovingThisFrame =
+                ( ( mVelocity > 0.0f || mVelocity < 0.0f ) && mLastVelocity == 0.0f );
+
+            StoppedMovingThisFrame =
+                ( mVelocity == 0.0f && ( mLastVelocity > 0.0f || mLastVelocity < 0.0f ) );
+
+            // How about direction? Did we change direction this frame?
+            ChangedDirectionThisFrame = ( mDirection != mLastDirection );
+
+            // Update our new values and store our old ones.
+            mLastVelocity  = mVelocity;
+            mLastDirection = mDirection;
+            mLastPosition  = mPosition;
+
+            mPosition      = newPosition;
+            mVelocity      = 0.0f;
+        }
     }
 }
