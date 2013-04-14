@@ -123,13 +123,11 @@ namespace Scott.Dungeon.Game
         /// </summary>
         private void SpawnSkeleton()
         {
-            if ( mEnemyCount > 0 )
-            {
-                return;
-            }
+            int width = Screen.Width - 64;
+            int height = Screen.Height - 64;
 
-            Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * Screen.Width ),
-                                            (int) ( GameRoot.Random.NextDouble() * Screen.Height ) );
+            Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * width ),
+                                            (int) ( GameRoot.Random.NextDouble() * height ) );
             GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
                                                     position,
                                                     Direction.South );
@@ -209,7 +207,7 @@ namespace Scott.Dungeon.Game
             }
 
             // Spawn some stuff
-            if ( mNextSpawnTime <= gameTime.TotalGameTime )
+            if ( mNextSpawnTime <= gameTime.TotalGameTime && GameRoot.Enemies.Count < 32 )
             {
                 if ( GameRoot.Random.NextDouble() < 0.75 || firstSpawn )
                 {

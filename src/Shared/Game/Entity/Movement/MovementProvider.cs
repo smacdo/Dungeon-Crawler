@@ -64,32 +64,6 @@ namespace Scott.Game.Entity.Movement
 
             // Debugging aid to help visualize the movebox.
             GameRoot.Debug.DrawRect( moveBox, Color.Yellow );
-
-            /*
-            float timeDelta  = (float) time.ElapsedGameTime.TotalSeconds;
-            float speed      = movement.Velocity;
-            Vector2 position = owner.Transform.Position;
-
-            if ( speed > 0.0f )
-            {
-                // Determine axis of motion and then calculate the new position
-                Vector2 movementAxis = GameUtil.GetMovementVector( movement.Direction );
-                Vector2 newPosition  = position + ( movementAxis * speed * timeDelta );
-
-                // Don't let the object go out of bounds
-                //  (TODO: Do this smarter when we get real levels)
-                RectangleF moveBox = movement.MoveBox;
-                moveBox.Offset( newPosition );
-
-                GameRoot.Debug.DrawRect( moveBox, Color.Yellow );
-
-                // Update our position so long as the game object is still in bounds
-                if ( IsInLevelBounds( moveBox ) && !IsCollidingWithSomething( movement, moveBox ) )
-                {
-                    owner.Transform.Direction = movement.Direction;
-                    owner.Transform.Position  = newPosition;
-                }
-            }*/
         }
 
 
@@ -164,8 +138,6 @@ namespace Scott.Game.Entity.Movement
         /// <param name="Component">Component instance that was created.</param>
         protected override void OnComponentCreated( MovementComponent Component )
         {
-
-            Console.Out.WriteLine( "Movement component created" );
             base.OnComponentCreated( Component );
         }
 
