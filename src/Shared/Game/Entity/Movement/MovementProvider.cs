@@ -49,30 +49,31 @@ namespace Scott.Game.Entity.Movement
         /// <param name="time"></param>
         /// <param name="movement"></param>
         private void UpdateMovement( GameTime time,
-                                      IGameObject owner,
-                                      MovementComponent movement )
+                                     IGameObject owner,
+                                     MovementComponent movement )
         {
-            float timeDelta = (float) time.ElapsedGameTime.TotalSeconds;
-            float speed     = movement.Speed;
+            float timeDelta  = (float) time.ElapsedGameTime.TotalSeconds;
+            float speed      = movement.Speed;
+            Vector2 position = owner.Transform.Position;
 
             if ( speed > 0.0f )
             {
                 // Determine axis of motion and then calculate the new position
                 Vector2 movementAxis = GameUtil.GetMovementVector( movement.Direction );
-                Vector2 position     = owner.Position + ( movementAxis * speed * timeDelta );
+                Vector2 newPosition  = position + ( movementAxis * speed * timeDelta );
 
                 // Don't let the object go out of bounds
                 //  (TODO: Do this smarter when we get real levels)
                 RectangleF moveBox = movement.MoveBox;
-                moveBox.Offset( position );
+                moveBox.Offset( newPosition );
 
                 GameRoot.Debug.DrawRect( moveBox, Color.Yellow );
 
                 // Update our position so long as the game object is still in bounds
                 if ( IsInLevelBounds( moveBox ) && !IsCollidingWithSomething( movement, moveBox ) )
                 {
-                    owner.Direction = movement.Direction;
-                    owner.Position = position;
+                    owner.Transform.Direction = movement.Direction;
+                    owner.Transform.Position  = newPosition;
                 }
             }
         }
@@ -137,7 +138,7 @@ namespace Scott.Game.Entity.Movement
                     IGameObject owner  = movement.Owner;
                     RectangleF moveBox = movement.MoveBox;
 
-                    moveBox.Offset( owner.Position );
+                    moveBox.Offset( owner.Transform.Position );
 
                     if ( bounds.Intersects( moveBox ) )
                     {

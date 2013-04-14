@@ -35,8 +35,6 @@ namespace Scott.Game.Entity
             AddComponentProvider( typeof( AiController ), typeof( ComponentCollection<AiController> ) );
             AddComponentProvider( typeof( ActorController ), typeof( ComponentCollection<ActorController> ) );
             AddComponentProvider( typeof( MovementComponent ), typeof( MovementProvider ) );
-
-            AddComponentProvider( typeof( ColliderComponent ), typeof( ComponentCollection<ColliderComponent> ) );
             AddComponentProvider( typeof( SpriteComponent ), typeof( ComponentCollection<SpriteComponent> ) );
         }
 
@@ -91,11 +89,11 @@ namespace Scott.Game.Entity
         /// <returns></returns>
         public GameObject Create( string name, Vector2 position, Direction direction )
         {
-            GameObject gameObject = new GameObject( name,
-                                                    this,
-                                                    position,
-                                                    direction );
+            GameObject gameObject = new GameObject( name, this );
             GameObjects.Add( gameObject );
+
+            gameObject.Transform.Position = position;
+            gameObject.Transform.Direction = direction;
 
             return gameObject; 
         }
@@ -120,50 +118,6 @@ namespace Scott.Game.Entity
             foreach ( SpriteComponent sprite in drawables )
             {
                 sprite.Draw( gameTime );
-            }
-        }
-
-        /// <summary>
-        /// TODO: Handle things htat move really fast and wouldn't get detected in this fashion
-        /// (eg, need to do movements together with collision detection... and calculate where
-        /// they are ending up)
-        /// </summary>
-        /// <param name="simulationTime"></param>
-        private void PerformCollisionDetection()
-        {
-            // this is deliciously horrible
-            foreach ( GameObject outterObject in GameObjects )
-            {
-                // Reject objects that do not have boundaries or are not set up to receive
-                // collisions
-                ColliderComponent collider = outterObject.GetComponent<ColliderComponent>();
-
-                if ( collider == null || outterObject.Bounds == null )
-                {
-                    continue;
-                }
-                else
-                {
-                    // Unmark any collisions that happened on the last update cycle
-                    collider.HadCollision = false;
-                }
-
-                // Test this object against all the other game objects in this scene
-                foreach ( GameObject innerObject in GameObjects )
-                {
-                    // don't test if this object does not have bounds, or is the same
-                    // object
-                    if ( innerObject.Bounds == null || innerObject == outterObject )
-                    {
-                        continue;
-                    }
-
-                    // do they collide with each other?
-                    if ( outterObject.Bounds.Intersects( innerObject.Bounds ) )
-                    {
-                        collider.HadCollision = true;
-                    }
-                }
             }
         }
 

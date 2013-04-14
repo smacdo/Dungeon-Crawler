@@ -59,7 +59,7 @@ namespace Scott.Dungeon.Actions
         public void Update( ActorController actor, GameTime gameTime )
         {
             IGameObject owner = actor.Owner;
-            Direction direction = owner.Direction;
+            Direction direction = owner.Transform.Direction;
             SpriteComponent sprite = owner.GetComponent<SpriteComponent>();
             TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
             TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );

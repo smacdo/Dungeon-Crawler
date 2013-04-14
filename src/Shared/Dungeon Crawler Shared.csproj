@@ -85,6 +85,7 @@
     <Compile Include="Game\Entity\Component.cs" />
     <Compile Include="Game\Entity\Actor\ActorController.cs" />
     <Compile Include="Game\Entity\Ai\AiController.cs" />
+    <Compile Include="Game\Entity\TransformComponent.cs" />
     <Compile Include="Game\GameEngineException.cs" />
     <Compile Include="Game\GameRoot.cs" />
     <Compile Include="Game\GameUtil.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="Game\Entity\Graphics\AnimationComponent.cs" />
     <Compile Include="Game\Entity\Graphics\SpriteComponent.cs" />
     <Compile Include="Game\Entity\IComponent.cs" />
-    <Compile Include="Game\Entity\Movement\ColliderComponent.cs" />
     <Compile Include="Game\Entity\Movement\MovementComponent.cs" />
     <Compile Include="Game\Graphics\AnimationException.cs" />
     <Compile Include="Game\Graphics\DebugRenderer.cs" />

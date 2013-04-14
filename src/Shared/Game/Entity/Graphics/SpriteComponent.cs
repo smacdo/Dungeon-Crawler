@@ -296,7 +296,7 @@ namespace Scott.Game.Entity.Graphics
                     GameRoot.Renderer.Draw( Layer.Default,
                                             item.AtlasTexture,
                                             item.AtlasSpriteRect,
-                                            item.OriginOffset + Owner.Position );
+                                            item.OriginOffset + Owner.Transform.Position );
                 }
             }
         }

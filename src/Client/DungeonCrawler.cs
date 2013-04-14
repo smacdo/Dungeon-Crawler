@@ -66,6 +66,11 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void Initialize()
         {
+            // Configure desired settings.
+            mGraphicsDevice.PreferredBackBufferWidth = 800;
+            mGraphicsDevice.PreferredBackBufferHeight = 600;
+            mGraphicsDevice.ApplyChanges();
+
             // Let XNA engine initialize first.
             base.Initialize();
             
@@ -93,7 +98,6 @@ namespace Scott.Dungeon.Game
         {
             // Create the player blue print.
             mPlayer = mGameObjects.Create( "Player" );
-            mPlayer.Bounds = new BoundingArea( mPlayer.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
             SpriteComponent sprite = mGameObjects.Attach<SpriteComponent>( mPlayer ); // mGameObjects.Sprites.Create( mPlayer );
 
@@ -112,7 +116,6 @@ namespace Scott.Dungeon.Game
             movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
             mGameObjects.Attach<ActorController>( mPlayer );
-            mGameObjects.Attach<ColliderComponent>( mPlayer );
         }
 
         /// <summary>
@@ -127,12 +130,9 @@ namespace Scott.Dungeon.Game
 
             Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * Screen.Width ),
                                             (int) ( GameRoot.Random.NextDouble() * Screen.Height ) );
-
             GameObject enemy = mGameObjects.Create( "Skeleton" + mEnemyCount,
                                                     position,
                                                     Direction.South );
-
-            enemy.Bounds = new BoundingArea( enemy.Position, new Vector2( 30, 50 ), new Vector2( 16, 12 ) );
 
             SpriteComponent sprite = mGameObjects.Attach<SpriteComponent>( enemy );
 
@@ -225,7 +225,6 @@ namespace Scott.Dungeon.Game
             // to do anything. Hence the current position of all objects (and collision)
             // that is displayed is actually one frame BEFORE this update
             mGameObjects.Update<MovementComponent>( gameTime );
-            mGameObjects.Update<ColliderComponent>( gameTime );
 
             // Update game ai and character actions
             mGameObjects.Update<AiController>( gameTime );

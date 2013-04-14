@@ -57,7 +57,7 @@ namespace Scott.Game.Entity.AI
                 // Keep doing whatever the heck we were doing
                 if ( movement.IsMoving )
                 {
-                    movement.Move( Owner.Direction, 50 );
+                    movement.Move( Owner.Transform.Direction, 50 );
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace Scott.Game.Entity.AI
                 else
                 {
                     // Should we change direction?
-                    Direction direction = Owner.Direction;
+                    Direction direction = Owner.Transform.Direction;
 
                     if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
@@ -99,7 +99,7 @@ namespace Scott.Game.Entity.AI
                 if ( GameRoot.Random.NextDouble() <= START_WALKING_CHANCE )
                 {
                     // Should we change direction when we start walking?
-                    Direction direction = Owner.Direction;
+                    Direction direction = Owner.Transform.Direction;
 
                     if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
