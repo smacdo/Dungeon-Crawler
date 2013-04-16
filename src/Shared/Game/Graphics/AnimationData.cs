@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scott.Game;
 using Microsoft.Xna.Framework;
 
-namespace Scott.GameContent
+namespace Scott.Game.Graphics
 {
     /// <summary>
-    /// Information about a sprite animation
+    ///  Contains runtime information describing a set of named animations built from static
+    ///  images contained in one or more sprite atlases. This class should be directly consumed by
+    ///  the SpriteData class, and read/written from disk.
+    ///  
+    ///  TODO: make this class internal.
     /// </summary>
     public class AnimationData
     {
@@ -49,7 +54,7 @@ namespace Scott.GameContent
         /// </summary>
         /// <param name="name">Name of the animation</param>
         /// <param name="frameTime">Amount of time to display each frame</param>
-        public AnimationData( string name, float frameTime, List<List<Rectangle>> directions )
+        internal AnimationData( string name, float frameTime, List<List<Rectangle>> directions )
         {
             Name = name;
             FrameTime = frameTime;
@@ -83,5 +88,15 @@ namespace Scott.GameContent
         {
             return Directions[(int) direction].GetEnumerator();
         }
+    }
+
+    /// <summary>
+    /// The action to perform when an action has ended
+    /// </summary>
+    public enum AnimationEndingAction
+    {
+        Stop,         // Freeze on the last played animation frame
+        Loop,         // Restart on animation frame zero and continue animating
+        StopAndReset, // Freeze on the first animation frame
     }
 }

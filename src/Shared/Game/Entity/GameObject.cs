@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using Scott.Game.Graphics;
 using Scott.Geometry;
-using Scott.GameContent;
 using System.Text;
 
 namespace Scott.Game.Entity

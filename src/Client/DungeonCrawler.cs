@@ -12,7 +12,6 @@ using Microsoft.Xna.Framework.Media;
 using Scott.Dungeon;
 using Scott.Game;
 using Scott.Game.Entity;
-using Scott.GameContent;
 using Scott.Game.Graphics;
 using Scott.Game.Entity.Actor;
 
@@ -23,6 +22,7 @@ using Scott.Game.Entity.Movement;
 using Scott.Game.Entity.AI;
 using Scott.Game.Input;
 using Scott.Dungeon.Actions;
+using Scott.Game.Content;
 
 namespace Scott.Dungeon.Game
 {
@@ -46,6 +46,7 @@ namespace Scott.Dungeon.Game
         private GameObject mPlayer;
         private GameObjectCollection mGameObjects;
         private InputManager<InputAction> mInputManager = new InputManager<InputAction>();
+        private ContentManagerX mContent;
         int mEnemyCount = 0;
 
         /// <summary>
@@ -70,6 +71,10 @@ namespace Scott.Dungeon.Game
             mGraphicsDevice.PreferredBackBufferWidth = 800;
             mGraphicsDevice.PreferredBackBufferHeight = 600;
             mGraphicsDevice.ApplyChanges();
+
+            // Create our custom content manager.
+            mContent = new ContentManagerX( Services );
+            this.Content = mContent;
 
             // Let XNA engine initialize first.
             base.Initialize();
@@ -96,6 +101,11 @@ namespace Scott.Dungeon.Game
         /// </summary>
         protected override void LoadContent()
         {
+            // Instruct the content manager to search our content dir to find game assets that we
+            // can load.
+            mContent.AddContentDir( "Content", true );
+
+
             // Create the player blue print.
             mPlayer = mGameObjects.Create( "Player" );
 

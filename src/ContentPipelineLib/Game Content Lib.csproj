@@ -92,10 +92,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommonTypes.cs" />
-    <Compile Include="Exceptions\InvalidGameDataException.cs" />
-    <Compile Include="AnimationData.cs" />
-    <Compile Include="SpriteData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -32,7 +32,7 @@ namespace Scott.Game.Graphics
         }
 
         private GraphicsDevice mGraphicsDevice;
-        private List< List<SpriteRenderInfo> > mSpritesToDraw;
+        private List< SpriteRenderInfo > mSpritesToDraw;
         private SpriteBatch mSpriteBatch;
 
         /// <summary>
@@ -43,14 +43,7 @@ namespace Scott.Game.Graphics
         public Renderer( GraphicsDevice graphics )
         {
             mGraphicsDevice = graphics;
-//            mSpritesToDraw = new List<SpriteRenderInfo>( 4096 );
-
-            mSpritesToDraw = new List<List<SpriteRenderInfo>>( (int) Layer.Count );
-
-            for ( int i = 0; i < (int) Layer.Count; ++i )
-            {
-                mSpritesToDraw.Add( new List<SpriteRenderInfo>( 4096 ) );
-            }
+            mSpritesToDraw = new List<SpriteRenderInfo>( 4096 );
 
             mSpriteBatch = new SpriteBatch( mGraphicsDevice );
 
@@ -63,18 +56,13 @@ namespace Scott.Game.Graphics
         /// </summary>
         public void ClearQueuedItems()
         {
-            foreach ( List<SpriteRenderInfo> list in mSpritesToDraw )
-            {
-                list.Clear();
-            }
+            mSpritesToDraw.Clear();
         }
 
-        public void Draw( Layer layer, Texture2D atlas, Rectangle offset, Vector2 position )
+        public void Draw( Texture2D atlas, Rectangle offset, Vector2 position )
         {
             Debug.Assert( atlas != null, "Texture must be valid" );
-            Debug.Assert( mSpritesToDraw.Count > (int) layer, "There is so such layer" );
-
-            mSpritesToDraw[(int)layer].Add( new SpriteRenderInfo( atlas, offset, position ) );
+            mSpritesToDraw.Add( new SpriteRenderInfo( atlas, offset, position ) );
         }
 
         public void DrawScreen( GameTime renderTime )
@@ -84,20 +72,13 @@ namespace Scott.Game.Graphics
             // Draw all requested sprites
             mSpriteBatch.Begin();
 
-            for ( int i = (int) Layer.Count - 1; i >= 0; --i )
+            foreach ( SpriteRenderInfo sprite in mSpritesToDraw )
             {
-                List<SpriteRenderInfo> sprites = mSpritesToDraw[i];
-
-                foreach ( SpriteRenderInfo info in sprites )
-                {
-                    mSpriteBatch.Draw( info.TextureAtlas,
-                                       info.Position,
-                                       info.OffsetRect,
-                                       Color.White );
-                }
+                mSpriteBatch.Draw( sprite.TextureAtlas,
+                                   sprite.Position,
+                                   sprite.OffsetRect,
+                                   Color.White );
             }
-
-
 
             mSpriteBatch.End();
 

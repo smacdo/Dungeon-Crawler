@@ -57,10 +57,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\ContentPipelineLib\Game Content Lib.csproj">
-      <Project>{f31e0cbe-3e8c-4c7f-9546-045bc49425f8}</Project>
-      <Name>Game Content Lib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\src\ContentPipeline\Game Content Pipeline.csproj">
       <Project>{8a5294b3-d184-4f4e-8dc7-1a621e89a761}</Project>
       <Name>Game Content Pipeline</Name>

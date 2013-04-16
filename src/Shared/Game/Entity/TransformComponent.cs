@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Scott.GameContent;
 using Scott.Common;
 using System;
 using System.Collections.Generic;

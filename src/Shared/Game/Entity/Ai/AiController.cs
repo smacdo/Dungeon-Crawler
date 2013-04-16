@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using Scott.Game;
 using Scott.Game.Entity;
 using Scott.Game.Entity.Actor;
-using Scott.GameContent;
 using Scott.Game.Entity.Movement;
 
 namespace Scott.Game.Entity.AI

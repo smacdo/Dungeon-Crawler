@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Scott.GameContent;
 using Scott.Common;
 using Scott.Game.Entity.Graphics;
 using Scott.Geometry;
 using Scott.Game.Entity;
 using Scott.Game.Entity.Actor;
+using Scott.Game;
 
 namespace Scott.Dungeon.Actions
 {

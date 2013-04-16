@@ -1,36 +1,66 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Scott.Game.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using System.Xml;
 using System.IO;
-using Scott.GameContent;
+using System.Linq;
+using System.Text;
+using System.Xml;
 
-// TODO: replace this with the type you want to import.
-using TImport = Scott.Dungeon.ContentPipeline.SpriteDataContent;
-
-namespace Scott.Dungeon.ContentPipeline
+namespace Scott.Game.Content
 {
     /// <summary>
-    /// Imports a sprite XML file
+    ///  Responsible for loading SpriteData instances from an input stream.
     /// </summary>
-    [ContentImporter( ".sprite", DisplayName = "Sprite Xml Importer", DefaultProcessor = "SpriteContentProcessor" )]
-    public class SpriteFileImporter : ContentImporter<TImport>
+    [ContentReaderAttribute( typeof( SpriteData ), ".sprite" )]
+    internal class SpriteDataReader : ContentReader<SpriteData>
     {
-        public override TImport Import( string filename, ContentImporterContext context )
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public SpriteDataReader()
+            : base()
         {
-            // Load the XML file
-            XmlDocument xml = new XmlDocument();
-            xml.Load( filename );
-
-            // Grab the root <sprite> node, and then a list of it's animation XML nodes
-            return ImportSpriteData( xml.SelectSingleNode( "/sprite" ), filename, context );
+            // Empty
         }
 
-        private SpriteDataContent ImportSpriteData( XmlNode spriteNode, string filename, ContentImporterContext context )
+        /// <summary>
+        ///  Construct a new SpriteData instance from disk.
+        /// </summary>
+        /// <returns>SpriteData instance.</returns>
+        public override SpriteData Read( Stream input, string filePath, ContentManagerX content )
+        {
+            SpriteData sprite = null;
+
+            try
+            {
+                // SpriteData is stored as an XML document, so create a file stream and convert it
+                // into an XML document.
+//                FileStream input = new FileStream( mFilename, FileMode.Open );
+                XmlDocument xml  = new XmlDocument();
+                xml.Load( input );
+
+                sprite = ImportSpriteData( xml.SelectSingleNode( "/sprite" ), filePath, content );
+            }
+            catch ( System.Exception ex )
+            {
+                throw new GameContentException( "Exception while reading game content",
+                                                filePath,
+                                                ex );
+            }
+
+            return sprite;
+        }
+
+        /// <summary>
+        ///  Load SpriteData from an XML document.
+        /// </summary>
+        /// <param name="spriteNode"></param>
+        /// <param name="filePath"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private SpriteData ImportSpriteData( XmlNode spriteNode, string filePath, ContentManagerX content )
         {
             XmlNodeList animationNodes = spriteNode.SelectNodes( "animation" );
 
@@ -47,37 +77,35 @@ namespace Scott.Dungeon.ContentPipeline
             // Get information on the default sprite name
             XmlNode defaultNode = spriteNode.SelectSingleNode( "default" );
 
-            string defaultAnimationName = defaultNode.Attributes["animation"].Value;
+            string defaultAnimation = defaultNode.Attributes["animation"].Value;
             Direction defaultDirection  = (Direction) Enum.Parse( typeof( Direction ), defaultNode.Attributes["direction"].Value );
 
             // This sprite depends on it's texture atlas
-            string fullImagePath = Path.Combine( Path.GetDirectoryName( filename ), imagePath );
-            context.AddDependency( fullImagePath );
-
-            // Generate a new sprite data object to store information from the imported XML file
-            SpriteDataContent sprite = new SpriteDataContent( spriteName, fullImagePath );
-
-            sprite.DefaultAnimationName = defaultAnimationName;
-            sprite.DefaultAnimationDirection = defaultDirection;
+            string fullImagePath = Path.Combine( Path.GetDirectoryName( filePath ), imagePath );
+            Texture2D atlas = content.Load<Texture2D>( fullImagePath ); 
 
             // Does the sprite have an offset?
+            Vector2 offset = Vector2.Zero;
+
             if ( spriteNode.Attributes["offsetX"] != null && spriteNode.Attributes["offsetY"] != null )
             {
                 int offsetX = Convert.ToInt32( spriteNode.Attributes["offsetX"].Value );
                 int offsetY = Convert.ToInt32( spriteNode.Attributes["offsetY"].Value );
 
-                sprite.OriginOffset = new Vector2( offsetX, offsetY );
+                offset = new Vector2( offsetX, offsetY );
             }
 
             // Iterate through all the animation nodes, and process them
+            List<AnimationData> animations = new List<AnimationData>( animationNodes.Count );
+
             foreach ( XmlNode animNode in animationNodes )
             {
                 AnimationData animation = ImportAnimationData( animNode, spriteWidth, spriteHeight );
-                sprite.Animations.Add( animation.Name, animation );
+                animations.Add( animation );
             }
 
             // All done, return the imported sprite
-            return sprite;
+            return new SpriteData( spriteName, atlas, defaultAnimation, defaultDirection, animations );
         }
 
         private AnimationData ImportAnimationData( XmlNode animNode, int spriteWidth, int spriteHeight )

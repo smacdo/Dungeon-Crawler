@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Scott.GameContent;
 using System.Diagnostics;
 using Scott.Game.Graphics;
 using Scott.Common;
@@ -310,8 +309,7 @@ namespace Scott.Game.Entity.Graphics
                         continue;
                     }
 
-                    GameRoot.Renderer.Draw( Layer.Default,
-                                            item.Texture,
+                    GameRoot.Renderer.Draw( item.Texture,
                                             item.AtlasRect,
                                             item.OriginOffset + Owner.Transform.Position );
                 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Scott.GameContent;
 using Scott.Game.Entity;
 using Scott.Game.Entity.Actor;
 using Scott.Game.Entity.AI;

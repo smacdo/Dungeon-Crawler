@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Scott.Game.Entity;
 using Scott.Game.Entity.Movement;
-using Scott.GameContent;
+using Scott.Common;
 
 namespace Scott.Game.Entity.Actor
 {

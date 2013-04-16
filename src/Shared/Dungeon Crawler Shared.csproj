@@ -68,10 +68,16 @@
     <Compile Include="Common\IRecyclable.cs" />
     <Compile Include="Common\ParentableNode.cs" />
     <Compile Include="Common\ParentingException.cs" />
-    <Compile Include="Common\StringExtensions.cs" />
+    <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\MathUtilTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
+    <Compile Include="Game\Constants.cs" />
+    <Compile Include="Game\Content\ContentManagerX.cs" />
+    <Compile Include="Game\Content\ContentReader.cs" />
+    <Compile Include="Game\Content\GameContentException.cs" />
+    <Compile Include="Game\Content\SpriteContentReader.cs" />
+    <Compile Include="Game\Direction.cs" />
     <Compile Include="Game\Entity\Actor\ActorAction.cs" />
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />
     <Compile Include="Game\Entity\Graphics\SpriteException.cs" />
@@ -89,7 +95,9 @@
     <Compile Include="Game\GameEngineException.cs" />
     <Compile Include="Game\GameRoot.cs" />
     <Compile Include="Game\GameUtil.cs" />
+    <Compile Include="Game\Graphics\AnimationData.cs" />
     <Compile Include="Game\Graphics\Screen.cs" />
+    <Compile Include="Game\Graphics\SpriteData.cs" />
     <Compile Include="Game\Input\InputException.cs" />
     <Compile Include="Game\Input\InputManager.cs" />
     <Compile Include="Geometry\BoundingArea.cs" />
@@ -97,26 +105,18 @@
     <Compile Include="Game\Entity\GameObject.cs" />
     <Compile Include="Game\Entity\GameObjectCollection.cs" />
     <Compile Include="Game\Entity\GameObjectException.cs" />
-    <Compile Include="Game\Entity\Graphics\AnimationComponent.cs" />
     <Compile Include="Game\Entity\Graphics\SpriteComponent.cs" />
     <Compile Include="Game\Entity\IComponent.cs" />
     <Compile Include="Game\Entity\Movement\MovementComponent.cs" />
     <Compile Include="Game\Graphics\AnimationException.cs" />
     <Compile Include="Game\Graphics\DebugRenderer.cs" />
     <Compile Include="Game\Graphics\Renderer.cs" />
-    <Compile Include="Game\Graphics\Layer.cs" />
     <Compile Include="Geometry\RectangleF.cs" />
     <Compile Include="Geometry\Tests\BoundingAreaTests.cs" />
     <Compile Include="Geometry\Tests\RectangleFTests.cs" />
     <Compile Include="Common\InstancePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\MathUtil.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ContentPipelineLib\Game Content Lib.csproj">
-      <Project>{f31e0cbe-3e8c-4c7f-9546-045bc49425f8}</Project>
-      <Name>Game Content Lib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Support\" />

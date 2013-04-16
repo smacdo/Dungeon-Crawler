@@ -125,15 +125,6 @@
     <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\assets\Game Content.contentproj">
-      <Project>{ACEFC806-15F0-42C9-BBE2-3795F699F82D}</Project>
-      <Name>Game Content %28Content%29</Name>
-      <XnaReferenceType>Content</XnaReferenceType>
-    </ProjectReference>
-    <ProjectReference Include="..\ContentPipelineLib\Game Content Lib.csproj">
-      <Project>{f31e0cbe-3e8c-4c7f-9546-045bc49425f8}</Project>
-      <Name>Game Content Lib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Shared\Dungeon Crawler Shared.csproj">
       <Project>{356b8d9b-3f93-4c3b-b09c-9bc5b3760ca2}</Project>
       <Name>Dungeon Crawler Shared</Name>

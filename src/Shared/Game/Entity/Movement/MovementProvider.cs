@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Scott.Common;
 using Scott.Game.Entity.Graphics;
 using Scott.Game.Graphics;
-using Scott.GameContent;
 using Scott.Geometry;
 using System;
 using System.Collections.Generic;
