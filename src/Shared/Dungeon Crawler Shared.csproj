@@ -70,7 +70,7 @@
     <Compile Include="Common\ParentingException.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
-    <Compile Include="Common\Tests\MathUtilTests.cs" />
+    <Compile Include="Common\Tests\MathXTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
     <Compile Include="Game\Constants.cs" />
     <Compile Include="Game\Content\ContentManagerX.cs" />
