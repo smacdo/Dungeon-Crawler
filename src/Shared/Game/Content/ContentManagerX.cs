@@ -135,8 +135,11 @@ namespace Scott.Game.Content
                 Scott.Game.Content.ContentReader<T> reader =
                     (Scott.Game.Content.ContentReader<T>) Activator.CreateInstance( assetReaderType );
 
+                // What content directory is this asset located in?
+                string contentDir = Path.GetDirectoryName( assetName );
+
                 // Now slurp the asset into memory.
-                asset = reader.Read( stream, assetPath, this );
+                asset = reader.Read( stream, assetName, contentDir, assetPath, this );
 
                 // Don't forget to cache it!
                 mLoadedAssets.Add( assetName, asset );
@@ -226,10 +229,13 @@ namespace Scott.Game.Content
             // extensions to the list of asset items.
             foreach ( string path in Directory.GetFiles( currentDir ) )
             {
+                // Load assets.
                 if ( IsValidExtension( path ) )
                 {
                     string baseName  = Path.GetFileNameWithoutExtension( path );
                     string assetName = Path.Combine( contentDir, baseName );
+
+                    // TODO: Make sure it is not already in asset list.
 
                     // We will always use backslash / when separating paths in an asset name.
                     assetName = assetName.Replace( '\\', '/' );

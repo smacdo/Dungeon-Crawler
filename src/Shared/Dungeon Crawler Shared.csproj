@@ -76,7 +76,10 @@
     <Compile Include="Game\Content\ContentManagerX.cs" />
     <Compile Include="Game\Content\ContentReader.cs" />
     <Compile Include="Game\Content\GameContentException.cs" />
-    <Compile Include="Game\Content\SpriteContentReader.cs" />
+    <Compile Include="Game\Content\SpriteContentReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Game\Content\TextureContentReader.cs" />
     <Compile Include="Game\Direction.cs" />
     <Compile Include="Game\Entity\Actor\ActorAction.cs" />
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />

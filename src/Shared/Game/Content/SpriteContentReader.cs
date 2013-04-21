@@ -14,12 +14,12 @@ namespace Scott.Game.Content
     ///  Responsible for loading SpriteData instances from an input stream.
     /// </summary>
     [ContentReaderAttribute( typeof( SpriteData ), ".sprite" )]
-    internal class SpriteDataReader : ContentReader<SpriteData>
+    internal class SpriteContentReader : ContentReader<SpriteData>
     {
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public SpriteDataReader()
+        public SpriteContentReader()
             : base()
         {
             // Empty
@@ -29,11 +29,15 @@ namespace Scott.Game.Content
         ///  Construct a new SpriteData instance from disk.
         /// </summary>
         /// <returns>SpriteData instance.</returns>
-        public override SpriteData Read( Stream input, string filePath, ContentManagerX content )
+        public override SpriteData Read( Stream input,
+                                         string assetName,
+                                         string contentDir,
+                                         string filePath,
+                                         ContentManagerX content )
         {
             SpriteData sprite = null;
 
-            try
+ //           try
             {
                 // SpriteData is stored as an XML document, so create a file stream and convert it
                 // into an XML document.
@@ -41,14 +45,14 @@ namespace Scott.Game.Content
                 XmlDocument xml  = new XmlDocument();
                 xml.Load( input );
 
-                sprite = ImportSpriteData( xml.SelectSingleNode( "/sprite" ), filePath, content );
+                sprite = ImportSpriteData( xml.SelectSingleNode( "/sprite" ), contentDir, content );
             }
-            catch ( System.Exception ex )
+/*            catch ( System.Exception ex )
             {
                 throw new GameContentException( "Exception while reading game content",
                                                 filePath,
                                                 ex );
-            }
+            }*/
 
             return sprite;
         }
@@ -57,10 +61,10 @@ namespace Scott.Game.Content
         ///  Load SpriteData from an XML document.
         /// </summary>
         /// <param name="spriteNode"></param>
-        /// <param name="filePath"></param>
+        /// <param name="contentDir"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        private SpriteData ImportSpriteData( XmlNode spriteNode, string filePath, ContentManagerX content )
+        private SpriteData ImportSpriteData( XmlNode spriteNode, string contentDir, ContentManagerX content )
         {
             XmlNodeList animationNodes = spriteNode.SelectNodes( "animation" );
 
@@ -70,7 +74,7 @@ namespace Scott.Game.Content
             // Get information on the texture atlas used for this sprite
             XmlNode atlasNode = spriteNode.SelectSingleNode( "atlas" );
 
-            string imagePath = atlasNode.Attributes["image"].Value;
+            string atlasName = atlasNode.Attributes["ref"].Value;
             int spriteWidth = Convert.ToInt32( atlasNode.Attributes["spriteWidth"].Value );
             int spriteHeight = Convert.ToInt32( atlasNode.Attributes["spriteHeight"].Value );
 
@@ -81,8 +85,7 @@ namespace Scott.Game.Content
             Direction defaultDirection  = (Direction) Enum.Parse( typeof( Direction ), defaultNode.Attributes["direction"].Value );
 
             // This sprite depends on it's texture atlas
-            string fullImagePath = Path.Combine( Path.GetDirectoryName( filePath ), imagePath );
-            Texture2D atlas = content.Load<Texture2D>( fullImagePath ); 
+            Texture2D atlas = content.Load<Texture2D>( atlasName ); 
 
             // Does the sprite have an offset?
             Vector2 offset = Vector2.Zero;
