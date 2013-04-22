@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Xml.Serialization;
 
 namespace Scott.Geometry
 {
@@ -9,26 +11,32 @@ namespace Scott.Geometry
     /// Represents a rectangle using a floating point values
     /// </summary>
     [Serializable]
+    [XmlRoot("RectangleF")]
+    [DebuggerDisplay( "X={X}, Y={Y}, Width={Width}, Height={Height}" )]
     public struct RectangleF : IEquatable<RectangleF>, ISerializable
     {
         /// <summary>
         ///  Left-most X coordinate of the rectangle.
         /// </summary>
+        [XmlAttribute("x")]
         public float X { get; set; }
 
         /// <summary>
         ///  Top-most Y coordinate of the rectangle.
         /// </summary>
+        [XmlAttribute("y")]
         public float Y { get; set; }
 
         /// <summary>
         ///  Width of the rectangle.
         /// </summary>
+        [XmlAttribute("width")]
         public float Width { get; set; }
 
         /// <summary>
         ///  Height of the rectangle.
         /// </summary>
+        [XmlAttribute("height")]
         public float Height { get; set; }
 
         /// <summary>
@@ -36,6 +44,7 @@ namespace Scott.Geometry
         /// </summary>
         public float Left
         {
+            [DebuggerStepThrough]
             get
             {
                 return X;
@@ -47,6 +56,7 @@ namespace Scott.Geometry
         /// </summary>
         public float Right
         {
+            [DebuggerStepThrough]
             get
             {
                 return X + Width;
@@ -58,6 +68,7 @@ namespace Scott.Geometry
         /// </summary>
         public float Top
         {
+            [DebuggerStepThrough]
             get
             {
                 return Y;
@@ -69,6 +80,7 @@ namespace Scott.Geometry
         /// </summary>
         public float Bottom
         {
+            [DebuggerStepThrough]
             get
             {
                 return Y + Height;
@@ -80,6 +92,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 Location
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( X, Y );
@@ -91,6 +104,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 Size
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( Width, Height );
@@ -102,6 +116,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 Center
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( X + Width / 2.0f, Y + Height / 2.0f );
@@ -113,6 +128,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 TopLeft
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( X, Y );
@@ -124,6 +140,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 TopRight
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( X + Width, Y );
@@ -135,6 +152,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 BottomLeft
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( X, Y + Height );
@@ -146,6 +164,7 @@ namespace Scott.Geometry
         /// </summary>
         public Vector2 BottomRight
         {
+            [DebuggerStepThrough]
             get
             {
                 return new Vector2( X + Width, Y + Height );
@@ -157,6 +176,7 @@ namespace Scott.Geometry
         /// </summary>
         public bool IsEmpty
         {
+            [DebuggerStepThrough]
             get
             {
                 return ( Width == 0.0f || Height == 0.0f );
@@ -397,7 +417,7 @@ namespace Scott.Geometry
         }
 
         /// <summary>
-        ///  Overriden ToString method. Returns a JSON compatible description of the rectangle
+        ///  Overridden ToString method. Returns a JSON compatible description of the rectangle
         ///  dimensions.
         /// </summary>
         /// <returns>A string with the rectangle's values.</returns>

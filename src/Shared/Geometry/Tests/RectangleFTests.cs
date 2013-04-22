@@ -256,27 +256,6 @@ namespace Scott.Geometry.Tests
         }
 
         [Test]
-        public void TestSerialization()
-        {
-            RectangleF first = new RectangleF( 2.5f, -3.0f, 1.2f, 0.5f );
-
-            // Serialize the object
-            MemoryStream stream = new MemoryStream();
-            BinaryFormatter formatter = new BinaryFormatter();
-
-            formatter.Serialize( stream, first );
-
-            // Now unserialize the object
-            stream.Seek( 0, SeekOrigin.Begin );
-            formatter = new BinaryFormatter();
-
-            RectangleF second = (RectangleF) formatter.Deserialize( stream );
-
-            // Test to make sure everything is the same
-            Assert.AreEqual( second, first );
-        }
-
-        [Test]
         public void TestToRectangle()
         {
             RectangleF rect = new RectangleF( 2.5f, -3.0f, 1.2f, 1.51f );
@@ -526,6 +505,27 @@ namespace Scott.Geometry.Tests
             Assert.AreNotEqual( rect.GetHashCode(), notB.GetHashCode(), "Rects with different values should not have the same hash code" );
             Assert.AreNotEqual( rect.GetHashCode(), notC.GetHashCode(), "Rects with different values should not have the same hash code" );
             Assert.AreNotEqual( rect.GetHashCode(), notD.GetHashCode(), "Rects with different values should not have the same hash code" );
+        }
+
+        [Test]
+        public void TestSerialization()
+        {
+            RectangleF first = new RectangleF( 2.5f, -3.0f, 1.2f, 0.5f );
+
+            // Serialize the object
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            formatter.Serialize( stream, first );
+
+            // Now unserialize the object
+            stream.Seek( 0, SeekOrigin.Begin );
+            formatter = new BinaryFormatter();
+
+            RectangleF second = (RectangleF) formatter.Deserialize( stream );
+
+            // Test to make sure everything is the same
+            Assert.AreEqual( second, first );
         }
     }
 }
