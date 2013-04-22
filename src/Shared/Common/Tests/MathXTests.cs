@@ -1,5 +1,4 @@
-﻿
-#pragma warning disable 1591            // Disable all XML Comment warnings in this file
+﻿#pragma warning disable 1591            // Disable all XML Comment warnings in this file
 
 using NUnit.Framework;
 using System;

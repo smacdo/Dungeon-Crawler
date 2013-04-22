@@ -72,6 +72,8 @@
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\MathXTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
+    <Compile Include="Common\Tests\StringExtensionMethodsTests.cs" />
+    <Compile Include="Common\Tests\TypeExtensionMethodsTests.cs" />
     <Compile Include="Game\Constants.cs" />
     <Compile Include="Game\Content\ContentManagerX.cs" />
     <Compile Include="Game\Content\ContentReader.cs" />
