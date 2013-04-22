@@ -264,65 +264,41 @@ namespace Scott.Common
         }
 
         /// <summary>
-        ///  Linearly interpolate a value between [a,b] by an amount defined by t. T must vary
-        ///  between zero and one.
+        ///  Linearly remaps a value x in the range [xMin,xMax] to be in the range [oMin,oMax].
         /// </summary>
-        /// <remarks>
-        ///  This function will perform a smooth linear interpolation of the range defined by
-        ///  [a,b]. When t = 0, the value returned will be a. When t = 0.5, the value returned
-        ///  will be halfway between a and b. And when t = 1, the value returned will be b.
-        /// </remarks>
-        /// <param name="a">Starting value.</param>
-        /// <param name="b">Ending value.</param>
-        /// <param name="t">Interpolation amount, clamped to [0,1].</param>
-        /// <returns>The interpolated value.</returns>
-        public static float Lerp( float a, float b, float t )
+        /// <param name="x">Value to remap.</param>
+        /// <param name="xMin">Input range minimum value.</param>
+        /// <param name="xMax">Input range maximum value.</param>
+        /// <param name="oMin">Output range minimum value.</param>
+        /// <param name="oMax">Output range maximum value.</param>
+        /// <returns>Linearly remapped value.</returns>
+        public static double LinearRemap( double x,
+                                          double xMin, double xMax,
+                                          double oMin, double oMax )
         {
-            return a + t * ( b - a );
+            // Get x interpolation amount from xMin to xMax.
+            double xAmount = ( x - xMin ) / ( xMax - xMin );
+
+            // Now apply this interpolation factor to [oMin, oMax].
+            return oMin + xAmount * ( oMax - oMin );
         }
 
         /// <summary>
-        ///  Linearly interpolate a value between [a,b] by an amount defined by t. T must vary
-        ///  between zero and one.
+        ///  Linearly remaps a value x in the range [xMin,xMax] to be in the range [oMin,oMax].
         /// </summary>
-        /// <remarks>
-        ///  This function will perform a smooth linear interpolation of the range defined by
-        ///  [a,b]. When t = 0, the value returned will be a. When t = 0.5, the value returned
-        ///  will be halfway between a and b. And when t = 1, the value returned will be b.
-        /// </remarks>
-        /// <param name="a">Starting value.</param>
-        /// <param name="b">Ending value.</param>
-        /// <param name="t">Interpolation amount, clamped to [0,1].</param>
-        /// <returns>The interpolated value.</returns>
-        public static double Lerp( double a, double b, double t )
+        /// <param name="x">Value to remap.</param>
+        /// <param name="xMin">Input range minimum value.</param>
+        /// <param name="xMax">Input range maximum value.</param>
+        /// <param name="oMin">Output range minimum value.</param>
+        /// <param name="oMax">Output range maximum value.</param>
+        /// <returns>Linearly remapped value.</returns>
+        public static float LinearRemap( float x, float xMin, float xMax, float oMin, float oMax )
         {
-            return a + t * ( b - a );
-        }
+            // Get x interpolation amount from xMin to xMax.
+            float xAmount = ( x - xMin ) / ( xMax - xMin );
 
-        /// <summary>
-        ///  Returns the interpolation factor used to interpolate between two values. This is the
-        ///  inverse of Lerp.
-        /// </summary>
-        /// <param name="a">Starting value.</param>
-        /// <param name="b">Ending value.</param>
-        /// <param name="t">Interpolate value from Lerp.</param>
-        /// <returns>The interpolation amount, clamped to [0,1].</returns>
-        public static float Unlerp( float a, float b, float t )
-        {
-            return ( t - a ) / ( b - a );
-        }
-
-        /// <summary>
-        ///  Returns the interpolation factor used to interpolate between two values. This is the
-        ///  inverse of Lerp.
-        /// </summary>
-        /// <param name="a">Starting value.</param>
-        /// <param name="b">Ending value.</param>
-        /// <param name="t">Interpolate value from Lerp.</param>
-        /// <returns>The interpolation amount, clamped to [0,1].</returns>
-        public static double Unlerp( double a, double b, double t )
-        {
-            return ( t - a ) / ( b - a );
+            // Now apply this interpolation factor to [oMin, oMax].
+            return oMin + xAmount * ( oMax - oMin );
         }
 
         /// <summary>
