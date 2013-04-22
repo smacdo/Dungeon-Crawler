@@ -324,5 +324,30 @@ namespace Scott.Common
         {
             return ( t - a ) / ( b - a );
         }
+
+        /// <summary>
+        ///  Clamps a value to the range defined by [min,max].
+        /// </summary>
+        /// <typeparam name="T">Value type to clamp.</typeparam>
+        /// <param name="v">Value to clamp.</param>
+        /// <param name="min">Minimum value.</param>
+        /// <param name="max">Maximum value.</param>
+        /// <returns>Clamped value.</returns>
+        public static T Clamp<T>( T v, T min, T max )
+            where T : IComparable<T>
+        {
+            if ( v.CompareTo( min ) < 0 )
+            {
+                return min;
+            }
+            else if ( v.CompareTo( max ) > 0 )
+            {
+                return max;
+            }
+            else
+            {
+                return v;
+            }
+        }
     }
 }

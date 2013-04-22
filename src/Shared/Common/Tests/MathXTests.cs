@@ -2,9 +2,6 @@
 
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Scott.Common.Tests
 {
@@ -236,6 +233,16 @@ namespace Scott.Common.Tests
             Assert.AreEqual( 0.75, MathX.Unlerp( 2.0, 4.0, 3.50 ) );
             Assert.AreEqual( 1.00, MathX.Unlerp( 2.0, 4.0, 4.00 ) );
             Assert.AreEqual( 2.00, MathX.Unlerp( 2.0, 4.0, 6.00 ) );
+        }
+
+        [Test]
+        public void Clamp()
+        {
+            Assert.AreEqual( 2.0f, MathX.Clamp( 1.5f, 2.0f, 3.0f ) );
+            Assert.AreEqual( 2.0f, MathX.Clamp( 2.0f, 2.0f, 3.0f ) );
+            Assert.AreEqual( 2.5f, MathX.Clamp( 2.5f, 2.0f, 3.0f ) );
+            Assert.AreEqual( 3.0f, MathX.Clamp( 3.0f, 2.0f, 3.0f ) );
+            Assert.AreEqual( 3.0f, MathX.Clamp( 4.0f, 2.0f, 3.0f ) );
         }
     }
 }

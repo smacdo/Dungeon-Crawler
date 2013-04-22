@@ -66,11 +66,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\IRecyclable.cs" />
+    <Compile Include="Common\MersenneTwister.cs" />
     <Compile Include="Common\ParentableNode.cs" />
     <Compile Include="Common\ParentingException.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
+    <Compile Include="Common\Random.cs" />
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\MathXTests.cs" />
+    <Compile Include="Common\Tests\MersenneTwisterTests.cs" />
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
     <Compile Include="Common\Tests\StringExtensionMethodsTests.cs" />
     <Compile Include="Common\Tests\TypeExtensionMethodsTests.cs" />
