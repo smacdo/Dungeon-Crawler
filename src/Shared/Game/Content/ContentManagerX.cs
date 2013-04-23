@@ -319,6 +319,11 @@ namespace Scott.Game.Content
             }
         }
 
+        /// <summary>
+        ///  Checks if the asset filename ends in a valid asset extension.
+        /// </summary>
+        /// <param name="filename">Asset filename.</param>
+        /// <returns>True if filename has a valid file extension.</returns>
         private bool IsValidExtension( string filename )
         {
             foreach ( string extension in mValidExtensions )
