@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Head_Helmet_Chain">
-  <atlas image="atlases/Head_Helmet_Chain.png" spriteWidth="64" spriteHeight="64" />
+  <atlas ref="sprites/atlases/Head_Helmet_Chain" spriteWidth="64" spriteHeight="64" />
   <default animation="Idle" direction="South" />
   <originOffset x="0" y="0" />
   

@@ -32,29 +32,12 @@ namespace Scott.Game.Content
         public override SpriteData Read( Stream input,
                                          string assetName,
                                          string contentDir,
-                                         string filePath,
                                          ContentManagerX content )
         {
-            SpriteData sprite = null;
+            XmlDocument xml  = new XmlDocument();
+            xml.Load( input );
 
- //           try
-            {
-                // SpriteData is stored as an XML document, so create a file stream and convert it
-                // into an XML document.
-//                FileStream input = new FileStream( mFilename, FileMode.Open );
-                XmlDocument xml  = new XmlDocument();
-                xml.Load( input );
-
-                sprite = ImportSpriteData( xml.SelectSingleNode( "/sprite" ), contentDir, content );
-            }
-/*            catch ( System.Exception ex )
-            {
-                throw new GameContentException( "Exception while reading game content",
-                                                filePath,
-                                                ex );
-            }*/
-
-            return sprite;
+            return  ImportSpriteData( xml.SelectSingleNode( "/sprite" ), contentDir, content );
         }
 
         /// <summary>

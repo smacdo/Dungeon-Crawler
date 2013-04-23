@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Bracer_Leather">
-  <atlas image="atlases/Bracer_Leather.png" spriteWidth="64" spriteHeight="64" />
+  <atlas ref="sprites/atlases/Bracer_Leather" spriteWidth="64" spriteHeight="64" />
   <default animation="Idle" direction="South" />
   <originOffset x="0" y="0" />
   

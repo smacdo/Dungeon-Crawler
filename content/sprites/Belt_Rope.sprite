@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Belt_Rope">
-  <atlas image="atlases/Belt_Rope.png" spriteWidth="64" spriteHeight="64" />
+  <atlas ref="sprites/atlases/Belt_Rope" spriteWidth="64" spriteHeight="64" />
   <default animation="Idle" direction="South" />
   <originOffset x="0" y="0" />
   

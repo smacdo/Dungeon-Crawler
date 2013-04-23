@@ -57,7 +57,7 @@ namespace Scott.Game.Graphics
             mWhitePixel = new Texture2D( graphics, 1, 1 );
             mWhitePixel.SetData( new[] { Color.White } );
 
-            mFont = content.Load<SpriteFont>( Path.Combine( "fonts", "System8" ) );
+            mFont = content.Load<SpriteFont>( Path.Combine( "fonts", "System10" ) );
 
             mSpriteBatch = new SpriteBatch( graphics );
 
@@ -281,6 +281,9 @@ namespace Scott.Game.Graphics
             DrawPrimitivesInList( mRectsToDraw );
             DrawPrimitivesInList( mLinesToDraw );
             DrawPrimitivesInList( mTextToDraw );
+
+            // Draw game name.
+            mSpriteBatch.DrawString( mFont, "Dungeon Crawler", Vector2.Zero, Color.White );
 
             mSpriteBatch.End();
 

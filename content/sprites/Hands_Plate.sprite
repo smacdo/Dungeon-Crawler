@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Hands_Plate">
-  <atlas image="atlases/Hands_Plate.png" spriteWidth="64" spriteHeight="64" />
+  <atlas ref="sprites/atlases/Hands_Plate" spriteWidth="64" spriteHeight="64" />
   <default animation="Idle" direction="South" />
   <originOffset x="0" y="0" />
   

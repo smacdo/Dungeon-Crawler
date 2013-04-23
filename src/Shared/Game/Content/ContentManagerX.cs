@@ -20,8 +20,11 @@ namespace Scott.Game.Content
     {
         private bool mDisposed = false;
         private Dictionary<string, string> mAssetFiles = new Dictionary<string, string>();
+
+        // List of valid file extensions.
         private List<string> mValidExtensions = new List<string>();
         
+        // List of content readers, which process a file into a loadable instance.
         private List<ContentReaderEntry> mContentReaders = new List<ContentReaderEntry>();
 
         // Cached assets (asset name => instance).
@@ -126,27 +129,19 @@ namespace Scott.Game.Content
         /// <returns>Instance of the asset loaded from disk.</returns>
         private T LoadAssetFromDisk<T>( string assetName )
         {
-            // Find the asset path in our list of assets.
-            string assetPath = null;
-
-            if (! mAssetFiles.TryGetValue( assetName, out assetPath ) )
-            {
-                throw new GameContentException( "Could not locate requested asset name", assetName );
-            }
-
             // Locate the content reader responsible for loading this asset type.
-            ContentReader<T> contentReader = FindContentReader<T>( assetPath );
+            ContentReader<T> contentReader = FindContentReader<T>( assetName );
 
             // Open up a file stream to the asset and put it into the object cache.
             T asset = default(T);
 
-            using ( FileStream stream = File.OpenRead( assetPath ) )
+            using ( Stream stream = OpenStream( assetName ) )
             {
                 // What content directory is this asset located in?
                 string contentDir = Path.GetDirectoryName( assetName );
 
                 // Now slurp the asset into memory.
-                asset = contentReader.Read( stream, assetName, contentDir, assetPath, this );
+                asset = contentReader.Read( stream, assetName, contentDir, this );
             }
 
             return asset;
@@ -157,9 +152,19 @@ namespace Scott.Game.Content
         /// </summary>
         /// <param name="assetName"></param>
         /// <returns></returns>
-        protected override System.IO.Stream OpenStream( string assetName )
+        protected override Stream OpenStream( string assetName )
         {
-            return base.OpenStream( assetName );
+            // Find the filepath for this asset.
+            string assetPath = null;
+
+            if ( !mAssetFiles.TryGetValue( assetName, out assetPath ) )
+            {
+                throw new GameContentException( "Could not locate filepath for asset", assetName );
+            }
+
+            // Is this file on disk or in a zip archive? Return the correct stream reader for
+            // this asset.
+            return File.OpenRead( assetPath );
         }
 
         /// <summary>
@@ -178,9 +183,18 @@ namespace Scott.Game.Content
         /// <param name="assetFileName">Asset's file name.</param>
         /// <param name="contentReader">(Out) Content reader that can load this asset.</param>
         /// <returns>True if the content reader was located, false otherwise.</returns>
-        private ContentReader<T> FindContentReader<T>( string assetFileName )
+        private ContentReader<T> FindContentReader<T>( string assetName )
         {
             Type contentReaderType = null;
+
+            // We need the full filepath of the asset name before we can determine what content
+            // reader to use.
+            string assetFileName = null;
+
+            if ( !mAssetFiles.TryGetValue( assetName, out assetFileName ) )
+            {
+                throw new GameContentException( "Could not locate filepath for asset", assetName );
+            }
 
             // Locate the content reader type that is responsible for reading this file's asset
             // type.
@@ -301,6 +315,7 @@ namespace Scott.Game.Content
 
                     // Track the asset in the xnb list not the normal asset list.
                     mXnbAssets.Add( assetName, path );
+                    items.Add( assetName, path );
                 }
                 else if ( IsValidExtension( path ) )
                 {

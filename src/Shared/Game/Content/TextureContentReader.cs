@@ -33,7 +33,6 @@ namespace Scott.Game.Content
         public override Texture2D Read( Stream input,
                                         string assetName,
                                         string contentDir,
-                                        string filePath,
                                         ContentManagerX content )
         {
             IServiceProvider provider = content.ServiceProvider;

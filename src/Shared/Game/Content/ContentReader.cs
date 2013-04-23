@@ -19,7 +19,6 @@ namespace Scott.Game.Content
         public abstract T Read( Stream input,
                                 string assetName,
                                 string contentDir,
-                                string filePath,
                                 ContentManagerX content );
     }
 
