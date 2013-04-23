@@ -8,6 +8,7 @@ using System.Text;
 using Scott.Common;
 using Scott.Geometry;
 using System.Diagnostics;
+using System.IO;
 
 namespace Scott.Game.Graphics
 {
@@ -56,7 +57,7 @@ namespace Scott.Game.Graphics
             mWhitePixel = new Texture2D( graphics, 1, 1 );
             mWhitePixel.SetData( new[] { Color.White } );
 
-            mFont = content.Load<SpriteFont>( "DebugFont" );
+            mFont = content.Load<SpriteFont>( Path.Combine( "fonts", "System8" ) );
 
             mSpriteBatch = new SpriteBatch( graphics );
 

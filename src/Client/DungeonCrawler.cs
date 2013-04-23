@@ -73,7 +73,7 @@ namespace Scott.Dungeon.Game
             mGraphicsDevice.ApplyChanges();
 
             // Create our custom content manager.
-            mContent = new ContentManagerX( Services );
+            mContent = new ContentManagerX( Services, "Content" );
             this.Content = mContent;
 
             // Let XNA engine initialize first.
