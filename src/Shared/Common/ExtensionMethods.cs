@@ -73,6 +73,16 @@ public static class StringExtensions
     }
 }
 
+/*
+public static class StreamExtensions
+{
+    public static byte[] ReadToEnd( this System.IO.Stream stream )
+    {
+
+    }
+}
+ */
+
 /// <summary>
 ///  System.Type extension methods.
 /// </summary>

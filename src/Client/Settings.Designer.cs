@@ -13,11 +13,11 @@ namespace Scott.Dungeon {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
-    internal sealed partial class DungeonCrawler : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
-        private static DungeonCrawler defaultInstance = ((DungeonCrawler)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new DungeonCrawler())));
+        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
-        public static DungeonCrawler Default {
+        public static Settings Default {
             get {
                 return defaultInstance;
             }
@@ -44,6 +44,15 @@ namespace Scott.Dungeon {
             }
             set {
                 this["WindowHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Content")]
+        public string ContentDir {
+            get {
+                return ((string)(this["ContentDir"]));
             }
         }
     }

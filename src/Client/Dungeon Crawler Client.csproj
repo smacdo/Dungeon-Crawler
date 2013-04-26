@@ -129,10 +129,10 @@
     <Compile Include="Actions\ActionSlashAttack.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DungeonCrawler.Designer.cs">
+    <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DungeonCrawler.settings</DependentUpon>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="ErrorDialog.cs">
       <SubType>Form</SubType>
@@ -184,9 +184,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="DungeonCrawler.settings">
+    <None Include="Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>DungeonCrawler.Designer.cs</LastGenOutput>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

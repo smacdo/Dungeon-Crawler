@@ -8,5 +8,8 @@
     <Setting Name="WindowHeight" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">600</Value>
     </Setting>
+    <Setting Name="ContentDir" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Content</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
