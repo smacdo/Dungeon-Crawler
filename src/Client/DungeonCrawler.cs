@@ -96,7 +96,7 @@ namespace Scott.Dungeon.Game
         {
             // Instruct the content manager to search our content dir to find game assets that we
             // can load.
-            mContent.AddContentDir( "Content", true );
+            mContent.SearchContentDirForAssets( true );
 
 
             // Create the player blue print.
@@ -119,6 +119,10 @@ namespace Scott.Dungeon.Game
             movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
             mGameObjects.Attach<ActorController>( mPlayer );
+
+            // Now that we have loaded the game's contents, we should force a garbage collection
+            // before proceeding to play mode.
+            GC.Collect();
         }
 
         /// <summary>

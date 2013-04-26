@@ -3,9 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Scott.Game.Content
 {
@@ -19,29 +17,53 @@ namespace Scott.Game.Content
     /// </summary>
     public class ContentManagerX : Microsoft.Xna.Framework.Content.ContentManager
     {
-        private bool mDisposed = false;
+        /// <summary>
+        ///  List of content readers, which process an asset file into a loadable instance.
+        /// </summary>
+        private static List<ContentReaderInfo> mContentReaders = new List<ContentReaderInfo>();
 
-        // Flag that lets us know if the content directory was scanned for asset entries.
-        // Normally this isn't required, but we're trying to act like the builtin XNA content
-        // manager so we support scanning at first asset load.
+        /// <summary>
+        /// Flag that lets us know if the content directory was scanned for asset entries.
+        /// Normally this isn't required, but we're trying to act like the builtin XNA content
+        /// manager so we support scanning at first asset load.
+        /// </summary>
         private bool mAssetDirectoryScanned = false;
 
         /// <summary>
-        ///  Tracks assets.
-        ///   asset name => asset info
+        ///  Relative path to a directory where the game's content is stored.
+        /// </summary>
+        private string mContentDir = String.Empty;
+
+        /// <summary>
+        ///  True if the instance has been disposed, false otherwise.
+        /// </summary>
+        private bool mDisposed = false;
+
+        /// <summary>
+        ///  List of loaded assets. Each asset name is mapped to a class describing information
+        ///  on how to load the asset from disk.
         /// </summary>
         private Dictionary<string, AssetInfo> mAssetFiles = new Dictionary<string, AssetInfo>();
 
-        private List<ZipFile> mBundleArchives = new List<ZipFile>();
+        /// <summary>
+        ///  A list of zipped bundle files that have been loaded. They should only be added once
+        ///  otherwise weird errors could happen.
+        /// </summary>
+        private static List<ZipFile> mBundleArchives = new List<ZipFile>();
 
-        // List of valid file extensions.
-        private List<string> mValidExtensions = new List<string>();
-        
-        // List of content readers, which process a file into a loadable instance.
-        private List<ContentReaderInfo> mContentReaders = new List<ContentReaderInfo>();
-
-        // Cached assets (asset name => instance).
+        /// <summary>
+        ///  Asset cache. Content items that are loaded are cached into this dictionary, so they
+        ///  can be quickly returned on subsequent loads.
+        /// </summary>
         private Dictionary<string, Object> mAssetCache = new Dictionary<string, Object>();
+
+        /// <summary>
+        ///  Static constructor. Set up the content readers and their extension information.
+        /// </summary>
+        static ContentManagerX()
+        {
+            InitContentReaderList();
+        }
 
         /// <summary>
         ///  Constructor.
@@ -49,7 +71,7 @@ namespace Scott.Game.Content
         public ContentManagerX( IServiceProvider provider, string rootDirectory )
             : base( provider, rootDirectory )
         {
-            InitContentReaderList();
+            mContentDir = rootDirectory;
         }
 
         /// <summary>
@@ -60,7 +82,7 @@ namespace Scott.Game.Content
         {
             if ( !mDisposed )
             {
-                // Do clean up work here...
+                Unload();
                 mDisposed = true;
             }
 
@@ -68,37 +90,21 @@ namespace Scott.Game.Content
         }
 
         /// <summary>
-        ///  Searches the given directory for game content.
+        ///  Check if the requested asset was loaded into the content manager.
         /// </summary>
-        /// <param name="contentPath">Content path to search.</param>
-        public void AddContentDir( string contentPath, bool preload )
+        /// <param name="assetName">Name of the asset to check.</param>
+        /// <returns>True if it was loaded, false otherwise.</returns>
+        public bool WasLoaded( string assetName )
         {
-            // Make sure the content path exists.
-            if ( !Directory.Exists( contentPath ) )
-            {
-                throw new GameContentException( "Could not locate root game content folder " + contentPath );
-            }
-
-            // Now search the directory recursively, looking for game content files.
-            SearchDirForContent( contentPath, contentPath, mAssetFiles );
-
-            // Should we start preloading the assets we discovered?
-            if ( preload )
-            {
-                foreach ( string assetName in mAssetFiles.Keys )
-                {
-                    // do SOMETHING
-                }
-            }
+            return mAssetFiles.ContainsKey( NormalizeAssetName( assetName ) );
         }
 
         /// <summary>
-        ///  Load requested asset name. This is an immediate request for the named asset, and
-        ///  this method will block until the content can be returned to teh caller.
+        ///  Load requested asset name into memory, and return a reference to the loaded instance.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="assetName"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Content type to load.</typeparam>
+        /// <param name="assetName">Name of the asset.</param>
+        /// <returns>Instance of the loaded asset.</returns>
         public override T Load<T>( string assetName )
         {
             // Make sure the asset name is normalized so we don't get funky path issues.
@@ -114,15 +120,7 @@ namespace Scott.Game.Content
             }
 
             // Get information on the requested asset.
-            AssetInfo assetInfo;
-
-            if ( !mAssetFiles.TryGetValue( assetName, out assetInfo ) )
-            {
-                throw new GameContentException(
-                    "Could not locate asset '{0}', it was not found in the content directory."
-                    .With( assetName )
-                );
-            }
+            AssetInfo assetInfo = FindAssetInfoFor( assetName );
 
             // Check if this is a precompiled XNB asset or a normal asset file. If it is an XNB
             // asset then we will need to use XNA's legacy loader.
@@ -144,6 +142,12 @@ namespace Scott.Game.Content
             return asset;
         }
 
+        /// <summary>
+        ///  Load the requested asset from disk
+        /// </summary>
+        /// <typeparam name="T">The asset type to load.</typeparam>
+        /// <param name="assetInfo">Information on how to load the asset.</param>
+        /// <returns>Instance of the asset.</returns>
         private T LoadAssetFromDisk<T>( AssetInfo assetInfo )
         {
             string assetName = assetInfo.AssetName;
@@ -164,25 +168,15 @@ namespace Scott.Game.Content
         }
 
         /// <summary>
-        ///  Overloaded from base.
+        ///  Returns a stream capable of loading the named asset.
         /// </summary>
-        /// <param name="assetName"></param>
-        /// <returns></returns>
+        /// <param name="assetName">Name of the asset to load.</param>
+        /// <returns>Stream containing the asset data.</returns>
         protected override Stream OpenStream( string assetName )
         {
-            // Make sure the asset name is normalized so we don't get funky path issues.
-            assetName = NormalizeAssetName( assetName );
-
-            // Locate the asset's file information.
-            AssetInfo asset;
-
-            if ( !mAssetFiles.TryGetValue( assetName, out asset ) )
-            {
-                throw new GameContentException(
-                    "Could not locate asset '{0}', it was not found in the content directory."
-                    .With( assetName )
-                );
-            }
+            // Make sure the asset name is normalized so we don't get funky path issues and then
+            // load information for the asset.
+            AssetInfo asset = FindAssetInfoFor( NormalizeAssetName( assetName ) );
 
             // What kind of asset file was it? Is it located on disk, or is it located in a bundle
             // archive?
@@ -213,49 +207,42 @@ namespace Scott.Game.Content
             base.Unload();
         }
 
- 
-
         /// <summary>
-        ///  Searches for content reader classes, and installs them into this content manager.
+        ///  Search the content manager's content directory for a list of loadable assets, and
+        ///  optionally preload them all into memory.
         /// </summary>
-        private void InitContentReaderList()
+        /// <param name="preload">True to preload all found assets into the cache, false to
+        /// wait until requested.</param>
+        public void SearchContentDirForAssets( bool preload )
         {
-            mContentReaders = new List<ContentReaderInfo>();
-
-            // Search for all classes with ContentReaderAttribute.
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            Type attribute = typeof( ContentReaderAttribute );
-
-            foreach ( Assembly assembly in assemblies )
+            // Make sure the content path exists before proceeding.
+            if ( String.IsNullOrEmpty( mContentDir ) || !Directory.Exists( mContentDir ) )
             {
-                foreach ( Type type in assembly.GetTypes() )
-                {
-                    object[] attribs = type.GetCustomAttributes( attribute, true );
-
-                    if ( attribs.Length > 0 )
-                    {
-                        ContentReaderAttribute attr = attribs[0] as ContentReaderAttribute;
-                        ContentReaderInfo entry    = new ContentReaderInfo();
-
-                        entry.ContentType = attr.ContentType;
-                        entry.ReaderType = type;
-                        entry.Extension  = attr.Extension;
-
-                        // XXX: verify no other assets have same name
-
-                        mContentReaders.Add( entry );
-                        mValidExtensions.Add( attr.Extension );
-                    }
-                }
+                throw new GameContentException(
+                    "Could not locate game content folder {0}".With( mContentDir) );
             }
 
+            // Now scan the directory for content.
+            SearchDirForContent( mContentDir, mContentDir, mAssetFiles );
+            mAssetDirectoryScanned = true;
+
+            // Did the caller want us to preload all the assets we found?
+            if ( preload )
+            {
+                foreach ( string assetName in mAssetFiles.Keys )
+                {
+                    // do SOMETHING
+                }
+            }
         }
 
         /// <summary>
-        ///  Recursively search this directory for assets.
+        ///  Recursively search this directory for a list of assets.
         /// </summary>
-        /// <param name="dirpath"></param>
-        /// <param name="items"></param>
+        /// <param name="dirpath">Path to the content directory being searched.</param>
+        /// <param name="items">
+        ///  List of assets to add assets found in this content directory.
+        /// </param>
         private void SearchDirForContent( string rootDir,
                                           string currentDir,
                                           Dictionary<string, AssetInfo> items )
@@ -284,7 +271,7 @@ namespace Scott.Game.Content
                 assetName = NormalizeAssetName( assetName );
 
                 // Was this asset already loaded? If so throw an error and bail out.
-                if ( mAssetFiles.ContainsKey( assetName ) )
+                if ( WasLoaded( assetName ) )
                 {
                     throw new GameContentException(
                         "Asset name '{0}' was already loaded. Is this a duplicate?"
@@ -322,13 +309,20 @@ namespace Scott.Game.Content
         /// <summary>
         ///  Searches a zip bundle for game assets.
         /// </summary>
-        /// <param name="bundleFileName"></param>
+        /// <param name="bundleFileName">Path to the asset bundle.</param>
+        /// <param name="items">
+        ///  List of assets to add assets found in this bundle.
+        /// </param>
         private void SearchBundleForAssets( string bundleFileName,
                                             Dictionary<string, AssetInfo> items )
         {
             FileStream fs   = File.OpenRead( bundleFileName );
             ZipFile zipFile = new ZipFile( fs );
 
+            // Track the loaded zip files.
+            mBundleArchives.Add( zipFile );
+
+            // Iterate through the bundle and make note of the asset files contained within.
             foreach ( ZipEntry entry in zipFile )
             {
                 // Only record file entries that are valid asset types.
@@ -340,6 +334,15 @@ namespace Scott.Game.Content
                 // Get the asset name, which is taken from the zip entry's file name.
                 string assetPath = entry.Name;
                 string assetName = ExtractAssetName( assetPath, null );
+
+                // Was this asset already loaded? If so throw an error and bail out.
+                if ( WasLoaded( assetName ) )
+                {
+                    throw new GameContentException(
+                        "Asset name '{0}' was already loaded. Is this a duplicate?"
+                        .With( assetName )
+                    );
+                }
 
                 // What kind of file did we find? There are several different types of files that the
                 // content manager can support, we'll need to deal with them differently.
@@ -366,6 +369,12 @@ namespace Scott.Game.Content
             }
         }
 
+        /// <summary>
+        ///  Returns a content reader capable of loading this asset into memory.
+        /// </summary>
+        /// <typeparam name="T">Content type to load.</typeparam>
+        /// <param name="asset">Information on the asset.</param>
+        /// <returns>Content reader capable of loading this asset.</returns>
         private ContentReader<T> CreateContentReader<T>( AssetInfo asset )
         {
             string assetName = asset.AssetName;
@@ -395,6 +404,11 @@ namespace Scott.Game.Content
             return reader;
         }
 
+        /// <summary>
+        ///  Gets the content reader type capable of loading this asset into memory.
+        /// </summary>
+        /// <param name="asset">Information on this asset.</param>
+        /// <returns>Content reader type capable of loading this asset.</returns>
         private ContentReaderInfo GetContentReaderInfo( AssetInfo asset )
         {
             // Locate the content reader type that is responsible for reading this file's asset
@@ -420,8 +434,21 @@ namespace Scott.Game.Content
             return readerInfo;
         }
 
+        /// <summary>
+        ///  Search the content manager's list of assets, and return information about the
+        ///  requested asset name.
+        /// </summary>
+        /// <param name="assetName">Name of the aset to search for.</param>
+        /// <returns>Information on the asset.</returns>
         private AssetInfo FindAssetInfoFor( string assetName )
         {
+            // If we haven't scanned the content directory yet, do it right now.
+            if ( !mAssetDirectoryScanned )
+            {
+                SearchContentDirForAssets( false );
+            }
+
+            // Locate the asset in our list of loaded assets.
             AssetInfo asset;
 
             if ( !mAssetFiles.TryGetValue( assetName, out asset ) )
@@ -436,15 +463,15 @@ namespace Scott.Game.Content
         }
 
         /// <summary>
-        ///  Checks if the asset filename ends in a valid asset extension.
+        ///  Checks if the asset file extension is a valid and loadable content type.
         /// </summary>
         /// <param name="filename">Asset filename.</param>
-        /// <returns>True if filename has a valid file extension.</returns>
-        private bool IsValidAssetExtension( string filename )
+        /// <returns>True if this asset file name can be loaded.</returns>
+        private static bool IsValidAssetExtension( string filename )
         {
-            foreach ( string extension in mValidExtensions )
+            foreach ( ContentReaderInfo readerInfo in mContentReaders )
             {
-                if ( filename.EndsWith( extension ) )
+                if ( filename.EndsWith( readerInfo.Extension ) )
                 {
                     return true;
                 }
@@ -453,16 +480,65 @@ namespace Scott.Game.Content
             return false;
         }
 
+        /// <summary>
+        ///  Searches the currently loaded assemblies for asset content readers, and then records
+        ///  them into a list of content readers for later use in asset loading.
+        /// </summary>
+        private static void InitContentReaderList()
+        {
+            mContentReaders = new List<ContentReaderInfo>();
+
+            // Search for all classes with ContentReaderAttribute.
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Type attribute = typeof( ContentReaderAttribute );
+
+            foreach ( Assembly assembly in assemblies )
+            {
+                foreach ( Type type in assembly.GetTypes() )
+                {
+                    object[] attribs = type.GetCustomAttributes( attribute, true );
+
+                    if ( attribs.Length > 0 )
+                    {
+                        ContentReaderAttribute attr = attribs[0] as ContentReaderAttribute;
+                        ContentReaderInfo entry    = new ContentReaderInfo();
+
+                        entry.ContentType = attr.ContentType;
+                        entry.ReaderType = type;
+                        entry.Extension = attr.Extension;
+
+                        mContentReaders.Add( entry );
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///  Check if the asset filepath is a valid precompiled .xnb asset.
+        /// </summary>
+        /// <param name="assetPath">Path to the asset.</param>
+        /// <returns>True if it is a precompiled xnb asset, false otherwise.</returns>
         private static bool IsXnbFile( string assetPath )
         {
             return assetPath.EndsWith( ".xnb" );
         }
 
+        /// <summary>
+        ///  Extracts the asset name from an asset's filepath.
+        /// </summary>
+        /// <param name="assetPath">Path to the asset.</param>
+        /// <returns>Name of the asset.</returns>
         private static string ExtractAssetName( string assetPath )
         {
             return ExtractAssetName( assetPath, null );
         }
 
+        /// <summary>
+        ///  Extracts the asset name from an asset's filepath.
+        /// </summary>
+        /// <param name="assetPath">Path to the asset.</param>
+        /// <param name="contentDir">Path to the game's content directory.</param>
+        /// <returns>Name of the asset.</returns>
         private static string ExtractAssetName( string assetPath, string contentDir )
         {
             string baseName  = Path.GetFileNameWithoutExtension( assetPath );
@@ -490,6 +566,9 @@ namespace Scott.Game.Content
             return assetName.Replace( '\\', '/' );
         }
 
+        /// <summary>
+        ///  Information on a content reader.
+        /// </summary>
         private class ContentReaderInfo
         {
             public Type ContentType;
