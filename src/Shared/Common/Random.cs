@@ -97,7 +97,7 @@ namespace Scott.Common
         /// </summary>
         /// <param name="max">The maximum value on the random range.</param>
         /// <returns>Random signed int from zero to max.</returns>
-        public int Next( int max )
+        public override int Next( int max )
         {
             return Next( 0, max );
         }

@@ -77,31 +77,23 @@ namespace Scott.Common
     public class MersenneTwister : ISerializable, IRandom
     {
         private const int N = 624;
-        private const int M = 396;
-        private const uint MATRIX_A = 0x9908B0DFU;
-        private const uint UPPER_MASK = 0x80000000U;
-        private const uint LOWER_MASK = 0x7fffffffU;
-        private const uint INITIAL_SEED = 5489U;
-        private static uint[] MAG01 = new uint[]{ 0x0, MATRIX_A };
+        private const int M = 397;
+        private const ulong MATRIX_A = 0x9908B0DFUL;
+        private const ulong UPPER_MASK = 0x80000000UL;
+        private const ulong LOWER_MASK = 0x7fffffffUL;
+        private const ulong INITIAL_SEED = 5489UL;
+        private static ulong[] MAG01 = new ulong[] { 0x0, MATRIX_A };
 
         // Current state of the mersenne twister.
-        private MersenneTwisterState mState;
+        private ulong[] mVals;
+        private ulong mSeed;
+        private int mIndex;
 
         // True if there is a cached Gaussian value to give out.
         private bool mHasNextGaussian = false;
 
         // A cached Gaussian value to give to a caller.
         private float mNextGaussian = 0.0f;
-
-        /// <summary>
-        ///  Structure containing the state of a mersenne twister generator.
-        /// </summary>
-        internal struct MersenneTwisterState
-        {
-            public uint[] Vals;
-            public uint Seed;
-            public int Index;
-        }
 
         /// <summary>
         ///  Constructor.
@@ -115,18 +107,18 @@ namespace Scott.Common
         ///  Constructor.
         /// </summary>
         /// <param name="seed">Random seed to use when initializing.</param>
-        public MersenneTwister( uint seed )
+        public MersenneTwister( ulong seed )
         {
-            mState = Init( seed );
+            Init( seed );
         }
 
         /// <summary>
         ///  Constructor.
         /// </summary>
         /// <param name="seed">Random seeds to use when initializing.</param>
-        public MersenneTwister( uint[] seed )
+        public MersenneTwister( ulong[] seed )
         {
-            mState = InitByArray( seed );
+            InitByArray( seed );
         }
 
         /// <summary>
@@ -134,11 +126,9 @@ namespace Scott.Common
         /// </summary>
         private MersenneTwister( SerializationInfo info, StreamingContext context )
         {
-            mState = new MersenneTwisterState();
-
-            mState.Vals  = (uint[]) info.GetValue( "state", typeof( uint[] ) );
-            mState.Seed  = (uint)   info.GetValue( "seed", typeof( uint ) );
-            mState.Index = (int)    info.GetValue( "index", typeof( int ) );
+            mVals  = (ulong[]) info.GetValue( "state", typeof( ulong[] ) );
+            mSeed  = (ulong) info.GetValue( "seed", typeof( ulong ) );
+            mIndex = (int)    info.GetValue( "index", typeof( int ) );
         }
 
         /// <summary>
@@ -147,9 +137,9 @@ namespace Scott.Common
         [SecurityPermissionAttribute( SecurityAction.Demand, SerializationFormatter = true )]
         public void GetObjectData( SerializationInfo info, StreamingContext context )
         {
-            info.AddValue( "state", mState.Vals, typeof( uint[] ) );
-            info.AddValue( "seed", mState.Seed, typeof( uint ) );
-            info.AddValue( "index", mState.Index, typeof( int ) );
+            info.AddValue( "state", mVals, typeof( ulong[] ) );
+            info.AddValue( "seed", mSeed, typeof( ulong ) );
+            info.AddValue( "index", mIndex, typeof( int ) );
         }
 
         /// <summary>
@@ -157,9 +147,9 @@ namespace Scott.Common
         /// </summary>
         /// <param name="seed">The seed value to use when initializing.</param>
         /// <returns>Starting state.</returns>
-        private MersenneTwisterState Init( uint seed )
+        private void Init( ulong seed )
         {
-            uint[] vals = new uint[N];
+            ulong[] vals = new ulong[N];
 
             // Initialize the first element in the state array with the seed value.
             vals[0] = seed & 0xffffffff;
@@ -177,13 +167,9 @@ namespace Scott.Common
             }
 
             // Initialize and return the new mersenne twister state.
-            MersenneTwisterState state = new MersenneTwisterState();
-
-            state.Vals = vals;
-            state.Seed = seed;
-            state.Index = 0;
-
-            return state;
+            mVals = vals;
+            mSeed = seed;
+            mIndex = 0;
         }
 
         /// <summary>
@@ -191,7 +177,7 @@ namespace Scott.Common
         /// </summary>
         /// <param name="key">The seed values to use when initializing.</param>
         /// <returns>Starting state.</returns>
-        private MersenneTwisterState InitByArray( uint[] key )
+        private void InitByArray( ulong[] key )
         {
             if ( key == null )
             {
@@ -203,14 +189,14 @@ namespace Scott.Common
             int k = ( N > key.Length ? N : key.Length );
 
             // Initialize the mersenne twister state once with an initial seed value.
-            MersenneTwisterState state = Init( 19650218 ); // what's this magic number represent?
-            uint[] vals = state.Vals;
+            Init( 19650218 ); // what's this magic number represent?
+            ulong[] vals = mVals;
 
             // Now initialize the mersenne twister state again with the provided state array.
             for ( ; k > 0; --k )
             {
                 vals[i] = ( vals[i] ^ ( ( vals[i - 1] ^ ( vals[i - 1] >> 30 ) ) * 1664525 ) )
-                    + vals[j] + (uint)j;   // non-linear... ?
+                    + vals[j] + (ulong) j;   // non-linear... ?
                 vals[i] &= 0xffffffff; // for WORDSIZE > 32 machines
 
                 i++;
@@ -231,7 +217,7 @@ namespace Scott.Common
             for ( k = N - 1; k > 0; k-- )
             {
                 vals[i] = ( vals[i] ^ ( ( vals[i - 1] ^ ( vals[i - 1] >> 30 ) ) ^ 1566083941 ) )
-                    - (uint)i; // non linear. again - ?
+                    - (ulong) i; // non linear. again - ?
                 vals[i] &= 0xffffffff; // for WORDSIZE > 32 machines
 
                 i++;
@@ -244,42 +230,41 @@ namespace Scott.Common
             }
 
             vals[0] = 0x80000000; // MSB is 1; assuring non-zero initial array
-            return state;
         }
 
         /// <summary>
         ///  Generate a random unsigned int and return it.
         /// </summary>
         /// <returns>Random unsigned int.</returns>
-        public uint NextUInt()
+        public ulong NextULong()
         {
-            uint y;
+            ulong y;
 
             // If we are out of state, then regenerate the random state array.
-            if ( mState.Index >= N )          // Generate N words at a time
+            if ( mIndex >= N )          // Generate N words at a time
             {
                 uint kk;
 
                 for ( kk = 0; kk < N - M; ++kk )
                 {
-                    y = ( mState.Vals[kk] & UPPER_MASK ) | ( mState.Vals[kk + 1] & LOWER_MASK );
-                    mState.Vals[kk] = mState.Vals[kk + M] ^ ( y >> 1 ) ^ MAG01[y & 0x1UL];
+                    y = ( mVals[kk] & UPPER_MASK ) | ( mVals[kk + 1] & LOWER_MASK );
+                    mVals[kk] = mVals[kk + M] ^ ( y >> 1 ) ^ MAG01[y & 0x1UL];
                 }
 
                 for ( ; kk < N - 1; ++kk )
                 {
-                    y = ( mState.Vals[kk] & UPPER_MASK ) | ( mState.Vals[kk + 1] & LOWER_MASK );
-                    mState.Vals[kk] = mState.Vals[kk + ( M - N )] ^ ( y >> 1 ) ^ MAG01[y & 0x1UL];
+                    y = ( mVals[kk] & UPPER_MASK ) | ( mVals[kk + 1] & LOWER_MASK );
+                    mVals[kk] = mVals[kk + ( M - N )] ^ ( y >> 1 ) ^ MAG01[y & 0x1UL];
                 }
 
-                y = ( mState.Vals[N - 1] & UPPER_MASK ) | ( mState.Vals[0] & LOWER_MASK );
-                mState.Vals[N - 1] = mState.Vals[M - 1] ^ ( y >> 1 ) ^ MAG01[y & 0x1UL];
+                y = ( mVals[N - 1] & UPPER_MASK ) | ( mVals[0] & LOWER_MASK );
+                mVals[N - 1] = mVals[M - 1] ^ ( y >> 1 ) ^ MAG01[y & 0x1UL];
 
-                mState.Index = 0;
+                mIndex = 0;
             }
 
             // Get next random value in sequence
-            y = mState.Vals[mState.Index++];
+            y = mVals[mIndex++];
 
             // Tempering
             y ^= ( y >> 11 );
@@ -296,7 +281,7 @@ namespace Scott.Common
         /// <returns>Random signed int.</returns>
         public int NextInt()
         {
-            return (int)( NextUInt() >> 1 );
+            return (int)( NextULong() >> 1 );
         }
 
         /// <summary>
@@ -319,7 +304,7 @@ namespace Scott.Common
         /// <returns></returns>
         public float NextUIntAsFloat()
         {
-            return (float) NextUInt();
+            return (float) NextULong();
         }
 
         /// <summary>
@@ -328,7 +313,7 @@ namespace Scott.Common
         /// <returns>Random floating point value [0,1].</returns>
         public float NextFloat()
         {
-            float value = (float) NextUInt();
+            float value = (float) NextULong();
             return value * ( 1.0f / 4294967295.0f );    // divide by 2^32-1
         }
 
@@ -338,7 +323,7 @@ namespace Scott.Common
         /// <returns>Random floating point value from [0,1).</returns>
         public float NextFloatExclusive()
         {
-            float value = (float) NextUInt();
+            float value = (float) NextULong();
             return value * ( 1.0f / 4294967296.0f );    // divide by 2^32
         }
 
@@ -348,7 +333,7 @@ namespace Scott.Common
         /// <returns>Random floating point value from (0,1).</returns>
         public float NextFloatNonZeroExclusive()
         {
-            float value = (float) NextUInt();
+            float value = (float) NextULong();
             return ( value + 0.5f ) * ( 1.0f / 4294967296.0f );
         }
 
@@ -363,8 +348,8 @@ namespace Scott.Common
         /// </returns>
         public double NextDouble()
         {
-            float a = (float)( NextUInt() >> 5 );
-            float b = (float)( NextUInt() >> 6 );
+            float a = (float)( NextULong() >> 5 );
+            float b = (float)( NextULong() >> 6 );
 
             return ( a * 67108864.0 + b ) * ( 1.0 / 9007199254740992.0 );
         }
@@ -375,7 +360,7 @@ namespace Scott.Common
         /// <returns>Random boolean value.</returns>
         public bool NextBool()
         {
-            return 1 == ( NextUInt() % 2 );
+            return 1 == ( NextULong() % 2 );
         }
 
         /// <summary>
@@ -394,7 +379,7 @@ namespace Scott.Common
             // Fill the provided byte array with random values, filling it in increments of four.
             for ( i = 0; i < bytes.Length; i += 4 )
             {
-                uint v = NextUInt();
+                ulong v = NextULong();
 
                 bytes[i + 0] = (byte)( v & 0xFF );
                 bytes[i + 1] = (byte)( ( v >> 8  ) & 0xFF );
@@ -403,7 +388,7 @@ namespace Scott.Common
             }
 
             // Fill the remaining buckets before finishing.
-            uint last = NextUInt();
+            ulong last = NextULong();
 
             switch ( bytes.Length - i )
             {
@@ -429,10 +414,10 @@ namespace Scott.Common
         ///  non-reproducible.
         /// </summary>
         /// <returns>Random seed value.</returns>
-        private static uint GetRandomSeed()
+        private static ulong GetRandomSeed()
         {
             System.Random r =new System.Random( new System.DateTime().Millisecond );
-            return (uint) r.Next();
+            return (ulong) r.Next();
         }
 
         /// <summary>

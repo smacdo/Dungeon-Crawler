@@ -41,7 +41,7 @@ namespace Scott.Game
             Debug = new DebugRenderer( graphics, content );
             mGraphicsDevice = graphics;
             Renderer = new Renderer( graphics );
-            Random = new Random();
+            Random = new System.Random(); //  new Scott.Common.Random( Common.RandomGeneratorType.MersenneTwister );
         }
 
         /// <summary>

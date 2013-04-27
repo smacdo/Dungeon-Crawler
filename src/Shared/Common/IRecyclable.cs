@@ -10,6 +10,9 @@ namespace Scott.Common
     /// </summary>
     public interface IRecyclable
     {
+        /// <summary>
+        ///  Return the object to the object pool from whence it came.
+        /// </summary>
         void Recycle();
     }
 }
