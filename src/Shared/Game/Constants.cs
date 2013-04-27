@@ -8,6 +8,7 @@ namespace Scott.Game
     public static partial class Constants
     {
         public const int DIRECTION_COUNT = 4;
+        public const Direction DEFAULT_DIRECTION = Direction.South;
     }
 }
 
