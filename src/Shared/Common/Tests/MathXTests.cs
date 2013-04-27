@@ -1,5 +1,6 @@
 ﻿#pragma warning disable 1591            // Disable all XML Comment warnings in this file
 
+using Microsoft.Xna.Framework;
 using NUnit.Framework;
 using System;
 
@@ -201,6 +202,24 @@ namespace Scott.Common.Tests
             Assert.AreEqual( 2.5f, MathX.Clamp( 2.5f, 2.0f, 3.0f ) );
             Assert.AreEqual( 3.0f, MathX.Clamp( 3.0f, 2.0f, 3.0f ) );
             Assert.AreEqual( 3.0f, MathX.Clamp( 4.0f, 2.0f, 3.0f ) );
+        }
+
+        [Test]
+        public void RotateVector()
+        {
+            Vector2 start = new Vector2( 1.0f, 0.0f );
+
+            float p45 = MathX.DegreeToRadian( 45.0f );
+            float p90 = MathX.DegreeToRadian( 90.0f );
+            float p180 = MathX.DegreeToRadian( 180.0f );
+            float p270 = MathX.DegreeToRadian( 270.0f );
+
+            // First from zero.
+            AssertX.AreEqual( new Vector2( 0.7071068f, 0.7071068f ), MathX.Rotate( start, p45 ) );
+            AssertX.AreEqual( new Vector2( 1.0f, 0.0f ), MathX.Rotate( start, 0.0f ) );
+            AssertX.AreEqual( new Vector2( 0.0f, 1.0f ), MathX.Rotate( start, p90 ) );
+            AssertX.AreEqual( new Vector2(-1.0f, 0.0f ), MathX.Rotate( start, p180 ) );
+            AssertX.AreEqual( new Vector2( 0.0f,-1.0f ), MathX.Rotate( start, p270 ) );
         }
     }
 }

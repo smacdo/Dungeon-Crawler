@@ -87,6 +87,7 @@
     <Compile Include="Common\ParentingException.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\Random.cs" />
+    <Compile Include="Common\Tests\AssertHelper.cs" />
     <Compile Include="Common\Tests\InstancePoolTests.cs" />
     <Compile Include="Common\Tests\InterpolationFuncsTests.cs" />
     <Compile Include="Common\Tests\MathXTests.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Game\Entity\Actor\ActorAction.cs" />
     <Compile Include="Game\Entity\Graphics\IDrawable.cs" />
     <Compile Include="Game\Entity\Graphics\SpriteException.cs" />
+    <Compile Include="Game\Entity\IBlueprintFactory.cs" />
     <Compile Include="Game\Entity\IGameObject.cs" />
     <Compile Include="Game\Entity\Movement\MovementProvider.cs" />
     <Compile Include="Game\Entity\Tests\ComponentCollectionTests.cs" />

@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
+using Microsoft.Xna.Framework;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Scott.Common
 {
@@ -135,10 +137,14 @@ namespace Scott.Common
             double absB = Math.Abs( b );
             double diff = Math.Abs( a - b );
 
-            if ( a * b == 0.0 )
+            if ( a == b )
+            {
+                return true;
+            }
+            else if ( a == 0.0f || b == 0.0f || diff < double.Epsilon )
             {
                 // A or b (or both) are zero. Relative error is therefore not meaningful here.
-                return diff < ( epsilon * epsilon );
+                return diff < ( epsilon * double.Epsilon );
             }
             else
             {
@@ -160,10 +166,14 @@ namespace Scott.Common
             float absB = Math.Abs( b );
             float diff = Math.Abs( a - b );
 
-            if ( a * b == 0.0f )
+            if ( a == b )
+            {
+                return true;
+            }
+            else if ( a == 0.0f || b == 0.0f || diff < float.Epsilon )
             {
                 // A or b (or both) are zero. Relative error is therefore not meaningful here.
-                return diff < ( epsilon * epsilon );
+                return diff < ( epsilon * float.Epsilon );
             }
             else
             {
@@ -324,6 +334,21 @@ namespace Scott.Common
             {
                 return v;
             }
+        }
+
+        /// <summary>
+        ///  Rotate Vector2 by the given angle. The angle must be specified in radians.
+        /// </summary>
+        /// <param name="v">Vector to rotate.</param>
+        /// <param name="angle">Amount to rotate.</param>
+        /// <returns>Rotated vector.</returns>
+        public static Vector2 Rotate( Vector2 v, float angle )
+        {
+            double c = Math.Cos( angle );
+            double s = Math.Sin( angle );
+
+            return new Vector2( (float)( v.X * c - v.Y * s ),
+                                (float)( v.Y * c + v.X * s ) );
         }
     }
 }
