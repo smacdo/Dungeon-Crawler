@@ -39,7 +39,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\build\x86\Debug\</OutputPath>
-	<IntermediateOutputPath>..\..\build\obj\x86\Debug</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\build\obj\x86\Debug</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -54,7 +54,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\build\x86\Release\</OutputPath>
-	<IntermediateOutputPath>..\..\build\obj\x86\Debug</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\build\obj\x86\Debug</IntermediateOutputPath>
     <DefineConstants>TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -125,12 +125,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\ActionCastSpell.cs" />
-    <Compile Include="Actions\ActionDeath.cs" />
-    <Compile Include="Actions\ActionRangedAttack.cs" />
-    <Compile Include="Actions\ActionSlashAttack.cs">
+    <Compile Include="Game\Actions\ActionCastSpell.cs" />
+    <Compile Include="Game\Actions\ActionDeath.cs" />
+    <Compile Include="Game\Actions\ActionRangedAttack.cs" />
+    <Compile Include="Game\Actions\ActionSlashAttack.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Game\TempBlueprintProvider.cs" />
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -144,7 +145,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="DungeonCrawler.cs" />
+    <Compile Include="Game\DungeonCrawler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

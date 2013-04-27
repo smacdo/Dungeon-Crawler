@@ -18,24 +18,30 @@ namespace Scott.Game.Entity
     public class GameObjectCollection
     {
         private const int DEFAULT_CAPACITY = 4096;
+        private IBlueprintFactory mBlueprintFactory = null;
 
-        public List<GameObject> GameObjects { get; private set; }
-
-        public Dictionary<Type, IComponentCollection> mComponentProviders;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public GameObjectCollection()
+        public GameObjectCollection( IBlueprintFactory blueprintFactory )
         {
             GameObjects = new List<GameObject>( DEFAULT_CAPACITY );
             mComponentProviders = new Dictionary<Type, IComponentCollection>();
 
+            // Set up blueprint.
+            mBlueprintFactory = blueprintFactory;
+            mBlueprintFactory.Collection = this;
+
+            // Create common component providers.
             AddComponentProvider( typeof( AiController ), typeof( ComponentCollection<AiController> ) );
             AddComponentProvider( typeof( ActorController ), typeof( ComponentCollection<ActorController> ) );
             AddComponentProvider( typeof( MovementComponent ), typeof( MovementProvider ) );
             AddComponentProvider( typeof( SpriteComponent ), typeof( ComponentCollection<SpriteComponent> ) );
         }
+
+        public List<GameObject> GameObjects { get; private set; }
+        public Dictionary<Type, IComponentCollection> mComponentProviders;
 
         /// <summary>
         ///  Adds a new component type of component that can be added to game objects in this
@@ -85,7 +91,7 @@ namespace Scott.Game.Entity
         /// <param name="direction">Direciton of the game object</param>
         /// <param name="width">Width of the game object</param>
         /// <param name="height">Height of the game object</param>
-        /// <returns></returns>
+        /// <returns>Game object.</returns>
         public GameObject Create( string name, Vector2 position, Direction direction )
         {
             GameObject gameObject = new GameObject( name, this );
@@ -95,6 +101,28 @@ namespace Scott.Game.Entity
             gameObject.Transform.Direction = direction;
 
             return gameObject; 
+        }
+
+        /// <summary>
+        ///  Instantiate a blueprint and return it's root as a game object.
+        /// </summary>
+        /// <param name="blueprintName">Name of the blueprint.</param>
+        /// <param name="position">World position to place the game object.</param>
+        /// <param name="direction">Direction to make game object face.</param>
+        /// <returns>Game object.</returns>
+        public GameObject InstantiateBlueprint( string blueprintName )
+        {
+            // Make sure we have a blueprint provider first.
+            if ( mBlueprintFactory == null )
+            {
+                throw new InvalidOperationException(
+                    "Cannot instantiate blueprints because there is no blueprint factory."
+                );
+            }
+
+            // Now instantiate a copy of the blueprint, and set the transform to what the caller
+            // wanted.
+            return mBlueprintFactory.Instantiate( blueprintName );
         }
 
         /// <summary>

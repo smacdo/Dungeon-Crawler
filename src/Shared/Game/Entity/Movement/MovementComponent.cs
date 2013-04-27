@@ -122,7 +122,7 @@ namespace Scott.Game.Entity.Movement
             Vector2 position = Owner.Transform.Position;
 
             // Calculate our new position.
-            Vector2 movementAxis = GameUtil.GetMovementVector( Direction );
+            Vector2 movementAxis = GameUtil.GetDirectionVector( Direction );
             Vector2 newPosition  = position + ( movementAxis * mVelocity * timeDelta );
 
             // Did we start or stop moving this frame?

@@ -19,7 +19,7 @@ namespace Scott.Game.Entity.Tests
         [Test]
         public void CreateNewCollection()
         {
-            GameObjectCollection collection = new GameObjectCollection();
+            GameObjectCollection collection = new GameObjectCollection( null );
         }
     }
 }

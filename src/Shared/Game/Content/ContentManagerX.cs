@@ -215,6 +215,12 @@ namespace Scott.Game.Content
         /// wait until requested.</param>
         public void SearchContentDirForAssets( bool preload )
         {
+            // Do not rescan a directory once scanned.
+            if ( mAssetDirectoryScanned )
+            {
+                return;
+            }
+
             // Make sure the content path exists before proceeding.
             if ( String.IsNullOrEmpty( mContentDir ) || !Directory.Exists( mContentDir ) )
             {
