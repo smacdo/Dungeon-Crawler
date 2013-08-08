@@ -27,11 +27,17 @@ namespace Scott.Game.Entity
         public GameObjectCollection( IBlueprintFactory blueprintFactory )
         {
             GameObjects = new List<GameObject>( DEFAULT_CAPACITY );
-            mComponentProviders = new Dictionary<Type, IComponentCollection>();
 
             // Set up blueprint.
-            mBlueprintFactory = blueprintFactory;
-            mBlueprintFactory.Collection = this;
+            if ( blueprintFactory != null )
+            {
+                mBlueprintFactory = blueprintFactory;
+                mBlueprintFactory.Collection = this;
+            }
+
+            mComponentProviders = new Dictionary<Type, IComponentCollection>();
+
+
 
             // Create common component providers.
             AddComponentProvider( typeof( AiController ), typeof( ComponentCollection<AiController> ) );

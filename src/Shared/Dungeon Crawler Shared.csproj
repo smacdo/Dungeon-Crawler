@@ -95,6 +95,8 @@
     <Compile Include="Common\Tests\ParentableNodeTests.cs" />
     <Compile Include="Common\Tests\StringExtensionMethodsTests.cs" />
     <Compile Include="Common\Tests\TypeExtensionMethodsTests.cs" />
+    <Compile Include="Game\Common\IDrawable.cs" />
+    <Compile Include="Game\Common\IUpdatable.cs" />
     <Compile Include="Game\Constants.cs" />
     <Compile Include="Game\Content\ContentManagerX.cs" />
     <Compile Include="Game\Content\ContentReader.cs" />
@@ -127,6 +129,11 @@
     <Compile Include="Game\Graphics\SpriteData.cs" />
     <Compile Include="Game\Input\InputException.cs" />
     <Compile Include="Game\Input\InputManager.cs" />
+    <Compile Include="Game\State\GameState.cs" />
+    <Compile Include="Game\State\GameStateException.cs" />
+    <Compile Include="Game\State\GameStateManager.cs" />
+    <Compile Include="Game\State\Tests\GameStateManagerTests.cs" />
+    <Compile Include="Game\State\Tests\GameStateTests.cs" />
     <Compile Include="Geometry\BoundingArea.cs" />
     <Compile Include="Game\Entity\ComponentCollection.cs" />
     <Compile Include="Game\Entity\GameObject.cs" />
