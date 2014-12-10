@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Windows.Forms;
 using System;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace Scott.Dungeon.Game
         private static void RunWithExceptionGuard()
         {
             // Install a global exception handler to catch any pesky exceptions.
-            Application.ThreadException += ApplicationThreadException;
+            //MediaTypeNames.Application.ThreadException += ApplicationThreadException;
 
             // Run the game in an exception guard.
             try
