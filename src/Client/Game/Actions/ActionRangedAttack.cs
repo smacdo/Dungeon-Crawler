@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Scott.Common;
-using Scott.Game.Entity.Graphics;
+using Scott.Forge.GameObjects.Graphics;
 using Scott.Geometry;
-using Scott.Game.Entity;
-using Scott.Game.Entity.Actor;
+using Scott.Forge.GameObjects;
+using Scott.Forge.GameObjects.Actor;
 using Scott.Game;
 
 namespace Scott.Dungeon.Actions

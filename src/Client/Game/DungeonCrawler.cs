@@ -4,14 +4,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Scott.Game;
-using Scott.Game.Entity;
+using Scott.Forge.GameObjects;
 using Scott.Game.Graphics;
-using Scott.Game.Entity.Actor;
+using Scott.Forge.GameObjects.Actor;
 
 using Scott.Geometry;
-using Scott.Game.Entity.Graphics;
-using Scott.Game.Entity.Movement;
-using Scott.Game.Entity.AI;
+using Scott.Forge.GameObjects.Graphics;
+using Scott.Forge.GameObjects.Movement;
+using Scott.Forge.GameObjects.AI;
 using Scott.Game.Input;
 using Scott.Dungeon.Actions;
 using Scott.Game.Content;

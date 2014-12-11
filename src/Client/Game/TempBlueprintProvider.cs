@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Scott.Game.Content;
-using Scott.Game.Entity;
-using Scott.Game.Entity.Actor;
-using Scott.Game.Entity.AI;
-using Scott.Game.Entity.Graphics;
-using Scott.Game.Entity.Movement;
+using Scott.Forge.GameObjects;
+using Scott.Forge.GameObjects.Actor;
+using Scott.Forge.GameObjects.AI;
+using Scott.Forge.GameObjects.Graphics;
+using Scott.Forge.GameObjects.Movement;
 using Scott.Game.Graphics;
 using Scott.Geometry;
 using System;
