@@ -21,12 +21,11 @@ namespace Scott.Forge.Tests.GameObjectsTests
         ///  Create a component, make sure everything is in the expected default state.
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/GameObjects/Component")]
         public void TestCreateComponent()
         {
             var c = new TestComponent();
-
             Assert.IsNull( c.Owner );
-            Assert.IsFalse( c.Enabled );
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Scott.Forge.Tests
     public class MathXTests
     {
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NormalizeToZeroOneRange_Float()
         {
             // 0/4
@@ -30,6 +31,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NormalizeToZeroOneRange_Double()
         {
             // 0/4
@@ -52,6 +54,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void DegreesToRadians()
         {
             Assert.AreEqual( 0.0f, MathHelper.DegreeToRadian( 0.0f ) );
@@ -62,6 +65,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void RadiansToDegrees()
         {
             Assert.AreEqual( 0.0f, MathHelper.RadianToDegree( 0.0f ) );
@@ -72,6 +76,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void SmallestAngleBetweenRadians()
         {
             float zero = MathHelper.DegreeToRadian( 0.0f );
@@ -91,6 +96,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void SmallestAngleBetweenDegrees()
         {
             Assert.AreEqual( 0.0f, MathHelper.SmallestDegreeAngleBetween( 0.0f, 0.0f ) );
@@ -102,6 +108,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NearlyEqualDouble()
         {
             Assert.IsTrue( MathHelper.NearlyEqual( 0.0, 0.0, 0.001 ) );
@@ -111,6 +118,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NearlyEqualFloat()
         {
             Assert.IsTrue( MathHelper.NearlyEqual( 0.0f, 0.0f, 0.001f ) );
@@ -120,6 +128,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void FastSin()
         {
             const float pi = (float) Math.PI;
@@ -131,6 +140,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NextPowerOfTwoInt()
         {
             Assert.AreEqual( 1, MathHelper.NextPowerOf2( 0 ) );
@@ -144,20 +154,22 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NextPowerOfTwoUInt()
         {
-            Assert.AreEqual( 1, MathHelper.NextPowerOf2( 0u ) );
-            Assert.AreEqual( 1, MathHelper.NextPowerOf2( 1u ) );
-            Assert.AreEqual( 2, MathHelper.NextPowerOf2( 2u ) );
-            Assert.AreEqual( 4, MathHelper.NextPowerOf2( 3u ) );
-            Assert.AreEqual( 4, MathHelper.NextPowerOf2( 4u ) );
-            Assert.AreEqual( 8, MathHelper.NextPowerOf2( 5u ) );
-            Assert.AreEqual( 65536, MathHelper.NextPowerOf2( 32769u ) );
-            Assert.AreEqual( 2147483648, MathHelper.NextPowerOf2( 2147483646u ) );
-            Assert.AreEqual( 0, MathHelper.NextPowerOf2( 2147483649U ) );
+            Assert.AreEqual( 1u, MathHelper.NextPowerOf2( 0u ) );
+            Assert.AreEqual( 1u, MathHelper.NextPowerOf2( 1u ) );
+            Assert.AreEqual( 2u, MathHelper.NextPowerOf2( 2u ) );
+            Assert.AreEqual( 4u, MathHelper.NextPowerOf2( 3u ) );
+            Assert.AreEqual( 4u, MathHelper.NextPowerOf2( 4u ) );
+            Assert.AreEqual( 8u, MathHelper.NextPowerOf2( 5u ) );
+            Assert.AreEqual( 65536u, MathHelper.NextPowerOf2( 32769u ) );
+            Assert.AreEqual( 2147483648u, MathHelper.NextPowerOf2( 2147483646u ) );
+            Assert.AreEqual( 0u, MathHelper.NextPowerOf2( 2147483649U ) );
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NextPowerOfTwoLong()
         {
             Assert.AreEqual( 1, MathHelper.NextPowerOf2( 0L ) );
@@ -172,27 +184,30 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void NextPowerOfTwoULong()
         {
-            Assert.AreEqual( 1, MathHelper.NextPowerOf2( 0UL ) );
-            Assert.AreEqual( 1, MathHelper.NextPowerOf2( 1UL ) );
-            Assert.AreEqual( 2, MathHelper.NextPowerOf2( 2UL ) );
-            Assert.AreEqual( 4, MathHelper.NextPowerOf2( 3UL ) );
-            Assert.AreEqual( 4, MathHelper.NextPowerOf2( 4UL ) );
-            Assert.AreEqual( 8, MathHelper.NextPowerOf2( 5UL ) );
-            Assert.AreEqual( 65536, MathHelper.NextPowerOf2( 32769UL ) );
-            Assert.AreEqual( 2147483648, MathHelper.NextPowerOf2( 2147483646UL ) );
-            Assert.AreEqual( 9223372036854775808, MathHelper.NextPowerOf2( 9223372036854775806UL ) );
-            Assert.AreEqual( 0, MathHelper.NextPowerOf2( 18446744073709551615UL ) );
+            Assert.AreEqual( 1u, MathHelper.NextPowerOf2( 0UL ) );
+            Assert.AreEqual( 1u, MathHelper.NextPowerOf2( 1UL ) );
+            Assert.AreEqual( 2u, MathHelper.NextPowerOf2( 2UL ) );
+            Assert.AreEqual( 4u, MathHelper.NextPowerOf2( 3UL ) );
+            Assert.AreEqual( 4u, MathHelper.NextPowerOf2( 4UL ) );
+            Assert.AreEqual( 8u, MathHelper.NextPowerOf2( 5UL ) );
+            Assert.AreEqual( 65536u, MathHelper.NextPowerOf2( 32769UL ) );
+            Assert.AreEqual( 2147483648u, MathHelper.NextPowerOf2( 2147483646UL ) );
+            Assert.AreEqual( 9223372036854775808u, MathHelper.NextPowerOf2( 9223372036854775806UL ) );
+            Assert.AreEqual( 0u, MathHelper.NextPowerOf2( 18446744073709551615UL ) );
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void LinearRemapFloat()
         {
             Assert.AreEqual( 7.5f, MathHelper.LinearRemap( 3.0f, 2.0f, 4.0f, 5.0f, 10.0f ) );
         }
 
         [TestMethod]
+        [TestCategory("Forge/Math/MathX")]
         public void Clamp()
         {
             Assert.AreEqual( 2.0f, MathHelper.Clamp( 1.5f, 2.0f, 3.0f ) );
@@ -204,6 +219,7 @@ namespace Scott.Forge.Tests
 
         [TestMethod]
         [Ignore]
+        [TestCategory("Forge/Math/MathX")]
         public void RotateVector()
         {
             Vector2 start = new Vector2( 1.0f, 0.0f );

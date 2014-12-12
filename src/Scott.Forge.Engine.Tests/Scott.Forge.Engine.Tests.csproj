@@ -50,8 +50,23 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
+      <Project>{07aaa29b-1006-4074-9c1f-ac12f09c35a6}</Project>
+      <Name>Scott.Forge.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Scott.Forge\Scott.Forge.csproj">
+      <Project>{fa4be4b8-5043-46e9-a43a-0575e8c56dc9}</Project>
+      <Name>Scott.Forge</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\" />
+    <Folder Include="GameObjects\" />
+    <Folder Include="GameStates\" />
+    <Folder Include="Input\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

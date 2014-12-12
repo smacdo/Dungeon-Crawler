@@ -8,6 +8,8 @@ namespace Scott.Forge.Tests
     public class TypeExtensionMethodsTests
     {
         [TestMethod]
+        [Ignore]
+        [TestCategory("Forge/ExtensionMethods/Type")]
         public void HasDefaultConstructor()
         {
             Assert.IsTrue( typeof( Foo ).HasDefaultConstructor() );
@@ -15,6 +17,8 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [Ignore]
+        [TestCategory("Forge/ExtensionMethods/Type")]
         public void HasAttributeGenric()
         {
             Assert.IsTrue( typeof( Foo ).HasAttribute<TestAttributeA>() );
@@ -24,6 +28,8 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [Ignore]
+        [TestCategory("Forge/ExtensionMethods/Type")]
         public void HasAttribute()
         {
             Assert.IsTrue( typeof( Foo ).HasAttribute( typeof( TestAttributeA ) ) );
@@ -33,6 +39,8 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [Ignore]
+        [TestCategory("Forge/ExtensionMethods/Type")]
         public void TryFindAttribute()
         {
             TestAttributeA a = null;
@@ -55,6 +63,8 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
+        [Ignore]
+        [TestCategory("Forge/ExtensionMethods/Type")]
         public void TryFindAttributes()
         {
             TestAttributeA[] a = null;
