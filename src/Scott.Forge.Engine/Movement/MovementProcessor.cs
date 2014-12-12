@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Microsoft.Xna.Framework;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
 
@@ -34,49 +33,60 @@ namespace Scott.Forge.Engine.Movement
         public override void UpdateGameObject(MovementComponent movement, double currentTime, double deltaTime)
         {
             IGameObject gameObject = movement.Owner;
+            var transform = gameObject.Transform;
 
-            // Calculate our new position.
-            var position = gameObject.Transform.Position;
-            var movementAxis = movement.Direction.ToVector();
-            var newPosition  = position + (movementAxis * movement.Velocity * (float)deltaTime);
+            if (!movement.IsMoving)
+            {
+                return;
+            }
 
-            movement.Update(position, movement.Velocity, movement.Direction);
+            // Check if we are moving before updating movement information.
+            var wasMoving = movement.IsMoving;
+            bool isMovingNow = false;
+            var oldDirection = transform.Direction;
 
-            // Update game object position.
-            gameObject.Transform.Position = newPosition;
+            // Calculate our new potential position.
+            movement.Velocity += (movement.Acceleration * (float)deltaTime);
+            movement.Velocity += (movement.Velocity.Normalized().Negated()*0.5f);       // bad way to do friction.
+            var newPosition = transform.Position + (movement.Velocity * (float) deltaTime);
+
+            // Check for collisions and other situations that can lead to an invalid position.
+            RectangleF moveBox = movement.MoveBox;
+            moveBox.Offset(newPosition);
+
+            bool isValidPosition = (IsInLevelBounds(moveBox) && !IsCollidingWithSomething(movement, moveBox));
+
+            if (isValidPosition)
+            {
+                // Movement is valid, we can update the movement component with its newest position.
+                isMovingNow = movement.IsMoving;
+
+                // Calculate movement component's new position and direction.
+                transform.Position = newPosition;
+                transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
+            }
+            else
+            {
+                // TODO: Find a way to put us in a valid positiohn.
+            }
+
+            // Debugging aid to help visualize movement boundary box.
+            GameRoot.Debug.DrawRect(
+                moveBox, 
+                (isValidPosition ? Microsoft.Xna.Framework.Color.Yellow : Microsoft.Xna.Framework.Color.Red));
+
+            // Update movement state flags.
+            movement.CollisionThisFrame = !isValidPosition;
+            movement.StartedMovingThisFrame = (!wasMoving && isMovingNow);
+            movement.StoppedMovingThisFrame = (wasMoving && !isMovingNow);
+            movement.ChangedDirectionThisFrame = (oldDirection != transform.Direction);
+
+            // Temporary hack : stop movement
+            movement.Acceleration = Vector2.Zero;
 
             // Update animations and movement.
             UpdateAnimation(gameObject, movement );
-            UpdateMovement(movement.Owner, movement, currentTime, deltaTime);
         }
-
-        /// <summary>
-        ///  Process the movement's request to move somewhere.
-        /// </summary>
-        /// <param name="time"></param>
-        /// <param name="movement"></param>
-        private void UpdateMovement(
-            IGameObject owner,
-            MovementComponent movement,
-            double currentTime,
-            double deltaTime)
-        {
-            // Is the new position OK? If not, revert back to the old position.
-            Vector2 position = movement.Position;
-            RectangleF moveBox = movement.MoveBox;
-
-            moveBox.Offset( position );
-
-            if ( IsInLevelBounds( moveBox ) && !IsCollidingWithSomething( movement, moveBox ) )
-            {
-                owner.Transform.Direction = movement.Direction;
-                owner.Transform.Position  = position;
-            }
-
-            // Debugging aid to help visualize the movebox.
-            GameRoot.Debug.DrawRect( moveBox, Color.Yellow );
-        }
-
 
         /// <summary>
         ///  Updates the movement component's animation.
@@ -84,20 +94,19 @@ namespace Scott.Forge.Engine.Movement
         public void UpdateAnimation( IGameObject owner, MovementComponent movement )
         {
             var sprite = owner.GetComponent<SpriteComponent>();
-            DirectionName direction = movement.Direction;
-            float speed = movement.Velocity;
+            var direction = owner.Transform.Direction;
 
             if ( movement.StartedMovingThisFrame )
             {
-                sprite.PlayAnimationLooping( "Walk", direction );
+                sprite.PlayAnimationLooping("Walk", direction);
             }
             else if ( movement.IsMoving && movement.ChangedDirectionThisFrame )
             {
-                sprite.PlayAnimationLooping( "Walk", direction );
+                sprite.PlayAnimationLooping("Walk", direction);
             }
             else if ( movement.StoppedMovingThisFrame )
             {
-                sprite.PlayAnimationLooping( "Idle", direction );
+                sprite.PlayAnimationLooping("Idle", direction);
             }
         }
 
@@ -123,12 +132,12 @@ namespace Scott.Forge.Engine.Movement
         /// <returns></returns>
         private bool IsCollidingWithSomething( MovementComponent self, RectangleF bounds )
         {
- /*           foreach ( MovementComponent movement in mComponentPool )
+            foreach (var movement in mComponents)
             {
                 if ( !ReferenceEquals( self, movement ) )
                 {
-                    IGameObject owner  = movement.Owner;
-                    RectangleF moveBox = movement.MoveBox;
+                    var owner  = movement.Owner;
+                    var moveBox = movement.MoveBox;
 
                     moveBox.Offset( owner.Transform.Position );
 
@@ -137,7 +146,7 @@ namespace Scott.Forge.Engine.Movement
                         return true;
                     }
                 }
-            }*/
+            }
 
             return false;
         }

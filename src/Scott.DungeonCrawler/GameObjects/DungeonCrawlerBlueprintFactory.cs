@@ -74,7 +74,7 @@ namespace Scott.DungeonCrawler.GameObjects
             var player = new GameObject("player");
 
             // Create the sprite and set it up.
-            SpriteComponent sprite = SpriteProcessor.Add(player);
+            var sprite = SpriteProcessor.Add(player);
 
             sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
 

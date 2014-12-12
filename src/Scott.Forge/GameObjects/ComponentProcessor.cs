@@ -59,6 +59,8 @@ namespace Scott.Forge.GameObjects
             var component = new TComponent {Owner = gameObject};
             gameObject.AddComponent(component);
 
+            mComponents.Add(component);
+
             return component;
         }
 

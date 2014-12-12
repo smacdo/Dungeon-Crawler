@@ -106,6 +106,7 @@ namespace Scott.Forge.Engine.Graphics
 
             // Add the initial root sprite
             mSpriteList.Add( new SpriteItem( spriteData ) );
+            SyncAllSprites();
         }
 
         /// <summary>
@@ -324,6 +325,11 @@ namespace Scott.Forge.Engine.Graphics
                     if ( !item.Enabled )
                     {
                         continue;
+                    }
+
+                    if (Owner.Name == "skeleton")
+                    {
+                        int x = 5;
                     }
 
                     GameRoot.Renderer.Draw( item.Texture,

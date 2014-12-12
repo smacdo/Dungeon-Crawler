@@ -39,26 +39,26 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="rotation">The angular rotation to convert.</param>
         /// <returns>A direction corresponding to the angular rotation.</returns>
-        public static DirectionName FromRotationAngle(float rotation)
+        public static DirectionName FromRotationAngle(double rotation)
         {
-            if (rotation < 0.0f || rotation > 360.0f)
+            if (rotation < 0.0 || rotation > 360.0)
             {
                 throw new ArgumentException("Rotation must be [0, 360]", "rotation");
             }
 
-            if (rotation < 45.0f)
+            if (rotation < 45.0)
             {
                 return DirectionName.East;
             }
-            else if (rotation < 135.0f)
+            else if (rotation < 135.0)
             {
                 return DirectionName.North;
             }
-            else if (rotation < 225.0f)
+            else if (rotation < 225.0)
             {
                 return DirectionName.West;
             }
-            else if (rotation < 315.0f)
+            else if (rotation < 315.0)
             {
                 return DirectionName.South;
             }
@@ -66,6 +66,14 @@ namespace Scott.Forge
             {
                 return DirectionName.East;
             }
+        }
+
+        public static DirectionName FromVector(Vector2 vector)
+        {
+            // TODO: Fixme.
+            float angle = (float) Math.Tan(vector.X/vector.Y);
+            float radians = MathHelper.RadianToDegree(angle);
+            return FromRotationAngle(MathHelper.Wrap(radians, 0.0f, 360.0f));
         }
 
         /// <summary>
