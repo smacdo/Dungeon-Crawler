@@ -1,28 +1,41 @@
+/*
+ * Copyright 2012-2014 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 using System;
-using System.Configuration;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
-using Scott.Game;
+using Scott.DungeonCrawler.GameObjects;
+using Scott.Forge;
+using Scott.Forge.Engine;
+using Scott.Forge.Engine.Actors;
+using Scott.Forge.Engine.Ai;
+using Scott.Forge.Engine.Content;
+using Scott.Forge.Engine.Graphics;
+using Scott.Forge.Engine.Input;
+using Scott.Forge.Engine.Movement;
 using Scott.Forge.GameObjects;
-using Scott.Game.Graphics;
-using Scott.Forge.GameObjects.Actor;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-using Scott.Geometry;
-using Scott.Forge.GameObjects.Graphics;
-using Scott.Forge.GameObjects.Movement;
-using Scott.Forge.GameObjects.AI;
-using Scott.Game.Input;
-using Scott.Dungeon.Actions;
-using Scott.Game.Content;
-
-namespace Scott.Dungeon.Game
+namespace Scott.DungeonCrawler
 {
     /// <summary>
     ///  This is the main class for Dungeon Crawler. It is responsible for running the game loop,
     ///  responding to external events and managing content loading/unloading.
     /// </summary>
-    public class DungeonCrawler : Microsoft.Xna.Framework.Game
+    public class DungeonCrawlerClient : Microsoft.Xna.Framework.Game
     {
         enum InputAction
         {
@@ -34,20 +47,28 @@ namespace Scott.Dungeon.Game
             CastSpell
         }
 
-        private GraphicsDeviceManager mGraphicsDevice;
+        private readonly GraphicsDeviceManager mGraphicsDevice;
         private GameObject mPlayer;
-        private GameObjectCollection mGameObjects;
-        private InputManager<InputAction> mInputManager = new InputManager<InputAction>();
+        private List<GameObject> mEnemies = new List<GameObject>();
+        
+        private SpriteProcessor mSpriteProcessor = new SpriteProcessor();
+        private MovementProcessor mMovementProcessor = new MovementProcessor();
+        private ActorProcessor mActorProcessor = new ActorProcessor();
+        private AiProcessor mAiProcessor = new AiProcessor();
+
+        private DungeonCrawlerGameObjectFactory mGameObjectFactory;
+
+        private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
         private ContentManagerX mContent;
         int mEnemyCount = 0;
 
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public DungeonCrawler()
+        public DungeonCrawlerClient(string contentDirectory)
         {
             mGraphicsDevice = new GraphicsDeviceManager( this );
-            Content.RootDirectory = "Content";
+            Content.RootDirectory = contentDirectory ?? "Content";      // Settings.Default.ContentDir
         }
 
         /// <summary>
@@ -64,7 +85,6 @@ namespace Scott.Dungeon.Game
             mGraphicsDevice.ApplyChanges();
 
             // Create our custom content manager.
-            string contentDir = Settings.Default.ContentDir;
             mContent = new ContentManagerX( Services, "Content" );
             this.Content = mContent;
 
@@ -73,8 +93,13 @@ namespace Scott.Dungeon.Game
             Screen.Initialize( mGraphicsDevice.GraphicsDevice );
 
             // Initialize default game level.
-            IBlueprintFactory factory = new TempBlueprintProvider( mContent );
-            mGameObjects = new GameObjectCollection( factory );
+            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent)
+            {
+                SpriteProcessor = mSpriteProcessor,
+                MovementProcessor = mMovementProcessor,
+                ActorProcessor = mActorProcessor,
+                AiProcessor = mAiProcessor
+            };
 
             // Initialize input system with default settings.
             mInputManager.AddAction( InputAction.ExitGame, Keys.Escape );
@@ -82,10 +107,10 @@ namespace Scott.Dungeon.Game
             mInputManager.AddAction( InputAction.MeleeAttack, Keys.Space );
             mInputManager.AddAction( InputAction.RangedAttack, Keys.E );
             mInputManager.AddAction( InputAction.CastSpell, Keys.Q );
-            mInputManager.AddDirectionalAction( InputAction.Move, Keys.W, Direction.North );
-            mInputManager.AddDirectionalAction( InputAction.Move, Keys.D, Direction.East );
-            mInputManager.AddDirectionalAction( InputAction.Move, Keys.S, Direction.South );
-            mInputManager.AddDirectionalAction( InputAction.Move, Keys.A, Direction.West );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.W, DirectionName.North );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.D, DirectionName.East );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.S, DirectionName.South );
+            mInputManager.AddDirectionalAction( InputAction.Move, Keys.A, DirectionName.West );
 
             // Let XNA engine initialize last.
             base.Initialize();
@@ -102,7 +127,7 @@ namespace Scott.Dungeon.Game
             mContent.SearchContentDirForAssets( true );
 
             // Create the player blue print.
-            mPlayer = mGameObjects.InstantiateBlueprint( "Player" );
+            mPlayer = mGameObjectFactory.Instantiate("Player");
 
             // Now that we have loaded the game's contents, we should force a garbage collection
             // before proceeding to play mode.
@@ -115,20 +140,21 @@ namespace Scott.Dungeon.Game
         private void SpawnSkeleton()
         {
             // Spawn the skeleton enemy.
-            GameObject skeleton = mGameObjects.InstantiateBlueprint( "Skeleton" );
+            GameObject skeleton = mGameObjectFactory.Instantiate("Skeleton");
 
             // Pick a spot to place the skeleton enemy.
             int width = Screen.Width - 64;
             int height = Screen.Height - 64;
 
-            Vector2 position = new Vector2( (int) ( GameRoot.Random.NextDouble() * width ),
-                                            (int) ( GameRoot.Random.NextDouble() * height ) );
+            var position = new Scott.Forge.Vector2( (int) ( GameRoot.Random.NextDouble() * width ),
+                                                    (int) ( GameRoot.Random.NextDouble() * height ) );
 
             skeleton.Transform.Position = position;
 
             // Add the newly spawned skeleton to our list of enemies.
             GameRoot.Enemies.Add( skeleton );
             mEnemyCount += 1;
+            mEnemies.Add(skeleton);
         }
 
         /// <summary>
@@ -159,36 +185,29 @@ namespace Scott.Dungeon.Game
 
             if ( mInputManager.WasTriggered( InputAction.ExitGame ) )
             {
-                this.Exit();
-            }
-
-            if ( mInputManager.WasTriggered( InputAction.PrintDebugInfo ) )
-            {
-                Console.WriteLine( "Game Object Debugging Information" );
-                Console.WriteLine( "=================================" );
-                Console.WriteLine( mGameObjects.DumpDebugInfoToString() );
+                Exit();
             }
 
             // Player movement.
-            ActorController playerActor = mPlayer.GetComponent<ActorController>();
-            Direction playerDirection;
+            var playerActor = mPlayer.GetComponent<ActorComponent>();
+            DirectionName playerDirection;
 
             if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
             {
-                playerActor.Move( playerDirection, 125 );
+                //playerActor.Move( playerDirection, 125 );
             }
 
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
-                playerActor.Perform( new ActionSlashAttack() );
+                //playerActor.Perform( new ActionSlashAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
             {
-                playerActor.Perform( new ActionRangedAttack() );
+                //playerActor.Perform( new ActionRangedAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.CastSpell ) )
             {
-                playerActor.Perform( new ActionCastSpell() );
+                //playerActor.Perform( new ActionCastSpell() );
             }
 
             // Spawn some stuff
@@ -207,15 +226,15 @@ namespace Scott.Dungeon.Game
             // We resolve movement and collision first, before the player or AI gets chance
             // to do anything. Hence the current position of all objects (and collision)
             // that is displayed is actually one frame BEFORE this update
-            mGameObjects.Update<MovementComponent>( gameTime );
+            mMovementProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Update game ai and character actions
-            mGameObjects.Update<AiController>( gameTime );
-            mGameObjects.Update<ActorController>( gameTime );
+            mAiProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            mActorProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Make sure animations are primed and updated (we need to trigger the
             // correct animation events even if we are not drawwing)
-            mGameObjects.Update<SpriteComponent>( gameTime );   // TODO: Remove this and have an animation component
+            mSpriteProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Update( gameTime );
 
@@ -230,7 +249,7 @@ namespace Scott.Dungeon.Game
         protected override void Draw( GameTime gameTime )
         {
             // Walk through the game scene and collect all sprites for drawing
-            mGameObjects.Draw<SpriteComponent>( gameTime );
+            mSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Draw all requested game sprites
             GameRoot.Renderer.DrawScreen( gameTime );

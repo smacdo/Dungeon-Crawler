@@ -32,5 +32,14 @@ namespace Scott.Forge.Engine.Graphics
             // TODO: Make much better by moving SpriteComponent.Update to here.
             component.Update(currentTime, deltaTime);
         }
+
+        public void Draw(double currentTime, double deltaTime)
+        {
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var index = 0; index < mComponents.Count; ++index)
+            {
+                mComponents[index].Draw(currentTime, deltaTime);
+            }
+        }
     }
 }

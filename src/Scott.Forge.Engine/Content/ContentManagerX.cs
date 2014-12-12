@@ -19,6 +19,7 @@ using System.IO;
 using System.Reflection;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework.Content;
+using Scott.Forge.Content;
 
 namespace Scott.Forge.Engine.Content
 {
@@ -30,7 +31,7 @@ namespace Scott.Forge.Engine.Content
     ///        
     ///  NOTE: THIS CLASS SHOULD BE THREADSAFE + CACHE, THREAD AND ASYNC HAPPY.
     /// </summary>
-    public class ContentManagerX : Microsoft.Xna.Framework.Content.ContentManager
+    public class ContentManagerX : ContentManager, IContentManager
     {
         /// <summary>
         ///  List of content readers, which process an asset file into a loadable instance.

@@ -23,23 +23,23 @@ namespace Scott.Forge.Engine.Input
     /// <summary>
     ///  Manages input mappings and input reading.
     /// </summary>
-    public class InputManager<ActionType> where ActionType : struct, IComparable, IConvertible, IFormattable
+    public class InputManager<TAction> where TAction : struct, IComparable, IConvertible, IFormattable
     {
         private class ActionData
         {
-            public ActionType InputAction = default(ActionType);
+            public TAction InputAction = default(TAction);
             public bool TriggeredThisFrame = false;
             public DirectionName DirectionThisFrame = DirectionName.East;
             public bool IsDirectional = false;
             public Dictionary<Keys, DirectionName> KeyboardKeys = new Dictionary<Keys, DirectionName>();
 
-            public ActionData( ActionType type, Keys k )
+            public ActionData( TAction type, Keys k )
             {
                 InputAction = type;
                 KeyboardKeys.Add(k, DirectionName.East);
             }
 
-            public ActionData(ActionType type, Keys k, DirectionName d)
+            public ActionData(TAction type, Keys k, DirectionName d)
             {
                 InputAction = type;
                 IsDirectional = true;
@@ -47,14 +47,14 @@ namespace Scott.Forge.Engine.Input
             }
         }
 
-        private Dictionary<ActionType, ActionData> mActions;
+        private Dictionary<TAction, ActionData> mActions;
 
         /// <summary>
         ///  Constructor.
         /// </summary>
         public InputManager()
         {
-            mActions = new Dictionary<ActionType, ActionData>();
+            mActions = new Dictionary<TAction, ActionData>();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Scott.Forge.Engine.Input
         /// </summary>
         /// <param name="action"></param>
         /// <param name="key"></param>
-        public void AddAction( ActionType actionType, Keys key )
+        public void AddAction( TAction actionType, Keys key )
         {
             // See if this action has already been created. Either update the existing action data,
             // or create a new entry.
@@ -99,7 +99,7 @@ namespace Scott.Forge.Engine.Input
         /// <param name="actionType"></param>
         /// <param name="key"></param>
         /// <param name="dir"></param>
-        public void AddDirectionalAction(ActionType actionType, Keys key, DirectionName dir)
+        public void AddDirectionalAction(TAction actionType, Keys key, DirectionName dir)
         {
             // See if this action has already been created. Either update the existing action data,
             // or create a new entry.
@@ -135,7 +135,7 @@ namespace Scott.Forge.Engine.Input
         /// </summary>
         /// <param name="action">Input action to check.</param>
         /// <returns>True if it was triggered this frame, false otherwise.</returns>
-        public bool WasTriggered( ActionType actionType )
+        public bool WasTriggered( TAction actionType )
         {
             // Ensure the action exists before going any further.
             ActionData action = null;
@@ -157,7 +157,7 @@ namespace Scott.Forge.Engine.Input
         /// <param name="action">Input action to check.</param>
         /// <param name="direction">The direction that was triggered</param>
         /// <returns>True if it was triggered this frame, false otherwise.</returns>
-        public bool WasTriggered(ActionType actionType, out DirectionName direction)
+        public bool WasTriggered(TAction actionType, out DirectionName direction)
         {
             // Ensure the action exists before going any further.
             ActionData action = null;
@@ -217,7 +217,7 @@ namespace Scott.Forge.Engine.Input
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private ActionData FindActionForType( ActionType type )
+        private ActionData FindActionForType( TAction type )
         {
             ActionData action = null;
             mActions.TryGetValue( type, out action );

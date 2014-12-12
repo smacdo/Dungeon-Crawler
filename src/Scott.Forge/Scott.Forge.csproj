@@ -48,7 +48,7 @@
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateException.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
-    <Compile Include="IContentManager.cs" />
+    <Compile Include="Content\IContentManager.cs" />
     <Compile Include="InstancePool.cs" />
     <Compile Include="Interpolation.cs" />
     <Compile Include="IRecyclable.cs" />

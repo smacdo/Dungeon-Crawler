@@ -17,6 +17,6 @@ namespace Scott.Forge.Engine.Graphics
 {
     public interface IDrawable      // TODO: Doesn't this conflict with other definition of IDrawable?
     {
-        void Draw( Microsoft.Xna.Framework.GameTime gameTime );
+        void Draw(double currentTime, double deltaTime);
     }
 }

@@ -23,10 +23,9 @@ namespace Scott.Forge.Tests.GameObjectsTests
         [TestMethod]
         public void TestCreateComponent()
         {
-            TestComponent c = new TestComponent();
+            var c = new TestComponent();
 
             Assert.IsNull( c.Owner );
-            Assert.AreEqual( Guid.Empty, c.Id );
             Assert.IsFalse( c.Enabled );
         }
     }

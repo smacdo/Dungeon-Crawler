@@ -25,7 +25,7 @@ namespace Scott.Forge.GameObjects
     ///  component processor gets an update call it will loop through all the components that it added and process them
     ///  in a batch.
     /// </summary>
-    public abstract class ComponentProcessor<T> : IComponentProcessor where T : IComponent, new()
+    public abstract class ComponentProcessor<TComponent> : IComponentProcessor where TComponent : IComponent, new()
     {
         /// <summary>
         ///  The number of components that should be created initially for improved performance.
@@ -35,36 +35,38 @@ namespace Scott.Forge.GameObjects
         /// <summary>
         ///  List of components for processing.
         /// </summary>
-        private readonly List<T> mComponents; 
+        protected readonly List<TComponent> mComponents; 
 
         /// <summary>
         /// Constructor
         /// </summary>
         protected ComponentProcessor()
         {
-            mComponents = new List<T>(DefaultCapacity);
+            mComponents = new List<TComponent>(DefaultCapacity);
         }
 
         /// <summary>
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
-        void Add(IGameObject gameObject)
+        public TComponent Add(IGameObject gameObject)
         {
             if (gameObject == null)
             {
                 throw new ArgumentNullException("gameObject");
             }
 
-            var component = new T {Owner = gameObject};
+            var component = new TComponent {Owner = gameObject};
             gameObject.AddComponent(component);
+
+            return component;
         }
 
         /// <summary>
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
-        void Remove(IGameObject gameObject)
+        public void Remove(IGameObject gameObject)
         {
             if (gameObject == null)
             {
@@ -73,8 +75,8 @@ namespace Scott.Forge.GameObjects
 
             // Get the component from the game object, remove it from the processor and then delete the component from
             // the game object itself.
-            var component = gameObject.GetComponent<T>();
-            gameObject.DeleteComponent<T>();
+            var component = gameObject.GetComponent<TComponent>();
+            gameObject.DeleteComponent<TComponent>();
 
             if (!mComponents.Remove(component))
             {
@@ -99,6 +101,6 @@ namespace Scott.Forge.GameObjects
             }
         }
 
-        public abstract void UpdateGameObject(T component, double currentTime, double deltaTime);
+        public abstract void UpdateGameObject(TComponent component, double currentTime, double deltaTime);
     }
 }

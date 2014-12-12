@@ -1,29 +1,47 @@
-﻿using Microsoft.Xna.Framework;
-using Scott.Game.Content;
-using Scott.Forge.GameObjects;
-using Scott.Forge.GameObjects.Actor;
-using Scott.Forge.GameObjects.AI;
-using Scott.Forge.GameObjects.Graphics;
-using Scott.Forge.GameObjects.Movement;
-using Scott.Game.Graphics;
-using Scott.Geometry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+ * Copyright 2012-2014 Scott MacDonald
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-namespace Scott.Dungeon.Game
+using System;
+using Scott.Forge;
+using Scott.Forge.Content;
+using Scott.Forge.Engine.Actors;
+using Scott.Forge.Engine.Ai;
+using Scott.Forge.Engine.Content;
+using Scott.Forge.Engine.Graphics;
+using Scott.Forge.Engine.Movement;
+using Scott.Forge.GameObjects;
+
+namespace Scott.DungeonCrawler.GameObjects
 {
     /// <summary>
     ///  Temporary blueprint provider. This is in place until we create a real one that actually
     ///  reads blueprints from a file.
+    /// 
+    ///  TODO: Generize this (engine/forge) since it has no dependency on game code... it just reads nested key/value
+    ///        information and creates blueprints.
     /// </summary>
-    public class TempBlueprintProvider : IBlueprintFactory
+    public class DungeonCrawlerGameObjectFactory : IBlueprintFactory
     {
-        public GameObjectCollection Collection { get; set; }
-        public ContentManagerX Content { get; set; }
+        public IContentManager Content { get; set; }
+        public SpriteProcessor SpriteProcessor { get; set; }        // TODO: Remove.
+        public MovementProcessor MovementProcessor { get; set; }    // TODO: Remove.
+        public ActorProcessor ActorProcessor { get; set; }          // TODO: Remove.
+        public AiProcessor AiProcessor { get; set; }                // TODO: Remove.
 
-        public TempBlueprintProvider( ContentManagerX content )
+        public DungeonCrawlerGameObjectFactory(IContentManager content)
         {
             Content = content;
         }
@@ -53,10 +71,10 @@ namespace Scott.Dungeon.Game
         private GameObject InstantiatePlayer()
         {
             // Create the player blue print.
-            GameObject player = Collection.Create( "Player" );
+            var player = new GameObject("player");
 
             // Create the sprite and set it up.
-            SpriteComponent sprite = Collection.Attach<SpriteComponent>( player );
+            SpriteComponent sprite = SpriteProcessor.Add(player);
 
             sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
 
@@ -70,26 +88,23 @@ namespace Scott.Dungeon.Game
             sprite.AddLayer( "Weapon", Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
 
             // Add movement component.
-            MovementComponent movement =  Collection.Attach<MovementComponent>( player );
+            var movement = MovementProcessor.Add(player);
             movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
-
-            // Add actor component.
-            Collection.Attach<ActorController>( player );
 
             return player;
         }
 
         private GameObject InstantiateSkeleton()
         {
-            GameObject enemy = Collection.Create( "Skeleton" );
-            SpriteComponent sprite = Collection.Attach<SpriteComponent>( enemy );
+            var enemy = new GameObject("skeleton");
+            var sprite = SpriteProcessor.Add(enemy);
 
             sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
 
-            Collection.Attach<ActorController>( enemy );
-            Collection.Attach<AiController>( enemy );
+            ActorProcessor.Add(enemy);
+            AiProcessor.Add(enemy);
 
-            MovementComponent movement =  Collection.Attach<MovementComponent>( enemy );
+            var movement = MovementProcessor.Add(enemy);
             movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
             return enemy;

@@ -15,9 +15,10 @@
  */
 using System;
 
-namespace Scott.Forge
+namespace Scott.Forge.Content
 {
     public interface IContentManager
     {
+        TContent Load<TContent>(string assetName);
     }
 }

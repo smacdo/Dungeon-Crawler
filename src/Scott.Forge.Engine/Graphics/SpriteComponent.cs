@@ -313,7 +313,7 @@ namespace Scott.Forge.Engine.Graphics
         /// Send update to the sprite
         /// </summary>
         /// <param name="gameTime"></param>
-        public void Draw( GameTime gameTime )
+        public void Draw(double currentTime, double deltaTime)
         {
             if ( Enabled )
             {
