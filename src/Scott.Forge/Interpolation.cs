@@ -17,7 +17,7 @@ using System;
 
 namespace Scott.Forge
 {
-    public static class InterpolationFuncs
+    public static class Interpolation
     {
         /// <summary>
         ///  Linearly interpolate a value between [a,b] by an amount defined by t. T must vary
