@@ -234,7 +234,7 @@ namespace Scott.Forge.Engine.Graphics
             var totalGameTime = TimeSpan.FromSeconds(currentTime);
 
             // Don't update if we are not visible or not playing an animation.
-            if ( !Enabled || !IsAnimating )
+            if ( !IsAnimating )
             {
                 return;
             }
@@ -316,26 +316,23 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="gameTime"></param>
         public void Draw(double currentTime, double deltaTime)
         {
-            if ( Enabled )
+            for ( int i = 0; i < mSpriteList.Count; ++i )
             {
-                for ( int i = 0; i < mSpriteList.Count; ++i )
+                SpriteItem item = mSpriteList[i];
+
+                if ( !item.Enabled )
                 {
-                    SpriteItem item = mSpriteList[i];
-
-                    if ( !item.Enabled )
-                    {
-                        continue;
-                    }
-
-                    if (Owner.Name == "skeleton")
-                    {
-                        int x = 5;
-                    }
-
-                    GameRoot.Renderer.Draw( item.Texture,
-                                            item.AtlasRect,
-                                            item.OriginOffset + Owner.Transform.Position );
+                    continue;
                 }
+
+                if (Owner.Name == "skeleton")
+                {
+                    int x = 5;
+                }
+
+                GameRoot.Renderer.Draw( item.Texture,
+                                        item.AtlasRect,
+                                        item.OriginOffset + Owner.Transform.Position );
             }
         }
 

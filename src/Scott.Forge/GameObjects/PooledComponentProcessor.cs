@@ -64,7 +64,7 @@ namespace Scott.Forge.GameObjects
             }
 
             mTrackedObjects.Add(gameObject);
-            gameObject.AddComponent(CreateNewComponent(gameObject));
+            gameObject.Add(CreateNewComponent(gameObject));
         }
 
         /// <summary>
@@ -80,9 +80,9 @@ namespace Scott.Forge.GameObjects
 
             if (mTrackedObjects.Remove(gameObject))
             {
-                var component = gameObject.GetComponent<T>(); // TODO: Verify must succeed.    
+                var component = gameObject.Get<T>(); // TODO: Verify must succeed.    
                 DestroyComponent(component);
-                gameObject.DeleteComponent<T>();
+                gameObject.Remove<T>();
             }
             else
             {
@@ -100,7 +100,7 @@ namespace Scott.Forge.GameObjects
             var instance = mComponentPool.Take();
             instance.Owner = owner;
 
-            owner.AddComponent<T>(instance);
+            owner.Add<T>(instance);
             OnComponentCreated(instance);
 
             return instance;

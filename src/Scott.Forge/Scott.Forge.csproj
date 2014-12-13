@@ -40,7 +40,10 @@
     <Compile Include="BoundingArea.cs" />
     <Compile Include="DirectionName.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="ForgeException.cs" />
     <Compile Include="GameObjects\ComponentProcessor.cs" />
+    <Compile Include="GameObjects\GameObjectExceptions.cs" />
+    <Compile Include="GameObjects\IComponentFactory.cs" />
     <Compile Include="GameObjects\PooledComponentProcessor.cs" />
     <Compile Include="GameObjects\TransformComponent.cs">
       <SubType>Code</SubType>
@@ -62,11 +65,8 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="GameObjects\Component.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
-    <Compile Include="GameObjects\GameObjectException.cs" />
     <Compile Include="GameObjects\IBlueprintFactory.cs" />
-    <Compile Include="GameObjects\IComponent.cs" />
     <Compile Include="GameObjects\IComponentProcessor.cs" />
-    <Compile Include="GameObjects\IGameObject.cs" />
     <Compile Include="RectF.cs" />
     <Compile Include="SizeF.cs" />
     <Compile Include="Vector2.cs" />

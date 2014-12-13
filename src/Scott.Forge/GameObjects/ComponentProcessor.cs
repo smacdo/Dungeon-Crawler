@@ -57,7 +57,7 @@ namespace Scott.Forge.GameObjects
             }
 
             var component = new TComponent {Owner = gameObject};
-            gameObject.AddComponent(component);
+            gameObject.Add(component);
 
             mComponents.Add(component);
 
@@ -77,8 +77,8 @@ namespace Scott.Forge.GameObjects
 
             // Get the component from the game object, remove it from the processor and then delete the component from
             // the game object itself.
-            var component = gameObject.GetComponent<TComponent>();
-            gameObject.DeleteComponent<TComponent>();
+            var component = gameObject.Get<TComponent>();
+            gameObject.Remove<TComponent>();
 
             if (!mComponents.Remove(component))
             {

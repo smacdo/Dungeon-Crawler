@@ -36,7 +36,7 @@ namespace Scott.Forge.Engine.Ai
 
             var gameObject = component.Owner;
 
-            var movement = gameObject.GetComponent<MovementComponent>();
+            var movement = gameObject.Get<MovementComponent>();
 
             // Is it time for us to make a decision?
             if (component.LastDecisionTime.Add(decisionTimeDelta) <= gameTime)
@@ -65,8 +65,8 @@ namespace Scott.Forge.Engine.Ai
         /// <param name="gameTime"></param>
         private void PerformIdleUpdate(IGameObject gameObject, double currentTime, double deltaTime)
         {
-            var actor = gameObject.GetComponent<ActorComponent>();
-            var movement = gameObject.GetComponent<MovementComponent>();
+            var actor = gameObject.Get<ActorComponent>();
+            var movement = gameObject.Get<MovementComponent>();
 
             // Are we walking around or just standing?
             if ( movement.IsMoving )

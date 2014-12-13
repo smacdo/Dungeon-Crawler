@@ -20,142 +20,299 @@ using System.Text;
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
-    /// Represents a physical object in the game world
+    ///  IGameObject specifies an interface which is are an implementation of the component entity pattern.
+    /// </summary>
+    /// <remarks>
+    ///  Forge uses game objects to implement the component entity design pattern. This pattern allows game developers
+    ///  to create objects that are composed of arbitrary groups of component data.
+    ///  
+    ///  For more information on this design pattern visit: 
+    ///    http://en.wikipedia.org/wiki/Entity_component_system
+    /// </remarks>
+    public interface IGameObject : IDisposable
+    {
+        /// <summary>
+        ///  Get a unique identifier for this game object.
+        /// </summary>
+        Guid Id { get; }
+
+        /// <summary>
+        ///  Get a string identifier for this game object.
+        /// </summary>
+        /// <remarks>
+        ///  The name value does not have to globally unique.
+        /// </remarks>
+        string Name { get; }
+
+        /// <summary>
+        ///  Get component containing information on this game object's physical location in the game world.
+        /// </summary>
+        TransformComponent Transform { get; }
+
+        /// <summary>
+        ///  Add a component to this game object.
+        /// </summary>
+        /// <remarks>
+        ///  Only one component of each type can be added to the game object.
+        /// </remarks>
+        /// <typeparam name="TComponent">Component type to add.</typeparam>
+        /// <param name="component">Component component to add.</param>
+        void Add<TComponent>(TComponent component) where TComponent : IComponent;
+
+        /// <summary>
+        ///  Check if this game object has a component of the specified type.
+        /// </summary>
+        /// <typeparam name="TComponent">Type of component to check for.</typeparam>
+        /// <returns>True if the game object has the component type, false otherwise.</returns>
+        bool Contains<TComponent>() where TComponent : IComponent;
+
+        /// <summary>
+        ///  Get a component from this game object. Will throw an exception if the component was not added.
+        /// </summary>
+        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
+        /// <returns>Component that was stored in this game object.</returns>
+        TComponent Get<TComponent>() where TComponent : IComponent;
+
+        /// <summary>
+        ///  Get a component from the game object. This will return null if the component was not added.
+        /// </summary>
+        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
+        /// <returns>Component that was stored in this game object.</returns>
+        TComponent Find<TComponent>() where TComponent : class, IComponent;
+
+        /// <summary>
+        ///  Remove a component from this game object.
+        /// </summary>
+        /// <remarks>
+        ///  Removing the transform component will also set the .Transform property to null. Generally, if the calling
+        ///  code is not destroying the game object, removing the transform component will have unpredicable
+        ///  consequences.
+        /// </remarks>
+        /// <typeparam name="TComponent">Component type to remove.</typeparam>
+        bool Remove<TComponent>() where TComponent : IComponent;
+    }
+
+    /// <summary>
+    ///  GameObject represents a basic, physical game object that can exist in the game world.
     /// </summary>
     public class GameObject : IGameObject
     {
-        private const int DEFAULT_COMPONENT_COUNT = 7;
-
-        private string mName = String.Empty;
-        private Guid mId = Guid.Empty;
-        private GameObject mParent = null;
-        private bool mEnabled = false;
-        private Dictionary< System.Type, IComponent > mComponents = new Dictionary<Type, IComponent>( DEFAULT_COMPONENT_COUNT );
-        private TransformComponent mTransform = new TransformComponent();
+        private bool mDisposed = false;
+        private const int InitialComponentCapacity = 7;
+        private Dictionary<System.Type, IComponent> mComponents =
+            new Dictionary<Type, IComponent>(InitialComponentCapacity);
 
         /// <summary>
         ///  Creates a new empty game object that is not associated with any collection.
         /// </summary>
         public GameObject()
-            : this ( "GameObject-NONAME")
+            : this(null)
         {
         }
 
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="name">This game object's name</param>
-        /// <param name="position">Position of the game object</param>
-        /// <param name="direction">Direction of the game object</param>
+        /// <param name="name">Name of the game object, or null for none.</param>
         public GameObject(string name)
         {
-            mName = name;
-            mEnabled = true;
+            Name = name ?? string.Empty;
+            Id = Guid.NewGuid();
 
-            mId = Guid.NewGuid();
+            // Pre-create a transform component, and make sure it is also in the component bag.
+            Transform = new TransformComponent();
+            mComponents.Add(Transform.GetType(), Transform);
         }
 
         /// <summary>
-        ///  Gets the name of this game object.
+        ///  Destructor ensures that all components are disposed of properly.
         /// </summary>
-        public string Name { get { return mName; } }
-
-        /// <summary>
-        ///  Gets the unique identifier for this game object.
-        /// </summary>
-        public Guid Id { get { return mId; } }
-
-        /// <summary>
-        ///  Check if game object is enabled or disabled. Disable objects are neither updated nor
-        ///  displayed to the player.
-        /// </summary>
-        public bool Enabled { get { return mEnabled; } set { mEnabled = false; } }
-
-        /// <summary>
-        ///  Gets the transform for this game object.
-        /// </summary>
-        public TransformComponent Transform { get { return mTransform; } }
-
-        /// <summary>
-        ///  Adds a game component to this game object.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void AddComponent<T>( T instance ) where T : IComponent
+        ~GameObject()
         {
-            // Make sure the game component isn't already added
-            if ( mComponents.ContainsKey( typeof( T ) ) )
+            Dispose(false);
+        }
+
+        /// <summary>
+        ///  Get a unique identifier for this game object.
+        /// </summary>
+        /// <remarks>
+        ///  The id should be globally unique, however there are no code checks to enforce this. It will cause problems
+        ///  with any system that expects a unique id, especially the serialization and network systems.
+        /// </remarks>
+        public Guid Id { get; private set; }
+
+        /// <summary>
+        ///  Get a string identifier for this game object.
+        /// </summary>
+        /// <remarks>
+        ///  The name value does not have to globally unique.
+        /// </remarks>
+        public string Name { get; private set; }
+
+        /// <summary>
+        ///  Get component containing information on this game object's physical location in the game world.
+        /// </summary>
+        public TransformComponent Transform { get; private set; }
+
+        /// <summary>
+        ///  Add a component to this game object.
+        /// </summary>
+        /// <remarks>
+        ///  Only one component of each type can be added to the game object.
+        /// </remarks>
+        /// <typeparam name="TComponent">Component type to add.</typeparam>
+        /// <param name="component">Component component to add.</param>
+        public void Add<TComponent>(TComponent component) where TComponent : IComponent
+        {
+            if (ReferenceEquals(component, null))
             {
-                throw new GameObjectException(
-                    "This game object already has a component of type " + typeof( T ).Name,
-                    this );
+                throw new ArgumentNullException("component");
+            }
+
+            var key = component.GetType();
+
+            if (!mComponents.ContainsKey(key))
+            {
+                mComponents.Add(key, component);
             }
             else
             {
-                mComponents.Add( typeof( T ), instance );
+                throw new ComponentAlreadyAddedException(this, component);
             }
         }
 
         /// <summary>
-        /// Removes the requested game component
+        ///  Check if this game object has a component of the specified type.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void DeleteComponent<T>() where T : IComponent
+        /// <typeparam name="TComponent">Type of component to check for.</typeparam>
+        /// <returns>True if the game object has the component type, false otherwise.</returns>
+        public bool Contains<T>() where T : IComponent
         {
-            // Make sure the game component actually exists
-            if ( mComponents.ContainsKey( typeof( T ) ) )
-            {
-                mComponents.Remove( typeof( T ) );
-            }
-            else
-            {
-                throw new GameObjectException(
-                    "This game object does not have a component of type " + typeof( T ).Name,
-                    this );
-            }
+            return mComponents.ContainsKey(typeof (T));
         }
 
         /// <summary>
-        /// Returns the game object's component. Use the non-generic GetComponent for a (slightly)
+        ///  Get a component from the game object. This will return null if the component was not added.
+        /// </summary>
+        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
+        /// <returns>Component that was stored in this game object.</returns>
+        public TComponent Find<TComponent>() where TComponent : class, IComponent
+        {
+            IComponent component;
+
+            if (mComponents.TryGetValue(typeof(TComponent), out component))
+            {
+                return component as TComponent;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the game object's component. Use the non-generic Get for a (slightly)
         /// faster look up.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetComponent<T>() where T : IComponent
+        public T Get<T>() where T : IComponent
         {
-            IComponent component = null;
-            mComponents.TryGetValue( typeof( T ), out component );
+            IComponent component;
+            mComponents.TryGetValue(typeof(T), out component);
 
-            return (T) component;       // TODO: Can this break if null?
+            return (T) component;
         }
 
-        public bool HasComponent<T>() where T : IComponent
+        /// <summary>
+        ///  Remove a component from this game object.
+        /// </summary>
+        /// <remarks>
+        ///  Removing the transform component will also set the .Transform property to null. Generally, if the calling
+        ///  code is not destroying the game object, removing the transform component will have unpredicable
+        ///  consequences.
+        /// 
+        ///  Additionally the component is disposed after being removed from this object. Since the game object has
+        ///  exclusive ownership over its components, you should not interact with the component once Remove`T` is
+        ///  invoked.
+        /// </remarks>
+        /// <typeparam name="TComponent">Component type to remove.</typeparam>
+        public bool Remove<TComponent>() where TComponent : IComponent
         {
-            throw new NotImplementedException();
+            return Remove(typeof (TComponent));
+        }
+
+        /// <summary>
+        ///  Remove a component from this game object.
+        /// </summary>
+        /// <remarks>
+        ///  Removing the transform component will also set the .Transform property to null. Generally, if the calling
+        ///  code is not destroying the game object, removing the transform component will have unpredicable
+        ///  consequences.
+        /// 
+        ///  Additionally the component is disposed after being removed from this object. Since the game object has
+        ///  exclusive ownership over its components, you should not interact with the component once Remove`T` is
+        ///  invoked.
+        /// </remarks>
+        /// <typeparam name="TComponent">Component type to remove.</typeparam>
+        public bool Remove(System.Type componentType)
+        {
+            IComponent component;
+
+            if (mComponents.TryGetValue(componentType, out component))
+            {
+                if (componentType == typeof(TransformComponent))
+                {
+                    Transform = null;
+                }
+
+                mComponents.Remove(componentType);
+                ((IDisposable) component).Dispose();
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
         ///  Display debugging information about this game object.
         /// </summary>
         /// <returns></returns>
-        public string DumpDebugInfoToString()
+        public override string ToString()
         {
-            var debugText = new StringBuilder();
+            return string.Format(
+                "GameObject id = {0}, Name = {1}, ComponentCount = {2}",
+                Id,
+                Name,
+                mComponents.Count);
+        }
 
-            debugText.Append( "\t{\n" );
-            debugText.Append( "\t\tid:     {0}\n".With( Id ) );
-            debugText.Append( "\t\tname:   \"{0}\"\n".With( Name ) );
-            debugText.Append( "\t\ttransform:    {0}\n".With( Transform ) );
-            debugText.Append( "\t\tcomponents: [\n" );
+        /// <summary>
+        ///  Dispose this game object, and all components contained within.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            // List the components attached to this game object (only the basics)
-            foreach ( KeyValuePair<System.Type, IComponent> pair in mComponents )
+        /// <summary>
+        ///  Dispose this game object, and all components contained within.
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!mDisposed)
             {
-                debugText.Append(pair);
-            }
+                foreach (var pair in mComponents)
+                {
+                    ((IDisposable) pair.Value).Dispose();
+                }
 
-            debugText.Append( "\t\t]\n" );
-            debugText.Append( "\t},\n" );
-            return debugText.ToString();
+                mComponents = null;
+                Transform = null;
+                Id = Guid.Empty;
+                Name = null;
+                mDisposed = true;
+            }
         }
     }
 }

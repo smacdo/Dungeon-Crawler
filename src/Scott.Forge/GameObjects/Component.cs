@@ -18,25 +18,48 @@ using System;
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
-    /// Base class for all game object components
-    /// 
-    /// NOTE: DO NOT STORE REFERENCES TO GAME COMPONENTS FOR MORE THAN ONE FRAME!
-    ///       Instead, re-request the reference from either the GameObjectCollection
-    ///       or the specific game object. This is to ensure we don't go crazy trying
-    ///       to figure out who is still holding references to deleted instances.
-    /// 
-    /// TODO: Explain this much better
+    ///  Interface for components that can be attached to game objects.
     /// </summary>
+    public interface IComponent : IDisposable
+    {
+        IGameObject Owner { get; set; }
+    }
+
+    /// <summary>
+    /// Base class for all game object components
+    /// </summary>
+    /// <remarks>
+    /// NOTE: DO NOT STORE REFERENCES TO GAME COMPONENTS FOR MORE THAN ONE FRAME!
+    /// TODO: Explain this much better
+    /// </remarks>
     public abstract class Component : IComponent
     {
+        private bool mDisposed;
         private IGameObject mOwner;
+        private IComponentDestroyedCallback mDestroyCallback;
 
         /// <summary>
-        /// Component constructor
+        ///  Component constructor
         /// </summary>
         protected Component()
+            : this(null)
         {
-            Enabled = true;
+        }
+
+        /// <summary>
+        ///  Component constructor
+        /// </summary>
+        protected Component(IComponentDestroyedCallback callback)
+        {
+            mDestroyCallback = callback;
+        }
+
+        /// <summary>
+        ///  Destructor that will invoke Dispose upon destruction.
+        /// </summary>
+        ~Component()
+        {
+            Dispose(false);
         }
 
         /// <summary>
@@ -50,9 +73,9 @@ namespace Scott.Forge.GameObjects
             }
             set
             {
-                if ( mOwner != null )
+                if (mOwner != null)
                 {
-                    throw new NotSupportedException( "Reparenting game objects is not supported" );
+                    throw new CannotChangeComponentOwnerException(this, mOwner, value);
                 }
 
                 mOwner = value;
@@ -60,10 +83,32 @@ namespace Scott.Forge.GameObjects
         }
 
         /// <summary>
-        /// Enables or disable the game component instance. A disabld component will not
-        /// be updated or displayed.
+        ///  Dispose the component. This informs the optional creator factory that this component is about to be
+        ///  removed.
         /// </summary>
-        public bool Enabled { get; set; }
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(true);
+        }
+
+        /// <summary>
+        ///  Clean up the component before disposal. Inform the creator factory that the component is being destroyed.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!mDisposed)
+            {
+                if (mDestroyCallback != null)
+                {
+                    mDestroyCallback.Destroy(this);
+                }
+
+                mDestroyCallback = null;
+                mDisposed = true;
+            }
+        }
 
         /// <summary>
         ///  Writes the game component out to a stirng

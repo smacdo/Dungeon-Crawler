@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
-namespace Scott.Forge.GameObjects
+namespace Scott.Forge
 {
     /// <summary>
-    ///  Interface for game object components
+    ///  Base class for Forge exceptions.
     /// </summary>
-    public interface IComponent
+    public class ForgeException : System.Exception
     {
-        IGameObject Owner { get; set; }
-        bool Enabled { get; set; }
+        public ForgeException()
+        {
+        }
+
+        public ForgeException(string message)
+            : base(message)
+        {
+        }
+
+        public ForgeException(string message, System.Exception innerException)
+            : base(message, innerException)
+        {
+        }
     }
 }

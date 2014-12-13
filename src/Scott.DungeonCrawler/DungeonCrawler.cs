@@ -189,12 +189,12 @@ namespace Scott.DungeonCrawler
             }
 
             // Player movement.
-            var playerActor = mPlayer.GetComponent<ActorComponent>();
+            var playerActor = mPlayer.Get<ActorComponent>();
             DirectionName playerDirection;
 
             if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
             {
-                var playerMovement = mPlayer.GetComponent<MovementComponent>();
+                var playerMovement = mPlayer.Get<MovementComponent>();
                 playerMovement.RequestMovement(playerDirection, 125);
                 //playerActor.Move( playerDirection, 125 );
             }

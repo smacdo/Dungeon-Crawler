@@ -93,7 +93,7 @@ namespace Scott.Forge.Engine.Movement
         /// </summary>
         public void UpdateAnimation( IGameObject owner, MovementComponent movement )
         {
-            var sprite = owner.GetComponent<SpriteComponent>();
+            var sprite = owner.Get<SpriteComponent>();
             var direction = owner.Transform.Direction;
 
             if ( movement.StartedMovingThisFrame )

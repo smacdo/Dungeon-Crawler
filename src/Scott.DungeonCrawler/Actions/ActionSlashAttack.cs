@@ -71,7 +71,7 @@ namespace Scott.DungeonCrawler.Actions
         public void Update(IGameObject actor, double currentTimeSeconds, double deltaTime)
         {
             var direction = actor.Transform.Direction;
-            var sprite = actor.GetComponent<SpriteComponent>();
+            var sprite = actor.Get<SpriteComponent>();
 
             var currentTime = TimeSpan.FromSeconds(currentTimeSeconds);;
             var waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );

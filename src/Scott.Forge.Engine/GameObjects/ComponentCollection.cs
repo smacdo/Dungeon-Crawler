@@ -57,9 +57,8 @@ namespace Scott.Forge.Engine.GameObjects
             T instance = mComponentPool.Take();
 
             instance.Owner = owner;
-            instance.Enabled = true;
 
-            owner.AddComponent<T>( instance );
+            owner.Add<T>( instance );
             OnComponentCreated( instance );
 
             return instance;
@@ -84,10 +83,7 @@ namespace Scott.Forge.Engine.GameObjects
         {
             foreach ( T instance in mComponentPool )
             {
-                if ( instance.Enabled )
-                {
-                    //instance.Update( gameTime );
-                }
+                //instance.Update( gameTime );
             }
         }
 

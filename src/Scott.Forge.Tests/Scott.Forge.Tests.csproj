@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="AssertHelper.cs" />
     <Compile Include="GameObjectsTests\ComponentTests.cs" />
+    <Compile Include="GameObjectsTests\GameObjectTests.cs" />
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
     <Compile Include="InstancePoolTests.cs" />

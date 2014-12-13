@@ -32,7 +32,7 @@ namespace Scott.Forge.Engine.Actors
             // execution.
             if (currentAction == null && requestedAction != null)
             {
-                var movement = component.Owner.GetComponent<MovementComponent>();
+                var movement = component.Owner.Get<MovementComponent>();
                 movement.RequestStopMovement();
 
                 component.CurrentAction = requestedAction;

@@ -19,7 +19,7 @@ namespace Scott.Forge.Engine
     /// <summary>
     ///  Represents an exception with the game engine.
     /// </summary>
-    public class GameEngineException : System.Exception
+    public class GameEngineException : ForgeException
     {
         public GameEngineException( string message )
             : base( message )

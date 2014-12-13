@@ -72,7 +72,7 @@ namespace Scott.DungeonCrawler.Actions
             /*
             IGameObject owner = actor.Owner;
             Direction direction = owner.Transform.Direction;
-            SpriteComponent sprite = owner.GetComponent<SpriteComponent>();
+            SpriteComponent sprite = owner.Get<SpriteComponent>();
             TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
             TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
 
