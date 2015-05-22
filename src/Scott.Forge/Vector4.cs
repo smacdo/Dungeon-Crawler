@@ -304,12 +304,12 @@ namespace Scott.Forge
         {
             unchecked
             {
-                int hash = 17;
+                int hash = 269;
 
-                hash *= 23 + mX.GetHashCode();
-                hash *= 23 + mY.GetHashCode();
-                hash *= 23 + mZ.GetHashCode();
-                hash *= 23 + mW.GetHashCode();
+                hash = (hash * 47) + mX.GetHashCode();
+                hash = (hash * 47) + mY.GetHashCode();
+                hash = (hash * 47) + mZ.GetHashCode();
+                hash = (hash * 47) + mW.GetHashCode();
 
                 return hash;
             }
@@ -417,7 +417,7 @@ namespace Scott.Forge
         /// <param name="left">First vector.</param>
         /// <param name="right">Second vector.</param>
         /// <returns>Cross product of the two vectors.</returns>
-        public static float Cross(Vector4 left, Vector4 right)
+        public static Vector4 Cross(Vector4 left, Vector4 right)
         {
             throw new NotImplementedException();
         }
@@ -430,10 +430,11 @@ namespace Scott.Forge
         /// <returns>Distance of the two vectors.</returns>
         public static float Distance(Vector4 left, Vector4 right)
         {
-            return (float) Math.Sqrt((left.X - right.X) * (left.X - right.X) +
-                                      (left.Y - right.Y) * (left.Y - right.Y) +
-                                      (left.Z - right.Z) * (left.Z - right.Z) +
-                                      (left.W - right.W) * (left.W - right.W));
+            return (float) Math.Sqrt(
+                (left.X - right.X) * (left.X - right.X) +
+                (left.Y - right.Y) * (left.Y - right.Y) +
+                (left.Z - right.Z) * (left.Z - right.Z) +
+                (left.W - right.W) * (left.W - right.W));
         }
 
         /// <summary>
@@ -469,7 +470,11 @@ namespace Scott.Forge
         /// <returns>A vector containing the maximum X and Y component.</returns>
         public static Vector4 Max(Vector4 left, Vector4 right)
         {
-            throw new NotImplementedException();
+            return new Vector4(
+                Math.Max(left.X, right.X),
+                Math.Max(left.Y, right.Y),
+                Math.Max(left.Z, right.Z),
+                Math.Max(left.W, right.W));
         }
 
         /// <summary>
@@ -480,7 +485,11 @@ namespace Scott.Forge
         /// <returns>A vector containing the minimum X and Y component.</returns>
         public static Vector4 Min(Vector4 left, Vector4 right)
         {
-            throw new NotImplementedException();
+            return new Vector4(
+                Math.Min(left.X, right.X),
+                Math.Min(left.Y, right.Y),
+                Math.Min(left.Z, right.Z),
+                Math.Min(left.W, right.W));
         }
 
         /// <summary>

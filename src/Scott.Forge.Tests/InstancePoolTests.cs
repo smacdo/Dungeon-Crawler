@@ -7,6 +7,7 @@ namespace Scott.Forge.Tests
     ///  Tests for the instance pool.
     /// </summary>
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class InstancePoolTests
     {
         /// <summary>

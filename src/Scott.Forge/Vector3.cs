@@ -399,9 +399,12 @@ namespace Scott.Forge
         /// <param name="left">First vector.</param>
         /// <param name="right">Second vector.</param>
         /// <returns>Cross product of the two vectors.</returns>
-        public static float Cross(Vector3 left, Vector3 right)
+        public static Vector3 Cross(Vector3 left, Vector3 right)
         {
-            throw new NotImplementedException();
+            return new Vector3(
+                left.Y * right.Z - left.Z * right.Y,
+                left.Z * right.X - left.X * right.Z,
+                left.X * right.Y - left.Y * right.X);
         }
 
         /// <summary>
@@ -449,7 +452,10 @@ namespace Scott.Forge
         /// <returns>A vector containing the maximum X and Y component.</returns>
         public static Vector3 Max(Vector3 left, Vector3 right)
         {
-            throw new NotImplementedException();
+            return new Vector3(
+                Math.Max(left.X, right.X),
+                Math.Max(left.Y, right.Y),
+                Math.Max(left.Z, right.Z));
         }
 
         /// <summary>
@@ -460,7 +466,10 @@ namespace Scott.Forge
         /// <returns>A vector containing the minimum X and Y component.</returns>
         public static Vector3 Min(Vector3 left, Vector3 right)
         {
-            throw new NotImplementedException();
+            return new Vector3(
+                Math.Min(left.X, right.X),
+                Math.Min(left.Y, right.Y),
+                Math.Min(left.Z, right.Z));
         }
 
         /// <summary>

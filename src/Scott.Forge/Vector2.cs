@@ -441,9 +441,9 @@ namespace Scott.Forge
         /// <param name="left">First vector.</param>
         /// <param name="right">Second vector.</param>
         /// <returns>Cross product of the two vectors.</returns>
-        public static float Cross( Vector2 left, Vector2 right )
+        public static Vector4 Cross( Vector2 left, Vector2 right )
         {
-            return ( left.X * right.Y ) - ( left.Y * right.X );
+            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 namespace Scott.Forge.Tests
 {
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class MathXTests
     {
         [TestMethod]

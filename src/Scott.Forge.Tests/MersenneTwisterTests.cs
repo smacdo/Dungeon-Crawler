@@ -5,6 +5,7 @@ using Scott.Forge;
 namespace Scott.Forge.Tests
 {
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class MersenneTwisterTests
     {
         #region TEST VALUES
