@@ -1,5 +1,5 @@
 ﻿/// <copyright>
-/// Copyright 2012-2014 Scott MacDonald
+/// Copyright 2012-2015 Scott MacDonald
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Scott.Forge.Core
+namespace Scott.Forge
 {
     /// <summary>
     ///  A generic tuple that holds two typed values.
@@ -183,32 +183,53 @@ namespace Scott.Forge.Core
         /// <returns>A string that represents this object.</returns>
         public override string ToString()
         {
-            return String.Format(
-                "{0} {1}",
-                (mFirst == null) ? "null" : mFirst.ToString(),
-                (mSecond == null) ? "null" : mSecond.ToString());
+            if (mFirst != null)
+            {
+                if (mSecond != null)
+                {
+                    return string.Format("{0} {1}", mFirst, mSecond);
+                }
+                else
+                {
+                    return mFirst.ToString();
+                }
+            }
+            else if (mSecond != null)
+            {
+                return mSecond.ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
-        public static bool operator <(Pair<TFirst, TSecond> left,
-                                        Pair<TFirst, TSecond> right)
+        public static bool operator <(Pair<TFirst, TSecond> left, Pair<TFirst, TSecond> right)
         {
             return left.CompareTo(right) < 0;
         }
+   
+        public static bool operator <=(Pair<TFirst, TSecond> left, Pair<TFirst, TSecond> right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
 
-        public static bool operator >(Pair<TFirst, TSecond> left,
-                                        Pair<TFirst, TSecond> right)
+        public static bool operator >(Pair<TFirst, TSecond> left, Pair<TFirst, TSecond> right)
         {
             return left.CompareTo(right) > 0;
         }
 
-        public static bool operator ==(Pair<TFirst, TSecond> left,
-                                        Pair<TFirst, TSecond> right)
+        public static bool operator >=(Pair<TFirst, TSecond> left, Pair<TFirst, TSecond> right)
+        {
+            return left.CompareTo(right) >= 0;
+        }
+
+        public static bool operator ==(Pair<TFirst, TSecond> left, Pair<TFirst, TSecond> right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(Pair<TFirst, TSecond> left,
-                                        Pair<TFirst, TSecond> right)
+        public static bool operator !=(Pair<TFirst, TSecond> left, Pair<TFirst, TSecond> right)
         {
             return !(left.Equals(right));
         }
@@ -218,8 +239,7 @@ namespace Scott.Forge.Core
             return new KeyValuePair<TFirst, TSecond>(pair.mFirst, pair.mSecond);
         }
 
-        public static explicit operator Pair<TFirst, TSecond>(
-            KeyValuePair<TFirst, TSecond> keyValuePair)
+        public static explicit operator Pair<TFirst, TSecond>(KeyValuePair<TFirst, TSecond> keyValuePair)
         {
             return new Pair<TFirst, TSecond>(keyValuePair.Key, keyValuePair.Value);
         }

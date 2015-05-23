@@ -5,6 +5,7 @@ using Scott.Forge.GameObjects;
 namespace Scott.Forge.Tests.GameObjectsTests
 {
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class GameObjectTests
     {
         [TestMethod]

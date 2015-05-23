@@ -6,10 +6,10 @@ namespace Scott.Forge.Tests
 {
     [TestClass]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    public class MathXTests
+    public class MathHelperTests
     {
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NormalizeToZeroOneRange_Float()
         {
             // 0/4
@@ -32,7 +32,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NormalizeToZeroOneRange_Double()
         {
             // 0/4
@@ -55,7 +55,53 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
+        public void NormalizeToNegativeOneOneRange_Float()
+        {
+            // 0/4
+            Assert.AreEqual(-1.0f, MathHelper.NormalizeToNegativeOneOneRange(0.0f, 0.0f, 4.0f));
+
+            // 1/4
+            Assert.AreEqual(-0.5f, MathHelper.NormalizeToNegativeOneOneRange(1.0f, 0.0f, 4.0f));
+
+            // 2/4
+            Assert.AreEqual(0.00f, MathHelper.NormalizeToNegativeOneOneRange(2.0f, 0.0f, 4.0f));
+
+            // 3/4
+            Assert.AreEqual(0.50f, MathHelper.NormalizeToNegativeOneOneRange(3.0f, 0.0f, 4.0f));
+
+            // 4/4
+            Assert.AreEqual(1.00f, MathHelper.NormalizeToNegativeOneOneRange(4.0f, 0.0f, 4.0f));
+
+            // 5/4
+            Assert.AreEqual(1.50f, MathHelper.NormalizeToNegativeOneOneRange(5.0f, 0.0f, 4.0f));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/MathHelper")]
+        public void NormalizeToNegativeOneOneRange_Double()
+        {
+            // 0/4
+            Assert.AreEqual(-1.0, MathHelper.NormalizeToNegativeOneOneRange(0.0, 0.0, 4.0));
+
+            // 1/4
+            Assert.AreEqual(-0.5, MathHelper.NormalizeToNegativeOneOneRange(1.0, 0.0, 4.0));
+
+            // 2/4
+            Assert.AreEqual(0.00, MathHelper.NormalizeToNegativeOneOneRange(2.0, 0.0, 4.0));
+
+            // 3/4
+            Assert.AreEqual(0.50, MathHelper.NormalizeToNegativeOneOneRange(3.0, 0.0, 4.0));
+
+            // 4/4
+            Assert.AreEqual(1.00, MathHelper.NormalizeToNegativeOneOneRange(4.0, 0.0, 4.0));
+
+            // 5/4
+            Assert.AreEqual(1.50, MathHelper.NormalizeToNegativeOneOneRange(5.0, 0.0, 4.0));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/MathHelper")]
         public void DegreesToRadians()
         {
             Assert.AreEqual( 0.0f, MathHelper.DegreeToRadian( 0.0f ) );
@@ -66,7 +112,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void RadiansToDegrees()
         {
             Assert.AreEqual( 0.0f, MathHelper.RadianToDegree( 0.0f ) );
@@ -77,7 +123,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void SmallestAngleBetweenRadians()
         {
             float zero = MathHelper.DegreeToRadian( 0.0f );
@@ -97,7 +143,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void SmallestAngleBetweenDegrees()
         {
             Assert.AreEqual( 0.0f, MathHelper.SmallestDegreeAngleBetween( 0.0f, 0.0f ) );
@@ -109,27 +155,31 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NearlyEqualDouble()
         {
             Assert.IsTrue( MathHelper.NearlyEqual( 0.0, 0.0, 0.001 ) );
             Assert.IsTrue( MathHelper.NearlyEqual( 1.0, 1.0, 0.001 ) );
             Assert.IsTrue( MathHelper.NearlyEqual( 1.0001, 1.0001, 0.001 ) );
             Assert.IsFalse( MathHelper.NearlyEqual( 1.0001, 1.010, 0.001 ) );
+            Assert.IsFalse(MathHelper.NearlyEqual(0.0, 1.0, 0.001));
+            Assert.IsFalse(MathHelper.NearlyEqual(1.0, 0.0, 0.001));
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NearlyEqualFloat()
         {
             Assert.IsTrue( MathHelper.NearlyEqual( 0.0f, 0.0f, 0.001f ) );
             Assert.IsTrue( MathHelper.NearlyEqual( 1.0f, 1.0f, 0.001f ) );
             Assert.IsTrue( MathHelper.NearlyEqual( 1.0001f, 1.0001f, 0.001f ) );
             Assert.IsFalse( MathHelper.NearlyEqual( 1.0001f, 1.010f, 0.001f ) );
+            Assert.IsFalse(MathHelper.NearlyEqual(0.0f, 1.0f, 0.001f));
+            Assert.IsFalse(MathHelper.NearlyEqual(1.0f, 0.0f, 0.001f));
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void FastSin()
         {
             const float pi = (float) Math.PI;
@@ -141,7 +191,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NextPowerOfTwoInt()
         {
             Assert.AreEqual( 1, MathHelper.NextPowerOf2( 0 ) );
@@ -155,7 +205,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NextPowerOfTwoUInt()
         {
             Assert.AreEqual( 1u, MathHelper.NextPowerOf2( 0u ) );
@@ -170,7 +220,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NextPowerOfTwoLong()
         {
             Assert.AreEqual( 1, MathHelper.NextPowerOf2( 0L ) );
@@ -185,7 +235,7 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void NextPowerOfTwoULong()
         {
             Assert.AreEqual( 1u, MathHelper.NextPowerOf2( 0UL ) );
@@ -201,14 +251,35 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
         public void LinearRemapFloat()
         {
-            Assert.AreEqual( 7.5f, MathHelper.LinearRemap( 3.0f, 2.0f, 4.0f, 5.0f, 10.0f ) );
+            // 0/4: [2 - 4] ==> [5, 10]
+            Assert.AreEqual(5.0f, MathHelper.LinearRemap(2.0f, 2.0f, 4.0f, 5.0f, 10.0f));
+
+            // 2/4: [2 - 4] ==> [5, 10]
+            Assert.AreEqual(7.5f, MathHelper.LinearRemap(3.0f, 2.0f, 4.0f, 5.0f, 10.0f));
+
+            // 4/4: [2 - 4] ==> [5, 10]
+            Assert.AreEqual(10.0f, MathHelper.LinearRemap(4.0f, 2.0f, 4.0f, 5.0f, 10.0f));
         }
 
         [TestMethod]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
+        public void LinearRemapDouble()
+        {
+            // 0/4: [2 - 4] ==> [5, 10]
+            Assert.AreEqual(5.0, MathHelper.LinearRemap(2.0, 2.0, 4.0, 5.0, 10.0));
+
+            // 2/4: [2 - 4] ==> [5, 10]
+            Assert.AreEqual(7.5, MathHelper.LinearRemap(3.0, 2.0, 4.0, 5.0, 10.0));
+
+            // 4/4: [2 - 4] ==> [5, 10]
+            Assert.AreEqual(10.0, MathHelper.LinearRemap(4.0, 2.0, 4.0, 5.0, 10.0));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/MathHelper")]
         public void Clamp()
         {
             Assert.AreEqual( 2.0f, MathHelper.Clamp( 1.5f, 2.0f, 3.0f ) );
@@ -219,26 +290,80 @@ namespace Scott.Forge.Tests
         }
 
         [TestMethod]
-        [Ignore]
-        [TestCategory("Forge/Math/MathX")]
+        [TestCategory("Forge/MathHelper")]
+        public void Wrap()
+        {
+            Assert.AreEqual(0.0f, MathHelper.Wrap(0.0f, 0.0f, 2.0f));
+            Assert.AreEqual(0.5f, MathHelper.Wrap(0.5f, 0.0f, 2.0f));
+            Assert.AreEqual(1.0f, MathHelper.Wrap(1.0f, 0.0f, 2.0f));
+            Assert.AreEqual(1.5f, MathHelper.Wrap(1.5f, 0.0f, 2.0f));
+            Assert.AreEqual(0.0f, MathHelper.Wrap(2.0f, 0.0f, 2.0f));
+            Assert.AreEqual(1.0f, MathHelper.Wrap(3.0f, 0.0f, 2.0f));
+            Assert.AreEqual(1.0f, MathHelper.Wrap(5.0f, 0.0f, 2.0f));
+            Assert.AreEqual(1.0f, MathHelper.Wrap(-1.0f, 0.0f, 2.0f));
+
+            Assert.AreEqual(2.0f, MathHelper.Wrap(2.0f, 2.0f, 4.0f));
+            Assert.AreEqual(2.5f, MathHelper.Wrap(2.5f, 2.0f, 4.0f));
+            Assert.AreEqual(3.0f, MathHelper.Wrap(3.0f, 2.0f, 4.0f));
+            Assert.AreEqual(3.5f, MathHelper.Wrap(3.5f, 2.0f, 4.0f));
+            Assert.AreEqual(2.0f, MathHelper.Wrap(4.0f, 2.0f, 4.0f));
+            Assert.AreEqual(3.0f, MathHelper.Wrap(5.0f, 2.0f, 4.0f));
+            Assert.AreEqual(3.0f, MathHelper.Wrap(7.0f, 2.0f, 4.0f));
+            Assert.AreEqual(3.0f, MathHelper.Wrap(-1.0f, 2.0f, 4.0f));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/MathHelper")]
+        public void GetDirectionTo()
+        {
+            // Test that zero or identical vector gives a zero direction vector.
+            var one = new Vector2(1.0f, 1.0f);
+
+            Assert.AreEqual(Vector2.Zero, MathHelper.GetDirectionTo(Vector2.Zero, Vector2.Zero));
+            Assert.AreEqual(Vector2.Zero, MathHelper.GetDirectionTo(one, one));
+
+            // Mirrored vectors.
+            var a = new Vector2(2.0f, 3.0f);
+            var b = new Vector2(-2.0f, -3.0f);
+
+            var expected = Vector2.Normalize(new Vector2(-4.0f, -6.0f));
+            Assert.AreEqual(expected, MathHelper.GetDirectionTo(a, b));
+
+            expected = Vector2.Normalize(new Vector2(4.0f, 6.0f));
+            Assert.AreEqual(expected, MathHelper.GetDirectionTo(b, a));
+
+            // Two aribtrary vectors.
+            a = new Vector2(-3.0f, 2.0f);
+            b = new Vector2(6.0f, 1.0f);
+
+            expected = Vector2.Normalize(new Vector2(9.0f, -1.0f));
+            Assert.AreEqual(expected, MathHelper.GetDirectionTo(a, b));
+
+            expected = Vector2.Normalize(new Vector2(-9.0f, 1.0f));
+            Assert.AreEqual(expected, MathHelper.GetDirectionTo(b, a));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/MathHelper")]
         public void RotateVector()
         {
-            Vector2 start = new Vector2( 1.0f, 0.0f );
+            float p0 = MathHelper.DegreeToRadian(0.0f);
+            float p45 = MathHelper.DegreeToRadian(45.0f);
+            float p90 = MathHelper.DegreeToRadian(90.0f);
+            float p180 = MathHelper.DegreeToRadian(180.0f);
+            float p270 = MathHelper.DegreeToRadian(270.0f);
 
-            float p45 = MathHelper.DegreeToRadian( 45.0f );
-            float p90 = MathHelper.DegreeToRadian( 90.0f );
-            float p180 = MathHelper.DegreeToRadian( 180.0f );
-            float p270 = MathHelper.DegreeToRadian( 270.0f );
+            // Test basic rotations from starting at (0, 1).
+            Vector2 v = new Vector2(1.0f, 0.0f);
 
-            // First from zero.
-            // TODO: Make this work again.
-            /*
-            AssertX.AreEqual( new Vector2( 0.7071068f, 0.7071068f ), MathHelper.Rotate( start, p45 ) );
-            AssertX.AreEqual( new Vector2( 1.0f, 0.0f ), MathHelper.Rotate( start, 0.0f ) );
-            AssertX.AreEqual( new Vector2( 0.0f, 1.0f ), MathHelper.Rotate( start, p90 ) );
-            AssertX.AreEqual( new Vector2(-1.0f, 0.0f ), MathHelper.Rotate( start, p180 ) );
-            AssertX.AreEqual( new Vector2( 0.0f,-1.0f ), MathHelper.Rotate( start, p270 ) );
-             */
+            AssertHelper.AreNearlyEqual(new Vector2(1.0f, 0.0f), MathHelper.Rotate(v, p0));
+            AssertHelper.AreNearlyEqual(new Vector2(0.7071068f, 0.7071068f), MathHelper.Rotate(v, p45));
+            AssertHelper.AreNearlyEqual(new Vector2(0.0f, 1.0f), MathHelper.Rotate(v, p90));
+            AssertHelper.AreNearlyEqual(new Vector2(-1.0f, 0.0f), MathHelper.Rotate(v, p180));
+            AssertHelper.AreNearlyEqual(new Vector2(0.0f, -1.0f), MathHelper.Rotate(v, p270));
+
+            // Test rotation an arbitrary vector.
+            //  TODO: Write unit test for this case.
         }
     }
 }

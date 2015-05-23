@@ -60,11 +60,13 @@
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
     <Compile Include="InstancePoolTests.cs" />
-    <Compile Include="InterpolationFuncsTests.cs" />
-    <Compile Include="MathXTests.cs" />
+    <Compile Include="InterpolationTests.cs" />
+    <Compile Include="MathHelperTests.cs" />
     <Compile Include="MersenneTwisterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SizeFTests.cs" />
     <Compile Include="StringExtensionMethodsTests.cs" />
+    <Compile Include="PairTests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />

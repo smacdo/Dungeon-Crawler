@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,12 @@ namespace Scott.Forge
     [DataContract]
     public enum AspectRatioMode
     {
-        [EnumMember] Ignore,
-        [EnumMember] Keep,
-        [EnumMember] KeepByExpanding
+        [EnumMember]
+        Ignore,
+        [EnumMember]
+        Keep,
+        [EnumMember]
+        KeepByExpanding
     }
 
     /// <summary>
@@ -44,15 +47,16 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="width">Initial width.</param>
         /// <param name="height">Initial height.</param>
-        public SizeF( float width, float height )
+        public SizeF(float width, float height)
         {
-            if ( width <= 0.0f )
+            if (width < 0.0f)
             {
-                throw new ArgumentException( "Width cannot be zero or negative" );
+                throw new ArgumentException("Width cannot be negative");
             }
-            else if ( height <= 0.0f )
+
+            if (height < 0.0f)
             {
-                throw new ArgumentException( "Height cannot be zero or negative" );
+                throw new ArgumentException("Height cannot be negative");
             }
 
             mWidth = width;
@@ -62,30 +66,31 @@ namespace Scott.Forge
         /// <summary>
         /// Initializes a new instance of the <see cref="SizeF"/> struct.
         /// </summary>
-        /// <param name="inputSize">Initial size.</param>
-        public SizeF(Vector2 inputSize)
+        /// <param name="sizeVector">Initial size.</param>
+        public SizeF(Vector2 sizeVector)
         {
-            if (inputSize.X <= 0.0f)
+            if (sizeVector.X < 0.0f)
             {
-                throw new ArgumentException( "Width cannot be zero or negative" );
-            }
-            else if (inputSize.Y <= 0.0f)
-            {
-                throw new ArgumentException( "Height cannot be zero or negative" );
+                throw new ArgumentException("Width cannot be negative");
             }
 
-            mWidth = inputSize.X;
-            mHeight = inputSize.Y;
+            if (sizeVector.Y < 0.0f)
+            {
+                throw new ArgumentException("Height cannot be negative");
+            }
+
+            mWidth = sizeVector.X;
+            mHeight = sizeVector.Y;
         }
 
         /// <summary>
         ///  Initializes a new instance of the <see cref="SizeF"/> struct.
         /// </summary>
-        /// <param name="inputSize">Initial size.</param>
-        public SizeF(SizeF inputSize)
+        /// <param name="size">Initial size.</param>
+        public SizeF(SizeF size)
         {
-            mWidth = inputSize.Width;
-            mHeight = inputSize.Height;
+            mWidth = size.Width;
+            mHeight = size.Height;
         }
 
         /// <summary>
@@ -98,9 +103,9 @@ namespace Scott.Forge
             get { return mWidth; }
             set
             {
-                if ( value < 0.0f )
+                if (value < 0.0f)
                 {
-                    throw new ArgumentException( "Width cannot be less than zero", "value" );
+                    throw new ArgumentException("Width cannot be less than zero", "value");
                 }
                 else
                 {
@@ -119,9 +124,9 @@ namespace Scott.Forge
             get { return mHeight; }
             set
             {
-                if ( value < 0.0f )
+                if (value < 0.0f)
                 {
-                    throw new ArgumentException( "Height cannot be less than zero", "value" );
+                    throw new ArgumentException("Height cannot be less than zero", "value");
                 }
                 else
                 {
@@ -151,16 +156,16 @@ namespace Scott.Forge
         ///  Negative one if this object precedes the other object, zero if they are equal and
         ///  positive one if the other object precedes this object.
         /// </returns>
-        public int CompareTo( SizeF other )
+        public int CompareTo(SizeF other)
         {
             float myArea = Width * Height;
             float otherArea = other.Width * other.Height;
 
-            if ( myArea < otherArea )
+            if (myArea < otherArea)
             {
                 return -1;
             }
-            else if ( myArea > otherArea )
+            else if (myArea > otherArea)
             {
                 return 1;
             }
@@ -177,11 +182,11 @@ namespace Scott.Forge
         ///  Negative one if this object precedes the other object, zero if they are equal and
         ///  positive one if the other object precedes this object.
         /// </returns>
-        int IComparable.CompareTo( object other )
+        int IComparable.CompareTo(object other)
         {
-            if ( other is SizeF )
+            if (other is SizeF)
             {
-                return CompareTo( (SizeF) other );
+                return CompareTo((SizeF) other);
             }
             else
             {
@@ -200,10 +205,10 @@ namespace Scott.Forge
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Microsoft.Naming",
             "CA1704:IdentifiersShouldBeSpelledCorrectly",
-            MessageId = "Tranposed" )]
+            MessageId = "Tranposed")]
         public SizeF Tranposed()
         {
-            return new SizeF( mHeight, mWidth );
+            return new SizeF(mHeight, mWidth);
         }
 
         // Rename Scale to Resize
@@ -249,7 +254,7 @@ namespace Scott.Forge
             if (mode != AspectRatioMode.Ignore)
             {
                 bool useHeight = false;
-                double rw = (double) (newHeight * newWidth) / (double) (newHeight);
+                double rw = (newHeight * newWidth) / newHeight;
 
                 // How do we want to scale the size?
                 if (mode == AspectRatioMode.Keep)
@@ -282,7 +287,7 @@ namespace Scott.Forge
         /// <returns>A vector containing this size.</returns>
         public Vector2 ToVector2()
         {
-            return new Vector2( Width, Height );
+            return new Vector2(Width, Height);
         }
 
         /// <summary>
@@ -307,13 +312,13 @@ namespace Scott.Forge
         /// </summary>
         public override string ToString()
         {
-            return String.Format( "<size w: {0}, h: {1}>", mWidth, mHeight );
+            return string.Format("<w: {0}, h: {1}>", mWidth, mHeight);
         }
 
         /// <summary>
         ///  Check if the other size is equal to this SizeF instance.
         /// </summary>
-        public bool Equals( SizeF other )
+        public bool Equals(SizeF other)
         {
             return other.mWidth == mWidth && other.mHeight == mHeight;
         }
@@ -321,11 +326,11 @@ namespace Scott.Forge
         /// <summary>
         ///  Check if the other object is equal to this SizeF instance.
         /// </summary>
-        public override bool Equals( object obj )
+        public override bool Equals(object obj)
         {
-            if ( obj is SizeF )
+            if (obj is SizeF)
             {
-                return Equals( (SizeF) obj );
+                return Equals((SizeF) obj);
             }
             else
             {
@@ -333,34 +338,34 @@ namespace Scott.Forge
             }
         }
 
-        public static bool operator ==( SizeF left, SizeF right )
+        public static bool operator ==(SizeF left, SizeF right)
         {
-            return left.Equals( right );
+            return left.Equals(right);
         }
 
-        public static bool operator !=( SizeF left, SizeF right )
+        public static bool operator !=(SizeF left, SizeF right)
         {
-            return !( left.Equals( right ) );
+            return !(left.Equals(right));
         }
 
-        public static bool operator <( SizeF left, SizeF right )
+        public static bool operator <(SizeF left, SizeF right)
         {
-            return ( ( left.Width * left.Height ) < ( right.Width * right.Height ) );
+            return ((left.Width * left.Height) < (right.Width * right.Height));
         }
 
-        public static bool operator <=( SizeF left, SizeF right )
+        public static bool operator <=(SizeF left, SizeF right)
         {
-            return ( ( left.Width * left.Height ) <= ( right.Width * right.Height ) );
+            return ((left.Width * left.Height) <= (right.Width * right.Height));
         }
 
-        public static bool operator >( SizeF left, SizeF right )
+        public static bool operator >(SizeF left, SizeF right)
         {
-            return ( ( left.Width * left.Height ) > ( right.Width * right.Height ) );
+            return ((left.Width * left.Height) > (right.Width * right.Height));
         }
 
-        public static bool operator >=( SizeF left, SizeF right )
+        public static bool operator >=(SizeF left, SizeF right)
         {
-            return ( ( left.Width * left.Height ) >= ( right.Width * right.Height ) );
+            return ((left.Width * left.Height) >= (right.Width * right.Height));
         }
     }
 }

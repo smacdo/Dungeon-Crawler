@@ -10,6 +10,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
     ///  Tests for the basic component.
     /// </summary>
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class ComponentTests
     {
         [TestMethod]

@@ -5,6 +5,7 @@ using Scott.Forge.GameStates;
 namespace Scott.Forge.Tests.GameStates
 {
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class GameStateManagerTests
     {
         [TestMethod]

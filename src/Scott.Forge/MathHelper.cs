@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -278,9 +278,12 @@ namespace Scott.Forge
         /// <param name="oMin">Output range minimum value.</param>
         /// <param name="oMax">Output range maximum value.</param>
         /// <returns>Linearly remapped value.</returns>
-        public static double LinearRemap(double x,
-                                          double xMin, double xMax,
-                                          double oMin, double oMax)
+        public static double LinearRemap(
+            double x,
+            double xMin,
+            double xMax,
+            double oMin,
+            double oMax)
         {
             // Get x interpolation amount from xMin to xMax.
             double xAmount = (x - xMin) / (xMax - xMin);
@@ -298,7 +301,12 @@ namespace Scott.Forge
         /// <param name="oMin">Output range minimum value.</param>
         /// <param name="oMax">Output range maximum value.</param>
         /// <returns>Linearly remapped value.</returns>
-        public static float LinearRemap(float x, float xMin, float xMax, float oMin, float oMax)
+        public static float LinearRemap(
+            float x,
+            float xMin,
+            float xMax,
+            float oMin,
+            float oMax)
         {
             // Get x interpolation amount from xMin to xMax.
             float xAmount = (x - xMin) / (xMax - xMin);
@@ -357,6 +365,11 @@ namespace Scott.Forge
         /// <param name="second">Vector to end at.</param>
         public static Vector2 GetDirectionTo(Vector2 first, Vector2 second)
         {
+            if (first == second)
+            {
+                return Vector2.Zero;
+            }
+
             return Vector2.Normalize(second - first);
         }
 
