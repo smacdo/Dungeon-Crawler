@@ -58,7 +58,7 @@ namespace Scott.Forge.Engine.Movement
         ///  Rectangle defining which part of the game object is used for movement related
         ///  collision detection.
         /// </summary>
-        public RectangleF MoveBox { get; set; }
+        public RectF MoveBox { get; set; }
 
         /// <summary>
         ///  Is this component moving?

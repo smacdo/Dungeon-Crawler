@@ -89,7 +89,7 @@ namespace Scott.DungeonCrawler.GameObjects
 
             // Add movement component.
             var movement = MovementProcessor.Add(player);
-            movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
+            movement.MoveBox = new RectF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
             return player;
         }
@@ -105,7 +105,7 @@ namespace Scott.DungeonCrawler.GameObjects
             AiProcessor.Add(enemy);
 
             var movement = MovementProcessor.Add(enemy);
-            movement.MoveBox = new RectangleF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
+            movement.MoveBox = new RectF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
             return enemy;
         }

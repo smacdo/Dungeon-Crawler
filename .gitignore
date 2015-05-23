@@ -25,3 +25,11 @@ TestResult.xml
 /packages
 /TestResults/197a30e8-a12b-45ec-ac70-1565df61f113
 /TestResults
+/src/Scott.DungeonCrawler/obj/Release
+/src/Scott.Forge/obj/Release
+/src/Scott.Forge.Engine/obj/Release
+/src/Scott.Forge.Engine.Tests/obj/Release
+/src/Scott.Forge.Game.Tests/obj/Release
+*.force
+*.cache
+/src/Scott.Forge.Tests/obj/Release

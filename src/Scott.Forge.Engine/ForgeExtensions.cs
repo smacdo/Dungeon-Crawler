@@ -32,11 +32,6 @@ namespace Scott.Forge.Engine
             return new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
         }
 
-        public static Rectangle ToXnaRectangle(this RectangleF rect)
-        {
-            return new Rectangle((int) rect.X, (int) rect.Y, (int) rect.Width, (int) rect.Height);
-        }
-
         public static Microsoft.Xna.Framework.Vector2 ToXnaVector2(this Vector2 v)
         {
             return new Microsoft.Xna.Framework.Vector2(v.X, v.Y);

@@ -60,7 +60,6 @@
     <Compile Include="Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Random.cs" />
-    <Compile Include="RectangleF.cs" />
     <Compile Include="GameObjects\Component.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\IBlueprintFactory.cs" />

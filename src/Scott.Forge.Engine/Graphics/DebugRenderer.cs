@@ -117,7 +117,7 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="dimensions"></param>
         /// <param name="color"></param>
         [Conditional( "DEBUG" )]
-        public void DrawRect( RectangleF dimensions, Color color )
+        public void DrawRect(RectF dimensions, Color color)
         {
             DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
 

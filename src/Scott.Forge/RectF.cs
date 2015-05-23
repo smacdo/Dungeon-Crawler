@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,54 +19,20 @@ using System.Runtime.Serialization;
 
 namespace Scott.Forge
 {
-    // TODO: Merge this into RectangleF. or the other way round.
-
     /// <summary>
     ///  A two dimesional axis aligned rectangle that is defined by its upper left corner (X,Y)
-    ///  and its width and height.
+    ///  and its width and height. Size and position are stored using floating point values.
     /// </summary>
     [DataContract]
-    [System.Diagnostics.DebuggerDisplay( "X={X}, Y={Y}, Width={Width}, Height={Height}" )]
+    [System.Diagnostics.DebuggerDisplay("X={X}, Y={Y}, Width={Width}, Height={Height}")]
     public struct RectF : IEquatable<RectF>
     {
-        private static readonly RectF EmptyRect = new RectF( 0.0f, 0.0f, 0.0f, 0.0f );
+        private static readonly RectF EmptyRect = new RectF(0.0f, 0.0f, 0.0f, 0.0f);
 
         private float mX;
         private float mY;
         private float mWidth;
         private float mHeight;
-
-        /// <summary>
-        ///  Initializes a new instance of the Rect structure that has the specified top left
-        ///  corner location and the specified width and height.
-        /// </summary>
-        /// <param name="topLeft">Top left corner of the new rectangle.</param>
-        /// <param name="rectSize">Size of the new rectangle.</param>
-        public RectF( Vector2 topLeft, SizeF rectSize )
-            : this( topLeft.X, topLeft.Y, rectSize.Width, rectSize.Height )
-        {
-        }
-
-        /// <summary>
-        ///  Initializes a new instance of the RectF structure that is defined by the given top
-        ///  left and bottom right points.
-        /// </summary>
-        /// <param name="topLeft">Top left corner of the new rectangle.</param>
-        /// <param name="bottomRight">Bottom right corner of the new rectangle.</param>
-        public RectF( Vector2 topLeft, Vector2 bottomRight )
-            : this( topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y )
-        {
-        }
-
-        /// <summary>
-        ///  Initializes a new instance of the RectF structure that is a copy of the provided
-        ///  RectF.
-        /// </summary>
-        /// <param name="rect">The RectF instance to copy from.</param>
-        public RectF( RectF rect )
-            : this( rect.mX, rect.mY, rect.mWidth, rect.mHeight )
-        {
-        }
 
         /// <summary>
         ///  Initializes a new instance of the RectF structure that is defined by the provided x,
@@ -76,23 +42,54 @@ namespace Scott.Forge
         /// <param name="topY">Top Y coordinate for the rectangle.</param>
         /// <param name="width">Width of the new rectangle.</param>
         /// <param name="height">Height of the new rectangle.</param>
-        public RectF( float topX, float topY, float width, float height )
+        public RectF(float topX, float topY, float width, float height)
         {
-            if ( width < 0.0f )
+            if (width < 0.0f)
             {
-                throw new ArgumentException( "Width cannot be less than zero", "width" );
+                throw new ArgumentException("Width cannot be less than zero", "width");
             }
-            else if ( height < 0.0f )
+
+            if (height < 0.0f)
             {
-                throw new ArgumentException( "Height cannot be less than zero", "height" );
+                throw new ArgumentException("Height cannot be less than zero", "height");
             }
-            else
-            {
-                mX = topX;
-                mY = topY;
-                mWidth = width;
-                mHeight = height;
-            }
+
+            mX = topX;
+            mY = topY;
+            mWidth = width;
+            mHeight = height;
+        }
+
+        /// <summary>
+        ///  Initializes a new instance of the Rect structure that has the specified top left
+        ///  corner location and the specified width and height.
+        /// </summary>
+        /// <param name="topLeft">Top left corner of the new rectangle.</param>
+        /// <param name="rectSize">Size of the new rectangle.</param>
+        public RectF(Vector2 topLeft, SizeF rectSize)
+            : this(topLeft.X, topLeft.Y, rectSize.Width, rectSize.Height)
+        {
+        }
+
+        /// <summary>
+        ///  Initializes a new instance of the RectF structure that is defined by the given top
+        ///  left and bottom right points.
+        /// </summary>
+        /// <param name="topLeft">Top left corner of the new rectangle.</param>
+        /// <param name="bottomRight">Bottom right corner of the new rectangle.</param>
+        public RectF(Vector2 topLeft, Vector2 bottomRight)
+            : this(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y)
+        {
+        }
+
+        /// <summary>
+        ///  Initializes a new instance of the RectF structure that is a copy of the provided
+        ///  RectF.
+        /// </summary>
+        /// <param name="rect">The RectF instance to copy from.</param>
+        public RectF(RectF rect)
+            : this(rect.mX, rect.mY, rect.mWidth, rect.mHeight)
+        {
         }
 
         /// <summary>
@@ -104,8 +101,7 @@ namespace Scott.Forge
         /// </remarks>
         public static RectF Empty
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return EmptyRect; }
+            [System.Diagnostics.DebuggerStepThrough] get { return EmptyRect; }
         }
 
         /// <summary>
@@ -113,29 +109,27 @@ namespace Scott.Forge
         /// </summary>
         public float Area
         {
-            get { return Width * Height; }
+            [System.Diagnostics.DebuggerStepThrough] get { return Width * Height; }
         }
 
         /// <summary>
-        ///  Get or set the left X position of the rectangle.
+        ///  Get or set the left-most X position of the rectangle.
         /// </summary>
         [DataMember(Name = "x", Order = 0, IsRequired = true)]
         public float X
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mX; }
-            set { mX = value; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mX; }
+            [System.Diagnostics.DebuggerStepThrough] set { mX = value; }
         }
 
         /// <summary>
-        ///  Get or set the top Y position of the rectangle.
+        ///  Get or set the top-most Y position of the rectangle.
         /// </summary>
         [DataMember(Name = "y", Order = 1, IsRequired = true)]
         public float Y
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mY; }
-            set { mY = value; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mY; }
+            [System.Diagnostics.DebuggerStepThrough] set { mY = value; }
         }
 
         /// <summary>
@@ -144,18 +138,15 @@ namespace Scott.Forge
         [DataMember(Name = "width", Order = 2, IsRequired = true)]
         public float Width
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mWidth; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mWidth; }
             set
             {
-                if ( value < 0.0f )
+                if (value < 0.0f)
                 {
-                    throw new ArgumentException( "Width cannot be less than zero", "value" );
+                    throw new ArgumentException("Width cannot be less than zero", "value");
                 }
-                else
-                {
-                    mWidth = value;
-                }
+
+                mWidth = value;
             }
         }
 
@@ -165,18 +156,15 @@ namespace Scott.Forge
         [DataMember(Name = "height", Order = 3, IsRequired = true)]
         public float Height
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mHeight; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mHeight; }
             set
             {
-                if ( value < 0.0f )
+                if (value < 0.0f)
                 {
-                    throw new ArgumentException( "Height cannot be less than zero", "value" );
+                    throw new ArgumentException("Height cannot be less than zero", "value");
                 }
-                else
-                {
-                    mHeight = value;
-                }
+
+                mHeight = value;
             }
         }
 
@@ -195,8 +183,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 MaxPoint
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth, mY + mHeight ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth, mY + mHeight); }
         }
 
         /// <summary>
@@ -204,8 +191,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 MinPoint
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX, mY ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX, mY); }
         }
 
         /// <summary>
@@ -214,8 +200,7 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public Vector2 Position
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX, mY ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX, mY); }
             set
             {
                 X = value.X;
@@ -228,8 +213,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 TopLeft
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX, mY ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX, mY); }
         }
 
         /// <summary>
@@ -237,8 +221,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 TopCenter
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth / 2.0f, mY ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth / 2.0f, mY); }
         }
 
         /// <summary>
@@ -246,8 +229,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 TopRight
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth, mY ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth, mY); }
         }
 
         /// <summary>
@@ -255,8 +237,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 MidLeft
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX, mY + mHeight / 2.0f ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX, mY + mHeight / 2.0f); }
         }
 
         /// <summary>
@@ -264,8 +245,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 MidCenter
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return Center; }
+            [System.Diagnostics.DebuggerStepThrough] get { return Center; }
         }
 
         /// <summary>
@@ -273,8 +253,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 MidRight
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth, mY + mHeight / 2.0f ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth, mY + mHeight / 2.0f); }
         }
 
         /// <summary>
@@ -282,8 +261,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 BottomLeft
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX, mY + mHeight ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX, mY + mHeight); }
         }
 
         /// <summary>
@@ -291,8 +269,7 @@ namespace Scott.Forge
         /// </summary>
         public Vector2 BottomCenter
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth / 2.0f, mY + mHeight ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth / 2.0f, mY + mHeight); }
         }
 
         /// <summary>
@@ -301,8 +278,7 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public Vector2 BottomRight
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth, mY + mHeight ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth, mY + mHeight); }
             set
             {
                 Width = value.X - mX;
@@ -316,8 +292,7 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public Vector2 Center
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new Vector2( mX + mWidth / 2.0f, mY + mHeight / 2.0f ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new Vector2(mX + mWidth / 2.0f, mY + mHeight / 2.0f); }
             set
             {
                 Vector2 halfSize = new Vector2( Width / 2.0f, Height / 2.0f );
@@ -331,8 +306,7 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public SizeF Size
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return new SizeF( mWidth, mHeight ); }
+            [System.Diagnostics.DebuggerStepThrough] get { return new SizeF(mWidth, mHeight); }
             set
             {
                 Width = value.Width;
@@ -346,9 +320,8 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public float Top
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mY; }
-            set { mY = value; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mY; }
+            [System.Diagnostics.DebuggerStepThrough] set { mY = value; }
         }
 
         /// <summary>
@@ -357,9 +330,8 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public float Left
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mX; }
-            set { mX = value; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mX; }
+            [System.Diagnostics.DebuggerStepThrough] set { mX = value; }
         }
 
         /// <summary>
@@ -368,9 +340,8 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public float Right
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mX + mWidth; }
-            set { Width = value - mX; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mX + mWidth; }
+            [System.Diagnostics.DebuggerStepThrough] set { Width = value - mX; }
         }
 
         /// <summary>
@@ -379,9 +350,8 @@ namespace Scott.Forge
         [System.Xml.Serialization.XmlIgnore]
         public float Bottom
         {
-            [System.Diagnostics.DebuggerStepThrough]
-            get { return mY + mHeight; }
-            set { Height = value - mY; }
+            [System.Diagnostics.DebuggerStepThrough] get { return mY + mHeight; }
+            [System.Diagnostics.DebuggerStepThrough] set { Height = value - mY; }
         }
 
         /// <summary>
@@ -393,9 +363,9 @@ namespace Scott.Forge
         /// <returns>
         ///  True if the point is contained inside of the rectangle, false otherwise.
         /// </returns>
-        public bool Contains( float pointX, float pointY )
+        public bool Contains(float pointX, float pointY)
         {
-            return ( X <= pointX ) && ( Y <= pointY ) && ( Right >= pointX ) && ( Bottom >= pointY );
+            return (X <= pointX) && (Y <= pointY) && (Right >= pointX) && (Bottom >= pointY);
         }
 
         /// <summary>
@@ -406,9 +376,9 @@ namespace Scott.Forge
         /// <returns>
         ///  True if the point is contained inside of the rectangle, false otherwise.
         /// </returns>       
-        public bool Contains( Vector2 vector )
+        public bool Contains(Vector2 vector)
         {
-            return Contains( vector.X, vector.Y );
+            return Contains(vector.X, vector.Y);
         }
 
         /// <summary>
@@ -416,12 +386,31 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="other">The rectangle to check against.</param>
         /// <returns>True if the other rectangle is contained inside of this rectangle.</returns>
-        public bool Contains( RectF other )
+        public bool Contains(RectF other)
         {
-            return ( X <= other.X ) &&
-                ( Y <= other.Y ) &&
-                    ( Right >= other.Right ) &&
-                    ( Bottom >= other.Bottom );
+            return 
+                (X <= other.X) &&
+                (Y <= other.Y) &&
+                (Right >= other.Right) &&
+                (Bottom >= other.Bottom);
+        }
+
+        /// <summary>
+        ///  Pushes the edges of the Rectangle out by the horizontal and vertical values specified.
+        /// </summary>
+        /// <remarks>
+        ///  TODO: Make this more intelligent, as in give the ability to dictate how the rectangle will
+        ///        grow.
+        /// </remarks>
+        /// <param name="horizontalAmount">Amount to inflate each side horizontally</param>
+        /// <param name="verticalAmount">Amount to inflate each side vertically</param>
+        public RectF Inflate(float horizontalAmount, float verticalAmount)
+        {
+            return new RectF(
+                X - horizontalAmount,
+                Y - verticalAmount,
+                Width + horizontalAmount * 2.0f,
+                Height + verticalAmount * 2.0f);
         }
 
         /// <summary>
@@ -429,12 +418,13 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="other">The rectangle to check against.</param>
         /// <returns>True if the other rectangle intersects this rectangle.</returns>
-        public bool Intersects( RectF other )
+        public bool Intersects(RectF other)
         {
-            return ( X < other.Right ) &&
-                ( Y < other.Bottom ) &&
-                    ( Right > other.X ) &&
-                    ( Bottom > other.Y );
+            return 
+                (X < other.Right) &&
+                (Y < other.Bottom) &&
+                (Right > other.X) &&
+                (Bottom > other.Y);
         }
 
         /// <summary>
@@ -444,17 +434,18 @@ namespace Scott.Forge
         /// <param name="other">The rectangle to check against.</param>
         /// <param name="result">Rectangle that will be set to the intersection area.</param>
         /// <returns>True if the other rectangle intersects this rectangle.</returns>
-        public bool Intersects( RectF other, ref RectF result )
+        public bool Intersects(RectF other, ref RectF result)
         {
-            bool intersects = ( X < other.Right ) && ( Y < other.Bottom ) &&
-                ( Right > other.X ) && ( Bottom > other.Y );
+            bool intersects = 
+                (X < other.Right) && (Y < other.Bottom) &&
+                (Right > other.X) && (Bottom > other.Y);
 
-            if ( intersects )
+            if (intersects)
             {
-                float aX = System.Math.Max( X, other.X );
-                float aY = System.Math.Max( Y, other.Y );
-                float bX = System.Math.Min( Right, other.Right );
-                float bY = System.Math.Min( Bottom, other.Bottom );
+                float aX = Math.Max(X, other.X);
+                float aY = Math.Max(Y, other.Y);
+                float bX = Math.Min(Right, other.Right);
+                float bY = Math.Min(Bottom, other.Bottom);
 
                 result.X = aX;
                 result.Y = aY;
@@ -471,21 +462,21 @@ namespace Scott.Forge
         /// <param name="first">The first rectangle to encompass.</param>
         /// <param name="second">The second rectangle to encompass.</param>
         /// <returns>The rectangle that encompassed both rectangles.</returns>       
-        public static RectF Merge( RectF first, RectF second )
+        public static RectF Merge(RectF first, RectF second)
         {
             Vector2 min = Vector2.Min( first.TopLeft, second.TopLeft );
             Vector2 max = Vector2.Max( first.BottomRight, second.BottomRight );
 
-            return new RectF( min, max );
+            return new RectF(min, max);
         }
 
         /// <summary>
         ///  Move the rectangle by the given amount.
         /// </summary>
         /// <param name="amount">Amount to move the rectangle by.</param>
-        public void Offset( Vector2 amount )
+        public void Offset(Vector2 amount)
         {
-            Offset( amount.X, amount.Y );
+            Offset(amount.X, amount.Y);
         }
 
         /// <summary>
@@ -493,7 +484,7 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="deltaX">X distance to move.</param>
         /// <param name="deltaY">Y distance to move.</param>
-        public void Offset( float deltaX, float deltaY )
+        public void Offset(float deltaX, float deltaY)
         {
             X += deltaX;
             Y += deltaY;
@@ -503,13 +494,10 @@ namespace Scott.Forge
         ///  Check if another rectangle equals this rectangle's value.
         /// </summary>
         /// <returns>True if the rectangles have the same value, false otherwise.</returns>
-        public bool Equals( RectF other )
+        public bool Equals(RectF other)
         {
             // ReSharper disable CompareOfFloatsByEqualityOperator
-            return ( X == other.X &&
-                     Y == other.Y &&
-                     Width == other.Width &&
-                     Height == other.Height );
+            return (X == other.X && Y == other.Y && Width == other.Width && Height == other.Height);
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
@@ -517,11 +505,11 @@ namespace Scott.Forge
         ///  Check if another object equals this rectangle's value.
         /// </summary>
         /// <returns>True if the rectangles have the same value, false otherwise.</returns>
-        public override bool Equals( Object obj )
+        public override bool Equals(Object obj)
         {
-            if ( obj is RectF )
+            if (obj is RectF)
             {
-                return Equals( (RectF) obj );
+                return Equals((RectF) obj);
             }
             else
             {
@@ -534,32 +522,32 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="points">A list of points to contain.</param>
         /// <returns>A rectangle that contains all the given points.</returns>
-        public static RectF Encapsulate( IList<Vector2> points )
+        public static RectF Encapsulate(IList<Vector2> points)
         {
-            if ( points == null )
+            if (points == null)
             {
-                throw new ArgumentNullException( "points" );
+                throw new ArgumentNullException("points");
             }
 
             // UNTESTED
             // Don't bother encapsulating a rectangle when there are no points to
             // encapsulate.
-            if ( points.Count < 1 )
+            if (points.Count < 1)
             {
-                throw new ArgumentException( "There must be at least one point in the collection" );
+                throw new ArgumentException("There must be at least one point in the collection");
             }
 
             // Get the first elements values to use as defaults.
             Vector2 min = points[0];
             Vector2 max = points[1];
 
-            for ( int i = 1; i < points.Count; ++i )
+            for (int i = 1; i < points.Count; ++i)
             {
-                min = Vector2.Min( points[i], min );
-                max = Vector2.Max( points[i], max );
+                min = Vector2.Min(points[i], min);
+                max = Vector2.Max(points[i], max);
             }
 
-            return new RectF( min, max - min );
+            return new RectF(min, max - min);
         }
 
         /// <summary>
@@ -573,7 +561,7 @@ namespace Scott.Forge
                 X,
                 Y,
                 Width,
-                Height );
+                Height);
         }
 
         /// <summary>
@@ -607,25 +595,25 @@ namespace Scott.Forge
         }
 #endif
 
-        public static bool operator ==( RectF left, RectF right )
+        public static bool operator ==(RectF left, RectF right)
         {
-            return left.Equals( right );
+            return left.Equals(right);
         }
 
-        public static bool operator !=( RectF left, RectF right )
+        public static bool operator !=(RectF left, RectF right)
         {
-            return !( left == right );
+            return !(left == right);
         }
 
-        public static RectF FromMinMaxPoint( float minX, float minY, float maxX, float maxY )
+        public static RectF FromMinMaxPoint(float minX, float minY, float maxX, float maxY)
         {
-            return new RectF( minX, minY, maxX - minX, maxY - minY );
+            return new RectF(minX, minY, maxX - minX, maxY - minY);
         }
 
-        public static RectF FromMinMaxPoint( Vector2 min, Vector2 max )
+        public static RectF FromMinMaxPoint(Vector2 min, Vector2 max)
         {
             Vector2 dims = max - min;
-            return new RectF( min, new SizeF( dims.X, dims.Y ) );
+            return new RectF(min, new SizeF(dims.X, dims.Y));
         }
 
     }

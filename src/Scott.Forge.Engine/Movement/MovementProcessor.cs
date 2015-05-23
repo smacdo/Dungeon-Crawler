@@ -51,7 +51,7 @@ namespace Scott.Forge.Engine.Movement
             var newPosition = transform.Position + (movement.Velocity * (float) deltaTime);
 
             // Check for collisions and other situations that can lead to an invalid position.
-            RectangleF moveBox = movement.MoveBox;
+            RectF moveBox = movement.MoveBox;
             moveBox.Offset(newPosition);
 
             bool isValidPosition = (IsInLevelBounds(moveBox) && !IsCollidingWithSomething(movement, moveBox));
@@ -116,7 +116,7 @@ namespace Scott.Forge.Engine.Movement
         /// <param name="owner"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        private bool IsInLevelBounds( RectangleF bounds )
+        private bool IsInLevelBounds(RectF bounds)
         {
             return bounds.TopLeft.X > 0 &&
                    bounds.TopRight.X < Screen.Width &&
@@ -130,7 +130,7 @@ namespace Scott.Forge.Engine.Movement
         /// </summary>
         /// <param name="movement"></param>
         /// <returns></returns>
-        private bool IsCollidingWithSomething( MovementComponent self, RectangleF bounds )
+        private bool IsCollidingWithSomething(MovementComponent self, RectF bounds)
         {
             foreach (var movement in mComponents)
             {

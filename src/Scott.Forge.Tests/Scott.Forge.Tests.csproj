@@ -67,6 +67,7 @@
     <Compile Include="SizeFTests.cs" />
     <Compile Include="StringExtensionMethodsTests.cs" />
     <Compile Include="PairTests.cs" />
+    <Compile Include="RectFTests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />
