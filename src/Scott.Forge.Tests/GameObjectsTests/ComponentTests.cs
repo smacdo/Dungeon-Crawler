@@ -56,100 +56,16 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.AreSame(c, f.ComponentsDestroyed.Single());
         }
 
-        /// <summary>
-        ///  Stubbed out test component for testing.
-        /// </summary>
-        public class TestComponent : Component
+        [TestMethod]
+        [TestCategory("Forge/GameObjects/Component")]
+        public void ToStringOutput()
         {
-            public TestComponent()
-            {
-            }
+            var c = new TestComponent();
+            Assert.AreEqual("<Component name: TestComponent, owner: null>", c.ToString());
 
-            public TestComponent(IComponentDestroyedCallback callback)
-                : base(callback)
-            {
-            }
-        }
-
-        public class ComponentDestroyedCallback : IComponentDestroyedCallback
-        {
-            public List<IComponent> ComponentsDestroyed { get; set; }
-
-            public ComponentDestroyedCallback()
-            {
-                ComponentsDestroyed = new List<IComponent>();
-            }
-
-            public void Destroy(IComponent component)
-            {
-                ComponentsDestroyed.Add(component);
-            }
-        }
-
-        public class TestGameObject : IGameObject
-        {
-            public void Add<T>(T component) where T : IComponent
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Remove<T>() where T : IComponent
-            {
-                throw new NotImplementedException();
-            }
-
-            public string DumpDebugInfoToString()
-            {
-                throw new NotImplementedException();
-            }
-
-            public T Get<T>() where T : IComponent
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Contains<T>() where T : IComponent
-            {
-                throw new NotImplementedException();
-            }
-
-            public Guid Id
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public string Name
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public bool Enabled
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-                set
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public TransformComponent Transform
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-
-            public TComponent Find<TComponent>() where TComponent : class, IComponent
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Dispose()
-            {
-                throw new NotImplementedException();
-            }
+            c.Owner = new TestGameObject();
+            var s = string.Format("<Component name: TestComponent, owner: {0}>", c.Owner.Id);
+            Assert.AreEqual(s, c.ToString());
         }
     }
 }

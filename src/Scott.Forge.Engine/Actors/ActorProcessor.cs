@@ -23,7 +23,7 @@ namespace Scott.Forge.Engine.Actors
     /// </summary>
     public class ActorProcessor : ComponentProcessor<ActorComponent>
     {
-        public override void UpdateGameObject(ActorComponent component, double currentTime, double deltaTime)
+        protected override void UpdateComponent(ActorComponent component, double currentTime, double deltaTime)
         {
             var currentAction = component.CurrentAction;
             var requestedAction = component.RequestedAction;

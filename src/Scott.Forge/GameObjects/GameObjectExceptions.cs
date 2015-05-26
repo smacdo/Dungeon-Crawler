@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,20 @@
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
-    ///  Game objects framework base exception class.
-    /// </summary>
-    public class GameObjectFrameworkException : ForgeException
-    {
-        public GameObjectFrameworkException()
-        {
-        }
-
-        public GameObjectFrameworkException(string message)
-            : base(message)
-        {
-        }
-
-        public GameObjectFrameworkException(string message, System.Exception innerException)
-            : base(message, innerException)
-        {
-        }
-    }
-
-    /// <summary>
     ///  General component exception.
     /// </summary>
-    public class GameObjectComponentException : GameObjectFrameworkException
+    public class GameComponentException : ForgeException
     {
-        public GameObjectComponentException()
+        public GameComponentException()
         {
         }
 
-        public GameObjectComponentException(string message)
+        public GameComponentException(string message)
             : base(message)
         {
         }
 
-        public GameObjectComponentException(string message, System.Exception innerException)
+        public GameComponentException(string message, System.Exception innerException)
             : base(message, innerException)
         {
         }        
@@ -59,7 +39,7 @@ namespace Scott.Forge.GameObjects
     /// <summary>
     ///  Game component reparenting not allowed exception.
     /// </summary>
-    public class CannotChangeComponentOwnerException : GameObjectFrameworkException
+    public class CannotChangeComponentOwnerException : GameComponentException
     {
         public CannotChangeComponentOwnerException(
             IComponent component,
@@ -80,7 +60,7 @@ namespace Scott.Forge.GameObjects
     /// <summary>
     ///  General game object exception.
     /// </summary>
-    public class GameObjectException : GameObjectFrameworkException
+    public class GameObjectException : ForgeException
     {
         public GameObjectException()
         {

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Scott.Forge.Tests
@@ -27,6 +30,7 @@ namespace Scott.Forge.Tests
         ///  Create a small instance pool, see if everything looks OK.
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         public void CreateSmallInstancePool()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(3);
@@ -39,6 +43,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         public void TakeOneInstance()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(3);
@@ -52,6 +57,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         public void ReturnRecycle()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(1);
@@ -69,6 +75,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         public void TakeAndReturnOneInstance()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(3);
@@ -84,6 +91,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         public void TakeAndReturnInDifferentOrder()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(3);
@@ -100,6 +108,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         public void TakeAndReturnAndTakeAgain()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(3);
@@ -127,7 +136,8 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(OverflowException))]
+        [TestCategory("Forge/InstancePool")]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void TakeTooManyInstances()
         {
             InstancePool<TestNode> pool = new InstancePool<TestNode>(3);
@@ -142,6 +152,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         [ExpectedException(typeof(ArgumentException))]
         public void ReturnTheWrongInstance()
         {
@@ -154,6 +165,7 @@ namespace Scott.Forge.Tests
         /// <summary>
         /// </summary>
         [TestMethod]
+        [TestCategory("Forge/InstancePool")]
         [ExpectedException(typeof(ArgumentException))]
         public void ReturnTheInstanceTwice()
         {
@@ -166,6 +178,84 @@ namespace Scott.Forge.Tests
             pool.Return(a);
         }
 
-        // TODO: Test the enumerators
+        [TestMethod]
+        [TestCategory("Forge/InstancePool")]
+        public void GetEnumeratorRepresentsActiveInstances()
+        {
+            // No active values at the start.
+            var pool = new InstancePool<TestNode>(3);
+
+            Assert.AreEqual(0, AsEnumerable(pool.GetActiveListEnumerator()).Count());
+            Assert.AreEqual(0, AsEnumerable(pool.GetEnumerator()).Count());
+            Assert.AreEqual(0, AsEnumerable(((IEnumerable<TestNode>)pool).GetEnumerator()).Count());
+
+            // Add one active node.
+            var a = pool.Take();
+
+            Assert.AreEqual(1, AsEnumerable(pool.GetActiveListEnumerator()).Count());
+            Assert.AreEqual(1, AsEnumerable(pool.GetEnumerator()).Count());
+            Assert.AreEqual(1, AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).Count());
+
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { a },
+                AsEnumerable(pool.GetActiveListEnumerator()).ToList());
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { a },
+                AsEnumerable(pool.GetEnumerator()).ToList());
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { a },
+                AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).ToList());
+
+            // Add two more active nodes.
+            var b = pool.Take();
+            var c = pool.Take();
+
+            Assert.AreEqual(3, AsEnumerable(pool.GetActiveListEnumerator()).Count());
+            Assert.AreEqual(3, AsEnumerable(pool.GetEnumerator()).Count());
+            Assert.AreEqual(3, AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).Count());
+
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { a, b, c },
+                AsEnumerable(pool.GetActiveListEnumerator()).ToList());
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { a, b, c },
+                AsEnumerable(pool.GetEnumerator()).ToList());
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { a, b, c },
+                AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).ToList());
+
+            // Return an active node.
+            pool.Return(a);
+
+            Assert.AreEqual(2, AsEnumerable(pool.GetActiveListEnumerator()).Count());
+            Assert.AreEqual(2, AsEnumerable(pool.GetEnumerator()).Count());
+            Assert.AreEqual(2, AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).Count());
+
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { b, c },
+                AsEnumerable(pool.GetActiveListEnumerator()).ToList());
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { b, c },
+                AsEnumerable(pool.GetEnumerator()).ToList());
+            CollectionAssert.AreEquivalent(
+                new List<TestNode>() { b, c },
+                AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).ToList());
+
+            // Return two active nodes.
+            pool.Return(b);
+            pool.Return(c);
+
+            Assert.AreEqual(0, AsEnumerable(pool.GetActiveListEnumerator()).Count());
+            Assert.AreEqual(0, AsEnumerable(pool.GetEnumerator()).Count());
+            Assert.AreEqual(0, AsEnumerable(((IEnumerable<TestNode>) pool).GetEnumerator()).Count());
+        }
+
+        private static IEnumerable<T> AsEnumerable<T>(IEnumerator<T> e)
+        {
+            while (e.MoveNext())
+            {
+                yield return e.Current;
+            }
+        }
     }
 }

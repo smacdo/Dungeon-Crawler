@@ -29,7 +29,7 @@ namespace Scott.Forge.Engine.Ai
         private const double START_WALKING_CHANCE = 0.15;
         private const double STOP_WALKING_CHANCE = 0.05;
 
-        public override void UpdateGameObject(AiComponent component, double currentTime, double deltaTime)
+        protected override void UpdateComponent(AiComponent component, double currentTime, double deltaTime)
         {
             var decisionTimeDelta = TimeSpan.FromSeconds(0.25);
             var gameTime = TimeSpan.FromSeconds(currentTime);

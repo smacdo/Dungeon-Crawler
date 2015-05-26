@@ -63,7 +63,6 @@
     <Compile Include="GameObjects\Component.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\IBlueprintFactory.cs" />
-    <Compile Include="GameObjects\IComponentProcessor.cs" />
     <Compile Include="RectF.cs" />
     <Compile Include="SizeF.cs" />
     <Compile Include="Vector2.cs" />

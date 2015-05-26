@@ -56,7 +56,10 @@
   <ItemGroup>
     <Compile Include="AssertHelper.cs" />
     <Compile Include="GameObjectsTests\ComponentTests.cs" />
+    <Compile Include="GameObjectsTests\GameObjectTestFakes.cs" />
     <Compile Include="GameObjectsTests\GameObjectTests.cs" />
+    <Compile Include="GameObjectsTests\TransformComponentTests.cs" />
+    <Compile Include="GameObjectsTests\ComponentProcessorTests.cs" />
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
     <Compile Include="InstancePoolTests.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="StringExtensionMethodsTests.cs" />
     <Compile Include="PairTests.cs" />
     <Compile Include="RectFTests.cs" />
+    <Compile Include="PooledComponentProcessorTests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />

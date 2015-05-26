@@ -22,11 +22,17 @@ using System.Text;
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
-    ///  Contains the position, rotation and direction of an object. All coordinate and rotational
-    ///  values are in local space and relative to the transform's parent unless explicitly stated.
+    ///  Contains the position, rotation and direction of an object. All coordinate and rotational values are in local
+    ///  space and relative to the transform's parent unless explicitly stated.
     /// </summary>
     public class TransformComponent : Component
     {
+        // Default scale is one, never zero.
+        public static readonly Vector2 DefaultScale = Vector2.One;
+
+        // Make sure rotation and direction match up by setting direction to the default direction.
+        public const DirectionName DefaultDirection = DirectionName.South;
+
         // Local position.
         private Vector2 mPosition;
         private Vector2 mWorldPosition;
@@ -42,25 +48,29 @@ namespace Scott.Forge.GameObjects
         private float mWorldRotation;
 
         // Local scale.
-        private Vector2 mScale = Vector2.One;        // Default scale is one, never zero.
+        private Vector2 mScale = Vector2.One;
 
         // Local direction.
-        private DirectionName mDirection;
+        private DirectionName mDirection = DefaultDirection;
 
         /// <summary>
         ///  Constructor.
         /// </summary>
+        /// <remarks>
+        ///  The transform's direction property is set to south.
+        /// </remarks>
         public TransformComponent()
         {
-            // Make sure rotation and direction match up by setting direction to the default
-            // direction.
-            Direction = DirectionName.South;
         }
 
         /// <summary>
         ///  Local position, relative to parent transform.
         /// </summary>
-        public Vector2 Position { get { return mPosition; } set { mPosition = value; mWorldPosition = value; } }
+        public Vector2 Position
+        {
+            get { return mPosition; }
+            set { mPosition = value; mWorldPosition = value; }
+        }
 
         /// <summary>
         ///  Local forward vector.

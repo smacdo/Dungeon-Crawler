@@ -27,7 +27,7 @@ namespace Scott.Forge.Engine.Graphics
     /// </summary>
     public class SpriteProcessor : ComponentProcessor<SpriteComponent>
     {
-        public override void UpdateGameObject(SpriteComponent component, double currentTime, double deltaTime)
+        protected override void UpdateComponent(SpriteComponent component, double currentTime, double deltaTime)
         {
             // TODO: Make much better by moving SpriteComponent.Update to here.
             component.Update(currentTime, deltaTime);

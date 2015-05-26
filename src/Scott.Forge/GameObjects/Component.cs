@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ namespace Scott.Forge.GameObjects
                 ownerId = Owner.Id.ToString();
             }
 
-            return String.Format("Component {0}, owner: {1}", GetType().Name, ownerId);
+            return String.Format("<Component name: {0}, owner: {1}>", GetType().Name, ownerId);
         }
     }
 }

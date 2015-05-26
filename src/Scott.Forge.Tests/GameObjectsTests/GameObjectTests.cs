@@ -55,8 +55,8 @@ namespace Scott.Forge.Tests.GameObjectsTests
         {
             var go = new GameObject();
 
-            Assert.IsNull(go.Get<TestComponentA>());
-            Assert.IsNull(go.Get<TestComponentB>());
+            Assert.IsNull(go.Find<TestComponentA>());
+            Assert.IsNull(go.Find<TestComponentB>());
 
             go.Add(new TestComponentA());
             go.Add(new TestComponentB());
@@ -97,12 +97,12 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.IsNotNull(go.Get<TestComponentB>());
 
             go.Remove<TestComponentA>();
-            Assert.IsNull(go.Get<TestComponentA>());
+            Assert.IsNull(go.Find<TestComponentA>());
             Assert.IsNotNull(go.Get<TestComponentB>());
 
             go.Remove<TestComponentB>();
-            Assert.IsNull(go.Get<TestComponentA>());
-            Assert.IsNull(go.Get<TestComponentB>());
+            Assert.IsNull(go.Find<TestComponentA>());
+            Assert.IsNull(go.Find<TestComponentB>());
         }
 
         [TestMethod]
@@ -117,12 +117,12 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.IsNotNull(go.Get<TestComponentB>());
 
             go.Remove(typeof(TestComponentA));
-            Assert.IsNull(go.Get<TestComponentA>());
+            Assert.IsNull(go.Find<TestComponentA>());
             Assert.IsNotNull(go.Get<TestComponentB>());
 
             go.Remove(typeof(TestComponentB));
-            Assert.IsNull(go.Get<TestComponentA>());
-            Assert.IsNull(go.Get<TestComponentB>());
+            Assert.IsNull(go.Find<TestComponentA>());
+            Assert.IsNull(go.Find<TestComponentB>());
         }
 
         [TestMethod]
@@ -138,6 +138,15 @@ namespace Scott.Forge.Tests.GameObjectsTests
 
             Assert.AreSame(a, go.Find<TestComponentA>());
             Assert.AreSame(b, go.Find<TestComponentB>());
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/GameObjects/GameObject")]
+        [ExpectedException(typeof(ComponentDoesNotExistException))]
+        public void GetThrowsExceptionIfComponentWasNotAdded()
+        {
+            var go = new GameObject();
+            go.Get<TestComponentA>();
         }
 
         [TestMethod]

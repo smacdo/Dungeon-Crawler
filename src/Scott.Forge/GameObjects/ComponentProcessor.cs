@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,28 @@ using System.Text;
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
+    ///  Interface for systems that process groups of components attached to game objects.
+    /// </summary>
+    public interface IComponentProcessor<TComponent>
+        where TComponent : class, IComponent, new()
+    {
+        TComponent Add(IGameObject gameObject);
+
+        void Remove(IGameObject gameObject);
+
+        int GameObjectCount { get; }
+
+        void Update(double currentTime, double deltaTime);
+    }
+
+    /// <summary>
     ///  Simple component processor that processes a batch of components. This component processor injects a typed
     ///  component into each game object and assumes that it is the exclusive owner of said component. Each time the
     ///  component processor gets an update call it will loop through all the components that it added and process them
     ///  in a batch.
     /// </summary>
-    public abstract class ComponentProcessor<TComponent> : IComponentProcessor where TComponent : IComponent, new()
+    public abstract class ComponentProcessor<TComponent> : IComponentProcessor<TComponent>
+        where TComponent : class, IComponent, new()
     {
         /// <summary>
         ///  The number of components that should be created initially for improved performance.
@@ -46,6 +62,14 @@ namespace Scott.Forge.GameObjects
         }
 
         /// <summary>
+        ///  Get the number of game objects registered in this component processor.
+        /// </summary>
+        public int GameObjectCount
+        {
+            get { return mComponents.Count; }
+        }
+
+        /// <summary>
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
@@ -56,12 +80,24 @@ namespace Scott.Forge.GameObjects
                 throw new ArgumentNullException("gameObject");
             }
 
-            var component = new TComponent {Owner = gameObject};
+            // Instantiate the component, and add it to the game object.
+            var component = CreateComponent(gameObject);
             gameObject.Add(component);
 
+            // Add the component to the processor's list of components for updating.
             mComponents.Add(component);
 
             return component;
+        }
+
+        /// <summary>
+        ///  Creates a new instance instance of the component for attaching to the game object.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        protected virtual TComponent CreateComponent(IGameObject gameObject)
+        {
+            return new TComponent {Owner = gameObject};
         }
 
         /// <summary>
@@ -77,13 +113,16 @@ namespace Scott.Forge.GameObjects
 
             // Get the component from the game object, remove it from the processor and then delete the component from
             // the game object itself.
-            var component = gameObject.Get<TComponent>();
-            gameObject.Remove<TComponent>();
+            var component = gameObject.Find<TComponent>();
 
-            if (!mComponents.Remove(component))
+            if (component == null)
             {
-                // TODO: Replace with specific exception.
-                throw new InvalidOperationException("Game object missing component required by this component processor");
+                throw new ComponentDoesNotExistException(gameObject, typeof(TComponent));
+            }
+            else
+            {
+                gameObject.Remove<TComponent>();
+                mComponents.Remove(component);
             }
         }
 
@@ -99,10 +138,11 @@ namespace Scott.Forge.GameObjects
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var index = 0; index < mComponents.Count; ++index)
             {
-                UpdateGameObject(mComponents[index], currentTime, deltaTime);
+                UpdateComponent(mComponents[index], currentTime, deltaTime);
             }
         }
 
-        public abstract void UpdateGameObject(TComponent component, double currentTime, double deltaTime);
+        protected abstract void UpdateComponent(TComponent component, double currentTime, double deltaTime);
+
     }
 }

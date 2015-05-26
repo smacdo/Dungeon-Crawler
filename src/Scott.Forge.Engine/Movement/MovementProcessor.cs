@@ -30,7 +30,7 @@ namespace Scott.Forge.Engine.Movement
         ///  Updates all movement components using collision detection and resolution.
         /// </summary>
         /// <param name="simulationTime">The current simulation time.</param>
-        public override void UpdateGameObject(MovementComponent movement, double currentTime, double deltaTime)
+        protected override void UpdateComponent(MovementComponent movement, double currentTime, double deltaTime)
         {
             IGameObject gameObject = movement.Owner;
             var transform = gameObject.Transform;

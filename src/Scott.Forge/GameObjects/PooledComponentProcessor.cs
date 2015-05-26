@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ namespace Scott.Forge.GameObjects
     /// TODO: Split up into ComponentProcessor and PooledComponentProcessor<T>. The pooled processor should contain
     ///       the instance pooling.
     /// </summary>
-    public abstract class PooledComponentProcessor<T> : IComponentProcessor, IEnumerable<IGameObject>
-        where T : IComponent, IRecyclable, new()
+    public abstract class PooledComponentProcessor<TComponent> : IComponentProcessor<TComponent>
+        where TComponent : class, IComponent, IRecyclable, new()
     {
         /// <summary>
         ///  The number of components that should be created initially for improved performance.
@@ -34,87 +34,76 @@ namespace Scott.Forge.GameObjects
         public const int DefaultCapacity = 100;
 
         /// <summary>
-        ///  List of game objects that are tracked for processing.
-        /// </summary>
-        private readonly List<IGameObject> mTrackedObjects;
-
-        /// <summary>
         /// A pre-allocated pool of instances to speed up object creation and destruction
         /// </summary>
-        private readonly InstancePool<T> mComponentPool;
+        private readonly InstancePool<TComponent> mComponentPool;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public PooledComponentProcessor()
         {
-            mTrackedObjects = new List<IGameObject>(DefaultCapacity);
-            mComponentPool = new InstancePool<T>(DefaultCapacity);
+            mComponentPool = new InstancePool<TComponent>(DefaultCapacity);
+        }
+
+        /// <summary>
+        ///  Get the number of game objects registered in this component processor.
+        /// </summary>
+        public int GameObjectCount
+        {
+            get { return mComponentPool.ActiveCount; }
         }
 
         /// <summary>
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
-        void Add(IGameObject gameObject)
+        public TComponent Add(IGameObject gameObject)
         {
             if (gameObject == null)
             {
                 throw new ArgumentNullException("gameObject");
             }
 
-            mTrackedObjects.Add(gameObject);
-            gameObject.Add(CreateNewComponent(gameObject));
+            // Take an unused component instance and add it to the game object.
+            var component = mComponentPool.Take();
+
+            gameObject.Add(component);
+            component.Owner = gameObject;
+
+            // Let derived classes have a chance to run code after the component is created and added.
+            OnComponentCreated(component);
+            return component;
         }
 
         /// <summary>
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
-        void Remove(IGameObject gameObject)
+        public void Remove(IGameObject gameObject)
         {
             if (gameObject == null)
             {
                 throw new ArgumentNullException("gameObject");
             }
 
-            if (mTrackedObjects.Remove(gameObject))
+            // Get the component from the game object, remove it from the processor and then delete the component from
+            // the game object itself.
+            var component = gameObject.Find<TComponent>();
+
+            if (component == null)
             {
-                var component = gameObject.Get<T>(); // TODO: Verify must succeed.    
-                DestroyComponent(component);
-                gameObject.Remove<T>();
+                throw new ComponentDoesNotExistException(gameObject, typeof(TComponent));
             }
             else
             {
-                throw new ArgumentException("Game object is in procesor's list of game objects");
+                // Reset to component's default state, and then return it to the component pool.
+                OnComponentDestroyed(component);
+                mComponentPool.Return(component);
+
+                // Remove the component from the game object.
+                gameObject.Remove<TComponent>();
             }
-        }
-
-        /// <summary>
-        /// Creates a new component for the requested game object instance
-        /// </summary>
-        /// <param name="owner">The game object that will own this instance</param>
-        /// <returns>A newly create game component instance</returns>
-        private T CreateNewComponent(IGameObject owner)
-        {
-            var instance = mComponentPool.Take();
-            instance.Owner = owner;
-
-            owner.Add<T>(instance);
-            OnComponentCreated(instance);
-
-            return instance;
-        }
-
-        /// <summary>
-        /// Destroys a component
-        /// </summary>
-        /// <param name="component"></param>
-        public virtual void DestroyComponent(T instance)
-        {
-            // Reset to component's default state, and then return it to the component pool.
-            OnComponentDestroyed(instance);
-            mComponentPool.Return(instance);
         }
 
         /// <summary>
@@ -124,74 +113,19 @@ namespace Scott.Forge.GameObjects
         public virtual void Update(double currentTime, double deltaTime)
         {
             // ReSharper disable once ForCanBeConvertedToForeach
-            for (var index = 0; index < mTrackedObjects.Count; ++index)
+            foreach (var instance in mComponentPool)
             {
-                UpdateGameObject(mTrackedObjects[index]);
+                UpdateComponent(instance, currentTime, deltaTime);
             }
         }
 
-        public abstract void UpdateGameObject(IGameObject gameObject);
-
-        /// <summary>
-        ///  Generate formatted text output detailing the state of this component collection.
-        /// </summary>
-        /// <returns>Debugging information.</returns>
-        public string DumpDebugInfoToString()
-        {
-            StringBuilder debugText = new StringBuilder();
-
-            debugText.Append("{\n");
-            debugText.Append(String.Format("\tcomponent_manager: \"{0}\",\n", typeof(T).Name));
-            debugText.Append(String.Format("\tactive_instances: {0},\n", mComponentPool.ActiveCount));
-            debugText.Append(String.Format("\tfree_instances: {0},\n", mComponentPool.FreeCount));
-            debugText.Append(String.Format("\ttotal_instances: {0},\n", mComponentPool.TotalCount));
-            debugText.Append("\tinstances: [\n");
-
-            // Dump diagnostic information on active components only
-            foreach (T instance in mComponentPool)
-            {
-                debugText.Append("\t\t");
-                debugText.Append(instance.ToString());
-                debugText.Append(",\n");
-            }
-
-            debugText.Append("\t]\n}\n");
-
-            return debugText.ToString();
-        }
-
-        /// <summary>
-        ///  Returns an enumerator that enumerates over the components in this collection.
-        /// </summary>
-        /// <returns>Component enumerator</returns>
-        public List<IGameObject>.Enumerator GetEnumerator()
-        {
-            return mTrackedObjects.GetEnumerator();
-        }
-
-        /// <summary>
-        ///  Returns an enumerator that enumerates over the components in this collection.
-        /// </summary>
-        /// <returns>Component enumerator</returns>
-        IEnumerator<IGameObject> IEnumerable<IGameObject>.GetEnumerator()
-        {
-            return mTrackedObjects.GetEnumerator();
-        }
-
-        /// <summary>
-        ///  Returns an enumerator that enumerates over the components in this collection.
-        /// </summary>
-        /// <returns>Component enumerator</returns>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return mComponentPool.GetEnumerator();
-        }
-
+        protected abstract void UpdateComponent(TComponent component, double currentTime, double deltaTime);
+        
         /// <summary>
         ///  Called after a component is created.
         /// </summary>
         /// <param name="Component"></param>
-        protected virtual void OnComponentCreated(T component)
+        protected virtual void OnComponentCreated(TComponent component)
         {
             // Empty
         }
@@ -200,7 +134,7 @@ namespace Scott.Forge.GameObjects
         ///  Called immediately prior to a c component being recycled.
         /// </summary>
         /// <param name="Component"></param>
-        protected virtual void OnComponentDestroyed(T component)
+        protected virtual void OnComponentDestroyed(TComponent component)
         {
             // empty
         }

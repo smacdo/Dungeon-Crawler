@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,7 +217,10 @@ namespace Scott.Forge.GameObjects
         public T Get<T>() where T : IComponent
         {
             IComponent component;
-            mComponents.TryGetValue(typeof(T), out component);
+            if (!mComponents.TryGetValue(typeof(T), out component))
+            {
+                throw new ComponentDoesNotExistException(this, typeof(T));
+            }
 
             return (T) component;
         }
