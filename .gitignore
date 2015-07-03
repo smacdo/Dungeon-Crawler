@@ -33,3 +33,4 @@ TestResult.xml
 *.force
 *.cache
 /src/Scott.Forge.Tests/obj/Release
+/cubeworld/
