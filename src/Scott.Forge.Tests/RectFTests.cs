@@ -549,7 +549,7 @@ namespace Scott.Forge.Tests
 
         [TestMethod]
         [TestCategory("Forge/RectF")]
-        public void Contains()
+        public void ContainsPoint()
         {
             var a = new RectF(-2.0f, 4.0f, 10.0f, 14.0f);
 
@@ -580,6 +580,94 @@ namespace Scott.Forge.Tests
             Assert.IsTrue(a.Contains(a.BottomLeft));
             Assert.IsTrue(a.Contains(a.BottomCenter));
             Assert.IsTrue(a.Contains(a.BottomRight));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/RectF")]
+        public void ContainsRect()
+        {
+            var a = new RectF(-2.0f, 4.0f, 10.0f, 14.0f);
+
+            // Rectangle always contains itself.
+            Assert.IsTrue(a.Contains(a));
+
+            // Rectangle contains a rectangle of the same size.
+            Assert.IsTrue(a.Contains(new RectF(-2.0f, 4.0f, 10.0f, 14.0f)));
+
+            // Rectangle contains a rect of a smaller size totally inside.
+            Assert.IsTrue(a.Contains(new RectF(0, 8, 6, 7)));
+
+            // Rectangle does not contain a rectangle larger than itself.
+            Assert.IsFalse(a.Contains(new RectF(-10.0f, 4.0f, 200.0f, 200.0f)));
+
+            // Rectangle does not contain a rectangle that intersects...
+            // upper left corner intersection
+            Assert.IsFalse(a.Contains(new RectF(-4, 2, 4, 6)));
+
+            // top intersection
+            Assert.IsFalse(a.Contains(new RectF(0, 2, 4, 6)));
+
+            // upper right corner intersection
+            Assert.IsFalse(a.Contains(new RectF(6, 2, 4, 6)));
+
+            // left intersection
+            Assert.IsFalse(a.Contains(new RectF(6, 8, 4, 7)));
+
+            // bottom left intersection
+            Assert.IsFalse(a.Contains(new RectF(6, 15, 4, 5)));
+
+            // bottom intersection
+            Assert.IsFalse(a.Contains(new RectF(0, 15, 6, 6)));
+
+            // bottom right intersection
+            Assert.IsFalse(a.Contains(new RectF(-4, 15, 4, 5)));
+
+            // right intersection
+            Assert.IsFalse(a.Contains(new RectF(-4, 8, 4, 7)));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/RectF")]
+        public void IntersectsRect()
+        {
+            var a = new RectF(-2.0f, 4.0f, 10.0f, 14.0f);
+
+            // Rectangle never intersects itself.
+            Assert.IsFalse(a.Intersects(a));
+
+            // Rectangle never intersects a rectangle of the same size.
+            Assert.IsTrue(a.Intersects(new RectF(-2.0f, 4.0f, 10.0f, 14.0f)));
+
+            // Rectangle contains a rect of a smaller size totally inside.
+            Assert.IsTrue(a.Contains(new RectF(0, 8, 6, 7)));
+
+            // Rectangle does not contain a rectangle larger than itself.
+            Assert.IsFalse(a.Contains(new RectF(-10.0f, 4.0f, 200.0f, 200.0f)));
+
+            // Rectangle does not contain a rectangle that intersects...
+            // upper left corner intersection
+            Assert.IsFalse(a.Contains(new RectF(-4, 2, 4, 6)));
+
+            // top intersection
+            Assert.IsFalse(a.Contains(new RectF(0, 2, 4, 6)));
+
+            // upper right corner intersection
+            Assert.IsFalse(a.Contains(new RectF(6, 2, 4, 6)));
+
+            // left intersection
+            Assert.IsFalse(a.Contains(new RectF(6, 8, 4, 7)));
+
+            // bottom left intersection
+            Assert.IsFalse(a.Contains(new RectF(6, 15, 4, 5)));
+
+            // bottom intersection
+            Assert.IsFalse(a.Contains(new RectF(0, 15, 6, 6)));
+
+            // bottom right intersection
+            Assert.IsFalse(a.Contains(new RectF(-4, 15, 4, 5)));
+
+            // right intersection
+            Assert.IsFalse(a.Contains(new RectF(-4, 8, 4, 7)));
         }
     }
 }
