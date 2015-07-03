@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.DungeonCrawler.Client", "src\Client\Scott.DungeonCrawler.Client.csproj", "{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.DungeonCrawler.Client", "src\Scott.DungeonCrawler.Client\Scott.DungeonCrawler.Client.csproj", "{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.Forge", "src\Scott.Forge\Scott.Forge.csproj", "{FA4BE4B8-5043-46E9-A43A-0575E8C56DC9}"
 EndProject
