@@ -1,0 +1,226 @@
+<?xml version="1.0"?>
+<?include "Config.wxi"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Fragment>
+
+    <!--
+      Defined in Setup.wxs, the "TARGETDIR" is not actually created, it's just a crutch
+      in WiX to allow the files to share a common root
+    -->
+    <DirectoryRef Id="TARGETDIR">
+
+      <!--
+        ProgramMenuFolder is a special name that resolves to the start menu folder.
+        The files (see below) can indicate that they want a shortcut created in
+        another folder. By defining this folder, we can make them put a shortcut
+        into the start menu!
+      -->
+      <Directory Id='ProgramMenuFolder' Name='Programs'>
+        <Directory Id='MyGameProgramMenuFolder' Name='Dungeon Crawler'>
+          <Component Id="StartMenuEntriesComponent" Guid="76eae710-a0fa-47c1-950a-56bd76d1dddc" DiskId="1">
+            <RemoveFolder Id='MyGameProgramMenuFolder' On='uninstall' />
+            <RegistryValue
+              Root='HKCU'
+              Key='SOFTWARE\ScottMacDonald\Dungeon Crawler'
+              Type='string'
+              Value='Installed'
+              KeyPath='yes'
+            />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <!--
+        ProgramFilesFolder is a special name that is resolved to the system's
+        programs folder. This entry makes sure that INSTALLDIR, displayed in
+        directory selection dialog, initially points to "C:\Program files\MyGame".
+        Note that this does not prevent the user from selecting an entirely
+        different path like "D:\Games\MyGame".
+      -->
+      <Directory Id="$(var.PlatformProgramFilesFolder)" Name="PFiles">
+
+        <!--
+          Target directory you game will be installed to. Create more <Directory />
+          elements below this one to create subdirectories or add <File /> elements
+          to add files to a directory
+        -->
+        <Directory Id="APPLICATIONFOLDER" Name="$(var.ProgramFilesDirName)">
+
+          <!--
+            Any <File /> element must be contained in a <Component /> element.
+            Components are entirely internal to the installs and group inseperable
+            partS of your game. For example, you could have 4 components:
+            "shared", "game", "editor" and "docs".
+
+            An installer then sets up a series of features (see <Feature /> in Setup.wxs),
+            where each feature points to a number of components. Following the previous
+            example, two features named "game" and "editor" could be imagined where
+            both point to the "shared" component and to their own component.
+          -->
+          
+          <Component Id="GameExecutable" Guid="abcc68ad-415a-4d6f-81f9-84c798b4b1e4" DiskId="1">
+            <File
+              Id="LicenseFile" Name="license.rtf"
+              Source="../../docs/license.rtf"
+            />
+            
+            <!-- Game client executable. -->
+            <File
+                  Id="GameExecutable"
+                  Name="$(var.Scott.DungeonCrawler.Client.TargetName).exe"
+                  KeyPath="yes"
+                  Checksum="yes"
+                  Source="$(var.Scott.DungeonCrawler.Client.TargetPath)">
+              <Shortcut
+                Id="MyGameShortcut"
+                Name="Dungeon Crawler"
+                Directory="MyGameProgramMenuFolder"
+                Advertise="yes"
+                WorkingDirectory="APPLICATIONFOLDER" />
+
+              <!-- Uncomment to enable ngen (TODO: Set up installer for 32/64 combined). -->
+              <!--
+              <netfx:NativeImage Id="ngen_GameExecutable" Platform="32bit" Priority="0" AppBaseDirectory="APPLICATIONFOLDER"/>
+              -->
+            </File>
+          </Component>
+
+          <Component Id="ProjectLooseFiles" Guid="2f35ec12-0914-46b1-bc65-07d23ce4804f" DiskId="1">
+            <File Id="ChangeLogTxt" Name="ChangeLog.txt" Source="$(var.SolutionDir)\ChangeLog.txt" />
+            <File Id="ThanksTxt" Name="Thanks.txt" Source="$(var.SolutionDir)\thanks.txt" />
+            <File Id="Copying" Name="Copying.txt" Source="$(var.SolutionDir)\copying.txt" />
+          </Component>
+
+          <Component Id="GamePdb" Guid="157614ea-8400-4ba8-a793-c83eac4f30aa" DiskId="1">
+            <File Id="DungeonCrawlerClientPdb" Name="DungeonCrawler.pdb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\DungeonCrawler.pdb" />
+            <File Id="DungeonCrawlerPdb" Name="Scott.DungeonCrawler.pdb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Scott.DungeonCrawler.pdb" />
+            <File Id="ForgeEnginePdb" Name="Scott.Forge.Engine.pdb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Scott.Forge.Engine.pdb" />
+            <File Id="ForgePdb" Name="Scott.Forge.pdb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Scott.Forge.pdb" />
+          </Component>
+
+          <Component Id="GameExeConfig" Guid="889d83b8-e534-4a04-bdec-81848fbc6f98" DiskId="1">
+            <File Id="DungeonCrawlerExeConfig" Name="DungeonCrawler.exe.config" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\DungeonCrawler.exe.config" />
+          </Component>
+
+          <Component Id="GameCommonLibraries" Guid="2e06b03f-e7dd-497b-949d-d104a678d3d0" DiskId="1">
+            <File Id="DungeonCrawlerDll" Name="$(var.Scott.DungeonCrawler.TargetName).dll" Source="$(var.Scott.DungeonCrawler.TargetPath)" />
+            <File Id="ForgeDll" Name="$(var.Scott.Forge.TargetName).dll" Source="$(var.Scott.Forge.TargetPath)" />
+            <File Id="ForgeEngineDll" Name="$(var.Scott.Forge.Engine.TargetName).dll" Source="$(var.Scott.Forge.Engine.TargetPath)" />
+          </Component>
+
+          <Component Id="ExceptionReporterLibrary" Guid="62e8b488-59c0-4540-aaca-35db6e115dd1" DiskId="1">
+            <File Id="ExceptionReporterWinFormsDll" Name="ExceptionReporter.WinForms.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\ExceptionReporter.WinForms.dll" />
+            <File Id="ExceptionReporterWinFormsPdb" Name="ExceptionReporter.WinForms.pdb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\ExceptionReporter.WinForms.pdb" />
+            <File Id="ExceptionReporterWinFormsXml" Name="ExceptionReporter.WinForms.xml" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\ExceptionReporter.WinForms.xml" />
+            <File Id="Win32Mapi" Name="Win32Mapi.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Win32Mapi.dll" />
+          </Component>
+
+          <Component Id="SharpZipLib" Guid="6a4cce98-4f0c-47da-9130-ac18195d3b9d" DiskId="1">
+            <File Id="ICSharpCodeSharpZipLibDll" Name="ICSharpCode.SharpZipLib.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\ICSharpCode.SharpZipLib.dll" />
+          </Component>
+
+          <Component Id="MonoGame" Guid="d4782bd2-ccc4-4de0-bd23-58434a347d3a" DiskId="1">
+            <File Id="MonoGameFrameworkDll" Name="MonoGame.Framework.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\MonoGame.Framework.dll" />
+            <File Id="MonoGameFrameworkXml" Name="MonoGame.Framework.xml" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\MonoGame.Framework.xml" />
+          </Component>
+
+          <Component Id="SharpDX" Guid="c7ff56ad-4d17-44e1-953a-e7ab11afb0e7" DiskId="1">
+            <File Id="SharpDX" Name="SharpDX.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.dll" />
+            <File Id="SharpDXDirect2D1" Name="SharpDX.Direct2D1.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.Direct2D1.dll" />
+            <File Id="SharpDXDirect3D9" Name="SharpDX.Direct3D9.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.Direct3D9.dll" />
+            <File Id="SharpDXDirect3D11" Name="SharpDX.Direct3D11.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.Direct3D11.dll" />
+            <File Id="SharpDXDXGI" Name="SharpDX.DXGI.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.DXGI.dll" />
+            <File Id="SharpDXMediaFoundation" Name="SharpDX.MediaFoundation.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.MediaFoundation.dll" />
+            <File Id="SharpDXRawInput" Name="SharpDX.RawInput.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.RawInput.dll" />
+            <File Id="SharpDXXAudio2" Name="SharpDX.XAudio2.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.XAudio2.dll" />
+            <File Id="SharpDXXInput" Name="SharpDX.XInput.dll" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\SharpDX.XInput.dll" />
+          </Component>
+
+          <!-- $(var.Scott.DungeonCrawler.Client.TargetDir) -->
+          
+          <!-- 
+            All of Dungeon Crawler's root level game content
+          -->
+          <Directory Id="GameContentDirectory" Name="content">
+            <Directory Id="GameContentFonts" Name="fonts">
+              <Component Id="GameRootContent" Guid="091b857d-2dd8-461f-892b-3370599a8c09" DiskId="1">
+                <File Id="System8Font" Name="System8.xnb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Content\fonts\System8.xnb" />
+                <File Id="System10Font" Name="System10.xnb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Content\fonts\System10.xnb" />
+                <File Id="System12Font" Name="System12.xnb" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)\Content\fonts\System12.xnb" />
+              </Component>
+            </Directory>
+
+            <!-- 
+              All of Dungeon Crawler's game sprite content
+            -->
+            <Directory Id="GameContentSprites" Name="sprites">
+              <Directory Id="GameContentSpriteAtlases" Name="atlases">
+                <Component Id="GameSpriteAtlasesContent" Guid="19cf3be1-7d0b-4751-9c40-253cc2021074" DiskId="1">
+                  <File Id="Back_QuiverPng" Name="Back_Quiver.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Back_Quiver.png" />
+                  <File Id="Belt_LeatherPng" Name="Belt_Leather.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Belt_Leather.png" />
+                  <File Id="Belt_RopePng" Name="Belt_Rope.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Belt_Rope.png" />
+                  <File Id="Bracer_LeatherPng" Name="Bracer_Leather.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Bracer_Leather.png" />
+                  <File Id="Feet_Shoes_BrownPng" Name="Feet_Shoes_Brown.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Feet_Shoes_Brown.png" />
+                  <File Id="Feet_Shoes_PlatePng" Name="Feet_Shoes_Plate.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Feet_Shoes_Plate.png" />
+                  <File Id="Hands_PlatePng" Name="Hands_Plate.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Hands_Plate.png" />
+                  <File Id="Head_Hair_BlondePng" Name="Head_Hair_Blonde.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Head_Hair_Blonde.png" />
+                  <File Id="Head_Helmet_ChainPng" Name="Head_Helmet_Chain.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Head_Helmet_Chain.png" />
+                  <File Id="Head_Helmet_LeatherPng" Name="Head_Helmet_Leather.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Head_Helmet_Leather.png" />
+                  <File Id="Head_Helmet_PlatePng" Name="Head_Helmet_Plate.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Head_Helmet_Plate.png" />
+                  <File Id="Head_Hood_ChainPng" Name="Head_Hood_Chain.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Head_Hood_Chain.png" />
+                  <File Id="Head_Hood_RobePng" Name="Head_Hood_Robe.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Head_Hood_Robe.png" />
+                  <File Id="Humanoid_MalePng" Name="Humanoid_Male.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Humanoid_Male.png" />
+                  <File Id="Humanoid_SkeletonPng" Name="Humanoid_Skeleton.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Humanoid_Skeleton.png" />
+                  <File Id="Legs_Pants_GreenPng" Name="Legs_Pants_Green.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Legs_Pants_Green.png" />
+                  <File Id="Legs_Pants_PlatePng" Name="Legs_Pants_Plate.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Legs_Pants_Plate.png" />
+                  <File Id="Legs_Skirt_RobePng" Name="Legs_Skirt_Robe.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Legs_Skirt_Robe.png" />
+                  <File Id="Shoulder_LeatherPng" Name="Shoulder_Leather.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Shoulder_Leather.png" />
+                  <File Id="Shoulder_PlatePng" Name="Shoulder_Plate.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Shoulder_Plate.png" />
+                  <File Id="Torso_Armor_ChainPng" Name="Torso_Armor_Chain.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Torso_Armor_Chain.png" />
+                  <File Id="Torso_Armor_LeatherPng" Name="Torso_Armor_Leather.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Torso_Armor_Leather.png" />
+                  <File Id="Torso_Armor_PlatePng" Name="Torso_Armor_Plate.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Torso_Armor_Plate.png" />
+                  <File Id="Torso_Armor_PurplePng" Name="Torso_Armor_Purple.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Torso_Armor_Purple.png" />
+                  <File Id="Torso_Shirt_Robe_BrownPng" Name="Torso_Shirt_Robe_Brown.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Torso_Shirt_Robe_Brown.png" />
+                  <File Id="Torso_Shirt_WhitePng" Name="Torso_Shirt_White.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Torso_Shirt_White.png" />
+                  <File Id="Weapon_LongswordPng" Name="Weapon_Longsword.png" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\atlases\Weapon_Longsword.png" />
+                </Component>
+              </Directory>
+
+              <Component Id="GameSpritesContent" Guid="2bb038e6-15cf-438d-a227-d64865f8bb52" DiskId="1">
+                <File Id="Back_QuiverSprite" Name="Back_Quiver.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Back_Quiver.sprite" />
+                <File Id="Belt_LeatherSprite" Name="Belt_Leather.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Belt_Leather.sprite" />
+                <File Id="Belt_RopeSprite" Name="Belt_Rope.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Belt_Rope.sprite" />
+                <File Id="Bracer_LeatherSprite" Name="Bracer_Leather.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Bracer_Leather.sprite" />
+                <File Id="Feet_Shoes_BrownSprite" Name="Feet_Shoes_Brown.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Feet_Shoes_Brown.sprite" />
+                <File Id="Feet_Shoes_PlateSprite" Name="Feet_Shoes_Plate.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Feet_Shoes_Plate.sprite" />
+                <File Id="Hands_PlateSprite" Name="Hands_Plate.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Hands_Plate.sprite" />
+                <File Id="Head_Hair_BlondeSprite" Name="Head_Hair_Blonde.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Head_Hair_Blonde.sprite" />
+                <File Id="Head_Helmet_ChainSprite" Name="Head_Helmet_Chain.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Head_Helmet_Chain.sprite" />
+                <File Id="Head_Helmet_LeatherSprite" Name="Head_Helmet_Leather.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Head_Helmet_Leather.sprite" />
+                <File Id="Head_Helmet_PlateSprite" Name="Head_Helmet_Plate.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Head_Helmet_Plate.sprite" />
+                <File Id="Head_Hood_ChainSprite" Name="Head_Hood_Chain.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Head_Hood_Chain.sprite" />
+                <File Id="Head_Hood_RobeSprite" Name="Head_Hood_Robe.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Head_Hood_Robe.sprite" />
+                <File Id="Humanoid_MaleSprite" Name="Humanoid_Male.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Humanoid_Male.sprite" />
+                <File Id="Humanoid_SkeletonSprite" Name="Humanoid_Skeleton.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Humanoid_Skeleton.sprite" />
+                <File Id="Legs_Pants_GreenSprite" Name="Legs_Pants_Green.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Legs_Pants_Green.sprite" />
+                <File Id="Legs_Pants_PlateSprite" Name="Legs_Pants_Plate.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Legs_Pants_Plate.sprite" />
+                <File Id="Legs_Skirt_RobeSprite" Name="Legs_Skirt_Robe.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Legs_Skirt_Robe.sprite" />
+                <File Id="Shoulder_LeatherSprite" Name="Shoulder_Leather.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Shoulder_Leather.sprite" />
+                <File Id="Shoulder_PlateSprite" Name="Shoulder_Plate.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Shoulder_Plate.sprite" />
+                <File Id="Torso_Armor_ChainSprite" Name="Torso_Armor_Chain.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Torso_Armor_Chain.sprite" />
+                <File Id="Torso_Armor_LeatherSprite" Name="Torso_Armor_Leather.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Torso_Armor_Leather.sprite" />
+                <File Id="Torso_Armor_PlateSprite" Name="Torso_Armor_Plate.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Torso_Armor_Plate.sprite" />
+                <File Id="Torso_Armor_PurpleSprite" Name="Torso_Armor_Purple.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Torso_Armor_Purple.sprite" />
+                <File Id="Torso_Shirt_Robe_BrownSprite" Name="Torso_Shirt_Robe_Brown.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Torso_Shirt_Robe_Brown.sprite" />
+                <File Id="Torso_Shirt_WhiteSprite" Name="Torso_Shirt_White.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Torso_Shirt_White.sprite" />
+                <File Id="Weapon_LongswordSprite" Name="Weapon_Longsword.sprite" Source="$(var.Scott.DungeonCrawler.Client.TargetDir)Content\sprites\Weapon_Longsword.sprite" />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </DirectoryRef>
+
+  </Fragment>
+</Wix>

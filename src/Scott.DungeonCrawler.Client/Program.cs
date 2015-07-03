@@ -19,7 +19,7 @@ using System.Threading;
 using Scott.Dungeon;
 using Scott.DungeonCrawler;
 
-namespace Scott.Forge.Client.WinDesktop
+namespace Scott.DungeonCrawler.Client
 {
 #if WINDOWS || XBOX
     static class Program

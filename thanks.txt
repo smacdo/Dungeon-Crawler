@@ -1,6 +1,6 @@
 Additional credits and contributions to Dungeon Crawler.
 
 Thanks to:
-    No one yet
+    J. W. Bjerk for the Painterly Spell Icons Pack
 
 See also the AUTHORS and ChangeLog files.

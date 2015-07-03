@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.7</ProductVersion>
+    <ProjectGuid>ab4e82c8-7fac-4a84-b0bf-1beff4468d4a</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>Scotts Dungeon Crawler Setup</OutputName>
+    <OutputType>Package</OutputType>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\Installer\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;build=debug</DefineConstants>
+    <SuppressValidation>True</SuppressValidation>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>build=Release</DefineConstants>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Files.wxs" />
+    <Compile Include="Product.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config.wxi" />
+    <Content Include="Notes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scott.DungeonCrawler.Client\Scott.DungeonCrawler.Client.csproj">
+      <Name>Scott.DungeonCrawler.Client</Name>
+      <Project>{efbbab7a-d346-42b9-bd6f-ac1d79eb97e5}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Scott.DungeonCrawler\Scott.DungeonCrawler.csproj">
+      <Name>Scott.DungeonCrawler</Name>
+      <Project>{2c789b85-9a6f-4700-a067-cff2091f3b35}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
+      <Name>Scott.Forge.Engine</Name>
+      <Project>{07aaa29b-1006-4074-9c1f-ac12f09c35a6}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Scott.Forge\Scott.Forge.csproj">
+      <Name>Scott.Forge</Name>
+      <Project>{fa4be4b8-5043-46e9-a43a-0575e8c56dc9}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

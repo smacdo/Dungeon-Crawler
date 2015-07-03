@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<Include>
+  <?define ProductBaseName = "Scott's Dungeon Crawler Game"?>
+  <?define ProductVersion = "0.0.3"?>
+  
+  <?define ProductUpgradeCode = "e6af1bbb-4470-40dc-8bd6-9121e0b0dd25"?>
+  <?define ProductManufacturer = "Scott MacDonald"?>
+  <?define ProductIcon = "Resources/Game.ico"?>
+  <?define HelpLink = "http://smacdo.com/"?>
+  <?define AboutLink = "http://smacdo.com/"?>
+  <?define ProgramFilesDirName = "Scotts Dungeon Crawler" ?>
+
+  <!-- 32/64 bit configuration -->
+  <?if $(var.Platform) = x64 ?>
+    <?define ProductName = "$(var.ProductBaseName) (64 bit)" ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?define ProductCode = "$(var.ProductCode64)" ?>
+  <?else ?>
+    <?define ProductName = "$(var.ProductBaseName)" ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?define ProductCode = "$(var.ProductCode32)" ?>
+  <?endif ?>
+</Include>

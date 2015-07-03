@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<?include "Config.wxi"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <!-- Dungeon Crawler Product -->
+  <Product
+    Id="$(var.ProductCode)"
+    Name="$(var.ProductName)"
+    Language="1033"
+    Version="$(var.ProductVersion)"
+    UpgradeCode="$(var.ProductUpgradeCode)"
+    Manufacturer="$(var.ProductManufacturer)">
+
+    <!-- Dungeon Crawler Product Package -->
+    <Package
+      Id="*"
+      Keywords="Installer"
+      Manufacturer="$(var.ProductManufacturer)"
+      Description="Installer for $(var.ProductName)"
+      Comments="Installs $(var.ProductName) on this computer"
+      InstallerVersion="200"
+      SummaryCodepage="1252"
+      Compressed="yes" />
+
+    <!-- CHECK: Windows 7 or later. -->
+    <Condition Message="This application is only supported on Windows 7 or higher.">
+      <![CDATA[Installed OR (VersionNT >= 601)]]>
+    </Condition>
+    
+    <!-- CHECK: .NET 4.5 or later. -->
+    <PropertyRef Id="NETFRAMEWORK45"/>
+
+    <Condition Message="This application requires .NET Framework 4.5. Please install .NET Framework 4.5 then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    </Condition>
+
+    <!-- Add / remove program property information -->
+    <Icon Id="ProductIcon" SourceFile="$(var.ProductIcon)"/>
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon"/>
+    <Property Id="ARPHELPLINK" Value="$(var.HelpLink)"/>
+    <Property Id="ARPURLINFOABOUT" Value="$(var.AboutLink)"/>
+    <Property Id="ARPNOREPAIR" Value="1"/>
+    <Property Id="ARPNOMODIFY" Value="1"/>
+
+    <!-- UI Configuration properties. -->
+    <UIRef Id="WixUI_Advanced" />
+    <Property Id="ApplicationFolderName" Value="$(var.ProgramFilesDirName)" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\..\docs\license.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\banner.bmp"/>
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\dialog.bmp"/>
+
+    <!-- Installation description.  -->
+    <Media Id="1" Cabinet="product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir"/>
+
+    <!-- Installation features -->
+    <Feature Id="GameExecutableFeature" Title="Game client" Level="1">
+      <ComponentRef Id="StartMenuEntriesComponent" />
+      <ComponentRef Id="GameExecutable" />
+      <ComponentRef Id="GameCommonLibraries" />
+      <ComponentRef Id="GameExeConfig" />
+      <ComponentRef Id="ProjectLooseFiles" />
+    </Feature>
+
+    <Feature Id="ThirdPartyLibrariesFeature" Title="Required 3rd party libraries" Level="1">
+      <ComponentRef Id="ExceptionReporterLibrary" />
+      <ComponentRef Id="SharpZipLib" />
+      <ComponentRef Id="MonoGame" />
+      <ComponentRef Id="SharpDX" />
+    </Feature>
+
+    <Feature Id="GameDebugFeature" Title="Game client debug symbols" Level="1">
+      <ComponentRef Id="GamePdb" />
+    </Feature>
+
+    <Feature Id="GameContentFeature" Title="Dungeon crawler content" Level="1">
+      <ComponentRef Id="GameRootContent" />
+      <ComponentRef Id="GameSpritesContent" />
+      <ComponentRef Id="GameSpriteAtlasesContent" />
+    </Feature>
+  </Product>
+</Wix>

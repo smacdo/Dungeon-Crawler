@@ -8,8 +8,8 @@
     <ProjectGuid>{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Scott.Forge.Client.WinDesktop</RootNamespace>
-    <AssemblyName>Scott.Forge.Client.WinDesktop</AssemblyName>
+    <RootNamespace>Scott.DungeonCrawler.Client</RootNamespace>
+    <AssemblyName>DungeonCrawler</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />

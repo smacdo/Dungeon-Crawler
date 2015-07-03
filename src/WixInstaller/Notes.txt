@@ -1,0 +1,3 @@
+﻿
+64 bit configurability:
+http://stackoverflow.com/questions/6231950/using-wix-to-create-32bit-and-64bit-installers-from-one-wxs-file
