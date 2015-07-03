@@ -58,6 +58,54 @@
     <Prefer32Bit>false</Prefer32Bit>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugRelease|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)</IntermediateOutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugRelease|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExceptionReporter.WinForms, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -143,13 +191,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <!-- Pre and post build steps -->
-  <ItemDefinitionGroup>
-    <PostBuildEvent>
-      <Message>Copying game content to output directory</Message>
-      <Command>copy /Y "$(SolutionDir)\$(Content)" "$(SolutionDir)\build\dist\$(Platform)\$(Configuration)\$(MSBuildProjectName)\content\"</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>

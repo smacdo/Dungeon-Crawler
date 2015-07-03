@@ -23,7 +23,7 @@
 -dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\Installer\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>build=Release</DefineConstants>
     <CompilerAdditionalOptions>-ext WixNetFxExtension
@@ -31,6 +31,112 @@
     <LinkerAdditionalOptions>-ext WixUIExtension
 -cultures:en-US
 -ext WixNetFxExtension</LinkerAdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugRelease|x86' ">
+    <DefineConstants>Debug;build=debug</DefineConstants>
+    <SuppressValidation>True</SuppressValidation>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\Installer\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugRelease|AnyCPU' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugRelease|Any CPU' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;build=debug</DefineConstants>
+    <SuppressValidation>True</SuppressValidation>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineConstants>build=Release</DefineConstants>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\Installer\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;build=debug</DefineConstants>
+    <SuppressValidation>True</SuppressValidation>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineConstants>build=Release</DefineConstants>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;build=debug</DefineConstants>
+    <SuppressValidation>True</SuppressValidation>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineConstants>build=Release</DefineConstants>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;build=debug</DefineConstants>
+    <SuppressValidation>True</SuppressValidation>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineConstants>build=Release</DefineConstants>
+    <CompilerAdditionalOptions>-ext WixNetFxExtension
+-dProductCode32=9c554296-c024-48b0-a82f-e4c2894a564d -dProductCode64=d6e7199d-ac15-4e04-b305-027348c6bd1f</CompilerAdditionalOptions>
+    <LinkerAdditionalOptions>-ext WixUIExtension
+-cultures:en-US
+-ext WixNetFxExtension</LinkerAdditionalOptions>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugRelease|x64' ">
+    <OutputPath>..\..\build\dist\$(Platform)\$(Configuration)\Installer\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Files.wxs" />
