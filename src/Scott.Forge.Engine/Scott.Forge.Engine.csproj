@@ -75,7 +75,9 @@
     <Compile Include="Graphics\IDrawable.cs" />
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Graphics\Screen.cs" />
-    <Compile Include="Sprites\LayeredSpriteComponent.cs" />
+    <Compile Include="Graphics\TextureCache.cs" />
+    <Compile Include="Sprites\ActorSpriteComponentProcessor.cs" />
+    <Compile Include="Sprites\ActorSpriteComponent.cs" />
     <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="Sprites\SpriteComponent.cs" />
     <Compile Include="Sprites\AnimationDefinition.cs" />

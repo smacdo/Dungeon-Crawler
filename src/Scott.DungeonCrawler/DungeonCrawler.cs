@@ -51,7 +51,8 @@ namespace Scott.DungeonCrawler
         private readonly GraphicsDeviceManager mGraphicsDevice;
         private GameObject mPlayer;
         private List<GameObject> mEnemies = new List<GameObject>();
-        
+
+        private ActorSpriteProcessor mActorSpriteProcessor = new ActorSpriteProcessor();
         private SpriteProcessor mSpriteProcessor = new SpriteProcessor();
         private MovementProcessor mMovementProcessor = new MovementProcessor();
         private ActorProcessor mActorProcessor = new ActorProcessor();
@@ -96,6 +97,7 @@ namespace Scott.DungeonCrawler
             // Initialize default game level.
             mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent)
             {
+                ActorSpriteProcessor = mActorSpriteProcessor,
                 SpriteProcessor = mSpriteProcessor,
                 MovementProcessor = mMovementProcessor,
                 ActorProcessor = mActorProcessor,
@@ -243,6 +245,7 @@ namespace Scott.DungeonCrawler
             // Make sure animations are primed and updated (we need to trigger the
             // correct animation events even if we are not drawwing)
             mSpriteProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            mActorSpriteProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Update( gameTime );
 
@@ -256,8 +259,9 @@ namespace Scott.DungeonCrawler
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            // Walk through the game scene and collect all sprites for drawing
+            // Walk through the game scene and collect all sprites for drawing.
             mSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            mActorSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Draw all requested game sprites
             GameRoot.Renderer.DrawScreen( gameTime );

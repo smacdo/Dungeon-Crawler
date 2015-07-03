@@ -20,9 +20,9 @@ namespace Scott.Forge.Engine.Sprites
     /// <summary>
     ///  Processes sprite components.
     /// </summary>
-    public class SpriteProcessor : ComponentProcessor<SpriteComponent>
+    public class ActorSpriteProcessor : ComponentProcessor<ActorSpriteComponent>
     {
-        protected override void UpdateComponent(SpriteComponent component, double currentTime, double deltaTime)
+        protected override void UpdateComponent(ActorSpriteComponent component, double currentTime, double deltaTime)
         {
             component.Update(currentTime, deltaTime);
         }
