@@ -91,6 +91,9 @@ namespace Scott.DungeonCrawler.GameObjects
             var movement = MovementProcessor.Add(player);
             movement.MoveBox = new RectF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
 
+            // Add actor component.
+            var actor = ActorProcessor.Add(player);
+
             return player;
         }
 
