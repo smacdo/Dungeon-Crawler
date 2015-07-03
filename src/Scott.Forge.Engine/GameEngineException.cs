@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,22 @@
 namespace Scott.Forge.Engine
 {
     /// <summary>
-    ///  Represents an exception with the game engine.
+    ///  Game engine core exception.
     /// </summary>
     public class GameEngineException : ForgeException
     {
-        public GameEngineException( string message )
-            : base( message )
+        public GameEngineException()
+            : base()
         {
         }
 
-        public GameEngineException( string message, System.Exception innerException )
-            : base( message, innerException )
+        public GameEngineException(string message)
+            : base(message)
+        {
+        }
+
+        public GameEngineException(string message, System.Exception innerException)
+            : base(message, innerException)
         {
         }
     }

@@ -17,7 +17,7 @@ using System;
 using Scott.Forge;
 using Scott.Forge.Engine;
 using Scott.Forge.Engine.Actors;
-using Scott.Forge.Engine.Graphics;
+using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 
 namespace Scott.DungeonCrawler.Actions

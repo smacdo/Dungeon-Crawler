@@ -15,6 +15,7 @@
  */
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Engine.Sprites;
 
 namespace Scott.Forge.Engine.Movement
 {
@@ -96,7 +97,7 @@ namespace Scott.Forge.Engine.Movement
             var sprite = owner.Get<SpriteComponent>();
             var direction = owner.Transform.Direction;
 
-            if ( movement.StartedMovingThisFrame )
+            /*if ( movement.StartedMovingThisFrame )
             {
                 sprite.PlayAnimationLooping("Walk", direction);
             }
@@ -107,7 +108,7 @@ namespace Scott.Forge.Engine.Movement
             else if ( movement.StoppedMovingThisFrame )
             {
                 sprite.PlayAnimationLooping("Idle", direction);
-            }
+            }*/
         }
 
         /// <summary>

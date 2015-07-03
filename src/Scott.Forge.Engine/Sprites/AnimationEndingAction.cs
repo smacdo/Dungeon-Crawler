@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2013 Scott MacDonald.
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Scott.Forge.Engine.Graphics
+
+namespace Scott.Forge.Engine.Sprites
 {
-    public class SpriteException : GameEngineException
+    /// <summary>
+    /// The action to perform when an action has ended
+    /// </summary>
+    public enum AnimationEndingAction
     {
-        public SpriteException( string message )
-            : base( message )
-        {
-            // empty
-        }
+        Stop,         // Freeze on the last played animation frame
+        Loop,         // Restart on animation frame zero and continue animating
+        StopAndReset, // Freeze on the first animation frame
     }
 }

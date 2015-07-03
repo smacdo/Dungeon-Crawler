@@ -20,14 +20,15 @@ using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Scott.Forge.Engine.Graphics;
+using Scott.Forge.Engine.Sprites;
 
 namespace Scott.Forge.Engine.Content
 {
     /// <summary>
     ///  Responsible for loading SpriteData instances from an input stream.
     /// </summary>
-    [ContentReaderAttribute( typeof( SpriteData ), ".sprite" )]
-    internal class SpriteContentReader : ContentReader<SpriteData>
+    [ContentReaderAttribute( typeof( SpriteDefinition ), ".sprite" )]
+    internal class SpriteContentReader : ContentReader<SpriteDefinition>
     {
         /// <summary>
         ///  Constructor.
@@ -42,7 +43,7 @@ namespace Scott.Forge.Engine.Content
         ///  Construct a new SpriteData instance from disk.
         /// </summary>
         /// <returns>SpriteData instance.</returns>
-        public override SpriteData Read( Stream input,
+        public override SpriteDefinition Read( Stream input,
                                          string assetName,
                                          string contentDir,
                                          ContentManagerX content )
@@ -60,7 +61,7 @@ namespace Scott.Forge.Engine.Content
         /// <param name="contentDir"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        private SpriteData ImportSpriteData( XmlNode spriteNode, string contentDir, ContentManagerX content )
+        private SpriteDefinition ImportSpriteData( XmlNode spriteNode, string contentDir, ContentManagerX content )
         {
             XmlNodeList animationNodes = spriteNode.SelectNodes( "animation" );
 
@@ -95,19 +96,19 @@ namespace Scott.Forge.Engine.Content
             }
 
             // Iterate through all the animation nodes, and process them
-            List<AnimationData> animations = new List<AnimationData>( animationNodes.Count );
+            List<AnimationDefinition> animations = new List<AnimationDefinition>( animationNodes.Count );
 
             foreach ( XmlNode animNode in animationNodes )
             {
-                AnimationData animation = ImportAnimationData( animNode, spriteWidth, spriteHeight );
+                AnimationDefinition animation = ImportAnimationData( animNode, spriteWidth, spriteHeight );
                 animations.Add( animation );
             }
 
             // All done, return the imported sprite
-            return new SpriteData( spriteName, atlas, defaultAnimation, defaultDirection, animations );
+            return new SpriteDefinition( spriteName, atlas, defaultAnimation, defaultDirection, animations );
         }
 
-        private AnimationData ImportAnimationData( XmlNode animNode, int spriteWidth, int spriteHeight )
+        private AnimationDefinition ImportAnimationData( XmlNode animNode, int spriteWidth, int spriteHeight )
         {
             // Read animation header values
             string animationName  = animNode.Attributes["name"].Value;
@@ -139,12 +140,12 @@ namespace Scott.Forge.Engine.Content
 
             // Now create a list to store all of four of the animatable directions and shove each
             // group's rectangles in.
-            var allFrames = new List<List<Rectangle>>( Constants.DirectionCount );
+            var allFrames = new List<List<RectF>>( Constants.DirectionCount );
 
             for (int dirIndex = 0; dirIndex < Constants.DirectionCount; ++dirIndex)
             {
                 XmlNodeList frameNodes = frameGroupsTable[(DirectionName) dirIndex];    // TODO: Remove cast?
-                var frames = new List<Rectangle>();
+                var frames = new List<RectF>();
 
                 // Iterate though all the frames in the animation
                 foreach ( XmlNode frameNode in frameNodes )
@@ -152,14 +153,14 @@ namespace Scott.Forge.Engine.Content
                     int x = Convert.ToInt32( frameNode.Attributes["x"].Value );
                     int y = Convert.ToInt32( frameNode.Attributes["y"].Value );
 
-                    frames.Add( new Rectangle( x, y, spriteWidth, spriteHeight ) );
+                    frames.Add( new RectF( x, y, spriteWidth, spriteHeight ) );
                 }
 
                 allFrames.Add( frames );
             }
 
             // Add the animation to the sprite object
-            return new AnimationData( animationName, frameTime, allFrames );
+            return new AnimationDefinition( animationName, frameTime, allFrames );
         }
     }
 }

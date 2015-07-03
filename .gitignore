@@ -34,3 +34,11 @@ TestResult.xml
 *.cache
 /src/Scott.Forge.Tests/obj/Release
 /cubeworld/
+/src/Scott.DungeonCrawler.Client/obj
+/src/Scott.Forge/obj
+/src/Scott.Forge.Engine/obj
+/src/Scott.Forge.Engine.Tests/obj
+/src/Scott.Forge.Game.Tests/obj
+/src/Scott.Forge.Tests/obj
+/src/WixInstaller/bin/Release
+/src/WixInstaller/obj/Release

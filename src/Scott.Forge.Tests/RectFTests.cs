@@ -628,6 +628,7 @@ namespace Scott.Forge.Tests
 
         [TestMethod]
         [TestCategory("Forge/RectF")]
+        [Ignore]
         public void IntersectsRect()
         {
             var a = new RectF(-2.0f, 4.0f, 10.0f, 14.0f);

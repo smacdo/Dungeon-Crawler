@@ -26,6 +26,7 @@ using Scott.Forge.Engine.Content;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.Engine.Input;
 using Scott.Forge.Engine.Movement;
+using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
@@ -155,6 +156,11 @@ namespace Scott.DungeonCrawler
             GameRoot.Enemies.Add( skeleton );
             mEnemyCount += 1;
             mEnemies.Add(skeleton);
+
+            // temp hack
+            skeleton.Transform.Direction = (DirectionName) GameRoot.Random.Next(0, 3);
+
+            skeleton.Get<SpriteComponent>().PlayAnimation("Walk", skeleton.Transform.Direction, AnimationEndingAction.Loop);
         }
 
         /// <summary>

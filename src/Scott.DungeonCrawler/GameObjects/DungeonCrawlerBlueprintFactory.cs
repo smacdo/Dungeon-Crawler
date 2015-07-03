@@ -19,7 +19,7 @@ using Scott.Forge;
 using Scott.Forge.Content;
 using Scott.Forge.Engine.Actors;
 using Scott.Forge.Engine.Ai;
-using Scott.Forge.Engine.Content;
+using Scott.Forge.Engine.Sprites;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.Engine.Movement;
 using Scott.Forge.GameObjects;
@@ -76,16 +76,16 @@ namespace Scott.DungeonCrawler.GameObjects
             // Create the sprite and set it up.
             var sprite = SpriteProcessor.Add(player);
 
-            sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Male" ) );
+            sprite.SetSprite( Content.Load<SpriteDefinition>( "sprites/Humanoid_Male" ) );
 
-            sprite.AddLayer( "Torso", Content.Load<SpriteData>( "sprites/Torso_Armor_Leather" ) );
-            sprite.AddLayer( "Legs", Content.Load<SpriteData>( "sprites/Legs_Pants_Green" ) );
-            sprite.AddLayer( "Feet", Content.Load<SpriteData>( "sprites/Feet_Shoes_Brown" ) );
-            sprite.AddLayer( "Head", Content.Load<SpriteData>( "sprites/Head_Helmet_Chain" ) );
-            sprite.AddLayer( "Bracer", Content.Load<SpriteData>( "sprites/Bracer_Leather" ) );
-            sprite.AddLayer( "Shoulder", Content.Load<SpriteData>( "sprites/Shoulder_Leather" ) );
-            sprite.AddLayer( "Belt", Content.Load<SpriteData>( "sprites/Belt_Leather" ) );
-            sprite.AddLayer( "Weapon", Content.Load<SpriteData>( "sprites/Weapon_Longsword" ), false );
+            sprite.AddLayer( "Torso", Content.Load<SpriteDefinition>( "sprites/Torso_Armor_Leather" ) );
+            sprite.AddLayer( "Legs", Content.Load<SpriteDefinition>( "sprites/Legs_Pants_Green" ) );
+            sprite.AddLayer( "Feet", Content.Load<SpriteDefinition>( "sprites/Feet_Shoes_Brown" ) );
+            sprite.AddLayer( "Head", Content.Load<SpriteDefinition>( "sprites/Head_Helmet_Chain" ) );
+            sprite.AddLayer( "Bracer", Content.Load<SpriteDefinition>( "sprites/Bracer_Leather" ) );
+            sprite.AddLayer( "Shoulder", Content.Load<SpriteDefinition>( "sprites/Shoulder_Leather" ) );
+            sprite.AddLayer( "Belt", Content.Load<SpriteDefinition>( "sprites/Belt_Leather" ) );
+            sprite.AddLayer( "Weapon", Content.Load<SpriteDefinition>( "sprites/Weapon_Longsword" ), false );
 
             // Add movement component.
             var movement = MovementProcessor.Add(player);
@@ -93,7 +93,6 @@ namespace Scott.DungeonCrawler.GameObjects
 
             // Add actor component.
             var actor = ActorProcessor.Add(player);
-
             return player;
         }
 
@@ -102,7 +101,7 @@ namespace Scott.DungeonCrawler.GameObjects
             var enemy = new GameObject("skeleton");
             var sprite = SpriteProcessor.Add(enemy);
 
-            sprite.AssignRootSprite( Content.Load<SpriteData>( "sprites/Humanoid_Skeleton" ) );
+            sprite.SetSprite( Content.Load<SpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
 
             ActorProcessor.Add(enemy);
             AiProcessor.Add(enemy);

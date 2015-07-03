@@ -67,6 +67,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sprites\AnimationDefinitionTests.cs" />
+    <Compile Include="Sprites\SpriteTests.cs" />
+    <Compile Include="Sprites\SpriteDefinitionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
@@ -79,7 +82,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\" />
     <Folder Include="GameObjects\" />
     <Folder Include="GameStates\" />
     <Folder Include="Input\" />
