@@ -46,13 +46,13 @@ namespace Scott.Forge
                 throw new ArgumentException("Rotation must be [0, 360]", "rotation");
             }
 
-            if (rotation < 45.0)
+            if (rotation < 45.0f)
             {
                 return DirectionName.East;
             }
             else if (rotation < 135.0)
             {
-                return DirectionName.North;
+                return DirectionName.South;
             }
             else if (rotation < 225.0)
             {
@@ -60,7 +60,7 @@ namespace Scott.Forge
             }
             else if (rotation < 315.0)
             {
-                return DirectionName.South;
+                return DirectionName.North;
             }
             else
             {
@@ -70,10 +70,9 @@ namespace Scott.Forge
 
         public static DirectionName FromVector(Vector2 vector)
         {
-            // TODO: Fixme.
-            float angle = (float) Math.Tan(vector.X/vector.Y);
-            float radians = MathHelper.RadianToDegree(angle);
-            return FromRotationAngle(MathHelper.Wrap(radians, 0.0f, 360.0f));
+            float angle = (float) Math.Atan2(vector.Y, vector.X);
+            float degrees = MathHelper.RadianToDegree(angle);
+            return FromRotationAngle(MathHelper.Wrap(degrees, 0.0f, 360.0f));
         }
 
         /// <summary>
@@ -92,16 +91,16 @@ namespace Scott.Forge
             switch (direction)
             {
                 case DirectionName.North:
-                    return 90.0f;
+                    return 270.0f;
 
                 case DirectionName.South:
-                    return 270.0f;
+                    return 90.0f;
 
                 case DirectionName.West:
                     return 180.0f;
 
                 case DirectionName.East:
-                    return 90.0f;
+                    return 0.0f;
 
                 default:
                     throw new ArgumentException("Why on earth is there a fifth direction?");

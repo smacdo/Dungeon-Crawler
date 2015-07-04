@@ -26,6 +26,7 @@ using Scott.Forge.Engine.Content;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.Engine.Input;
 using Scott.Forge.Engine.Movement;
+using Scott.Forge.Engine.Physics;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -55,6 +56,7 @@ namespace Scott.DungeonCrawler
         private ActorSpriteProcessor mActorSpriteProcessor = new ActorSpriteProcessor();
         private SpriteProcessor mSpriteProcessor = new SpriteProcessor();
         private MovementProcessor mMovementProcessor = new MovementProcessor();
+        private CollisionProcessor mCollisionProcessor = new CollisionProcessor();
         private ActorProcessor mActorProcessor = new ActorProcessor();
         private AiProcessor mAiProcessor = new AiProcessor();
 
@@ -101,7 +103,8 @@ namespace Scott.DungeonCrawler
                 SpriteProcessor = mSpriteProcessor,
                 MovementProcessor = mMovementProcessor,
                 ActorProcessor = mActorProcessor,
-                AiProcessor = mAiProcessor
+                AiProcessor = mAiProcessor,
+                CollisionProcessor = mCollisionProcessor
             };
 
             // Initialize input system with default settings.
@@ -142,6 +145,11 @@ namespace Scott.DungeonCrawler
         /// </summary>
         private void SpawnSkeleton()
         {
+            if (mEnemyCount >= 1)
+            {
+                return;
+            }
+
             // Spawn the skeleton enemy.
             GameObject skeleton = mGameObjectFactory.Instantiate("Skeleton");
 
@@ -149,10 +157,11 @@ namespace Scott.DungeonCrawler
             int width = Screen.Width - 64;
             int height = Screen.Height - 64;
 
+            /*
             var position = new Scott.Forge.Vector2( (int) ( GameRoot.Random.NextDouble() * width ),
-                                                    (int) ( GameRoot.Random.NextDouble() * height ) );
+                                                    (int) ( GameRoot.Random.NextDouble() * height ) );*/
 
-            skeleton.Transform.Position = position;
+            skeleton.Transform.Position = new Forge.Vector2(96, 32);
 
             // Add the newly spawned skeleton to our list of enemies.
             GameRoot.Enemies.Add( skeleton );
@@ -237,6 +246,7 @@ namespace Scott.DungeonCrawler
             // to do anything. Hence the current position of all objects (and collision)
             // that is displayed is actually one frame BEFORE this update
             mMovementProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            mCollisionProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Update game ai and character actions
             mAiProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);

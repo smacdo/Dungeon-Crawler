@@ -23,6 +23,7 @@ using Scott.Forge.Engine.Sprites;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.Engine.Movement;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Engine.Physics;
 
 namespace Scott.DungeonCrawler.GameObjects
 {
@@ -41,6 +42,8 @@ namespace Scott.DungeonCrawler.GameObjects
         public MovementProcessor MovementProcessor { get; set; }    // TODO: Remove.
         public ActorProcessor ActorProcessor { get; set; }          // TODO: Remove.
         public AiProcessor AiProcessor { get; set; }                // TODO: Remove.
+
+        public CollisionProcessor CollisionProcessor { get; set; }
 
         public DungeonCrawlerGameObjectFactory(IContentManager content)
         {
@@ -93,10 +96,17 @@ namespace Scott.DungeonCrawler.GameObjects
 
             // Add movement component.
             var movement = MovementProcessor.Add(player);
-            movement.MoveBox = new RectF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
+            movement.MoveBox = new RectF(new Vector2(15, 32), new SizeF(32, 50));
 
             // Add actor component.
             var actor = ActorProcessor.Add(player);
+
+            // Add collision.
+            var collision = CollisionProcessor.Add(player);
+            collision.Initialize(movement.MoveBox, new Vector2(16, 12));
+
+            // TODO: Test what happens when collision bounds is not set...
+
             return player;
         }
 
@@ -108,10 +118,13 @@ namespace Scott.DungeonCrawler.GameObjects
             sprite.SetSprite( Content.Load<SpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
 
             ActorProcessor.Add(enemy);
-            AiProcessor.Add(enemy);
-
+            //AiProcessor.Add(enemy);
+            
             var movement = MovementProcessor.Add(enemy);
-            movement.MoveBox = new RectF( new Vector2( 15, 32 ), new Vector2( 32, 32 ) );
+            movement.MoveBox = new RectF(new Vector2(129, 32), new SizeF(32, 50));
+
+            var collision = CollisionProcessor.Add(enemy);
+            collision.Initialize(movement.MoveBox, new Vector2(16, 14));
 
             return enemy;
         }

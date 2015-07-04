@@ -193,6 +193,7 @@ namespace Scott.Forge.Engine.Sprites
             if (AnimationFrameStartTime == TimeSpan.MinValue)        // start the clock
             {
                 AnimationFrameStartTime = totalGameTime;
+                AnimationFrameIndex = 0;
             }
 
             // How long does each frame last? When did we last flip a frame?

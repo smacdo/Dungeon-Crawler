@@ -135,8 +135,8 @@ namespace Scott.Forge.Engine.Sprites
         /// </summary>
         public Sprite Weapon
         {
-            get { return mSprites[(int) ActorSpriteLayer.Head]; }
-            set { mSprites[(int) ActorSpriteLayer.Head] = value; }
+            get { return mSprites[(int) ActorSpriteLayer.Weapon]; }
+            set { mSprites[(int) ActorSpriteLayer.Weapon] = value; }
         }
 
         /// <summary>

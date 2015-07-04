@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ namespace Scott.Forge.Engine.Movement
         public MovementComponent()
         {
             // Empty;
+            MaxSpeed = 16;
         }
 
         public Vector2 Acceleration { get; set; }
@@ -71,8 +72,6 @@ namespace Scott.Forge.Engine.Movement
             }
         }
 
-        public bool CollisionThisFrame { get; set; }
-
         /// <summary>
         ///  True if this is the update call that started the component moving.
         /// </summary>
@@ -87,6 +86,8 @@ namespace Scott.Forge.Engine.Movement
         ///  True if this is the update call that started the component moving.
         /// </summary>
         public bool ChangedDirectionThisFrame { get; set; }     // TODO: refer to internal movement data
+
+        public float MaxSpeed { get; set; }
 
         public void RequestMovement(DirectionName direction, float acceleration)
         {

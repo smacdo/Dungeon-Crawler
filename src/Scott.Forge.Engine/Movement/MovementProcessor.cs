@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2015 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Engine.Sprites;
+using System;
+using Scott.Forge.Engine.Physics;
 
 namespace Scott.Forge.Engine.Movement
 {
@@ -46,18 +48,25 @@ namespace Scott.Forge.Engine.Movement
             bool isMovingNow = false;
             var oldDirection = transform.Direction;
 
-            // Calculate our new potential position.
+            // Apply acceleration and friction.
             movement.Velocity += (movement.Acceleration * (float)deltaTime);
             movement.Velocity += (movement.Velocity.Normalized().Negated()*0.5f);       // bad way to do friction.
+
+            // Limit velocity to a maximum value.
+            //  TODO: Do this proper: http://answers.unity3d.com/questions/9985/limiting-rigidbody-velocity.html
+            if (movement.Velocity.LengthSquared > movement.MaxSpeed * movement.MaxSpeed)
+            {
+                movement.Velocity = movement.Velocity.Normalized() * movement.MaxSpeed;
+            }
+
+            // Calculate new position.
             var newPosition = transform.Position + (movement.Velocity * (float) deltaTime);
 
             // Check for collisions and other situations that can lead to an invalid position.
             RectF moveBox = movement.MoveBox;
             moveBox.Offset(newPosition);
 
-            bool isValidPosition = (IsInLevelBounds(moveBox) && !IsCollidingWithSomething(movement, moveBox));
-
-            if (isValidPosition)
+            if (IsInLevelBounds(moveBox))
             {
                 // Movement is valid, we can update the movement component with its newest position.
                 isMovingNow = movement.IsMoving;
@@ -66,18 +75,10 @@ namespace Scott.Forge.Engine.Movement
                 transform.Position = newPosition;
                 transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
             }
-            else
-            {
-                // TODO: Find a way to put us in a valid positiohn.
-            }
 
-            // Debugging aid to help visualize movement boundary box.
-            GameRoot.Debug.DrawRect(
-                moveBox, 
-                (isValidPosition ? Microsoft.Xna.Framework.Color.Yellow : Microsoft.Xna.Framework.Color.Red));
+            DrawDebugVisualization(movement, transform);
 
             // Update movement state flags.
-            movement.CollisionThisFrame = !isValidPosition;
             movement.StartedMovingThisFrame = (!wasMoving && isMovingNow);
             movement.StoppedMovingThisFrame = (wasMoving && !isMovingNow);
             movement.ChangedDirectionThisFrame = (oldDirection != transform.Direction);
@@ -89,37 +90,55 @@ namespace Scott.Forge.Engine.Movement
             UpdateAnimation(gameObject, movement );
         }
 
+        private void DrawDebugVisualization(MovementComponent movement, TransformComponent transform)
+        {
+            /*GameRoot.Debug.DrawText(
+                string.Format(
+                    "x: {0:0.0}, y: {1:0.0}, vx: {2:0.0}, vy: {3:0.0} ({4})",
+                    transform.Position.X,
+                    transform.Position.Y,
+                    movement.Velocity.X,
+                    movement.Velocity.Y,
+                    transform.Direction.ToString()),
+                transform.Position,
+                Microsoft.Xna.Framework.Color.Yellow);*/
+        }
+
         /// <summary>
         ///  Updates the movement component's animation.
         /// </summary>
-        public void UpdateAnimation( IGameObject owner, MovementComponent movement )
+        private void UpdateAnimation(IGameObject owner, MovementComponent movement)
         {
+            // Which animation do we play?
+            if (movement.StartedMovingThisFrame)
+            {
+                PlayAnimationOnObject(owner, "Walk");
+            }
+            else if (movement.IsMoving && movement.ChangedDirectionThisFrame)
+            {
+                PlayAnimationOnObject(owner, "Walk");
+            }
+            else if (movement.StoppedMovingThisFrame)
+            {
+                PlayAnimationOnObject(owner, "Idle");
+            }
+        }
+
+        public void PlayAnimationOnObject(IGameObject owner, string animationName)
+        {
+            // Play selected animation.
             var sprite = owner.Find<SpriteComponent>();
             var direction = owner.Transform.Direction;
 
             if (sprite != null)
             {
-                // do something...
+                sprite.PlayAnimationLooping("Walk", direction);
             }
             else
             {
                 var actorSprite = owner.Get<ActorSpriteComponent>();
-                // do something...
+                actorSprite.PlayAnimationOnBodyAndClothes(animationName, direction, AnimationEndingAction.Loop);
             }
-            
-
-            /*if ( movement.StartedMovingThisFrame )
-            {
-                sprite.PlayAnimationLooping("Walk", direction);
-            }
-            else if ( movement.IsMoving && movement.ChangedDirectionThisFrame )
-            {
-                sprite.PlayAnimationLooping("Walk", direction);
-            }
-            else if ( movement.StoppedMovingThisFrame )
-            {
-                sprite.PlayAnimationLooping("Idle", direction);
-            }*/
         }
 
         /// <summary>
@@ -134,33 +153,6 @@ namespace Scott.Forge.Engine.Movement
                    bounds.TopRight.X < Screen.Width &&
                    bounds.TopLeft.Y > 0 &&
                    bounds.BottomLeft.Y < Screen.Height;
-        }
-
-        /// <summary>
-        ///  Check if the given area is colliding with a movement component's movebox.
-        ///  TODO: This is a terrible N^2 algorithm... do something much better!
-        /// </summary>
-        /// <param name="movement"></param>
-        /// <returns></returns>
-        private bool IsCollidingWithSomething(MovementComponent self, RectF bounds)
-        {
-            foreach (var movement in mComponents)
-            {
-                if ( !ReferenceEquals( self, movement ) )
-                {
-                    var owner  = movement.Owner;
-                    var moveBox = movement.MoveBox;
-
-                    moveBox.Offset( owner.Transform.Position );
-
-                    if ( bounds.Intersects( moveBox ) )
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

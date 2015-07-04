@@ -164,21 +164,13 @@ namespace Scott.Forge.Engine.Graphics
         /// </summary>
         /// <param name="bounds">Size of the bounding area.</param>
         [Conditional( "DEBUG" )]
-        public void DrawBoundingArea( BoundingArea bounds )
+        public void DrawBoundingArea(BoundingArea bounds, Color color)
         {
-            DrawRect( bounds.BroadPhaseRectangle.ToXnaRectangle(), Color.Green );
+            DrawLine(bounds.UpperLeft, bounds.UpperRight, color);
+            DrawLine(bounds.UpperLeft, bounds.LowerLeft, color);
 
-            // Draw the bounding box that is possibly rotated
-            if ( bounds.Rotation != 0.0f )
-            {
-                Vector2 pos = bounds.WorldPosition;
-
-                DrawLine( bounds.UpperLeft + pos, bounds.UpperRight + pos, Color.Purple );
-                DrawLine( bounds.UpperLeft + pos, bounds.LowerLeft + pos, Color.Purple );
-
-                DrawLine( bounds.LowerRight + pos, bounds.UpperRight + pos, Color.Purple );
-                DrawLine( bounds.LowerRight + pos, bounds.LowerLeft + pos, Color.Purple );
-            }
+            DrawLine(bounds.LowerRight, bounds.UpperRight, color);
+            DrawLine(bounds.LowerRight, bounds.LowerLeft, color);
         }
 
         /// <summary>

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using System;
+using System.Diagnostics;
 
 namespace Scott.Forge
 {
@@ -31,6 +32,9 @@ namespace Scott.Forge
     /// 
     /// HUGE HELP: http://www.metanetsoftware.com/technique/tutorialA.html
     /// 
+    /// Excellent description of polygon collision + Response with C# code.
+    /// http://www.codeproject.com/Articles/15573/D-Polygon-Collision-Detection
+    /// 
     /// TESTS NEEDED:
     ///   Rotation
     ///   LocalOffset
@@ -40,43 +44,51 @@ namespace Scott.Forge
         public float Width { get; private set; }
         public float Height { get; private set; }
         public float Rotation { get; private set; }
-        public Vector2 WorldPosition { get; private set; }
-        public Vector2 LocalOffset { get; private set; }
-
-        /// <summary>
-        /// A rectangle that tightly encompasses the rotated rectangle.
-        /// </summary>
-        public RectF BroadPhaseRectangle;
+        public Vector2 WorldPosition { get; set; }
 
         public Vector2 Size { get { return new Vector2( Width, Height ); } }
+
+        public Vector2 UpperLeft { get { return WorldPosition + LocalUpperLeft; } }
+        public Vector2 UpperRight { get { return WorldPosition + LocalUpperRight; } }
+        public Vector2 LowerLeft { get { return WorldPosition + LocalLowerLeft; } }
+        public Vector2 LowerRight { get { return WorldPosition + LocalLowerRight; } }
 
         /// <summary>
         /// The rotated rectangle's upper left vertex. This is the original upper left vertex from
         /// the unrotated rectangle, so this value may or may not actually be the upper left most
         /// point.
         /// </summary>
-        public Vector2 UpperLeft { get; private set; }
+        public Vector2 LocalUpperLeft { get; private set; }
 
         /// <summary>
         /// The rotated rectangle's upper right vertex. This is the original upper right vertex from
         /// the unrotated rectangle, so this value may or may not actually be the upper right most
         /// point.
         /// </summary>
-        public Vector2 UpperRight { get; private set; }
+        public Vector2 LocalUpperRight { get; private set; }
 
         /// <summary>
         /// The rotated rectangle's lower left vertex. This is the original lower left vertex from
         /// the unrotated rectangle, so this value may or may not actually be the lower left most
         /// point.
         /// </summary>
-        public Vector2 LowerLeft { get; private set; }
+        public Vector2 LocalLowerLeft { get; private set; }
 
         /// <summary>
         /// The rotated rectangle's lower right vertex. This is the original lower right vertex from
         /// the unrotated rectangle, so this value may or may not actually be the lower right most
         /// point.
         /// </summary>
-        public Vector2 LowerRight { get; private set; }
+        public Vector2 LocalLowerRight { get; private set; }
+
+        /// <summary>
+        /// Bounding box constructor
+        /// </summary>
+        /// <param name="dimensions">Bounding box dimensions</param>
+        public BoundingArea(RectF box)
+            : this(box.TopLeft, new Vector2(box.Width, box.Height))
+        {
+        }
 
         /// <summary>
         /// Bounding box constructor
@@ -97,7 +109,6 @@ namespace Scott.Forge
             Height        = dimensions.Y;
             Rotation      = 0.0f;
             WorldPosition = topLeft + offset;
-            LocalOffset   = offset;
 
             RecalculateCachedCorners( Rotation, dimensions / 2.0f );
         }
@@ -109,55 +120,117 @@ namespace Scott.Forge
         public void Move( Vector2 delta )
         {
             WorldPosition += delta;
-
-            BroadPhaseRectangle.Y = (int) WorldPosition.Y;
-            BroadPhaseRectangle.X = (int) WorldPosition.X;
         }
 
         /// <summary>
         /// Check if the bounding rectangle intersects this bounding rectangle.
         /// </summary>
-        /// <param name="area"></param>
+        /// <param name="other"></param>
         /// <returns></returns>
-        public bool Intersects( BoundingArea area )
+        public bool Intersects(BoundingArea other, ref Vector2 minimumTranslationVector)
         {
-            // Quick check
-            if ( BroadPhaseRectangle.Intersects( area.BroadPhaseRectangle ) )
-            {
-                return true;
-            }
-
             // Generate the potential seperating axis vectors between our bounding rect
             // and the provided rect. We avoid the use of arrays here so we can avoid
             // garbage collection
-            Vector2 v0 = UpperRight - UpperLeft + WorldPosition;
-            Vector2 v1 = UpperRight - LowerRight + WorldPosition;
-            Vector2 v2 = area.UpperLeft - area.LowerLeft + WorldPosition;
-            Vector2 v3 = area.UpperLeft - area.UpperRight + WorldPosition;
+            Vector2 v0 = LocalUpperRight - LocalUpperLeft + WorldPosition;
+            Vector2 v1 = LocalUpperRight - LocalLowerRight + WorldPosition;
+            Vector2 v2 = other.LocalUpperLeft - other.LocalLowerLeft + WorldPosition;
+            Vector2 v3 = other.LocalUpperLeft - other.LocalUpperRight + WorldPosition;
 
-            return ( IsAxisCollision( area, v0 ) &&
-                     IsAxisCollision( area, v1 ) &&
-                     IsAxisCollision( area, v2 ) &&
-                     IsAxisCollision( area, v3 ) );
+            // Test for collision by seeing if the interval distance is less than zero. The sensitivity of the test can
+            // be tweaked by changing the < 0.0f to <= 0.0f. A symbol less than seems to allow for a small amount of
+            // overlap, while <= appears to trigger as soon as the lines intersect. Further testing required!
+            bool collides = true;
+            Vector2 translationAxis = Vector2.Zero;
+            float shortestDistance = 0;
+            float distance = 0.0f;
+
+            if ((distance = IsAxisCollision(other, v0)) < 0.0f)
+            {
+                distance = Math.Abs(distance);
+                Debug.WriteLine(string.Format("test v0 distance = {0}", distance));
+
+                translationAxis = v0;
+                shortestDistance = distance;
+            }
+            if ((distance = IsAxisCollision(other, v1)) < 0.0f)
+            {
+                distance = Math.Abs(distance);
+                Debug.WriteLine(string.Format("test v1 distance = {0}", distance));
+
+                if (distance < shortestDistance)
+                {
+                    translationAxis = v1;
+                    shortestDistance = distance;
+                }
+            }
+            else if ((distance = IsAxisCollision(other, v2)) < 0.0f)
+            {
+                distance = Math.Abs(distance);
+                Debug.WriteLine(string.Format("test v2 distance = {0}", distance));
+
+                if (distance < shortestDistance)
+                {
+                    translationAxis = v2;
+                    shortestDistance = distance;
+                }
+            }
+            else if ((distance = IsAxisCollision(other, v3)) < 0.0f)
+            {
+                distance = Math.Abs(distance);
+                Debug.WriteLine(string.Format("test v3 distance = {0}", distance));
+
+                if (distance < shortestDistance)
+                {
+                    translationAxis = v3;
+                    shortestDistance = distance;
+                }
+            }
+            else
+            {
+                collides = false;
+            }
+
+            // Blargh.
+            if (collides)
+            {
+                Vector2 move = WorldPosition - other.WorldPosition;
+                translationAxis = (translationAxis - WorldPosition).Normalized();
+                
+                if (Vector2.Dot(move, translationAxis) < 0)
+                {
+                    translationAxis = -translationAxis;
+                }
+
+                minimumTranslationVector = translationAxis * shortestDistance;
+
+                Debug.WriteLine(
+                    string.Format("collide tA1: {0}, sD: {1}, mTV: {2}",
+                    translationAxis,
+                    shortestDistance,
+                    minimumTranslationVector));
+            }
+
+            return collides;
         }
 
-        private bool IsAxisCollision( BoundingArea otherRect, Vector2 axis )
+        private float IsAxisCollision(BoundingArea otherRect, Vector2 axis)
         {
             // Project the four corners of the bounding box we are checking onto the axis,
             // and get a scalar value of that projection for comparison.
             Vector2 axisNormalized = Vector2.Normalize( axis );
 
-            float a0 = Vector2.Dot( otherRect.UpperLeft, axisNormalized );
-            float a1 = Vector2.Dot( otherRect.UpperRight, axisNormalized );
-            float a2 = Vector2.Dot( otherRect.LowerLeft, axisNormalized );
-            float a3 = Vector2.Dot( otherRect.LowerRight, axisNormalized );
+            float a0 = Vector2.Dot( otherRect.LocalUpperLeft, axisNormalized );
+            float a1 = Vector2.Dot( otherRect.LocalUpperRight, axisNormalized );
+            float a2 = Vector2.Dot( otherRect.LocalLowerLeft, axisNormalized );
+            float a3 = Vector2.Dot( otherRect.LocalLowerRight, axisNormalized );
 
             // Project the four corners of our bounding rect onto the requested axis, and
             // get scalar values for those projections
-            float b0 = Vector2.Dot( UpperLeft, axisNormalized );
-            float b1 = Vector2.Dot( UpperRight, axisNormalized );
-            float b2 = Vector2.Dot( LowerLeft, axisNormalized );
-            float b3 = Vector2.Dot( LowerRight, axisNormalized );
+            float b0 = Vector2.Dot( LocalUpperLeft, axisNormalized );
+            float b1 = Vector2.Dot( LocalUpperRight, axisNormalized );
+            float b2 = Vector2.Dot( LocalLowerLeft, axisNormalized );
+            float b3 = Vector2.Dot( LocalLowerRight, axisNormalized );
 
             // Get the maximum and minimum scalar values for each of the rectangles
             float aMin = Math.Min( Math.Min( a0, a1 ), Math.Min( a2, a3 ) );
@@ -165,10 +238,20 @@ namespace Scott.Forge
             float bMin = Math.Min( Math.Min( b0, b1 ), Math.Min( b2, b3 ) );
             float bMax = Math.Max( Math.Min( b0, b1 ), Math.Max( b2, b3 ) );
 
-            // Test if there is an overlap between the minimum of a and the maximum
-            // values of the two rectangles
-            return ( bMin <= aMax && bMax >= aMax ) ||
-                   ( aMin <= bMax && aMax >= bMax );
+            // Test if there is an overlap between the minimum of a and the maximum values of the two rectangles.
+            return IntervalDistance(aMin, aMax, bMin, bMax);
+        }
+
+        private float IntervalDistance(float aMin, float aMax, float bMin, float bMax)
+        {
+            if (aMin < bMin)
+            {
+                return bMin - aMax;
+            }
+            else
+            {
+                return aMin - bMax;
+            }
         }
 
         /// <summary>
@@ -183,23 +266,21 @@ namespace Scott.Forge
             Rotation = MathHelper.Wrap(radians, 0f, (float)Math.PI * 2.0f);     // TODO: Verify this is safe way to wrap angle?
 
             // Find unrotated vertex points
-            Vector2 oUpperLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y );
+            /*Vector2 oUpperLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y );
             Vector2 oUpperRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y );
             Vector2 oLowerLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y + Height );
-            Vector2 oLowerRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y + Height );
+            Vector2 oLowerRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y + Height )*/
+
+            Vector2 oUpperLeft  = new Vector2(0, 0);
+            Vector2 oUpperRight = new Vector2(Width, 0);
+            Vector2 oLowerLeft  = new Vector2(0, Height);
+            Vector2 oLowerRight = new Vector2(Width, Height);
 
             // Rotate and calculate our new rotated vertex points
-            UpperLeft  = RotatePoint( oUpperLeft, pivot, radians );
-            UpperRight = RotatePoint( oUpperRight, pivot, radians );
-            LowerLeft  = RotatePoint( oLowerLeft, pivot, radians );
-            LowerRight = RotatePoint( oLowerRight, pivot, radians );
-
-            // Calculate a broad phase bounding box
-            //  XXX: Do this better
-            BroadPhaseRectangle = new RectF( (int) Math.Round( WorldPosition.X ),
-                                             (int) Math.Round( WorldPosition.Y ),
-                                             (int) Math.Round( Width ),
-                                             (int) Math.Round( Height ) );
+            LocalUpperLeft  = RotatePoint( oUpperLeft, pivot, radians );
+            LocalUpperRight = RotatePoint( oUpperRight, pivot, radians );
+            LocalLowerLeft  = RotatePoint( oLowerLeft, pivot, radians );
+            LocalLowerRight = RotatePoint( oLowerRight, pivot, radians );
         }
 
         /// <summary>
@@ -220,15 +301,6 @@ namespace Scott.Forge
                 return new Vector2( (float) ( origin.X + ( vector.X - origin.X ) * Math.Cos( amount ) - ( vector.Y - origin.Y ) * Math.Sin( amount ) ),
                                     (float) ( origin.Y + ( vector.Y - origin.Y ) * Math.Cos( amount ) + ( vector.X - origin.X ) * Math.Sin( amount ) ) );
             }
-        }
-
-        public override string ToString()
-        {
-            return String.Format( "{{ x: {0}, y: {1}, w: {2}, h: {3} }}",
-                                  BroadPhaseRectangle.X,
-                                  BroadPhaseRectangle.Y,
-                                  BroadPhaseRectangle.Width,
-                                  BroadPhaseRectangle.Height );
         }
     }
 }

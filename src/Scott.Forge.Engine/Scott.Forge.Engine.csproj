@@ -76,6 +76,9 @@
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Graphics\Screen.cs" />
     <Compile Include="Graphics\TextureCache.cs" />
+    <Compile Include="Physics\CollisionComponent.cs" />
+    <Compile Include="Physics\CollisionProcessor.cs" />
+    <Compile Include="Physics\CollisionResult.cs" />
     <Compile Include="Sprites\ActorSpriteComponentProcessor.cs" />
     <Compile Include="Sprites\ActorSpriteComponent.cs" />
     <Compile Include="Sprites\Sprite.cs" />
