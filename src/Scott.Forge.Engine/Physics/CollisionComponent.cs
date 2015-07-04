@@ -47,11 +47,9 @@ namespace Scott.Forge.Engine.Physics
         public void Update()
         {
             var position = Owner.Transform.Position;
-            //Offset = Vector2.Zero;
             mBroadPhaseBox.Position = position + Offset;
             mBounds.WorldPosition = position + Offset;
             CollisionThisFrame = false;
-            System.Diagnostics.Debug.WriteLine("{0} update: {1}, {2}, {3}", Owner.Name, Owner.Transform.Position, position, Offset);
         }
 
         /// <summary>

@@ -140,81 +140,19 @@ namespace Scott.Forge
             // Test for collision by seeing if the interval distance is less than zero. The sensitivity of the test can
             // be tweaked by changing the < 0.0f to <= 0.0f. A symbol less than seems to allow for a small amount of
             // overlap, while <= appears to trigger as soon as the lines intersect. Further testing required!
-            bool collides = true;
-            Vector2 translationAxis = Vector2.Zero;
-            float shortestDistance = 0;
-            float distance = 0.0f;
+            bool collides = 
+                IsAxisCollision(other, v0) && IsAxisCollision(other, v1) &&
+                IsAxisCollision(other, v2) && IsAxisCollision(other, v3);
 
-            if ((distance = IsAxisCollision(other, v0)) < 0.0f)
-            {
-                distance = Math.Abs(distance);
-                Debug.WriteLine(string.Format("test v0 distance = {0}", distance));
-
-                translationAxis = v0;
-                shortestDistance = distance;
-            }
-            if ((distance = IsAxisCollision(other, v1)) < 0.0f)
-            {
-                distance = Math.Abs(distance);
-                Debug.WriteLine(string.Format("test v1 distance = {0}", distance));
-
-                if (distance < shortestDistance)
-                {
-                    translationAxis = v1;
-                    shortestDistance = distance;
-                }
-            }
-            else if ((distance = IsAxisCollision(other, v2)) < 0.0f)
-            {
-                distance = Math.Abs(distance);
-                Debug.WriteLine(string.Format("test v2 distance = {0}", distance));
-
-                if (distance < shortestDistance)
-                {
-                    translationAxis = v2;
-                    shortestDistance = distance;
-                }
-            }
-            else if ((distance = IsAxisCollision(other, v3)) < 0.0f)
-            {
-                distance = Math.Abs(distance);
-                Debug.WriteLine(string.Format("test v3 distance = {0}", distance));
-
-                if (distance < shortestDistance)
-                {
-                    translationAxis = v3;
-                    shortestDistance = distance;
-                }
-            }
-            else
-            {
-                collides = false;
-            }
-
-            // Blargh.
             if (collides)
             {
-                Vector2 move = WorldPosition - other.WorldPosition;
-                translationAxis = (translationAxis - WorldPosition).Normalized();
-                
-                if (Vector2.Dot(move, translationAxis) < 0)
-                {
-                    translationAxis = -translationAxis;
-                }
-
-                minimumTranslationVector = translationAxis * shortestDistance;
-
-                Debug.WriteLine(
-                    string.Format("collide tA1: {0}, sD: {1}, mTV: {2}",
-                    translationAxis,
-                    shortestDistance,
-                    minimumTranslationVector));
+                minimumTranslationVector = GetMinimumTranslationVector(this, other);
             }
 
             return collides;
         }
 
-        private float IsAxisCollision(BoundingArea otherRect, Vector2 axis)
+        private bool IsAxisCollision(BoundingArea otherRect, Vector2 axis)
         {
             // Project the four corners of the bounding box we are checking onto the axis,
             // and get a scalar value of that projection for comparison.
@@ -239,19 +177,7 @@ namespace Scott.Forge
             float bMax = Math.Max( Math.Min( b0, b1 ), Math.Max( b2, b3 ) );
 
             // Test if there is an overlap between the minimum of a and the maximum values of the two rectangles.
-            return IntervalDistance(aMin, aMax, bMin, bMax);
-        }
-
-        private float IntervalDistance(float aMin, float aMax, float bMin, float bMax)
-        {
-            if (aMin < bMin)
-            {
-                return bMin - aMax;
-            }
-            else
-            {
-                return aMin - bMax;
-            }
+            return (bMin <= aMax && bMax >= aMax) || (aMin <= bMax && aMax >= bMax);
         }
 
         /// <summary>
@@ -290,7 +216,7 @@ namespace Scott.Forge
         /// <param name="origin">Pivot to rotate around</param>
         /// <param name="amount">Amount of rotation to apply</param>
         /// <returns>Rotated vector</returns>
-        private Vector2 RotatePoint( Vector2 vector, Vector2 origin, float amount )
+        public static Vector2 RotatePoint( Vector2 vector, Vector2 origin, float amount )
         {
             if ( amount == 0 )
             {
@@ -301,6 +227,50 @@ namespace Scott.Forge
                 return new Vector2( (float) ( origin.X + ( vector.X - origin.X ) * Math.Cos( amount ) - ( vector.Y - origin.Y ) * Math.Sin( amount ) ),
                                     (float) ( origin.Y + ( vector.Y - origin.Y ) * Math.Cos( amount ) + ( vector.X - origin.X ) * Math.Sin( amount ) ) );
             }
+        }
+
+        // NOTE: THIS ONLY WORKS FOR AABB!! Once we resume rotating the bounding area we're kinda screwed and need to
+        // do the translation vector correctly.
+        public static Vector2 GetMinimumTranslationVector(BoundingArea a, BoundingArea b)
+        {
+            Vector2 result = Vector2.Zero;
+            float left = 0, right = 0, top = 0, bottom = 0;
+
+            // Axis
+            left = b.UpperLeft.X - a.UpperRight.X;
+            right = b.UpperRight.X - a.UpperLeft.X;
+            bottom = b.UpperLeft.Y - a.LowerLeft.Y;
+            top = b.LowerLeft.Y - a.UpperLeft.Y;
+
+
+            if (Math.Abs(left) > right)
+            {
+                result.X = right;
+            }
+            else
+            {
+                result.X = left;
+            }
+
+            if (Math.Abs(bottom) > top)
+            {
+                result.Y = top;
+            }
+            else
+            {
+                result.Y = bottom;
+            }
+
+            if (Math.Abs(result.X) < Math.Abs(result.Y))
+            {
+                result.Y = 0;
+            }
+            else
+            {
+                result.X = 0;
+            }
+
+            return result;
         }
     }
 }

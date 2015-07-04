@@ -145,11 +145,6 @@ namespace Scott.DungeonCrawler
         /// </summary>
         private void SpawnSkeleton()
         {
-            if (mEnemyCount >= 1)
-            {
-                return;
-            }
-
             // Spawn the skeleton enemy.
             GameObject skeleton = mGameObjectFactory.Instantiate("Skeleton");
 
@@ -157,11 +152,9 @@ namespace Scott.DungeonCrawler
             int width = Screen.Width - 64;
             int height = Screen.Height - 64;
 
-            /*
-            var position = new Scott.Forge.Vector2( (int) ( GameRoot.Random.NextDouble() * width ),
-                                                    (int) ( GameRoot.Random.NextDouble() * height ) );*/
-
-            skeleton.Transform.Position = new Forge.Vector2(96, 32);
+            skeleton.Transform.Position = new Scott.Forge.Vector2(
+                (int) ( GameRoot.Random.NextDouble() * width ),
+                (int) ( GameRoot.Random.NextDouble() * height ) );
 
             // Add the newly spawned skeleton to our list of enemies.
             GameRoot.Enemies.Add( skeleton );

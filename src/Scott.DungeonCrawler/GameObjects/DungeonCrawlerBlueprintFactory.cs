@@ -118,7 +118,7 @@ namespace Scott.DungeonCrawler.GameObjects
             sprite.SetSprite( Content.Load<SpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
 
             ActorProcessor.Add(enemy);
-            //AiProcessor.Add(enemy);
+            AiProcessor.Add(enemy);
             
             var movement = MovementProcessor.Add(enemy);
             movement.MoveBox = new RectF(new Vector2(129, 32), new SizeF(32, 50));

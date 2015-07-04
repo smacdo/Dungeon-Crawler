@@ -94,22 +94,9 @@ namespace Scott.Forge.Engine.Physics
                 var first = collisions[i].First;
                 var second = collisions[i].Second;
 
-
                 if (first.Bounds.Intersects(second.Bounds, ref minimumTranslation))
                 {
-                    Debug.WriteLine(
-                        string.Format(
-                            "Collision! A: {0}, B: {1}, mT: {2}",
-                            first.BroadPhaseBox.Position,
-                            second.BroadPhaseBox.Position,
-                            minimumTranslation));
-
-                    aaafirst.Owner.Transform.Position += minimumTranslation;
-
-                    GameRoot.Debug.DrawLine(
-                        second.Bounds.WorldPosition,
-                        second.Bounds.WorldPosition + minimumTranslation,
-                        Microsoft.Xna.Framework.Color.Orange);
+                    first.Owner.Transform.Position += minimumTranslation;
                 }
             }
         }

@@ -33,7 +33,7 @@ namespace Scott.Forge.Engine.Movement
         public MovementComponent()
         {
             // Empty;
-            MaxSpeed = 16;
+            MaxSpeed = 128;
         }
 
         public Vector2 Acceleration { get; set; }
