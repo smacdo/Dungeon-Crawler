@@ -3,6 +3,10 @@
 <Include>
   <?define ProductBaseName = "Scott's Dungeon Crawler Game"?>
   <?define ProductVersion = "0.0.3"?>
+  <?define ProductShortcutTitle = "Scott's Dungeon Crawler Game"?>
+  <?define StartMenuFolderName = "Scott's Dungeon Crawler Game"?>
+  <?define RegKeyCompanyName = "ScottMacDonald" ?>
+  <?define RegKeyProductName = "DungeonCrawler" ?>
   
   <?define ProductUpgradeCode = "e6af1bbb-4470-40dc-8bd6-9121e0b0dd25"?>
   <?define ProductManufacturer = "Scott MacDonald"?>

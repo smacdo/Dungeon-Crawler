@@ -17,12 +17,12 @@
         into the start menu!
       -->
       <Directory Id='ProgramMenuFolder' Name='Programs'>
-        <Directory Id='MyGameProgramMenuFolder' Name='Dungeon Crawler'>
+        <Directory Id='MyGameProgramMenuFolder' Name='$(var.StartMenuFolderName)'>
           <Component Id="StartMenuEntriesComponent" Guid="76eae710-a0fa-47c1-950a-56bd76d1dddc" DiskId="1">
             <RemoveFolder Id='MyGameProgramMenuFolder' On='uninstall' />
             <RegistryValue
               Root='HKCU'
-              Key='SOFTWARE\ScottMacDonald\Dungeon Crawler'
+              Key='SOFTWARE\$(var.RegKeyCompanyName)\$(var.RegKeyProductName)'
               Type='string'
               Value='Installed'
               KeyPath='yes'
@@ -74,15 +74,16 @@
                   Source="$(var.Scott.DungeonCrawler.Client.TargetPath)">
               <Shortcut
                 Id="MyGameShortcut"
-                Name="Dungeon Crawler"
+                Name="$(var.ProductShortcutTitle)"
                 Directory="MyGameProgramMenuFolder"
                 Advertise="yes"
                 WorkingDirectory="APPLICATIONFOLDER" />
 
-              <!-- Uncomment to enable ngen (TODO: Set up installer for 32/64 combined). -->
-              <!--
-              <netfx:NativeImage Id="ngen_GameExecutable" Platform="32bit" Priority="0" AppBaseDirectory="APPLICATIONFOLDER"/>
-              -->
+              <?if $(var.Platform) = x64 ?>
+                <netfx:NativeImage Id="ngen_GameExecutable" Platform="64bit" Priority="0" AppBaseDirectory="APPLICATIONFOLDER"/>
+              <?else ?>
+                <netfx:NativeImage Id="ngen_GameExecutable" Platform="32bit" Priority="0" AppBaseDirectory="APPLICATIONFOLDER"/>
+              <?endif ?>
             </File>
           </Component>
 
