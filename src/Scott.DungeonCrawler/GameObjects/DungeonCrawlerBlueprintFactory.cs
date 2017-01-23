@@ -38,7 +38,7 @@ namespace Scott.DungeonCrawler.GameObjects
     {
         public IContentManager Content { get; set; }
         public ActorSpriteProcessor ActorSpriteProcessor { get; set; }        // TODO: Remove.
-        public SpriteProcessor SpriteProcessor { get; set; }        // TODO: Remove.
+        public SpriteComponentProcessor SpriteProcessor { get; set; }        // TODO: Remove.
         public MovementProcessor MovementProcessor { get; set; }    // TODO: Remove.
         public ActorProcessor ActorProcessor { get; set; }          // TODO: Remove.
         public AiProcessor AiProcessor { get; set; }                // TODO: Remove.

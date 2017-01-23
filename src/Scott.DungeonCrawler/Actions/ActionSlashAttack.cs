@@ -85,7 +85,7 @@ namespace Scott.DungeonCrawler.Actions
 
                     // Enable the weapon sprite, and animate the attack
                     sprite.PlayAnimation( "Slash", direction );
-                    sprite.EnableLayer( "Weapon", true );
+                    //sprite.EnableLayer( "Weapon", true );
                     break;
 
                 case ActionAttackStatus.StartingUp:
@@ -101,7 +101,7 @@ namespace Scott.DungeonCrawler.Actions
                     if (mTimeStarted.Add(actionTimeSpan) <= currentTime)
                     {
                         // Disable the weapon sprite now that the attack has finished
-                        sprite.EnableLayer( "Weapon", false );
+                        //sprite.EnableLayer( "Weapon", false );
                         mAttackStatus = ActionAttackStatus.Finished;
                     }
                     else

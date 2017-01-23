@@ -21,6 +21,7 @@ namespace Scott.Forge.Engine.Sprites
 {
     /// <summary>
     ///  A sprite is a 2d image that can hold one or more animations.
+    ///  TODO: Delete once this folded into SpriteComponent.
     /// </summary>
     public class Sprite
     {

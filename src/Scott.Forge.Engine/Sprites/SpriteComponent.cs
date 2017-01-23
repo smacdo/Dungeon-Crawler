@@ -15,6 +15,7 @@
  */
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Scott.Forge.GameObjects;
 
 namespace Scott.Forge.Engine.Sprites
@@ -23,33 +24,95 @@ namespace Scott.Forge.Engine.Sprites
     ///  The sprite component represents a sprite visible to the camera. Supports a single renderable sprite, or a
     ///  multiple sprites composited together.
     /// </summary>
-    /// <remarks>
-    ///  TODO: Consider breaking this class apart into SpriteComponent and CompositeSpriteComponent.
-    /// </remarks>
     public class SpriteComponent : Component
     {
-        // Sprite data that this sprite is using
-        private Sprite mRootSprite;
-
-        private List<Sprite> mSpriteList;
-        private Dictionary<string, Sprite> mSpriteLayers;
+        private SpriteDefinition[] mSprites;
+        private Rectangle[] mSpriteRects;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public SpriteComponent()
         {
-            mSpriteList = new List<Sprite>(1);
+            mSprites = new SpriteDefinition[1];
+            mSpriteRects = new Rectangle[1];
         }
+
+        /// <summary>
+        ///  Get the current animation frame index.
+        /// </summary>
+        /// <remarks>
+        ///  This should be changed only by animation routines.
+        /// </remarks>
+        public int AnimationFrameIndex { get; internal set; }
+
+        /// <summary>
+        ///  Get the time that the current animation frame was first shown.
+        /// </summary>
+        public TimeSpan AnimationFrameStartTime { get; internal set; }
+
+        /// <summary>
+        ///  Get or set sprite animation set definition.
+        /// </summary>
+        public AnimationSetDefinition Animations { get; internal set; }
+
+        /// <summary>
+        ///  Get the current sprite animation definition.
+        /// </summary>
+        public AnimationDefinition CurrentAnimation { get; internal set; }
+
+        /// <summary>
+        ///  Get the current sprite direction.
+        /// </summary>
+        public DirectionName Direction { get; internal set; }
+
+        /// <summary>
+        ///  Get the action to take when an animation reaches the last frame.
+        /// </summary>
+        public AnimationEndingAction EndingAction { get; internal set; }
+
+        /// <summary>
+        ///  Get it the sprite is playing an animation.
+        /// </summary>
+        public bool IsAnimating
+        {
+            get { return CurrentAnimation != null; }
+        }
+
+        /// <summary>
+        ///  Get list of composite sprites.
+        /// </summary>
+        internal SpriteDefinition[] Sprites { get { return mSprites; } }
+
+        /// <summary>
+        ///  Get list of composite sprites.
+        /// </summary>
+        internal Rectangle[] SpriteRects { get { return mSpriteRects; } }
 
         /// <summary>
         ///  Set a single sprite to be displayed.
         /// </summary>
-        /// <param name="spriteData">Sprite definition.</param>
-        public void SetSprite(AnimatedSpriteDefinition spriteData)
+        /// <param name="spriteDefinition">Sprite definition.</param>
+        public void SetSprite(AnimatedSpriteDefinition spriteDefinition)
         {
-            mRootSprite = new Sprite(spriteData);
-            mSpriteList.Add(mRootSprite);
+            if (spriteDefinition == null)
+            {
+                throw new ArgumentNullException("spriteDefinition");
+            }
+
+            Animations = spriteDefinition.Animations;
+            SetLayer(0, spriteDefinition.Sprite);
+        }
+
+        public void SetMultipleSpriteCount(int newCount)
+        {
+            if (newCount < 1)
+            {
+                throw new ArgumentException("Must have at least one sprite", "newCount");
+            }
+
+            Array.Resize(ref mSprites, newCount);
+            Array.Resize(ref mSpriteRects, newCount);
         }
 
         /// <summary>
@@ -58,43 +121,24 @@ namespace Scott.Forge.Engine.Sprites
         /// <param name="layerName">Name of the layer.</param>
         /// <param name="spriteData">Sprite definition.</param>
         /// <param name="enabled">True if layer is enabled by default, false otherwise.</param>
-        public void AddLayer(
-            string layerName,
-            AnimatedSpriteDefinition spriteData,
-            bool enabled = true)
+        public void SetLayer(int layerIndex, SpriteDefinition spriteDefinition)
         {
-            if (string.IsNullOrWhiteSpace(layerName))
+            if (layerIndex < 0 || layerIndex >= Sprites.Length)
             {
-                throw new ArgumentNullException("layerName");
+                throw new ArgumentOutOfRangeException("layerIndex");
             }
 
-            // Initialize layer dictionary if needed.
-            if (mSpriteLayers == null)
+            if (spriteDefinition == null)
             {
-                mSpriteLayers = new Dictionary<string, Sprite>();
+                throw new ArgumentNullException("spriteDefinition");
             }
 
-            var sprite = new Sprite(spriteData);
-
-            mSpriteList.Add(sprite);
-            mSpriteLayers.Add(layerName, sprite);
-
-            // TODO: Make sure sprite is playing animation in tune with other sprites. Might be tricky.
-        }
-
-        /// <summary>
-        ///  Enable or disable a sprite layer.
-        /// </summary>
-        /// <param name="layerName">Name of layer to use.</param>
-        /// <param name="isEnabled">True to enable the layer, false otherwise.</param>
-        public void EnableLayer(string layerName, bool isEnabled)
-        {
-            Sprite sprite = null;
-
-            if (!mSpriteLayers.TryGetValue(layerName, out sprite))
-            {
-                throw new SpriteComponentLayerNotFound(layerName);
-            }
+            Sprites[layerIndex] = spriteDefinition;
+            mSpriteRects[layerIndex] = new Rectangle(
+                (int) Sprites[layerIndex].StartingOffset.X,
+                (int) Sprites[layerIndex].StartingOffset.Y,
+                (int) Sprites[layerIndex].Size.Width,
+                (int) Sprites[layerIndex].Size.Height);
         }
 
         /// <summary>
@@ -108,17 +152,24 @@ namespace Scott.Forge.Engine.Sprites
             DirectionName direction,
             AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset)
         {
-            if (mRootSprite != null)
+            // Are we about to abort a currently playing animation?
+            if (IsAnimating)
             {
-                mRootSprite.PlayAnimation(animationName, direction, endingAction);
+                AbortCurrentAnimation();
             }
-            else
+
+            // Look up the requested animation definition and begin playing it.
+            AnimationDefinition animation = null;
+
+            if (!Animations.Animations.TryGetValue(animationName, out animation))
             {
-                for (int i = 0; i < mSpriteList.Count; ++i)
-                {
-                    mSpriteList[i].PlayAnimation(animationName, direction, endingAction);
-                }
+                throw new ArgumentException("Animation not found", "animation");
             }
+
+            CurrentAnimation = animation;
+            Direction = direction;
+            EndingAction = endingAction;
+            AnimationFrameStartTime = TimeSpan.MinValue;
         }
 
         /// <summary>
@@ -131,47 +182,26 @@ namespace Scott.Forge.Engine.Sprites
         }
 
         /// <summary>
-        /// Check if an animation is playing.
+        ///  Update cached sprite atlas rects.
         /// </summary>
-        /// <param name="animationName"></param>
-        /// <param name="direction"></param>
-        /// <returns></returns>
-        public bool IsPlayingAnimation(string animationName, DirectionName direction)
+        internal void SetAtlasRects(Vector2 atlasOffset)
         {
-            // TODO: Needs to handle multi-layered situations.
-            return (
-                mRootSprite.IsAnimating &&
-                animationName == mRootSprite.CurrentAnimation.Name &&
-                direction == mRootSprite.Direction);
-        }
-
-        /// <summary>
-        /// Updates the sprite's animation
-        /// </summary>
-        /// <remarks>
-        ///  Move this to SpriteProcessor.
-        /// </remarks>
-        /// <param name="gameTime">Current rendering time</param>
-        public void Update(double currentTime, double deltaTime)
-        {
-            for (int i = 0; i < mSpriteList.Count; ++i)
+            for (int i = 0; i < mSpriteRects.Length; i++)
             {
-                mSpriteList[i].Update(currentTime, deltaTime);
+                mSpriteRects[i] = new Rectangle(
+                    (int) atlasOffset.X,
+                    (int) atlasOffset.Y,
+                    (int) Sprites[i].Size.Width,
+                    (int) Sprites[i].Size.Height);
             }
         }
 
         /// <summary>
-        /// Send update to the sprite
+        ///  Kills the current animation.
         /// </summary>
-        /// <param name="gameTime"></param>
-        public void Draw(double currentTime, double deltaTime)
+        public void AbortCurrentAnimation()
         {
-            var origin = Owner.Transform.Position;
-
-            for (int i = 0; i < mSpriteList.Count; ++i)
-            {
-                mSpriteList[i].Draw(origin, currentTime, deltaTime);
-            }
-        }        
+            CurrentAnimation = null;
+        }
     }
 }

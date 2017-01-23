@@ -54,7 +54,7 @@ namespace Scott.DungeonCrawler
         private List<GameObject> mEnemies = new List<GameObject>();
 
         private ActorSpriteProcessor mActorSpriteProcessor = new ActorSpriteProcessor();
-        private SpriteProcessor mSpriteProcessor = new SpriteProcessor();
+        private SpriteComponentProcessor mSpriteProcessor = new SpriteComponentProcessor();
         private MovementProcessor mMovementProcessor = new MovementProcessor();
         private CollisionProcessor mCollisionProcessor = new CollisionProcessor();
         private ActorProcessor mActorProcessor = new ActorProcessor();

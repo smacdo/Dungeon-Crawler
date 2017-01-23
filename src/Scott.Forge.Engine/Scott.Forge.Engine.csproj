@@ -89,7 +89,7 @@
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationEndingAction.cs" />
     <Compile Include="Sprites\SpriteExceptions.cs" />
-    <Compile Include="Sprites\SpriteProcessor.cs" />
+    <Compile Include="Sprites\SpriteComponentProcessor.cs" />
     <Compile Include="Input\InputException.cs" />
     <Compile Include="Input\InputManager.cs" />
     <Compile Include="IUpdatable.cs" />
