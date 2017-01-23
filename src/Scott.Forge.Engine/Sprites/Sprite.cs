@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Scott.Forge.Engine.Sprites
 {
@@ -28,23 +27,37 @@ namespace Scott.Forge.Engine.Sprites
         /// <summary>
         ///  Instantiate a new Sprite instance.
         /// </summary>
+        /// <param name="definition">Sprite definition.</param>
+        public Sprite(AnimatedSpriteDefinition definition)
+            : this(definition != null ? definition.Sprite : null, definition != null ? definition.Animations : null)
+        {
+        }
+
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
         /// <param name="sprite">Sprite definition.</param>
-        public Sprite(SpriteDefinition sprite)
+        /// <param name="animations">Animation sets definition.</param>
+        public Sprite(SpriteDefinition sprite, AnimationSetDefinition animations)
         {
             if (sprite == null)
             {
                 throw new ArgumentNullException("sprite");
             }
 
-            Definition = sprite;
-            Enabled = true;
+            if (animations == null)
+            {
+                throw new ArgumentNullException("animations");
+            }
 
-            // TODO: We don't want to force an animation to play when constructed...
-            //  (Just show the first frame of the default animation / direction).
-            PlayAnimation(
-                Definition.DefaultAnimationName,
-                Definition.DefaultAnimationDirection,
-                AnimationEndingAction.StopAndReset);
+            Animations = animations;
+            Definition = sprite;
+
+            AtlasRect = new Rectangle(
+                (int) Definition.StartingOffset.X,
+                (int) Definition.StartingOffset.Y,
+                (int) Definition.Size.Width,
+                (int) Definition.Size.Height);
         }
 
         /// <summary>
@@ -64,6 +77,11 @@ namespace Scott.Forge.Engine.Sprites
         ///  Get the texture atlas rendering rectangle.
         /// </summary>
         public Rectangle AtlasRect { get; private set; }
+        
+        /// <summary>
+        ///  Get or set sprite animation set definition.
+        /// </summary>
+        public AnimationSetDefinition Animations { get; private set; }
 
         /// <summary>
         ///  Get the current sprite animation definition.
@@ -71,10 +89,10 @@ namespace Scott.Forge.Engine.Sprites
         public AnimationDefinition CurrentAnimation { get; private set; }
 
         /// <summary>
-        ///  Get the sprite definition.
+        ///  Get or set sprite definition.
         /// </summary>
         public SpriteDefinition Definition { get; private set; }
-
+        
         /// <summary>
         ///  Get the current sprite direction.
         /// </summary>
@@ -89,15 +107,6 @@ namespace Scott.Forge.Engine.Sprites
         public AnimationEndingAction EndingAction;
 
         /// <summary>
-        ///  Get if sprite is enabled.
-        /// </summary>
-        /// <remarks>
-        ///  TODO:
-        ///  This should be removed since it is up to callers to check if the sprite is enabled.
-        /// </remarks>
-        public bool Enabled { get; set; }
-
-        /// <summary>
         ///  Get if the sprite is playing an animation.
         /// </summary>
         /// <remarks>
@@ -107,10 +116,11 @@ namespace Scott.Forge.Engine.Sprites
         public bool IsAnimating { get; private set; }
 
         /// <summary>
-        ///  Get the sprite texture atlas.
+        ///  Play an animation on this sprite.
         /// </summary>
-        //public Texture2D Texture { get; private set; }
-
+        /// <param name="animationName">Name of the animation to play.</param>
+        /// <param name="direction">2d direction to use for animation.</param>
+        /// <param name="endingAction">Action to take when the animation finishes.</param>
         public void PlayAnimation(
             string animationName,
             DirectionName direction,
@@ -125,7 +135,7 @@ namespace Scott.Forge.Engine.Sprites
             // Look up the requested animation definition and begin playing it.
             AnimationDefinition animation = null;
 
-            if (!Definition.Animations.TryGetValue(animationName, out animation))
+            if (!Animations.Animations.TryGetValue(animationName, out animation))
             {
                 throw new SpriteAnimationNotFoundException(this, animationName, direction);
             }
@@ -198,7 +208,7 @@ namespace Scott.Forge.Engine.Sprites
 
             // How long does each frame last? When did we last flip a frame?
             TimeSpan lastFrameTime = AnimationFrameStartTime;
-            TimeSpan lengthOfFrame = TimeSpan.FromSeconds(CurrentAnimation.FrameTime);
+            TimeSpan lengthOfFrame = TimeSpan.FromSeconds(CurrentAnimation.FrameSeconds);
 
             // Update the current frame index by seeing how much time has passed, and then
             // moving to the correct frame.
@@ -233,12 +243,12 @@ namespace Scott.Forge.Engine.Sprites
                 }
 
                 // Load the texture atlas rect for the next animtaion frame.
-                var spriteRect = CurrentAnimation.GetSpriteRectFor(Direction, AnimationFrameIndex);
+                var spriteRect = CurrentAnimation.GetSpriteFrame(Direction, AnimationFrameIndex);
                 AtlasRect = new Rectangle(
                     (int) spriteRect.X,
                     (int) spriteRect.Y,
-                    (int) spriteRect.Width,
-                    (int) spriteRect.Height);
+                    (int) Definition.Size.Width,
+                    (int) Definition.Size.Height);
 
                 // Update the time when this animation frame was first displayed
                 AnimationFrameStartTime = totalGameTime;

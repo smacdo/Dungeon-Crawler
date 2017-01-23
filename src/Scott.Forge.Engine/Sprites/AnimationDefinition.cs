@@ -29,16 +29,15 @@ namespace Scott.Forge.Engine.Sprites
     /// </remarks>
     public class AnimationDefinition
     {
-        private const int MaxDirectionCount = 4;
         private const float DefaultFrameTime = 0.10f;
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
         /// <param name="name">Name of the animation</param>
         /// <param name="frameTime">Amount of time to display each frame</param>
-        /// <param name="directions">List of animated sprite frames grouped by sprite direction.</param>
-        public AnimationDefinition(string name, float frameTime, List<List<RectF>> directions)
+        /// <param name="sourceFrames">List of animated sprite frames grouped by sprite direction.</param>
+        public AnimationDefinition(string name, float frameTime, List<List<Vector2>> sourceFrames)
         {
             // Check arguments for errors.
             if (string.IsNullOrWhiteSpace(name))
@@ -51,22 +50,21 @@ namespace Scott.Forge.Engine.Sprites
                 throw new ArgumentException("Frame time must be larger than zero", "frameTime");
             }
 
-            if (directions == null)
+            if (sourceFrames == null)
             {
                 throw new ArgumentNullException("directions");
             }
 
-            if (directions.Count != 1 && directions.Count != MaxDirectionCount)
+            if (sourceFrames.Count != 1 && sourceFrames.Count != Constants.DirectionCount)
             {
                 throw new ArgumentException("Must have either 1 or 4 directions defined", "directions");
             }
             
             // Copy properties.
             Name = name;
-            FrameTime = frameTime;
-            FrameCount = directions[0].Count;
-            DirectionCount = directions.Count;
-            Directions = new RectF[DirectionCount, FrameCount];
+            FrameSeconds = frameTime;
+            FrameCount = sourceFrames[0].Count;
+            Frames = new Vector2[Constants.DirectionCount, FrameCount];
 
             // Check frameCount > 0.
             if (FrameCount < 1)
@@ -74,18 +72,21 @@ namespace Scott.Forge.Engine.Sprites
                 throw new ArgumentException("Sprite animation must have at least one frame");
             }
 
-            // Copy all of the animations for each direction
-            for (int i = 0; i < DirectionCount; ++i)
-            {
-                // Check frame count is the same as previous frames.
-                if (directions[i].Count != FrameCount)
+            // Copy all of the animations for each direction. Duplicate animation data if only one direction was
+            // provided.
+            for (int i = 0; i < Constants.DirectionCount; ++i)
+           { 
+                // Copy frames if there are four directions defined, otherwise duplicate the first direction.
+                int directionIndex = (sourceFrames.Count == 1 ? 0 : i);
+
+                if (sourceFrames[directionIndex].Count != FrameCount)
                 {
                     throw new ArgumentException("Sprite animation frame count is not consistent", "directions");
                 }
 
-                for (int j = 0; j < directions[i].Count; ++j)
+                for (int j = 0; j < sourceFrames[directionIndex].Count; ++j)
                 {
-                    Directions[i, j] = directions[i][j];
+                    Frames[i, j] = sourceFrames[directionIndex][j];
                 }
             }
         }
@@ -94,16 +95,10 @@ namespace Scott.Forge.Engine.Sprites
         ///  Get a list of sprite animation frames grouped by direction.
         /// </summary>
         /// <remarks>
-        ///  A list of animation directions. Each direction contains a list of rectangles that specify the offset for
+        ///  A list of animation directions. Each direction contains a list of (X,Y) values that specify the offset for
         ///  each sprite frame in the animation. Each direction is assumed to have the same number of sprite frames.
-        ///  If this not the case then undefined results may occur!
         /// </summary>
-        public readonly RectF[,] Directions;
-
-        /// <summary>
-        ///  Get the number of directions defined for this animation.
-        /// </summary>
-        public int DirectionCount { get; private set; }
+        public readonly Vector2[,] Frames;
 
         /// <summary>
         ///  Get the number of frames in an animation.
@@ -113,10 +108,10 @@ namespace Scott.Forge.Engine.Sprites
         /// <summary>
         ///  Get the amount of time to play each frame in the animation.
         /// </summary>
-        public float FrameTime { get; private set; }
+        public float FrameSeconds { get; private set; }
 
         /// <summary>
-        /// Get the name of the animation
+        /// Get the name of the animation.
         /// </summary>
         public string Name { get; private set; }
 
@@ -126,9 +121,9 @@ namespace Scott.Forge.Engine.Sprites
         /// <param name="direction">Sprite direction.</param>
         /// <param name="frame">Frame animation index.</param>
         /// <returns>Sprite frame atlas.</returns>
-        public RectF GetSpriteRectFor(DirectionName direction, int frame)
+        public Vector2 GetSpriteFrame(DirectionName direction, int frame)
         {
-            return Directions[(int) direction, frame];
+            return Frames[(int) direction, frame];
         }
     }
 }

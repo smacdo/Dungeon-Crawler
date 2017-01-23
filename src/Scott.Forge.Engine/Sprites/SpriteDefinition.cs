@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald.
+ * Copyright 2012-2017 Scott MacDonald.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,16 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Scott.Forge.Engine.Sprites
 {
     /// <summary>
-    ///  SpriteDefinition holds data describing 2d graphical image known as a "Sprite". This class is responsible for
-    ///  holding basic sprite data (Such as name, width, height, etc), a list of animations that the sprite is capable
-    ///  of performing and the information required for displaying each image frame.
+    ///  SpriteDefinition defines the data required to display a traditional 2d sprite stored in a texture atlas.
     /// </summary>
-    /// <remarks>
-    ///  SpriteData holds one or more images, and these images are stored in one or more texture atlases. SpriteData
-    ///  describes how to index the images stored in the texture atlas. Generally SpriteData should not be modified at
-    ///  run time. It should be modified when it is stored on disk, and then read into memory.
-    /// </remarks>
     public class SpriteDefinition
     {
         /// <summary>
@@ -36,15 +32,13 @@ namespace Scott.Forge.Engine.Sprites
         /// </summary>
         /// <param name="name">Name of the sprite.</param>
         /// <param name="texture">Texture atlas that contains this sprite.</param>
-        /// <param name="defaultAnimation">Default animation name.</param>
-        /// <param name="defaultDirection">Default direction to use when animating.</param>
-        /// <param name="animationList">List of animation definitions to include with the sprite.</param>
+        /// <param name="size">Width and height of the sprite.</param>
+        /// <param name="startingOffset">The X and Y atlas offset to use if the sprite is not animating.</param>
         public SpriteDefinition(
             string name,
-            Texture2D texture,
-            string defaultAnimation,
-            DirectionName defaultDirection,
-            List<AnimationDefinition> animationList)
+            SizeF size,
+            Vector2 startingOffset,
+            Texture2D texture)
         {
             // Check arguments for errors.
             if (string.IsNullOrEmpty(name))
@@ -52,74 +46,30 @@ namespace Scott.Forge.Engine.Sprites
                 throw new ArgumentNullException("name");
             }
 
-            if (texture == null)
+            if (size.Width <= 0)
             {
-                throw new ArgumentNullException("texture");
+                throw new ArgumentException("Sprite width must be larger than zero", "size");
+            }
+            else if (size.Height <= 0)
+            {
+                throw new ArgumentException("Sprite height must be larger than zero", "size");
             }
 
-            if (string.IsNullOrWhiteSpace(defaultAnimation))
+            if (startingOffset.X < 0)
             {
-                throw new ArgumentNullException("defaultAnimation");
+                throw new ArgumentException("Sprite atlas x offset must be at least zero", "startingOffset");
             }
-
-            if (animationList == null)
+            else if (startingOffset.Y < 0)
             {
-                throw new ArgumentNullException("animationList");
-            }
-            else if (animationList.Count < 1)
-            {
-                throw new ArgumentException("Must have at least one animation", "animationList");
+                throw new ArgumentException("Sprite atlas y offset must be at least zero", "startingOffset");
             }
 
             // Copy properties.
             Name = name;
             Texture = texture;
-            OriginOffset = Vector2.Zero;
-
-            // Copy animations
-            Animations = new Dictionary<string, AnimationDefinition>(animationList.Count);
-
-            foreach (AnimationDefinition animation in animationList)
-            {
-                Animations.Add(animation.Name, animation);
-            }
-
-            // Verify default animation and direction exists before copying default animation properties.
-            if (!Animations.ContainsKey(defaultAnimation))
-            {
-                throw new ArgumentException("Invalid default animation name", "defaultAnimation");
-            }
-
-            if (Animations[defaultAnimation].DirectionCount < (int) defaultDirection)
-            {
-                throw new ArgumentException("Invalid default direction", "defaultDirection");
-            }
-
-            DefaultAnimationName = defaultAnimation;
-            DefaultAnimationDirection = defaultDirection;
-            DefaultAnimation = Animations[DefaultAnimationName];
+            StartingOffset = startingOffset;
+            Size = size;
         }
-
-
-        /// <summary>
-        ///  Get a list of sprite animations.
-        /// </summary>
-        public Dictionary<string, AnimationDefinition> Animations { get; private set; }
-
-        /// <summary>
-        ///  Get the default sprite animation.
-        /// </summary>
-        public AnimationDefinition DefaultAnimation { get; private set; }
-
-        /// <summary>
-        ///  Get the default sprite animation direction.
-        /// </summary>
-        public DirectionName DefaultAnimationDirection { get; private set; }
-
-        /// <summary>
-        ///  Get the default sprite animation name.
-        /// </summary>
-        public string DefaultAnimationName { get; private set; }
 
         /// <summary>
         ///  Get the name of the sprite.
@@ -127,11 +77,16 @@ namespace Scott.Forge.Engine.Sprites
         public string Name { get; private set; }
 
         /// <summary>
-        ///  Get the offset from local origin when rendering.
+        ///  Get the size of the sprite. (X is width, and Y is height).
         /// </summary>
-        public Vector2 OriginOffset { get; private set; }
+        public SizeF Size { get; private set; }
 
         /// <summary>
+        ///  Get the X and Y atlas offset to use if the sprite is not animating.
+        /// </summary>
+        public Vector2 StartingOffset { get; private set; }
+
+        /// <summar>y
         ///  Get the sprite texture atlas.
         /// </summary>
         public Texture2D Texture { get; private set; }

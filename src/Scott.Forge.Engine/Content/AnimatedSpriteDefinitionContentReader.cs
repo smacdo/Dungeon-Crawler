@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,16 @@ namespace Scott.Forge.Engine.Content
 {
     /// <summary>
     ///  Responsible for loading SpriteData instances from an input stream.
+    ///  TODO: Make this more robust with errors when unexpected values are encountered.
+    ///  TODO: Convert file format to JSON.
     /// </summary>
-    [ContentReaderAttribute( typeof( SpriteDefinition ), ".sprite" )]
-    internal class SpriteContentReader : ContentReader<SpriteDefinition>
+    [ContentReaderAttribute( typeof( AnimatedSpriteDefinition ), ".sprite" )]
+    internal class AnimatedSpriteDefinitionContentReader : ContentReader<AnimatedSpriteDefinition>
     {
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public SpriteContentReader()
+        public AnimatedSpriteDefinitionContentReader()
             : base()
         {
             // Empty
@@ -43,7 +45,7 @@ namespace Scott.Forge.Engine.Content
         ///  Construct a new SpriteData instance from disk.
         /// </summary>
         /// <returns>SpriteData instance.</returns>
-        public override SpriteDefinition Read( Stream input,
+        public override AnimatedSpriteDefinition Read( Stream input,
                                          string assetName,
                                          string contentDir,
                                          ContentManagerX content )
@@ -61,54 +63,70 @@ namespace Scott.Forge.Engine.Content
         /// <param name="contentDir"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        private SpriteDefinition ImportSpriteData( XmlNode spriteNode, string contentDir, ContentManagerX content )
+        private AnimatedSpriteDefinition ImportSpriteData(XmlNode spriteNode, string contentDir, ContentManagerX content)
         {
-            XmlNodeList animationNodes = spriteNode.SelectNodes( "animation" );
-
+            return new AnimatedSpriteDefinition(
+                ImportSpriteDefinition(spriteNode, content),
+                ImportAnimationSetDefintion(spriteNode));
+        }
+        
+        private SpriteDefinition ImportSpriteDefinition(XmlNode rootNode, ContentManagerX content)
+        {
             // What is the name of this sprite?
-            string spriteName = spriteNode.Attributes["name"].Value;
+            string spriteName = rootNode.Attributes["name"].Value;
 
             // Get information on the texture atlas used for this sprite
-            XmlNode atlasNode = spriteNode.SelectSingleNode( "atlas" );
+            var atlasNode = rootNode.SelectSingleNode( "atlas" );
 
             string atlasName = atlasNode.Attributes["ref"].Value;
             int spriteWidth = Convert.ToInt32( atlasNode.Attributes["spriteWidth"].Value );
             int spriteHeight = Convert.ToInt32( atlasNode.Attributes["spriteHeight"].Value );
 
-            // Get information on the default sprite name
-            XmlNode defaultNode = spriteNode.SelectSingleNode( "default" );
+            // Find the sprite atlas x/y offset.
+            // TODO: Currently using the animation data to get this. Stop using this hacky solution and directly encode
+            //       the initial x/y offset. Probably should do this when we convert the data from XML to JSON.
+            var startingOffset = Vector2.Zero;
 
-            string defaultAnimation = defaultNode.Attributes["animation"].Value;
-            var defaultDirection  = DirectionNameHelper.Parse(defaultNode.Attributes["direction"].Value );
+            var defaultNode = rootNode.SelectSingleNode("default");
+            string defaultAnimationName = defaultNode.Attributes["animation"].Value;
 
-            // This sprite depends on it's texture atlas
-            Texture2D atlas = content.Load<Texture2D>( atlasName ); 
+            var animationNodes = rootNode.SelectNodes( "animation" );
+            var animations = new List<AnimationDefinition>(animationNodes.Count);
 
-            // Does the sprite have an offset?
-            Vector2 offset = Vector2.Zero;
-
-            if ( spriteNode.Attributes["offsetX"] != null && spriteNode.Attributes["offsetY"] != null )
+            foreach (XmlNode animNode in animationNodes)
             {
-                int offsetX = Convert.ToInt32( spriteNode.Attributes["offsetX"].Value );
-                int offsetY = Convert.ToInt32( spriteNode.Attributes["offsetY"].Value );
+                var animationName = animNode.Attributes["name"].Value;
 
-                offset = new Vector2( offsetX, offsetY );
+                if (animationName == defaultAnimationName)
+                {
+                    var animation = ImportAnimationData(animNode);
+                    startingOffset = animation.GetSpriteFrame(Constants.DefaultDirection, 0);
+                }
             }
 
-            // Iterate through all the animation nodes, and process them
-            List<AnimationDefinition> animations = new List<AnimationDefinition>( animationNodes.Count );
+            // Grab the texture atlas.
+            var atlas = content.Load<Texture2D>(atlasName);
 
-            foreach ( XmlNode animNode in animationNodes )
-            {
-                AnimationDefinition animation = ImportAnimationData( animNode, spriteWidth, spriteHeight );
-                animations.Add( animation );
-            }
-
-            // All done, return the imported sprite
-            return new SpriteDefinition( spriteName, atlas, defaultAnimation, defaultDirection, animations );
+            // All done.
+            return new SpriteDefinition(spriteName, new SizeF(spriteWidth, spriteHeight), startingOffset, atlas);
         }
 
-        private AnimationDefinition ImportAnimationData( XmlNode animNode, int spriteWidth, int spriteHeight )
+        private AnimationSetDefinition ImportAnimationSetDefintion(XmlNode rootNode)
+        {
+            // Iterate through all the animation nodes, and process them.
+            var animationNodes = rootNode.SelectNodes("animation");
+            var animations = new List<AnimationDefinition>(animationNodes.Count);
+
+            foreach (XmlNode animNode in animationNodes)
+            {
+                var animation = ImportAnimationData(animNode);
+                animations.Add(animation);
+            }
+
+            return new AnimationSetDefinition(animations);
+        }
+
+        private AnimationDefinition ImportAnimationData(XmlNode animNode)
         {
             // Read animation header values
             string animationName  = animNode.Attributes["name"].Value;
@@ -140,12 +158,12 @@ namespace Scott.Forge.Engine.Content
 
             // Now create a list to store all of four of the animatable directions and shove each
             // group's rectangles in.
-            var allFrames = new List<List<RectF>>( Constants.DirectionCount );
+            var allFrames = new List<List<Vector2>>( Constants.DirectionCount );
 
             for (int dirIndex = 0; dirIndex < Constants.DirectionCount; ++dirIndex)
             {
                 XmlNodeList frameNodes = frameGroupsTable[(DirectionName) dirIndex];    // TODO: Remove cast?
-                var frames = new List<RectF>();
+                var frames = new List<Vector2>();
 
                 // Iterate though all the frames in the animation
                 foreach ( XmlNode frameNode in frameNodes )
@@ -153,7 +171,7 @@ namespace Scott.Forge.Engine.Content
                     int x = Convert.ToInt32( frameNode.Attributes["x"].Value );
                     int y = Convert.ToInt32( frameNode.Attributes["y"].Value );
 
-                    frames.Add( new RectF( x, y, spriteWidth, spriteHeight ) );
+                    frames.Add(new Vector2(x, y));
                 }
 
                 allFrames.Add( frames );

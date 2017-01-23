@@ -46,7 +46,7 @@ namespace Scott.Forge.Engine.Sprites
         ///  Set a single sprite to be displayed.
         /// </summary>
         /// <param name="spriteData">Sprite definition.</param>
-        public void SetSprite(SpriteDefinition spriteData)
+        public void SetSprite(AnimatedSpriteDefinition spriteData)
         {
             mRootSprite = new Sprite(spriteData);
             mSpriteList.Add(mRootSprite);
@@ -60,7 +60,7 @@ namespace Scott.Forge.Engine.Sprites
         /// <param name="enabled">True if layer is enabled by default, false otherwise.</param>
         public void AddLayer(
             string layerName,
-            SpriteDefinition spriteData,
+            AnimatedSpriteDefinition spriteData,
             bool enabled = true)
         {
             if (string.IsNullOrWhiteSpace(layerName))
@@ -75,7 +75,6 @@ namespace Scott.Forge.Engine.Sprites
             }
 
             var sprite = new Sprite(spriteData);
-            sprite.Enabled = enabled;
 
             mSpriteList.Add(sprite);
             mSpriteLayers.Add(layerName, sprite);
@@ -96,8 +95,6 @@ namespace Scott.Forge.Engine.Sprites
             {
                 throw new SpriteComponentLayerNotFound(layerName);
             }
-
-            sprite.Enabled = isEnabled;
         }
 
         /// <summary>
@@ -119,10 +116,7 @@ namespace Scott.Forge.Engine.Sprites
             {
                 for (int i = 0; i < mSpriteList.Count; ++i)
                 {
-                    if (mSpriteList[i].Enabled)
-                    {
-                        mSpriteList[i].PlayAnimation(animationName, direction, endingAction);
-                    }
+                    mSpriteList[i].PlayAnimation(animationName, direction, endingAction);
                 }
             }
         }
@@ -162,10 +156,7 @@ namespace Scott.Forge.Engine.Sprites
         {
             for (int i = 0; i < mSpriteList.Count; ++i)
             {
-                if (mSpriteList[i].Enabled)
-                {
-                    mSpriteList[i].Update(currentTime, deltaTime);
-                }
+                mSpriteList[i].Update(currentTime, deltaTime);
             }
         }
 
@@ -179,10 +170,7 @@ namespace Scott.Forge.Engine.Sprites
 
             for (int i = 0; i < mSpriteList.Count; ++i)
             {
-                if (mSpriteList[i].Enabled)
-                {
-                    mSpriteList[i].Draw(origin, currentTime, deltaTime);
-                }
+                mSpriteList[i].Draw(origin, currentTime, deltaTime);
             }
         }        
     }

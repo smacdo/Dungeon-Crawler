@@ -80,15 +80,15 @@ namespace Scott.DungeonCrawler.GameObjects
             // Create the sprite and set it up.
             var sprite = ActorSpriteProcessor.Add(player);
 
-            sprite.Body = new Sprite(Content.Load<SpriteDefinition>("sprites/Humanoid_Male"));
-            sprite.Torso = new Sprite(Content.Load<SpriteDefinition>("sprites/Torso_Armor_Leather"));
-            sprite.Legs = new Sprite(Content.Load<SpriteDefinition>("sprites/Legs_Pants_Green"));
-            sprite.Feet = new Sprite(Content.Load<SpriteDefinition>("sprites/Feet_Shoes_Brown"));
-            sprite.Head = new Sprite(Content.Load<SpriteDefinition>("sprites/Head_Helmet_Chain"));
-            sprite.Bracer = new Sprite(Content.Load<SpriteDefinition>("sprites/Bracer_Leather"));
-            sprite.Shoulder = new Sprite(Content.Load<SpriteDefinition>("sprites/Shoulder_Leather"));
-            sprite.Belt = new Sprite(Content.Load<SpriteDefinition>("sprites/Belt_Leather"));
-            sprite.Weapon = new Sprite(Content.Load<SpriteDefinition>("sprites/Weapon_Longsword"));
+            sprite.Body = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male"));
+            sprite.Torso = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Torso_Armor_Leather"));
+            sprite.Legs = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Legs_Pants_Green"));
+            sprite.Feet = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Feet_Shoes_Brown"));
+            sprite.Head = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Head_Helmet_Chain"));
+            sprite.Bracer = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Bracer_Leather"));
+            sprite.Shoulder = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Shoulder_Leather"));
+            sprite.Belt = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather"));
+            sprite.Weapon = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword"));
 
             sprite.IsBodyEnabled = true;
             sprite.IsClothingEnabled = true;
@@ -115,7 +115,7 @@ namespace Scott.DungeonCrawler.GameObjects
             var enemy = new GameObject("skeleton");
             var sprite = SpriteProcessor.Add(enemy);
 
-            sprite.SetSprite( Content.Load<SpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
+            sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
 
             ActorProcessor.Add(enemy);
             AiProcessor.Add(enemy);
