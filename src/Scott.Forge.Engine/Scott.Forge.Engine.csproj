@@ -79,16 +79,12 @@
     <Compile Include="Physics\CollisionComponent.cs" />
     <Compile Include="Physics\CollisionProcessor.cs" />
     <Compile Include="Physics\CollisionResult.cs" />
-    <Compile Include="Sprites\ActorSpriteComponentProcessor.cs" />
-    <Compile Include="Sprites\ActorSpriteComponent.cs" />
     <Compile Include="Sprites\SpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationSetDefinition.cs" />
-    <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="Sprites\SpriteComponent.cs" />
     <Compile Include="Sprites\AnimationDefinition.cs" />
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationEndingAction.cs" />
-    <Compile Include="Sprites\SpriteExceptions.cs" />
     <Compile Include="Sprites\SpriteComponentProcessor.cs" />
     <Compile Include="Input\InputException.cs" />
     <Compile Include="Input\InputManager.cs" />

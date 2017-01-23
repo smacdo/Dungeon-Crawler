@@ -130,15 +130,7 @@ namespace Scott.Forge.Engine.Movement
             var sprite = owner.Find<SpriteComponent>();
             var direction = owner.Transform.Direction;
 
-            if (sprite != null)
-            {
-                sprite.PlayAnimationLooping("Walk", direction);
-            }
-            else
-            {
-                var actorSprite = owner.Get<ActorSpriteComponent>();
-                actorSprite.PlayAnimationOnBodyAndClothes(animationName, direction, AnimationEndingAction.Loop);
-            }
+            sprite.PlayAnimationLooping("Walk", direction);
         }
 
         /// <summary>

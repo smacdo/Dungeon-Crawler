@@ -79,11 +79,18 @@ namespace Scott.Forge.Engine.Sprites
                 }
 
                 // Load the texture atlas rect for the next animtaion frame.
-                var spriteRect = component.CurrentAnimation.GetSpriteFrame(
+                var atlasOffset = component.CurrentAnimation.GetSpriteFrame(
                     component.Direction,
                     component.AnimationFrameIndex);
 
-                component.SetAtlasRects(spriteRect);
+                for (var layer = 0; layer < component.Sprites.Length; layer++)
+                {
+                    component.SpriteRects[layer] = new Microsoft.Xna.Framework.Rectangle(
+                        (int) atlasOffset.X,
+                        (int) atlasOffset.Y,
+                        (int) component.Sprites[layer].Size.Width,      // TODO: Have width on SPriteComponent.
+                        (int) component.Sprites[layer].Size.Height);
+                }
 
                 // Update the time when this animation frame was first displayed
                 component.AnimationFrameStartTime = totalGameTime;

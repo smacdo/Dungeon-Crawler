@@ -53,7 +53,6 @@ namespace Scott.DungeonCrawler
         private GameObject mPlayer;
         private List<GameObject> mEnemies = new List<GameObject>();
 
-        private ActorSpriteProcessor mActorSpriteProcessor = new ActorSpriteProcessor();
         private SpriteComponentProcessor mSpriteProcessor = new SpriteComponentProcessor();
         private MovementProcessor mMovementProcessor = new MovementProcessor();
         private CollisionProcessor mCollisionProcessor = new CollisionProcessor();
@@ -99,7 +98,6 @@ namespace Scott.DungeonCrawler
             // Initialize default game level.
             mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent)
             {
-                ActorSpriteProcessor = mActorSpriteProcessor,
                 SpriteProcessor = mSpriteProcessor,
                 MovementProcessor = mMovementProcessor,
                 ActorProcessor = mActorProcessor,
@@ -248,7 +246,6 @@ namespace Scott.DungeonCrawler
             // Make sure animations are primed and updated (we need to trigger the
             // correct animation events even if we are not drawwing)
             mSpriteProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-            mActorSpriteProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Update( gameTime );
 
@@ -264,7 +261,6 @@ namespace Scott.DungeonCrawler
         {
             // Walk through the game scene and collect all sprites for drawing.
             mSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-            mActorSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Draw all requested game sprites
             GameRoot.Renderer.DrawScreen( gameTime );

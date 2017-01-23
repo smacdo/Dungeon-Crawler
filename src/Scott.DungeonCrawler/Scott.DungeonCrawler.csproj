@@ -59,6 +59,7 @@
     <Compile Include="Actions\ActionDeath.cs" />
     <Compile Include="Actions\ActionRangedAttack.cs" />
     <Compile Include="Actions\ActionSlashAttack.cs" />
+    <Compile Include="ActorEquipmentSlot.cs" />
     <Compile Include="DungeonCrawler.cs" />
     <Compile Include="GameObjects\DungeonCrawlerBlueprintFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

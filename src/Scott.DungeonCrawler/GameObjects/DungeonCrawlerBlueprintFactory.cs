@@ -37,7 +37,6 @@ namespace Scott.DungeonCrawler.GameObjects
     public class DungeonCrawlerGameObjectFactory : IBlueprintFactory
     {
         public IContentManager Content { get; set; }
-        public ActorSpriteProcessor ActorSpriteProcessor { get; set; }        // TODO: Remove.
         public SpriteComponentProcessor SpriteProcessor { get; set; }        // TODO: Remove.
         public MovementProcessor MovementProcessor { get; set; }    // TODO: Remove.
         public ActorProcessor ActorProcessor { get; set; }          // TODO: Remove.
@@ -78,21 +77,32 @@ namespace Scott.DungeonCrawler.GameObjects
             var player = new GameObject("player");
 
             // Create the sprite and set it up.
-            var sprite = ActorSpriteProcessor.Add(player);
+            var sprite = SpriteProcessor.Add(player);
 
-            sprite.Body = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male"));
-            sprite.Torso = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Torso_Armor_Leather"));
-            sprite.Legs = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Legs_Pants_Green"));
-            sprite.Feet = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Feet_Shoes_Brown"));
-            sprite.Head = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Head_Helmet_Chain"));
-            sprite.Bracer = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Bracer_Leather"));
-            sprite.Shoulder = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Shoulder_Leather"));
-            sprite.Belt = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather"));
-            sprite.Weapon = new Sprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword"));
+            sprite.SetMultipleSpriteCount((int) ActorEquipmentSlot.Count);
+            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male"));
 
-            sprite.IsBodyEnabled = true;
-            sprite.IsClothingEnabled = true;
-            sprite.IsWeaponEnabled = false;
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Torso,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Torso_Armor_Leather").Sprite);  // TODO: Add content processor for SpriteDefinition.
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Legs,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Legs_Pants_Green").Sprite);
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Feet,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Feet_Shoes_Brown").Sprite);
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Head,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Head_Helmet_Chain").Sprite);
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Bracer,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Bracer_Leather").Sprite);
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Shoulder,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Shoulder_Leather").Sprite);
+            sprite.SetLayer(
+                (int) ActorEquipmentSlot.Belt,
+                Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather").Sprite);
 
             // Add movement component.
             var movement = MovementProcessor.Add(player);
