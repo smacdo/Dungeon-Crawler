@@ -32,13 +32,33 @@ namespace Scott.Forge.Engine.Actors
         public IActorAction CurrentAction { get; set; }
         public IActorAction RequestedAction { get; set; }
         public DirectionName Direction { get; set; }
+        public Vector2 RequestedMovement { get; set; }
+
+        public float MaxSpeed { get; set;}
+
+        /// <summary>
+        ///  Get or set the seconds that have elapsed since the actor started the current walk cycle.
+        /// </summary>
+        public double WalkAccelerationSeconds { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public ActorComponent()
         {
-            Direction = DirectionName.South;
+            Direction = Constants.DefaultDirection;
+            MaxSpeed = 100;
+            WalkAccelerationSeconds = 0;
+        }
+
+        /// <summary>
+        ///  Requests the actor move in a given direction and speed.
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="speed"></param>
+        public void Move(DirectionName direction, float speed)
+        {
+            RequestedMovement = DirectionNameHelper.ToVector(direction) * speed;
         }
     }
 }

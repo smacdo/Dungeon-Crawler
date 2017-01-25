@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,24 +72,14 @@ namespace Scott.Forge.Engine.Movement
             }
         }
 
-        /// <summary>
-        ///  True if this is the update call that started the component moving.
-        /// </summary>
-        public bool StartedMovingThisFrame { get; set; }        // TODO: refer to internal movement data
-
-        /// <summary>
-        ///  True if this is the update call that started the component moving.
-        /// </summary>
-        public bool StoppedMovingThisFrame { get; set; }        // TODO: refer to internal movement data
-
-        /// <summary>
-        ///  True if this is the update call that started the component moving.
-        /// </summary>
-        public bool ChangedDirectionThisFrame { get; set; }     // TODO: refer to internal movement data
-
         public float MaxSpeed { get; set; }
 
-        public void RequestMovement(DirectionName direction, float acceleration)
+        public void AddAcceleration(Vector2 acceleration)
+        {
+            Acceleration = acceleration;
+        }
+
+        public void AddAceleration(DirectionName direction, float acceleration)
         {
             Acceleration = direction.ToVector() * acceleration;
         }

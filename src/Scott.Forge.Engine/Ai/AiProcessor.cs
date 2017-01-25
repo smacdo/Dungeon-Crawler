@@ -54,7 +54,7 @@ namespace Scott.Forge.Engine.Ai
                 // Keep doing whatever the heck we we are doing.
                 if (movement.IsMoving)
                 {
-                    movement.RequestMovement(gameObject.Transform.Direction, 50);
+                    movement.AddAceleration(gameObject.Transform.Direction, 50);
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace Scott.Forge.Engine.Ai
                         direction = (DirectionName) GameRoot.Random.Next( 0, 3 );
                     }
 
-                    movement.RequestMovement( direction, 50 );
+                    movement.AddAceleration( direction, 50 );
                 }
             }
             else
@@ -105,7 +105,7 @@ namespace Scott.Forge.Engine.Ai
                     }
 
                     // Start walking now
-                    movement.RequestMovement(direction, 50);
+                    movement.AddAceleration(direction, 50);
                 }
                 else
                 {

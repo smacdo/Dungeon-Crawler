@@ -20,6 +20,7 @@ namespace Scott.Forge.Engine
     {
         public const int DirectionCount = 4;
         public const DirectionName DefaultDirection = DirectionName.East;
+        public const string WalkAnimationName = "Walk";
     }
 }
 

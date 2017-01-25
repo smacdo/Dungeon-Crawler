@@ -202,9 +202,7 @@ namespace Scott.DungeonCrawler
 
             if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
             {
-                var playerMovement = mPlayer.Get<MovementComponent>();
-                playerMovement.RequestMovement(playerDirection, 125);
-                //playerActor.Move( playerDirection, 125 );
+                playerActor.Move(playerDirection, 125.0f);
             }
 
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )

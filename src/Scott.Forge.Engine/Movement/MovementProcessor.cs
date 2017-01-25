@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,19 +38,18 @@ namespace Scott.Forge.Engine.Movement
             IGameObject gameObject = movement.Owner;
             var transform = gameObject.Transform;
 
+            // Skip processing if movement component is not moving.
             if (!movement.IsMoving)
             {
                 return;
             }
 
-            // Check if we are moving before updating movement information.
-            var wasMoving = movement.IsMoving;
-            bool isMovingNow = false;
-            var oldDirection = transform.Direction;
+            // TODO: Rewrite all this and use force rather than friction. Right now the actor system skips all this
+            //       because it uses velocity directly.
 
             // Apply acceleration and friction.
             movement.Velocity += (movement.Acceleration * (float)deltaTime);
-            movement.Velocity += (movement.Velocity.Normalized().Negated()*0.5f);       // bad way to do friction.
+            movement.Velocity += (movement.Velocity.Normalized().Negated()*0.95f);       // bad way to do friction.
 
             // Limit velocity to a maximum value.
             //  TODO: Do this proper: http://answers.unity3d.com/questions/9985/limiting-rigidbody-velocity.html
@@ -68,9 +67,6 @@ namespace Scott.Forge.Engine.Movement
 
             if (IsInLevelBounds(moveBox))
             {
-                // Movement is valid, we can update the movement component with its newest position.
-                isMovingNow = movement.IsMoving;
-
                 // Calculate movement component's new position and direction.
                 transform.Position = newPosition;
                 transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
@@ -78,16 +74,8 @@ namespace Scott.Forge.Engine.Movement
 
             DrawDebugVisualization(movement, transform);
 
-            // Update movement state flags.
-            movement.StartedMovingThisFrame = (!wasMoving && isMovingNow);
-            movement.StoppedMovingThisFrame = (wasMoving && !isMovingNow);
-            movement.ChangedDirectionThisFrame = (oldDirection != transform.Direction);
-
             // Temporary hack : stop movement
             movement.Acceleration = Vector2.Zero;
-
-            // Update animations and movement.
-            UpdateAnimation(gameObject, movement );
         }
 
         private void DrawDebugVisualization(MovementComponent movement, TransformComponent transform)
@@ -102,35 +90,6 @@ namespace Scott.Forge.Engine.Movement
                     transform.Direction.ToString()),
                 transform.Position,
                 Microsoft.Xna.Framework.Color.Yellow);*/
-        }
-
-        /// <summary>
-        ///  Updates the movement component's animation.
-        /// </summary>
-        private void UpdateAnimation(IGameObject owner, MovementComponent movement)
-        {
-            // Which animation do we play?
-            if (movement.StartedMovingThisFrame)
-            {
-                PlayAnimationOnObject(owner, "Walk");
-            }
-            else if (movement.IsMoving && movement.ChangedDirectionThisFrame)
-            {
-                PlayAnimationOnObject(owner, "Walk");
-            }
-            else if (movement.StoppedMovingThisFrame)
-            {
-                PlayAnimationOnObject(owner, "Idle");
-            }
-        }
-
-        public void PlayAnimationOnObject(IGameObject owner, string animationName)
-        {
-            // Play selected animation.
-            var sprite = owner.Find<SpriteComponent>();
-            var direction = owner.Transform.Direction;
-
-            sprite.PlayAnimationLooping("Walk", direction);
         }
 
         /// <summary>
