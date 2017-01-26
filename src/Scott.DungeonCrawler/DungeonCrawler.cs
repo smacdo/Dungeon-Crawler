@@ -62,7 +62,7 @@ namespace Scott.DungeonCrawler
         private DungeonCrawlerGameObjectFactory mGameObjectFactory;
 
         private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
-        private ContentManagerX mContent;
+        private ForgeContentManager mContent;
         int mEnemyCount = 0;
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Scott.DungeonCrawler
             mGraphicsDevice.ApplyChanges();
 
             // Create our custom content manager.
-            mContent = new ContentManagerX( Services, "Content" );
+            mContent = new ForgeContentManager( Services, "Content" );
             this.Content = mContent;
 
             // Initialize systems.
@@ -128,7 +128,7 @@ namespace Scott.DungeonCrawler
         {
             // Instruct the content manager to search our content dir to find game assets that we
             // can load.
-            mContent.SearchContentDirForAssets( true );
+            mContent.SearchForContentItems( true );
 
             // Create the player blue print.
             mPlayer = mGameObjectFactory.Instantiate("Player");

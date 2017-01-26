@@ -34,7 +34,7 @@ namespace Scott.Forge.Engine.Content
         public abstract T Read( Stream input,
                                 string assetName,
                                 string contentDir,
-                                ContentManagerX content );
+                                ForgeContentManager content );
     }
 
     /// <summary>
