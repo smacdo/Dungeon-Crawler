@@ -72,6 +72,11 @@ namespace Scott.Forge.Engine.Sprites
         public AnimationEndingAction EndingAction { get; internal set; }
 
         /// <summary>
+        ///  Get or set if the sprite renderer should ignore the transform rotation.
+        /// </summary>
+        public bool RendererIgnoreTransformRotation { get; set; }
+
+        /// <summary>
         ///  Get it the sprite is playing an animation.
         /// </summary>
         public bool IsAnimating

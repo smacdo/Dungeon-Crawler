@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-// TODO: Convert this into Transform and stick it onto GameObjects rather than keep it as a component.
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
@@ -30,28 +29,24 @@ namespace Scott.Forge.GameObjects
         // Default scale is one, never zero.
         public static readonly Vector2 DefaultScale = Vector2.One;
 
-        // Make sure rotation and direction match up by setting direction to the default direction.
-        public const DirectionName DefaultDirection = DirectionName.South;
+        /// <summary>
+        ///  Offset from local origin.
+        /// </summary>
+        private Vector2 mLocalPosition = Vector2.Zero;
 
-        // Local position.
-        private Vector2 mPosition;
-        private Vector2 mWorldPosition;
+        /// <summary>
+        ///  Offset from world origin. Calculate as parent.WorldPosition + this.LocalPosition.
+        /// </summary>
+        private Vector2 mWorldPosition = Vector2.Zero;
 
-        // Local forward vector.
-        private Vector2 mForward;
+        private float mLocalRotation = 0.0f;
+        private float mWorldRotation = 0.0f;
 
-        // Local right vector.
-        private Vector2 mRight;
+        private Vector2 mLocalScale = Vector2.One;
+        private Vector2 mWorldScale = Vector2.One;
 
-        // Local rotation.
-        private float mRotation;
-        private float mWorldRotation;
-
-        // Local scale.
-        private Vector2 mScale = Vector2.One;
-
-        // Local direction.
-        private DirectionName mDirection = DefaultDirection;
+        // Cached from mWorldRotation.
+        private Vector2 mWorldForward;        
 
         /// <summary>
         ///  Constructor.
@@ -64,61 +59,73 @@ namespace Scott.Forge.GameObjects
         }
 
         /// <summary>
-        ///  Local position, relative to parent transform.
+        ///  Object world position.
         /// </summary>
         public Vector2 Position
         {
-            get { return mPosition; }
-            set { mPosition = value; mWorldPosition = value; }
+            get { return mLocalPosition; }
+            set { mLocalPosition = value; mWorldPosition = value; }
         }
 
         /// <summary>
-        ///  Local forward vector.
+        ///  Forward vector in world space.
+        ///  TODO: This is wrong.
         /// </summary>
-        public Vector2 Forward { get { return mForward; } }
+        public Vector2 Forward { get { return mWorldForward; } }
 
         /// <summary>
-        ///  Local backward vector.
+        ///  Backward vector in world space.
+        ///  TODO: This is wrong.
         /// </summary>
-        public Vector2 Backward { get { return -mForward; } }
+        public Vector2 Backward { get { return -mWorldForward; } }
 
         /// <summary>
-        ///  Local right vector.
+        ///  Right vector in world space.
+        ///   TODO: This is wrong.
         /// </summary>
-        public Vector2 Right { get { return mRight; } }
+        public Vector2 Right { get { return mWorldRight; } }
 
         /// <summary>
-        ///  Local left vector.
+        ///  Left vector in world space.
+        ///   TODO: This is wrong.
         /// </summary>
-        public Vector2 Left { get { return -mRight; } }
+        public Vector2 Left { get { return -mWorldRight; } }
 
         /// <summary>
-        ///  Local rotation, relative to parent transform.
+        ///  Local rotation, relative to parent transform. Rotation is in radians.
         /// </summary>
-        public float Rotation { get { return mRotation; } }
+        public float Rotation
+        {
+            get { return mWorldRotation; }
+            set
+            {
+                // TODO: Wrap angle.
+                mWorldRotation = value;
+                mWorldForward = MathHelper.Rotate(0, 1, (float)Math.PI * 2.0f - value);
+            }
+        }
 
         /// <summary>
         ///  Local scale, relative to parent transform.
         /// </summary>
-        public Vector2 Scale { get { return mScale; } }
+        public Vector2 Scale { get { return mLocalScale; } }
 
         /// <summary>
-        ///  Local direction.
+        ///  World direction.
         /// </summary>
         public DirectionName Direction
         {
             get
             {
-                return mDirection;
+                return DirectionNameHelper.FromRotationDegrees(mWorldRotation);
             }
             set
             {
-                mDirection = value;
-                mRotation = value.ToRotationAngle();
-                mForward = value.ToVector();
-                mRight = value.ToRightVector();
+                mLocalRotation = MathHelper.DegreeToRadian(value.ToRotationDegrees());
+                mWorldForward = value.ToVector();
+                mWorldRight = value.ToRightVector();
 
-                mWorldRotation = mRotation;
+                mWorldRotation = mLocalRotation;
             }
         }
 
@@ -149,7 +156,7 @@ namespace Scott.Forge.GameObjects
         /// <returns>World space position vector.</returns>
         public Vector2 TransformPosition( Vector2 position )
         {
-            Vector2 rPos = mPosition + MathHelper.Rotate( position - mPosition, mWorldRotation );
+            Vector2 rPos = mLocalPosition + MathHelper.Rotate( position - mLocalPosition, mWorldRotation );
             return mWorldPosition + rPos;
         }
 

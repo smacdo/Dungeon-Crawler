@@ -79,6 +79,8 @@ namespace Scott.DungeonCrawler.GameObjects
             // Create the sprite and set it up.
             var sprite = SpriteProcessor.Add(player);
 
+            sprite.RendererIgnoreTransformRotation = true;
+
             sprite.SetMultipleSpriteCount((int) ActorEquipmentSlot.Count);
             sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male"));
 
@@ -126,6 +128,7 @@ namespace Scott.DungeonCrawler.GameObjects
             var sprite = SpriteProcessor.Add(enemy);
 
             sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
+            sprite.RendererIgnoreTransformRotation = true;
 
             ActorProcessor.Add(enemy);
             AiProcessor.Add(enemy);

@@ -357,6 +357,22 @@ namespace Scott.Forge
         }
 
         /// <summary>
+        ///  Rotate Vector2 by the given angle. The angle must be specified in radians.
+        /// </summary>
+        /// <param name="v">Vector to rotate.</param>
+        /// <param name="angle">Amount to rotate.</param>
+        /// <returns>Rotated vector.</returns>
+        public static Vector2 Rotate(float x, float y, float angle)
+        {
+            double c = Math.Cos(angle);
+            double s = Math.Sin(angle);
+
+            return new Vector2(
+                (float) (x * c - y * s),
+                (float) (y * c + x * s));
+        }
+
+        /// <summary>
         ///  Gets a unit vector containing the direction going from the first vector to the second
         ///  vector.
         /// </summary>
