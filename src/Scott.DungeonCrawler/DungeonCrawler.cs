@@ -160,9 +160,12 @@ namespace Scott.DungeonCrawler
             mEnemies.Add(skeleton);
 
             // temp hack
-            skeleton.Transform.Direction = (DirectionName) GameRoot.Random.Next(0, 3);
+            var initialDirection = (DirectionName) GameRoot.Random.Next(0, 3);
 
-            skeleton.Get<SpriteComponent>().PlayAnimation("Walk", skeleton.Transform.Direction, AnimationEndingAction.Loop);
+            var actor = skeleton.Get<ActorComponent>();
+            actor.Direction = initialDirection;
+
+            skeleton.Get<SpriteComponent>().PlayAnimation("Walk", initialDirection, AnimationEndingAction.Loop);
         }
 
         /// <summary>

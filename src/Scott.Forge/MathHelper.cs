@@ -402,5 +402,23 @@ namespace Scott.Forge
             float times = (float) System.Math.Floor((value - lower) / distance);
             return value - (times * distance);
         }
+
+        /// <summary>
+        ///  Normalize an angle to [0, 360) range.
+        /// </summary>
+        /// <param name="value">Angle in degrees to normalize.</param>
+        /// <returns>Normalized angle in degrees.</returns>
+        public static float NormalizeAngle360(float value)
+        {
+            // Ref: http://stackoverflow.com/a/11498248
+            var x = value % 360.0f;     // C# modulo operator supports float so no need to use fmod.
+            
+            if (x < 0.0f)
+            {
+                x += 360.0f;
+            }
+
+            return x;
+        }
     }
 }

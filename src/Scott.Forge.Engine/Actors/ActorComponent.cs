@@ -31,6 +31,10 @@ namespace Scott.Forge.Engine.Actors
     {
         public IActorAction CurrentAction { get; set; }
         public IActorAction RequestedAction { get; set; }
+
+        /// <summary>
+        ///  Direction the actor is facing.
+        /// </summary>
         public DirectionName Direction { get; set; }
         public Vector2 RequestedMovement { get; set; }
 

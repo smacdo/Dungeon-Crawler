@@ -69,7 +69,7 @@ namespace Scott.Forge.Engine.Movement
             {
                 // Calculate movement component's new position and direction.
                 transform.Position = newPosition;
-                transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
+//                transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
             }
 
             DrawDebugVisualization(movement, transform);

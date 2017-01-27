@@ -98,8 +98,6 @@ namespace Scott.Forge.Engine.Actors
                 var requestedSpeed = requestedMovement.Length;
                 var actualSpeed = Interpolation.Lerp(0.0f, requestedSpeed, interpFactor);
 
-                System.Console.WriteLine("{0} {1} {2} ({3})", interpFactor, requestedSpeed, actualSpeed, component.WalkAccelerationSeconds);
-
                 mover.Velocity = DirectionNameHelper.ToVector(requestedDirection) * (float)actualSpeed;
 
                 component.WalkAccelerationSeconds += deltaTime;

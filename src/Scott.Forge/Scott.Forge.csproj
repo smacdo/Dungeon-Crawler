@@ -68,6 +68,7 @@
     <Compile Include="Interpolation.cs" />
     <Compile Include="IRecyclable.cs" />
     <Compile Include="MathHelper.cs" />
+    <Compile Include="Matrix2d.cs" />
     <Compile Include="MersenneTwister.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

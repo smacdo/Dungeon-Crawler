@@ -68,10 +68,12 @@ namespace Scott.DungeonCrawler.Actions
         /// Update simulation with the state of slashing attack
         /// </summary>
         /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actor, double currentTimeSeconds, double deltaTime)
+        public void Update(IGameObject actorGameObject, double currentTimeSeconds, double deltaTime)
         {
-            var direction = actor.Transform.Direction;
-            var sprite = actor.Get<SpriteComponent>();
+            var actor = actorGameObject.Get<ActorComponent>();
+            var direction = actor.Direction;
+
+            var sprite = actorGameObject.Get<SpriteComponent>();
 
             var currentTime = TimeSpan.FromSeconds(currentTimeSeconds);;
             var waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
@@ -107,7 +109,7 @@ namespace Scott.DungeonCrawler.Actions
                     else
                     {
                         // Perform attack hit detection
-                        DrawHitBox(actor, currentTimeSeconds);
+                        DrawHitBox(actorGameObject, currentTimeSeconds);
                     }
                     break;
 

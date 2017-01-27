@@ -13,7 +13,6 @@ namespace Scott.Forge.Tests.GameObjectsTests
         {
             var tc = new TransformComponent();
 
-            Assert.AreEqual(TransformComponent.DefaultDirection, tc.Direction);
             Assert.AreEqual(TransformComponent.DefaultScale, tc.Scale);
         }
 

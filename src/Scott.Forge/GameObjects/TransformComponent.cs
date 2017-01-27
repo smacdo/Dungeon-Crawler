@@ -63,33 +63,41 @@ namespace Scott.Forge.GameObjects
         /// </summary>
         public Vector2 Position
         {
+            get { return mWorldPosition; }
+            set
+            {
+                mWorldPosition = value;
+            }
+        }
+
+        public Vector2 LocalPosition
+        {
             get { return mLocalPosition; }
-            set { mLocalPosition = value; mWorldPosition = value; }
+            set
+            {
+                mLocalPosition = value;
+            }
         }
 
         /// <summary>
         ///  Forward vector in world space.
-        ///  TODO: This is wrong.
         /// </summary>
         public Vector2 Forward { get { return mWorldForward; } }
 
         /// <summary>
         ///  Backward vector in world space.
-        ///  TODO: This is wrong.
         /// </summary>
         public Vector2 Backward { get { return -mWorldForward; } }
 
         /// <summary>
         ///  Right vector in world space.
-        ///   TODO: This is wrong.
         /// </summary>
-        public Vector2 Right { get { return mWorldRight; } }
+        public Vector2 Right { get { return new Vector2(-mWorldForward.Y, mWorldForward.X); } }
 
         /// <summary>
         ///  Left vector in world space.
-        ///   TODO: This is wrong.
         /// </summary>
-        public Vector2 Left { get { return -mWorldRight; } }
+        public Vector2 Left { get { return new Vector2(mWorldForward.Y, -mWorldForward.X); } }
 
         /// <summary>
         ///  Local rotation, relative to parent transform. Rotation is in radians.
@@ -123,8 +131,6 @@ namespace Scott.Forge.GameObjects
             {
                 mLocalRotation = MathHelper.DegreeToRadian(value.ToRotationDegrees());
                 mWorldForward = value.ToVector();
-                mWorldRight = value.ToRightVector();
-
                 mWorldRotation = mLocalRotation;
             }
         }

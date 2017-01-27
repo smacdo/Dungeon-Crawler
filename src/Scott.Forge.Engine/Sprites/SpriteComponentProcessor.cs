@@ -119,6 +119,10 @@ namespace Scott.Forge.Engine.Sprites
                 var rotationLineEnd = transform.Position + (transform.Forward * 16.0f);
 
                 GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.Red);
+
+                rotationLineEnd = transform.Position + (transform.Right * 16.0f);
+
+                GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.White);
             }
         }
 

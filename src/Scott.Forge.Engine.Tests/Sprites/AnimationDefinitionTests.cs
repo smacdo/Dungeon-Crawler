@@ -105,14 +105,14 @@ namespace Scott.Forge.Engine.Tests.Sprites
                 42.0f,
                 frames);
 
-            Assert.AreEqual(frames[0][0], a.GetSpriteFrame(DirectionName.North, 0));
-            Assert.AreEqual(frames[0][1], a.GetSpriteFrame(DirectionName.North, 1));
-            Assert.AreEqual(frames[1][0], a.GetSpriteFrame(DirectionName.West, 0));
-            Assert.AreEqual(frames[1][1], a.GetSpriteFrame(DirectionName.West, 1));
-            Assert.AreEqual(frames[2][0], a.GetSpriteFrame(DirectionName.South, 0));
-            Assert.AreEqual(frames[2][1], a.GetSpriteFrame(DirectionName.South, 1));
-            Assert.AreEqual(frames[3][0], a.GetSpriteFrame(DirectionName.East, 0));
-            Assert.AreEqual(frames[3][1], a.GetSpriteFrame(DirectionName.East, 1));
+            Assert.AreEqual(frames[0][0], a.GetSpriteFrame(DirectionName.East, 0));
+            Assert.AreEqual(frames[0][1], a.GetSpriteFrame(DirectionName.East, 1));
+            Assert.AreEqual(frames[1][0], a.GetSpriteFrame(DirectionName.South, 0));
+            Assert.AreEqual(frames[1][1], a.GetSpriteFrame(DirectionName.South, 1));
+            Assert.AreEqual(frames[2][0], a.GetSpriteFrame(DirectionName.West, 0));
+            Assert.AreEqual(frames[2][1], a.GetSpriteFrame(DirectionName.West, 1));
+            Assert.AreEqual(frames[3][0], a.GetSpriteFrame(DirectionName.North, 0));
+            Assert.AreEqual(frames[3][1], a.GetSpriteFrame(DirectionName.North, 1));
         }
     }
 }

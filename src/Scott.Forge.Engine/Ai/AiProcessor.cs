@@ -36,6 +36,7 @@ namespace Scott.Forge.Engine.Ai
 
             var gameObject = component.Owner;
 
+            var actor = gameObject.Get<ActorComponent>();
             var movement = gameObject.Get<MovementComponent>();
 
             // Is it time for us to make a decision?
@@ -52,10 +53,7 @@ namespace Scott.Forge.Engine.Ai
             else
             {
                 // Keep doing whatever the heck we we are doing.
-                if (movement.IsMoving)
-                {
-                    movement.AddAceleration(gameObject.Transform.Direction, 50);
-                }
+                actor.Move(actor.Direction, 50);
             }
         }
 
@@ -79,14 +77,14 @@ namespace Scott.Forge.Engine.Ai
                 else
                 {
                     // Should we change direction?
-                    DirectionName direction = gameObject.Transform.Direction;
+                    DirectionName direction = actor.Direction;
 
                     if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
                         direction = (DirectionName) GameRoot.Random.Next( 0, 3 );
                     }
 
-                    movement.AddAceleration( direction, 50 );
+                    actor.Move(direction, 50);
                 }
             }
             else
@@ -96,7 +94,7 @@ namespace Scott.Forge.Engine.Ai
                 if ( GameRoot.Random.NextDouble() <= START_WALKING_CHANCE )
                 {
                     // Should we change direction when we start walking?
-                    DirectionName direction = gameObject.Transform.Direction;
+                    DirectionName direction = actor.Direction;
 
                     if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
@@ -105,7 +103,7 @@ namespace Scott.Forge.Engine.Ai
                     }
 
                     // Start walking now
-                    movement.AddAceleration(direction, 50);
+                    actor.Move(direction, 50);
                 }
                 else
                 {
@@ -113,7 +111,7 @@ namespace Scott.Forge.Engine.Ai
                     if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
                     {
                         // Pick a new direction
-                        gameObject.Transform.Direction = (DirectionName) GameRoot.Random.Next(0, 3);
+                        actor.Direction = (DirectionName) GameRoot.Random.Next(0, 3);
                     }
                 }
             }
