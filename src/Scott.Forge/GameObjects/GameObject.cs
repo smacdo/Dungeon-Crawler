@@ -21,7 +21,7 @@ using System.Text;
 namespace Scott.Forge.GameObjects
 {
     /// <summary>
-    ///  IGameObject specifies an interface which is are an implementation of the component entity pattern.
+    ///  IGameObject defines the interface for Forge game objects.
     /// </summary>
     /// <remarks>
     ///  Forge uses game objects to implement the component entity design pattern. This pattern allows game developers
@@ -33,12 +33,23 @@ namespace Scott.Forge.GameObjects
     public interface IGameObject : IDisposable
     {
         /// <summary>
-        ///  Get or ste if this game object is enabled.
+        ///  Get or set if this game object is active.
         /// </summary>
         /// <remarks>
-        ///  Changing the value of this property will propagate this change to all children.
+        ///  Changing the value of this property will propagate this change to all children. A game object may continue
+        ///  to be inactive even if this property is set to true because an ancestor is still disabled.
         /// </remarks>
-        bool Enabled { get; set; }
+        bool Active { get; set; }
+
+        /// <summary>
+        ///  Get if the GameObject is active in the current scene.
+        /// </summary>
+        bool ActiveInHierarchy { get; }
+
+        /// <summary>
+        ///  Get the local active state of the GameObject.
+        /// </summary>
+        bool ActiveSelf { get; }
 
         /// <summary>
         ///  Get the first child of this game object.
@@ -101,11 +112,11 @@ namespace Scott.Forge.GameObjects
         TComponent Get<TComponent>() where TComponent : IComponent;
 
         /// <summary>
-        ///  Get a component from the game object. This will return null if the component was not added.
+        ///  Find the first child that matches the given name.
         /// </summary>
-        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
-        /// <returns>Component that was stored in this game object.</returns>
-        TComponent Find<TComponent>() where TComponent : class, IComponent;
+        /// <param name="name">Name of the child game object.</param>
+        /// <returns>The child game object if located otherwise null.</returns>
+        IGameObject FindChildByName(string name);
 
         /// <summary>
         ///  Remove a component from this game object.
@@ -117,6 +128,13 @@ namespace Scott.Forge.GameObjects
         /// </remarks>
         /// <typeparam name="TComponent">Component type to remove.</typeparam>
         bool Remove<TComponent>() where TComponent : IComponent;
+
+        /// <summary>
+        ///  Get a component from the game object. This will return null if the component was not added.
+        /// </summary>
+        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
+        /// <returns>Component that was stored in this game object.</returns>
+        TComponent TryGet<TComponent>() where TComponent : class, IComponent;
     }
 
     /// <summary>
@@ -128,8 +146,6 @@ namespace Scott.Forge.GameObjects
 
         private bool mDisposed = false;
         private GameObject mParent = null;
-
-        private bool mEnabled = true;
         
         private Dictionary<System.Type, IComponent> mComponents =
             new Dictionary<Type, IComponent>(InitialComponentCapacity);
@@ -172,24 +188,28 @@ namespace Scott.Forge.GameObjects
         /// <remarks>
         ///  Changing the value of this property will propagate this change to all children.
         /// </remarks>
-        public bool Enabled
+        public bool Active
         {
-            get { return mEnabled; }
+            get { return ActiveInHierarchy && ActiveSelf; }
             set
             {
-                mEnabled = value;
-
-                // TODO: Move this to a method?
-                // TODO: Don't use foreach because it generates garbage.
-                foreach (var component in mComponents)
+                if (ActiveSelf != value)
                 {
-                    component.Value.OnOwnerEnableChanged(value);
+                    ActiveSelf = value;
+                    OnActiveChanged(!value);
                 }
-
-                // TODO: Need to propagate this value down to children and ensure their specific enable/disable values
-                //       are preserved.
             }
         }
+
+        /// <summary>
+        ///  Get if the GameObject is active in the current scene.
+        /// </summary>
+        public bool ActiveInHierarchy { get; private set; } = true;
+
+        /// <summary>
+        ///  Get the local active state of the GameObject.
+        /// </summary>
+        public bool ActiveSelf { get; private set; } = true;
 
         /// <summary>
         ///  Get the first child of this game object.
@@ -303,17 +323,31 @@ namespace Scott.Forge.GameObjects
         }
 
         /// <summary>
-        ///  Get a component from the game object. This will return null if the component was not added.
+        ///  Find the first child that matches the given name.
         /// </summary>
-        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
-        /// <returns>Component that was stored in this game object.</returns>
-        public TComponent Find<TComponent>() where TComponent : class, IComponent
+        /// <param name="name">Name of the child game object.</param>
+        /// <returns>The child game object if located otherwise null.</returns>
+        public IGameObject FindChildByName(string name)
         {
-            IComponent component;
+            var next = FirstChild;
 
-            if (mComponents.TryGetValue(typeof(TComponent), out component))
+            while (next != null)
             {
-                return component as TComponent;
+                if (next.Name == name)
+                {
+                    return next;
+                }
+                else if (next.FirstChild != null)
+                {
+                    var result = next.FindChildByName(name);
+
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+
+                next = next.NextSibling;
             }
 
             return null;
@@ -385,6 +419,23 @@ namespace Scott.Forge.GameObjects
             }
 
             return false;
+        }
+
+        /// <summary>
+        ///  Get a component from the game object. This will return null if the component was not added.
+        /// </summary>
+        /// <typeparam name="TComponent">Type of game object to get.</typeparam>
+        /// <returns>Component that was stored in this game object.</returns>
+        public TComponent TryGet<TComponent>() where TComponent : class, IComponent
+        {
+            IComponent component;
+
+            if (mComponents.TryGetValue(typeof(TComponent), out component))
+            {
+                return component as TComponent;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -532,6 +583,39 @@ namespace Scott.Forge.GameObjects
             child.NextSibling = null;
 
             return didFindAndRemove;
+        }
+
+        /// <summary>
+        ///  Called when the GameObject Active property is changed.
+        /// </summary>
+        /// <param name="oldActiveSelf">Previous ActiveSelf value.</param>
+        private void OnActiveChanged(bool oldActiveSelf)
+        {
+            if (FirstChild != null)
+            {
+                SetActiveInHierarchy(this);
+            }
+        }
+
+        /// <summary>
+        ///  Update active in hierarchy value and propagate changes to children.
+        /// </summary>
+        /// <param name="parent"></param>
+        private void SetActiveInHierarchy(GameObject parent)
+        {
+            var next = FirstChild;
+
+            while (next != null)
+            {
+                next.ActiveInHierarchy = parent.ActiveSelf && parent.ActiveInHierarchy;
+
+                if (next.FirstChild != null)
+                {
+                    next.FirstChild.SetActiveInHierarchy(next);
+                }
+
+                next = next.NextSibling;
+            }
         }
     }
 }

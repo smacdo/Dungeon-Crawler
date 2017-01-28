@@ -81,7 +81,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             get { throw new NotImplementedException(); }
         }
 
-        public bool Enabled
+        public bool Active
         {
             get
             {
@@ -122,12 +122,33 @@ namespace Scott.Forge.Tests.GameObjectsTests
             }
         }
 
-        public TComponent Find<TComponent>() where TComponent : class, IComponent
+        public bool ActiveInHierarchy
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool ActiveSelf
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public TComponent TryGet<TComponent>() where TComponent : class, IComponent
         {
             throw new NotImplementedException();
         }
 
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IGameObject FindChildByName(string name)
         {
             throw new NotImplementedException();
         }

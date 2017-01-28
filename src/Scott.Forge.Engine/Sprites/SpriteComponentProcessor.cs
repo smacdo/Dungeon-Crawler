@@ -116,7 +116,7 @@ namespace Scott.Forge.Engine.Sprites
         {
             for (var index = 0; index < mComponents.Count; ++index)
             {
-                if (!mComponents[index].Enabled)
+                if (!mComponents[index].Active)
                 {
                     continue;
                 }
@@ -134,10 +134,10 @@ namespace Scott.Forge.Engine.Sprites
                 }
 
                 // Draw debug rotation.
-                var rotationLineStart = transform.WorldPosition;
-                var rotationLineEnd = transform.WorldPosition + (transform.Forward * 16.0f);
+                //var rotationLineStart = transform.WorldPosition;
+                //var rotationLineEnd = transform.WorldPosition + (transform.Forward * 16.0f);
 
-                GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.Red);
+                //GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.Red);
             }
         }
 

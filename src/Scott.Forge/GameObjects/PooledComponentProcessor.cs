@@ -89,7 +89,7 @@ namespace Scott.Forge.GameObjects
 
             // Get the component from the game object, remove it from the processor and then delete the component from
             // the game object itself.
-            var component = gameObject.Find<TComponent>();
+            var component = gameObject.TryGet<TComponent>();
 
             if (component == null)
             {

@@ -123,7 +123,7 @@ namespace Scott.DungeonCrawler.GameObjects
             weaponGameObject.Parent = player;
 
             weaponGameObject.Transform.LocalPosition = new Vector2(-192 / 2 + 32, -192 / 2 + 32);
-            weaponGameObject.Enabled = false;
+            weaponGameObject.Active = false;
 
             return player;
         }

@@ -113,7 +113,7 @@ namespace Scott.Forge.GameObjects
 
             // Get the component from the game object, remove it from the processor and then delete the component from
             // the game object itself.
-            var component = gameObject.Find<TComponent>();
+            var component = gameObject.TryGet<TComponent>();
 
             if (component == null)
             {
@@ -138,7 +138,7 @@ namespace Scott.Forge.GameObjects
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var index = 0; index < mComponents.Count; ++index)
             {
-                if (mComponents[index].Enabled)
+                if (mComponents[index].Active)
                 {
                     UpdateComponent(mComponents[index], currentTime, deltaTime);
                 }
