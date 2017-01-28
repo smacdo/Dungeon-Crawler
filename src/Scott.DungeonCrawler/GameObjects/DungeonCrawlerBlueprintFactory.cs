@@ -117,11 +117,12 @@ namespace Scott.DungeonCrawler.GameObjects
             var collision = CollisionProcessor.Add(player);
             collision.Initialize(movement.MoveBox, new Vector2(16, 12));
 
-            // Create sword.
-            //var weaponGameObject = InstantiateSword();
-            //weaponGameObject.Parent = player;
+            // Create sword and center the object on the character.
+            //  TODO: Don't hard code the values.
+            var weaponGameObject = InstantiateSword();
+            weaponGameObject.Parent = player;
 
-            // TODO: Test what happens when collision bounds is not set...
+            weaponGameObject.Transform.LocalPosition = new Vector2(-192 / 2 + 32, -192 / 2 + 32);
 
             return player;
         }
