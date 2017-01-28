@@ -150,7 +150,7 @@ namespace Scott.DungeonCrawler
             int width = Screen.Width - 64;
             int height = Screen.Height - 64;
 
-            skeleton.Transform.Position = new Scott.Forge.Vector2(
+            skeleton.Transform.WorldPosition = new Scott.Forge.Vector2(
                 (int) ( GameRoot.Random.NextDouble() * width ),
                 (int) ( GameRoot.Random.NextDouble() * height ) );
 

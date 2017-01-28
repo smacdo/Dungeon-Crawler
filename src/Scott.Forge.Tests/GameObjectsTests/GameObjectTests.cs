@@ -261,6 +261,177 @@ namespace Scott.Forge.Tests.GameObjectsTests
             go.Get<TestComponentA>();
         }
 
+        [TestMethod]
+        public void NewGameObjectHasCorrectChildDefaults()
+        {
+            var obj = new GameObject();
+
+            Assert.IsNull(obj.Parent);
+            Assert.IsNull(obj.FirstChild);
+            Assert.IsNull(obj.NextSibling);
+        }
+
+        [TestMethod]
+        public void AddingChildCorrectlyParentsEverything()
+        {
+            var parent = new GameObject();
+
+            // Create and add one child.
+            var firstChild = new GameObject();
+            firstChild.Parent = parent;
+
+            Assert.IsNull(parent.Parent);
+            Assert.IsNull(parent.NextSibling);
+            Assert.AreSame(parent.FirstChild, firstChild);
+
+            Assert.AreSame(firstChild.Parent, parent);
+            Assert.IsNull(firstChild.NextSibling);
+            Assert.IsNull(firstChild.FirstChild);
+
+            // Add second child.
+            var secondChild = new GameObject();
+            secondChild.Parent = parent;
+
+            Assert.IsNull(parent.Parent);
+            Assert.IsNull(parent.NextSibling);
+            Assert.AreSame(parent.FirstChild, secondChild);
+
+            Assert.AreSame(secondChild.Parent, parent);
+            Assert.AreSame(secondChild.NextSibling, firstChild);
+            Assert.IsNull(secondChild.FirstChild);
+
+            Assert.AreSame(firstChild.Parent, parent);
+            Assert.IsNull(firstChild.NextSibling);
+            Assert.IsNull(firstChild.FirstChild);
+        }
+
+        [TestMethod]
+        public void MovingGameObjectFromOneParentToAnother()
+        {
+            var firstParent = new GameObject();
+
+            // Add child.
+            var child = new GameObject();
+            child.Parent = firstParent;
+
+            Assert.IsNull(firstParent.Parent);
+            Assert.IsNull(firstParent.NextSibling);
+            Assert.AreSame(firstParent.FirstChild, child);
+
+            Assert.AreSame(child.Parent, firstParent);
+            Assert.IsNull(child.NextSibling);
+            Assert.IsNull(child.FirstChild);
+
+            // Move child to new game object.
+            var secondParent = new GameObject();
+            child.Parent = secondParent;
+
+            Assert.IsNull(firstParent.Parent);
+            Assert.IsNull(firstParent.NextSibling);
+            Assert.IsNull(firstParent.FirstChild);
+
+            Assert.IsNull(secondParent.Parent);
+            Assert.IsNull(secondParent.NextSibling);
+            Assert.AreSame(secondParent.FirstChild, child);
+
+            Assert.AreSame(child.Parent, secondParent);
+            Assert.IsNull(child.NextSibling);
+            Assert.IsNull(child.FirstChild);
+        }
+
+        [TestMethod]
+        public void MovingTwoGameObjectFromOneParentToAnother()
+        {
+            var firstParent = new GameObject();
+
+            // Add two children.
+            var firstChild = new GameObject();
+            firstChild.Parent = firstParent;
+
+            var secondChild = new GameObject();
+            secondChild.Parent = firstParent;
+
+            Assert.IsNull(firstParent.Parent);
+            Assert.IsNull(firstParent.NextSibling);
+            Assert.AreSame(firstParent.FirstChild, secondChild);
+
+            Assert.AreSame(secondChild.Parent, firstParent);
+            Assert.AreSame(secondChild.NextSibling, firstChild);
+            Assert.IsNull(secondChild.FirstChild);
+
+            Assert.AreSame(firstChild.Parent, firstParent);
+            Assert.IsNull(firstChild.NextSibling);
+            Assert.IsNull(firstChild.FirstChild);
+
+            // Move the first child to the new parent.
+            var secondParent = new GameObject();
+            firstChild.Parent = secondParent;
+
+            Assert.IsNull(firstParent.Parent);
+            Assert.IsNull(firstParent.NextSibling);
+            Assert.AreSame(firstParent.FirstChild, secondChild);
+
+            Assert.IsNull(secondParent.Parent);
+            Assert.IsNull(secondParent.NextSibling);
+            Assert.AreSame(secondParent.FirstChild, firstChild);
+
+            Assert.AreSame(firstChild.Parent, secondParent);
+            Assert.IsNull(firstChild.NextSibling);
+            Assert.IsNull(firstChild.FirstChild);
+
+            Assert.AreSame(secondChild.Parent, firstParent);
+            Assert.IsNull(secondChild.NextSibling);
+            Assert.IsNull(secondChild.FirstChild);
+
+            // Move the second second to the new parent.
+            secondChild.Parent = secondParent;
+
+            Assert.IsNull(firstParent.Parent);
+            Assert.IsNull(firstParent.NextSibling);
+            Assert.IsNull(firstParent.FirstChild);
+
+            Assert.IsNull(secondParent.Parent);
+            Assert.IsNull(secondParent.NextSibling);
+            Assert.AreSame(secondParent.FirstChild, secondChild);
+
+            Assert.AreSame(firstChild.Parent, secondParent);
+            Assert.IsNull(firstChild.NextSibling);
+            Assert.IsNull(firstChild.FirstChild);
+
+            Assert.AreSame(secondChild.Parent, secondParent);
+            Assert.AreSame(secondChild.NextSibling, firstChild);
+            Assert.IsNull(secondChild.FirstChild);
+        }
+
+        [TestMethod]
+        public void ChangeGameObjectParentToNull()
+        {
+            var parent = new GameObject();
+
+            // Add child.
+            var child = new GameObject();
+            child.Parent = parent;
+
+            Assert.IsNull(parent.Parent);
+            Assert.IsNull(parent.NextSibling);
+            Assert.AreSame(parent.FirstChild, child);
+
+            Assert.AreSame(child.Parent, parent);
+            Assert.IsNull(child.NextSibling);
+            Assert.IsNull(child.FirstChild);
+
+            // Set child game object to null.
+            child.Parent = null;
+
+            Assert.IsNull(parent.Parent);
+            Assert.IsNull(parent.NextSibling);
+            Assert.IsNull(parent.FirstChild);
+
+            Assert.IsNull(child.Parent);
+            Assert.IsNull(child.NextSibling);
+            Assert.IsNull(child.FirstChild);
+        }
+
         /// <summary>
         ///  Test mocks.
         /// </summary>

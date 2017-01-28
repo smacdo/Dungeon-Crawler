@@ -30,6 +30,9 @@ namespace Scott.Forge.GameObjects
     /// </remarks>
     public class TransformComponent : Component
     {
+        // Default scale is one, never zero.
+        public static readonly Vector2 DefaultScale = Vector2.One;
+
         /// <summary>
         ///  Offset from local origin.
         /// </summary>
@@ -43,8 +46,11 @@ namespace Scott.Forge.GameObjects
         private float mLocalRotation = 0.0f;
         private float mWorldRotation = 0.0f;
 
+        private Vector2 mLocalScale = Vector2.One;
+        private Vector2 mWorldScale = Vector2.One;
+
         // Cached from mWorldRotation.
-        private Vector2 mWorldForward = new Vector2(1.0f, 0.0f);        
+        private Vector2 mWorldForward;        
 
         /// <summary>
         ///  Constructor.
@@ -59,14 +65,29 @@ namespace Scott.Forge.GameObjects
         public Vector2 Backward { get { return -mWorldForward; } }
 
         /// <summary>
+        ///  World direction.
+        /// </summary>
+        /// <remarks>
+        ///  TODO: REMOVE.
+        /// </remarks>
+        public DirectionName Direction
+        {
+            get
+            {
+                return DirectionNameHelper.FromRotationDegrees(mWorldRotation);
+            }
+            set
+            {
+                mLocalRotation = MathHelper.DegreeToRadian(value.ToRotationDegrees());
+                mWorldForward = value.ToVector();
+                mWorldRotation = mLocalRotation;
+            }
+        }
+
+        /// <summary>
         ///  Get a unit vector from the transform oriented toward the +X axis.
         /// </summary>
         public Vector2 Forward { get { return mWorldForward; } }
-
-        /// <summary>
-        ///  Get a vector that is 90 degrees left of the forward vector.
-        /// </summary>
-        public Vector2 Left { get { return new Vector2(mWorldForward.Y, -mWorldForward.X); } }
 
         /// <summary>
         ///  Get or set the position of this transform relative to the parent.
@@ -76,51 +97,14 @@ namespace Scott.Forge.GameObjects
             get { return mLocalPosition; }
             set
             {
-                if (!mLocalPosition.Equals(value))
-                {
-                    mLocalPosition = value;
-                    RegenerateWorldTransform();
-                }
+                mLocalPosition = value;
             }
         }
 
         /// <summary>
-        ///  Get or set the rotation of this transform relative to the parent.
+        ///  Get or set the world position.
         /// </summary>
-        public float LocalRotation
-        {
-            get { return mLocalRotation; }
-            set
-            {
-                if (mLocalRotation != value)
-                {
-                    mLocalRotation = value;
-                    RegenerateWorldTransform();
-                }
-            }
-        }
-
-        /// <summary>
-        ///  Get a vector that is 90 degrees right of the forward vector.
-        /// </summary>
-        public Vector2 Right { get { return new Vector2(-mWorldForward.Y, mWorldForward.X); } }
-
-        /// <summary>
-        ///  Get or set the world rotation.
-        /// </summary>
-        /// <remarks>
-        ///  TODO: Implement me.
-        /// </remarks>
-        public float WorldRotation
-        {
-            get { return mWorldRotation; }
-            set { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        ///  Get or set the position relative to the world.
-        /// </summary>
-        public Vector2 WorldPosition
+        public Vector2 Position
         {
             get { return mWorldPosition; }
             set
@@ -129,17 +113,53 @@ namespace Scott.Forge.GameObjects
                 {
                     if (Owner != null && Owner.Parent != null)
                     {
-                        mLocalPosition = value - Owner.Parent.Transform.WorldPosition;
+                        mLocalPosition = value - mWorldPosition;
                     }
                     else
                     {
-                        mLocalPosition = value;
+                        mLocalPosition = Vector2.Zero;
                     }
-                    
-                    RegenerateWorldTransform();
+
+                    mWorldPosition = value;
+
+                    RecalculateChildTransforms();
                 }
             }
         }
+
+
+
+
+        /// <summary>
+        ///  Right vector in world space.
+        /// </summary>
+        public Vector2 Right { get { return new Vector2(-mWorldForward.Y, mWorldForward.X); } }
+
+        /// <summary>
+        ///  Left vector in world space.
+        /// </summary>
+        public Vector2 Left { get { return new Vector2(mWorldForward.Y, -mWorldForward.X); } }
+
+        /// <summary>
+        ///  Rotation relative to world origin.
+        /// </summary>
+        public float Rotation
+        {
+            get { return mWorldRotation; }
+            set
+            {
+                // TODO: Wrap angle.
+                mWorldRotation = value;
+                mWorldForward = MathHelper.Rotate(0, 1, (float)Math.PI * 2.0f - value);
+            }
+        }
+
+        /// <summary>
+        ///  Local scale, relative to parent transform.
+        /// </summary>
+        public Vector2 Scale { get { return mLocalScale; } }
+
+
 
         /// <summary>
         ///  Move the transform in the requested distance, relative to the transform's current
@@ -148,7 +168,7 @@ namespace Scott.Forge.GameObjects
         /// <param name="distance">Distance to move.</param>
         public void Translate( Vector2 distance )
         {
-            throw new NotImplementedException();
+            Position += distance;
         }
 
         /// <summary>
@@ -158,7 +178,7 @@ namespace Scott.Forge.GameObjects
         /// <returns>World space direction vector</returns>
         public Vector2 TransformDirection( Vector2 direction )
         {
-            throw new NotImplementedException();
+            return MathHelper.Rotate( direction, mWorldRotation );
         }
 
         /// <summary>
@@ -168,7 +188,8 @@ namespace Scott.Forge.GameObjects
         /// <returns>World space position vector.</returns>
         public Vector2 TransformPosition( Vector2 position )
         {
-            throw new NotImplementedException();
+            Vector2 rPos = mLocalPosition + MathHelper.Rotate( position - mLocalPosition, mWorldRotation );
+            return mWorldPosition + rPos;
         }
 
         /// <summary>
@@ -178,47 +199,35 @@ namespace Scott.Forge.GameObjects
         /// <param name="oldParent">The old parent.</param>
         public void OnParentChanged(GameObject newParent, GameObject oldParent)
         {
-            RegenerateWorldTransform();
-        }
+            // Recalculate world position and rotation from the new parent, and then propogate changes to children.
+            var parentPosition = (newParent != null ? newParent.Transform.Position : Vector2.Zero);
+            var mWorldPosition = parentPosition + mLocalPosition;
 
-        /// <summary>
-        ///  Method will recaculate world position, rotation and scale after a local position, rotation or scale change
-        ///  has happened.
-        /// </summary>
-        void RegenerateWorldTransform()
-        {
-            if (Owner == null)
-            {
-                mWorldPosition = mLocalPosition;
-                mWorldRotation = mLocalRotation;
-            }
-            else
-            {
-                var parentPosition = (Owner.Parent == null ? Vector2.Zero : Owner.Parent.Transform.WorldPosition);
-                var parentRotation = (Owner.Parent == null ? 0.0f : Owner.Parent.Transform.WorldRotation);
-
-                RecalculateChildTransforms(parentPosition, parentRotation);
-            }
+            RecalculateChildTransforms();
         }
 
         /// <summary>
         ///  Recursively invalidate and recalculate transforms of children.
         /// </summary>
-        void RecalculateChildTransforms(Vector2 parentPosition, float parentRotation)
+        void RecalculateChildTransforms()
         {
-            // Recreate world transformations.
-            mWorldPosition = parentPosition + MathHelper.Rotate(mLocalPosition, parentRotation);
-            mWorldRotation = MathHelper.NormalizeAngleTwoPi(parentRotation + mLocalRotation);
-            mWorldForward = MathHelper.Rotate(new Forge.Vector2(1, 0), mWorldRotation);    // TODO: Do this faster.
+            // TODO.
+        }
+        
 
-            // Propogate transform to children.
-            var currentChild = Owner.FirstChild;
-
-            while (currentChild != null)
-            {
-                currentChild.Transform.RecalculateChildTransforms(mWorldPosition, mWorldRotation);
-                currentChild = currentChild.NextSibling;
-            }
+        /// <summary>
+        ///  Convert the Transform to a human readable string.
+        /// </summary>
+        /// <returns>String readable transform.</returns>
+        public override string ToString()
+        {
+            return
+                "Position <{0},{1}>, Dir: {2}, Rotation: {3}, Scale: <{4},{5}>"
+                    .With( Position.X, Position.Y,
+                           Direction,
+                           Rotation,
+                           Scale.X,
+                           Scale.Y );
         }
     }
 }

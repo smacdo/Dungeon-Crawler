@@ -98,6 +98,29 @@ namespace Scott.Forge.Tests.GameObjectsTests
             get { throw new NotImplementedException(); }
         }
 
+        public GameObject Parent
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public GameObject FirstChild
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public GameObject NextSibling
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public TComponent Find<TComponent>() where TComponent : class, IComponent
         {

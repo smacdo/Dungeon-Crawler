@@ -8,12 +8,9 @@ namespace Scott.Forge.Tests.GameObjectsTests
     public class TransformComponentTests
     {
         [TestMethod]
-        [TestCategory("Forge/GameObjects/TransformComponent")]
-        public void CreateComponentSetsDefaultProperties()
+        public void NewTransformComponentHasValidDefaultValues()
         {
-            var tc = new TransformComponent();
-
-            Assert.AreEqual(TransformComponent.DefaultScale, tc.Scale);
+            var t = new TransformComponent();
         }
 
         [TestMethod]
@@ -21,9 +18,9 @@ namespace Scott.Forge.Tests.GameObjectsTests
         public void GetAndSetPosition()
         {
             var tc = new TransformComponent();
-            tc.Position = new Vector2(2.0f, 3.0f);
+            tc.WorldPosition = new Vector2(2.0f, 3.0f);
 
-            Assert.AreEqual(new Vector2(2.0f, 3.0f), tc.Position);
+            Assert.AreEqual(new Vector2(2.0f, 3.0f), tc.WorldPosition);
         }
     }
 }

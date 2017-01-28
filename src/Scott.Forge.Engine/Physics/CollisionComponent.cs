@@ -46,7 +46,7 @@ namespace Scott.Forge.Engine.Physics
 
         public void Update()
         {
-            var position = Owner.Transform.Position;
+            var position = Owner.Transform.WorldPosition;
             mBroadPhaseBox.Position = position + Offset;
             mBounds.WorldPosition = position + Offset;
             CollisionThisFrame = false;

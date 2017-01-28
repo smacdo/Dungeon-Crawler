@@ -29,13 +29,22 @@ namespace Scott.Forge.Engine.Actors
     /// </summary>
     public class ActorComponent : Component
     {
+        private DirectionName mDirection;
+
         public IActorAction CurrentAction { get; set; }
         public IActorAction RequestedAction { get; set; }
 
         /// <summary>
         ///  Direction the actor is facing.
         /// </summary>
-        public DirectionName Direction { get; set; }
+        public DirectionName Direction
+        {
+            get { return mDirection; }
+            set
+            {
+                mDirection = value;
+            }
+        }
         public Vector2 RequestedMovement { get; set; }
 
         public float MaxSpeed { get; set;}

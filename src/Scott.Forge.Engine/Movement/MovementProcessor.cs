@@ -59,7 +59,7 @@ namespace Scott.Forge.Engine.Movement
             }
 
             // Calculate new position.
-            var newPosition = transform.Position + (movement.Velocity * (float) deltaTime);
+            var newPosition = transform.WorldPosition + (movement.Velocity * (float) deltaTime);
 
             // Check for collisions and other situations that can lead to an invalid position.
             RectF moveBox = movement.MoveBox;
@@ -68,7 +68,7 @@ namespace Scott.Forge.Engine.Movement
             if (IsInLevelBounds(moveBox))
             {
                 // Calculate movement component's new position and direction.
-                transform.Position = newPosition;
+                transform.WorldPosition = newPosition;
 //                transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
             }
 

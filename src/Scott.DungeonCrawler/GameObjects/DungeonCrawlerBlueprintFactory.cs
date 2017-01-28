@@ -117,9 +117,27 @@ namespace Scott.DungeonCrawler.GameObjects
             var collision = CollisionProcessor.Add(player);
             collision.Initialize(movement.MoveBox, new Vector2(16, 12));
 
+            // Create sword.
+            //var weaponGameObject = InstantiateSword();
+            //weaponGameObject.Parent = player;
+
             // TODO: Test what happens when collision bounds is not set...
 
             return player;
+        }
+
+        private GameObject InstantiateSword()
+        {
+            // Create the player blue print.
+            var weapon = new GameObject("weapon");
+
+            // Create the sprite and set it up.
+            var sprite = SpriteProcessor.Add(weapon);
+            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword"));
+
+            //sprite.RendererIgnoreTransformRotation = true;
+
+            return weapon;
         }
 
         private GameObject InstantiateSkeleton()

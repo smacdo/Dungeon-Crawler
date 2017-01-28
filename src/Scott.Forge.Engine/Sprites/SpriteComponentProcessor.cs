@@ -110,19 +110,15 @@ namespace Scott.Forge.Engine.Sprites
                     GameRoot.Renderer.Draw(
                         component.Sprites[layer].Texture,
                         component.SpriteRects[layer],
-                        transform.Position,
-                        (component.RendererIgnoreTransformRotation ? 0.0f : transform.Rotation));
+                        transform.WorldPosition,
+                        (component.RendererIgnoreTransformRotation ? 0.0f : transform.WorldRotation));
                 }
 
                 // Draw debug rotation.
-                var rotationLineStart = transform.Position;
-                var rotationLineEnd = transform.Position + (transform.Forward * 16.0f);
+                var rotationLineStart = transform.WorldPosition;
+                var rotationLineEnd = transform.WorldPosition + (transform.Forward * 16.0f);
 
                 GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.Red);
-
-                rotationLineEnd = transform.Position + (transform.Right * 16.0f);
-
-                GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.White);
             }
         }
 

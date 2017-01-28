@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Scott.Forge.GameObjects
@@ -32,6 +33,11 @@ namespace Scott.Forge.GameObjects
     public interface IGameObject : IDisposable
     {
         /// <summary>
+        ///  Get the first child of this game object.
+        /// </summary>
+        GameObject FirstChild { get; }
+
+        /// <summary>
         ///  Get a unique identifier for this game object.
         /// </summary>
         Guid Id { get; }
@@ -43,6 +49,19 @@ namespace Scott.Forge.GameObjects
         ///  The name value does not have to globally unique.
         /// </remarks>
         string Name { get; }
+
+        /// <summary>
+        ///  Get the next sibling of this game object.
+        /// </summary>
+        GameObject NextSibling { get; }
+
+        /// <summary>
+        ///  Get or set the parent of a game object.
+        /// </summary>
+        /// <remarks>
+        ///  Changing the parent can trigger a cascade of updates which is a moderately slow operation.
+        /// </remarks>
+        GameObject Parent { get; }
 
         /// <summary>
         ///  Get component containing information on this game object's physical location in the game world.
@@ -97,8 +116,11 @@ namespace Scott.Forge.GameObjects
     /// </summary>
     public class GameObject : IGameObject
     {
-        private bool mDisposed = false;
         private const int InitialComponentCapacity = 7;
+
+        private bool mDisposed = false;
+        private GameObject mParent = null;
+        
         private Dictionary<System.Type, IComponent> mComponents =
             new Dictionary<Type, IComponent>(InitialComponentCapacity);
 
@@ -121,6 +143,8 @@ namespace Scott.Forge.GameObjects
 
             // Pre-create a transform component, and make sure it is also in the component bag.
             Transform = new TransformComponent();
+            Transform.Owner = this;
+
             mComponents.Add(Transform.GetType(), Transform);
         }
 
@@ -131,6 +155,11 @@ namespace Scott.Forge.GameObjects
         {
             Dispose(false);
         }
+
+        /// <summary>
+        ///  Get the first child of this game object.
+        /// </summary>
+        public GameObject FirstChild { get; private set; }
 
         /// <summary>
         ///  Get a unique identifier for this game object.
@@ -148,6 +177,53 @@ namespace Scott.Forge.GameObjects
         ///  The name value does not have to globally unique.
         /// </remarks>
         public string Name { get; private set; }
+
+        /// <summary>
+        ///  Get the next sibling of this game object.
+        /// </summary>
+        public GameObject NextSibling { get; private set; }
+
+        /// <summary>
+        ///  Get or set the parent of a game object.
+        /// </summary>
+        /// <remarks>
+        ///  Changing the parent can trigger a cascade of updates which is a moderately slow operation.
+        /// </remarks>
+        public GameObject Parent
+        {
+            get { return mParent; }
+            set
+            {
+                // Skip update logic if parent is the same instance.
+                if (mParent == value)
+                {
+                    return;
+                }
+
+                // Unparent the game object.
+                var oldParent = mParent;
+
+                if (oldParent != null)
+                {
+                    if (!oldParent.RemoveChild(this))
+                    {
+                        throw new InvalidOperationException("Parent does not have this object has a child");
+                    }
+                }
+
+                // Change parent to new game object and notify components that the parent has changed.
+                if (value != null)
+                {
+                    value.AddChild(this);
+                }
+                else
+                {
+                    mParent = null;
+                }
+                
+                Transform.OnParentChanged(value, oldParent);
+            }
+        }
 
         /// <summary>
         ///  Get component containing information on this game object's physical location in the game world.
@@ -316,6 +392,111 @@ namespace Scott.Forge.GameObjects
                 Name = null;
                 mDisposed = true;
             }
+        }
+
+        /// <summary>
+        ///  Add a child game object.
+        /// </summary>
+        /// <remarks>
+        ///  Should only be called by the Parent property when it is changed.
+        /// </remarks>
+        /// <param name="child">The child game object to add.</param>
+        private void AddChild(GameObject child)
+        {
+            if (child == null)
+            {
+                throw new ArgumentNullException("child");
+            }
+
+            if (child == this)
+            {
+                throw new ArgumentException("Cannot add self as child", "child");
+            }
+
+            if (child.Parent != null)
+            {
+                throw new ArgumentException("Cannot add child with existing parent", "child");
+            }
+
+            if (child.NextSibling != null)
+            {
+                throw new ArgumentException("Child has dangling sibling reference", "child");
+            }
+
+            // Add to the start of the children list (For performance).
+            // TODO: Consider debug option to validate game object not added twice.
+            if (FirstChild == null)
+            {
+                FirstChild = child;
+            }
+            else
+            {
+                child.NextSibling = FirstChild;
+                FirstChild = child;
+            }
+
+            // Change child parent to this game object. Make sure to update the mParent backing field to avoid circular
+            // updates.
+            child.mParent = this;
+        }
+
+        /// <summary>
+        ///  Remove a child game object.
+        /// </summary>
+        /// <remarks>
+        ///  Should only be called by the Parent property when it is changed.
+        /// </remarks>
+        /// <param name="child">The child object to remove.</param>
+        private bool RemoveChild(GameObject child)
+        {
+            if (child == null)
+            {
+                throw new ArgumentNullException("child");
+            }
+
+            if (child == this)
+            {
+                throw new ArgumentException("Cannot remove self as child", "child");
+            }
+
+            if (child.Parent != this)
+            {
+                throw new ArgumentException("Cannot remove game object that is not child of self", "child");
+            }
+
+            // Find and remove the child.
+            bool didFindAndRemove = false;
+
+            if (child == FirstChild)
+            {
+                // First child is the one to remove.
+                FirstChild = child.NextSibling;
+                didFindAndRemove = true;
+            }
+            else
+            {
+                // Search children list until child is found.
+                var previousNode = FirstChild;
+                var current = FirstChild.NextSibling;
+
+                while (current != null && !didFindAndRemove)
+                {
+                    if (current == child)
+                    {
+                        previousNode.NextSibling = current.NextSibling;
+                        didFindAndRemove = true;
+                    }
+
+                    previousNode = current;
+                    current = current.NextSibling;
+                }
+            }
+
+            // Remove the child's parent reference before returning. (Do not assign to public Parent field).
+            child.mParent = null;
+            child.NextSibling = null;
+
+            return didFindAndRemove;
         }
     }
 }

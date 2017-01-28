@@ -96,7 +96,7 @@ namespace Scott.Forge.Engine.Physics
 
                 if (first.Bounds.Intersects(second.Bounds, ref minimumTranslation))
                 {
-                    first.Owner.Transform.Position += minimumTranslation;
+                    first.Owner.Transform.WorldPosition += minimumTranslation;
                 }
             }
         }

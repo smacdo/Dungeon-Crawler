@@ -420,5 +420,24 @@ namespace Scott.Forge
 
             return x;
         }
+
+        /// <summary>
+        ///  Normalize an angle to [0, 2*Pi) range.
+        /// </summary>
+        /// <param name="value">Angle in radians to normalize.</param>
+        /// <returns>Normalized angle in radians.</returns>
+        public static float NormalizeAngleTwoPi(float value)
+        {
+            // Ref: http://stackoverflow.com/a/11498248
+            const float TwoPi = (float)(Math.PI * 2.0);
+            var x = value % TwoPi;
+
+            if (x < 0.0f)
+            {
+                x += TwoPi;
+            }
+
+            return x;
+        }
     }
 }
