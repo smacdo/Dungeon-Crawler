@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 using System;
 using Scott.Forge.Engine.Actors;
+using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 
 namespace Scott.DungeonCrawler.Actions
 {
+    /// <summary>
+    ///  Spell cast animation states.
+    /// </summary>
     public enum CastSpellState
     {
         NotStarted,
@@ -26,12 +30,14 @@ namespace Scott.DungeonCrawler.Actions
         Finished
     }
 
+    /// <summary>
+    ///  Actor cast spell.
+    /// </summary>
     public class ActionCastSpell : IActorAction
     {
-        private const float WAIT_TIME = 0.2f;
-        private const float ACTION_TIME = 0.7f;     // how long the attack lasts, sync to animation
+        private const double AnimationSeconds = 0.2;
 
-        private TimeSpan mTimeStarted = TimeSpan.MinValue;
+        private double mAnimationSecondsPlayed = 0.0f;
         private CastSpellState mState = CastSpellState.NotStarted;
 
         /// <summary>
@@ -67,30 +73,25 @@ namespace Scott.DungeonCrawler.Actions
         ///  Update the actor with the current state of our action.
         /// </summary>
         /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actor, double currentTime, double deltaTime)
+        public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
-            /*
-            IGameObject owner = actor.Owner;
-            Direction direction = owner.Transform.Direction;
-            SpriteComponent sprite = owner.Get<SpriteComponent>();
-            TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
-            TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
+            var actor = actorGameObject.Get<ActorComponent>();
+            var direction = actor.Direction;        // TODO: Use Transform.Direction.
 
-            switch ( mState )
+            var sprite = actorGameObject.Get<SpriteComponent>();
+            var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
+
+            switch (mState)
             {
                 case CastSpellState.NotStarted:
-                    mTimeStarted = gameTime.TotalGameTime;
+                    mAnimationSecondsPlayed = 0.0f;
                     mState = CastSpellState.Performing;
-
-                    // Enable the weapon sprite, and animate the attack
-                    sprite.PlayAnimation( "Spell", direction );
+                    sprite.PlayAnimation("Spell", direction);
                     break;
 
                 case CastSpellState.Performing:
-                    // Have we finished the attack?
-                    if ( mTimeStarted.Add( actionTimeSpan ) <= gameTime.TotalGameTime )
+                    if (mAnimationSecondsPlayed < AnimationSeconds)
                     {
-                        // Disable the weapon sprite now that the attack has finished
                         mState = CastSpellState.Finished;
                     }
                     break;
@@ -98,7 +99,6 @@ namespace Scott.DungeonCrawler.Actions
                 case CastSpellState.Finished:
                     break;
             }
-             */
         }
     }
 }

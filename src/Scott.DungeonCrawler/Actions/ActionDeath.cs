@@ -15,11 +15,16 @@
  */
 using System;
 using System.Collections.Generic;
+using Scott.Forge;
 using Scott.Forge.Engine.Actors;
+using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 
-namespace Scott.Forge.Client
+namespace Scott.DungeonCrawler.Actions
 {
+    /// <summary>
+    ///  Death animation state.
+    /// </summary>
     public enum DeathAnimationState
     {
         NotStarted,
@@ -27,12 +32,14 @@ namespace Scott.Forge.Client
         Finished
     }
 
+    /// <summary>
+    ///  Action performed when an actor dies.
+    /// </summary>
     public class ActionDeath : IActorAction
     {
-        private const float WAIT_TIME = 0.2f;
-        private const float ACTION_TIME = 0.6f;     // how long the attack lasts, sync to animation
+        private const float AnimationSeconds = 0.2f;
 
-        private TimeSpan mTimeStarted = TimeSpan.MinValue;
+        private double mAnimationSecondsPlayed = 0.0f;
         private DeathAnimationState mState = DeathAnimationState.NotStarted;
 
         /// <summary>
@@ -68,36 +75,32 @@ namespace Scott.Forge.Client
         ///  Update the actor with the current state of our action.
         /// </summary>
         /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actor, double currentTime, double deltaTime)
+        public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
-            /*IGameObject owner = actor.Owner;
-            Direction direction = owner.Transform.Direction;
-            SpriteComponent sprite = owner.Get<SpriteComponent>();
-            TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
-            TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
+            var actor = actorGameObject.Get<ActorComponent>();
+            var direction = actor.Direction;        // TODO: Use Transform.Direction.
 
-            switch ( mState )
+            var sprite = actorGameObject.Get<SpriteComponent>();
+            var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
+
+            switch (mState)
             {
                 case DeathAnimationState.NotStarted:
-                    mTimeStarted = gameTime.TotalGameTime;
+                    mAnimationSecondsPlayed = 0.0f;
                     mState = DeathAnimationState.Performing;
-
-                    // Enable the weapon sprite, and animate the attack
-                    sprite.PlayAnimation( "Hurt", direction );
+                    sprite.PlayAnimation("Hurt", direction);
                     break;
 
                 case DeathAnimationState.Performing:
-                    // Have we finished the attack?
-                    if ( mTimeStarted.Add( actionTimeSpan ) <= gameTime.TotalGameTime )
+                    if (mAnimationSecondsPlayed < AnimationSeconds)
                     {
-                        // Disable the weapon sprite now that the attack has finished
                         mState = DeathAnimationState.Finished;
                     }
                     break;
 
                 case DeathAnimationState.Finished:
                     break;
-            }*/
+            }
         }
     }
 }

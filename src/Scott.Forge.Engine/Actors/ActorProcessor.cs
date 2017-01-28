@@ -24,28 +24,30 @@ namespace Scott.Forge.Engine.Actors
     /// </summary>
     public class ActorProcessor : ComponentProcessor<ActorComponent>
     {
+        /// <summary>
+        ///  Update actor component.
+        /// </summary>
         protected override void UpdateComponent(ActorComponent component, double currentTime, double deltaTime)
         {
             ProcessMovementRequest(component, currentTime, deltaTime);
-            
-            ProcessActionRequest(component, currentTime, deltaTime);
+
             UpdateCurrentAction(component, currentTime, deltaTime);
+            ProcessActionRequest(component, currentTime, deltaTime);
+            
         }
 
         /// <summary>
-        ///  Check if there was an action requested, and if so attempt to perform it.
+        ///  Perform any requested actions for this actor.
         /// </summary>
         private void ProcessActionRequest(ActorComponent component, double currentTime, double deltaTime)
         {
             var currentAction = component.CurrentAction;
             var requestedAction = component.RequestedAction;
 
-            // Check if the actor is idle and there's a requested action to perform. If so, schedule it for
-            // execution.
+            // Activate the next requested action if so long as the actor is idle.
             if (currentAction == null && requestedAction != null)
             {
                 var movement = component.Owner.Get<MovementComponent>();
-                movement.RequestStopMovement();
 
                 component.CurrentAction = requestedAction;
                 component.RequestedAction = null;
@@ -81,6 +83,15 @@ namespace Scott.Forge.Engine.Actors
         /// </summary>
         private void ProcessMovementRequest(ActorComponent component, double currentTime, double deltaTime)
         {
+            // Skip movement if the actor is performing an action that prevents movement.
+            bool movementAllowed = true;
+
+            if (component.CurrentAction != null && !component.CurrentAction.CanMove)
+            {
+                movementAllowed = false;
+            }
+
+            // Calculate the a movement vector from the request.
             var mover = component.Owner.Get<MovementComponent>();
 
             var requestedMovement = component.RequestedMovement;
@@ -91,7 +102,7 @@ namespace Scott.Forge.Engine.Actors
             // TODO: Don't start walking if movemnt speed is too high.
             //const float MaxSpeed = 64.0f * 64.0f;
 
-            if (requestedMovement != Vector2.Zero)
+            if (movementAllowed && requestedMovement != Vector2.Zero)
             {
                 // Linearly interpolate speed from zero up to requested speed to simulate acceleration.
                 var interpFactor = MathHelper.Clamp(component.WalkAccelerationSeconds, 0.0f, 0.1f) * 10.0f;

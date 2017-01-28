@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Scott.DungeonCrawler.Actions;
 using Scott.DungeonCrawler.GameObjects;
 using Scott.Forge;
 using Scott.Forge.Engine;
@@ -210,15 +211,15 @@ namespace Scott.DungeonCrawler
 
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
-                //playerActor.Perform( new ActionSlashAttack() );
+                playerActor.Perform( new ActionSlashAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
             {
-                //playerActor.Perform( new ActionRangedAttack() );
+                playerActor.Perform( new ActionRangedAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.CastSpell ) )
             {
-                //playerActor.Perform( new ActionCastSpell() );
+                playerActor.Perform(new ActionCastSpell());
             }
 
             // Spawn some stuff
