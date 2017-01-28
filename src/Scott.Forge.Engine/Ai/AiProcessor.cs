@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,103 +21,109 @@ using Scott.Forge.GameObjects;
 namespace Scott.Forge.Engine.Ai
 {
     /// <summary>
-    /// Does AI logic
+    /// Does AI logic.
+    ///  TODO: This belongs in DungeonCrawler project not in engine.
     /// </summary>
     public class AiProcessor : ComponentProcessor<AiComponent>
     {
-        private const double CHANGE_DIRECTION_CHANCE = 0.05;
-        private const double START_WALKING_CHANCE = 0.15;
-        private const double STOP_WALKING_CHANCE = 0.05;
+        private const double DecisionWindowInSeconds = 1.0f;
+        private const double ChangeWalkDirectionChance = 0.05;
+        private const double ChangeIdleDirectionChange = 0.20;
+        private const double StartWalkingChance = 0.15;
+        private const double StopWalkingChance = 0.05;
+        private const double MovementSpeedPerSecond = 50;
 
-        protected override void UpdateComponent(AiComponent component, double currentTime, double deltaTime)
+        /// <summary>
+        ///  Update an AI component.
+        /// </summary>
+        protected override void UpdateComponent(AiComponent ai, double currentTime, double deltaTime)
         {
             var decisionTimeDelta = TimeSpan.FromSeconds(0.25);
             var gameTime = TimeSpan.FromSeconds(currentTime);
 
-            var gameObject = component.Owner;
+            var gameObject = ai.Owner;
 
             var actor = gameObject.Get<ActorComponent>();
             var movement = gameObject.Get<MovementComponent>();
 
-            // Is it time for us to make a decision?
-            if (component.LastDecisionTime.Add(decisionTimeDelta) <= gameTime)
+            switch (ai.CurrentState)
             {
-                PerformIdleUpdate(gameObject, currentTime, deltaTime);
-                component.LastDecisionTime = gameTime;
-            }
-            else if (component.LastDecisionTime == TimeSpan.MinValue)
-            {
-                // First update call. Schedule an AI decision next update.
-                component.LastDecisionTime = gameTime.Subtract(decisionTimeDelta);
-            }
-            else
-            {
-                // Keep doing whatever the heck we we are doing.
-                actor.Move(actor.Direction, 50);
+                case AiState.Idle:
+                    PerformIdleUpdate(ai, gameObject, currentTime, deltaTime);
+                    break;
+
+                case AiState.Walking:
+                    PerformMovingUpdate(ai, gameObject, currentTime, deltaTime);
+                    break;
             }
         }
 
         /// <summary>
         /// Idle AI logic
         /// </summary>
-        /// <param name="gameTime"></param>
-        private void PerformIdleUpdate(IGameObject gameObject, double currentTime, double deltaTime)
+        private void PerformIdleUpdate(
+            AiComponent ai,
+            IGameObject gameObject,
+            double currentTime,
+            double deltaTime)
+        {
+            // Consider switching to movement.
+            var actor = gameObject.Get<ActorComponent>();
+
+            if (ai.SecondsSinceLastStateChange >= DecisionWindowInSeconds)
+            {
+                // Shift to walking?
+                if (GameRoot.Random.NextDouble() <= StartWalkingChance)
+                {
+                    ai.CurrentState = AiState.Walking;
+                    ai.SecondsSinceLastStateChange = 0.0f;
+                }
+                // Change direction?
+                else if (GameRoot.Random.NextDouble() <= ChangeWalkDirectionChance)
+                {
+                    actor.Direction = (DirectionName) GameRoot.Random.Next(0, Constants.DirectionCount);
+                    ai.SecondsSinceLastStateChange = 0.0f;
+                }
+            }
+
+            ai.SecondsSinceLastStateChange += deltaTime;
+        }
+
+        /// <summary>
+        ///  Perform movement logic.
+        /// </summary>
+        private void PerformMovingUpdate(
+            AiComponent ai,
+            IGameObject gameObject,
+            double currentTime,
+            double deltaTime)
         {
             var actor = gameObject.Get<ActorComponent>();
-            var movement = gameObject.Get<MovementComponent>();
 
-            // Are we walking around or just standing?
-            if ( movement.IsMoving )
+            // Consider changing movement direction or state every second.
+            if (ai.SecondsSinceLastStateChange >= DecisionWindowInSeconds)
             {
-                // Character is moving around... should they stop moving? Change direction mid walk?
-                if ( GameRoot.Random.NextDouble() <= STOP_WALKING_CHANCE )
+                // Start walking?
+                if (GameRoot.Random.NextDouble() <= StopWalkingChance)
                 {
-                    // nothing to do!
+                    ai.CurrentState = AiState.Walking;
+                    ai.SecondsSinceLastStateChange = 0.0f;
                 }
-                else
+                // Change direction?
+                else if (GameRoot.Random.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    // Should we change direction?
-                    DirectionName direction = actor.Direction;
-
-                    if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
-                    {
-                        direction = (DirectionName) GameRoot.Random.Next( 0, 3 );
-                    }
-
-                    actor.Move(direction, 50);
-                }
-            }
-            else
-            {
-                // Character is standing around. Should they start moving? Maybe change
-                // direction
-                if ( GameRoot.Random.NextDouble() <= START_WALKING_CHANCE )
-                {
-                    // Should we change direction when we start walking?
-                    DirectionName direction = actor.Direction;
-
-                    if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
-                    {
-                        direction = (DirectionName) GameRoot.Random.Next( 0, 3 );
-                        Console.WriteLine( "Starting to walk" );
-                    }
-
-                    // Start walking now
-                    actor.Move(direction, 50);
-                }
-                else
-                {
-                    // Maybe we should look around?
-                    if ( GameRoot.Random.NextDouble() <= CHANGE_DIRECTION_CHANCE )
-                    {
-                        // Pick a new direction
-                        actor.Direction = (DirectionName) GameRoot.Random.Next(0, 3);
-                    }
+                    actor.Direction = (DirectionName) GameRoot.Random.Next(0, Constants.DirectionCount);
+                    ai.SecondsSinceLastStateChange = 0.0f;
                 }
             }
 
-            // Should we change direction? (5% chance each frame)
+            // Move!
+            if (ai.CurrentState == AiState.Walking)
+            {
+                actor.MoveForward((float)(MovementSpeedPerSecond));
+            }
 
+            ai.SecondsSinceLastStateChange += deltaTime;
         }
     }
 }

@@ -76,6 +76,15 @@ namespace Scott.Forge.Engine.Actors
         }
 
         /// <summary>
+        ///  Requests the actor to move in the direction they are facing at the requested speed.
+        /// </summary>
+        /// <param name="speed">Speed to move the actor.</param>
+        public void MoveForward(float speed)
+        {
+            Move(Direction, speed);
+        }
+
+        /// <summary>
         ///  Requests the actor to perform the given action.
         /// </summary>
         /// <remarks>This action will be activated the next time Actor processor runs.</remarks>
