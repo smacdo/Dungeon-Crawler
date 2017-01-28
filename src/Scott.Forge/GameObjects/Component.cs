@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,24 @@ namespace Scott.Forge.GameObjects
     /// </summary>
     public interface IComponent : IDisposable
     {
+        /// <summary>
+        ///  Get or set the enabled status of this component.
+        /// </summary>
+        /// <remarks>
+        ///  Disabled components are not updated by their respective component processor.
+        /// </remarks>
+        bool Enabled { get; set; }
+
+        /// <summary>
+        ///  Get or set the game object that owns this component.
+        /// </summary>
         IGameObject Owner { get; set; }
+
+        /// <summary>
+        ///  Called when the owner's enabled value changes.
+        /// </summary>
+        /// <param name="isOwnerEnabled"></param>
+        void OnOwnerEnableChanged(bool isOwnerEnabled);
     }
 
     /// <summary>
@@ -34,7 +51,9 @@ namespace Scott.Forge.GameObjects
     /// </remarks>
     public abstract class Component : IComponent
     {
-        private bool mDisposed;
+        private bool mDisposed = false;
+        private bool mEnabled = true;
+        private bool mOwnerEnabled = true;
         private IGameObject mOwner;
         private IComponentDestroyedCallback mDestroyCallback;
 
@@ -63,6 +82,18 @@ namespace Scott.Forge.GameObjects
         }
 
         /// <summary>
+        ///  Get or set the enabled status of this component.
+        /// </summary>
+        /// <remarks>
+        ///  Disabled components are not updated by their respective component processor.
+        /// </remarks>
+        public bool Enabled
+        {
+            get { return mEnabled && mOwnerEnabled; }
+            set { mEnabled = value; }
+        }
+
+        /// <summary>
         /// The game object that owns this components
         /// </summary>
         public IGameObject Owner
@@ -80,6 +111,15 @@ namespace Scott.Forge.GameObjects
 
                 mOwner = value;
             }
+        }
+
+        /// <summary>
+        ///  Called when the owner's enabled value changes.
+        /// </summary>
+        /// <param name="isOwnerEnabled"></param>
+        public void OnOwnerEnableChanged(bool isOwnerEnabled)
+        {
+            mOwnerEnabled = isOwnerEnabled;
         }
 
         /// <summary>

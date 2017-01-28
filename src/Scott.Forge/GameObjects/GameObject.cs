@@ -33,6 +33,14 @@ namespace Scott.Forge.GameObjects
     public interface IGameObject : IDisposable
     {
         /// <summary>
+        ///  Get or ste if this game object is enabled.
+        /// </summary>
+        /// <remarks>
+        ///  Changing the value of this property will propagate this change to all children.
+        /// </remarks>
+        bool Enabled { get; set; }
+
+        /// <summary>
         ///  Get the first child of this game object.
         /// </summary>
         GameObject FirstChild { get; }
@@ -120,6 +128,8 @@ namespace Scott.Forge.GameObjects
 
         private bool mDisposed = false;
         private GameObject mParent = null;
+
+        private bool mEnabled = true;
         
         private Dictionary<System.Type, IComponent> mComponents =
             new Dictionary<Type, IComponent>(InitialComponentCapacity);
@@ -154,6 +164,31 @@ namespace Scott.Forge.GameObjects
         ~GameObject()
         {
             Dispose(false);
+        }
+
+        /// <summary>
+        ///  Get or ste if this game object is enabled.
+        /// </summary>
+        /// <remarks>
+        ///  Changing the value of this property will propagate this change to all children.
+        /// </remarks>
+        public bool Enabled
+        {
+            get { return mEnabled; }
+            set
+            {
+                mEnabled = value;
+
+                // TODO: Move this to a method?
+                // TODO: Don't use foreach because it generates garbage.
+                foreach (var component in mComponents)
+                {
+                    component.Value.OnOwnerEnableChanged(value);
+                }
+
+                // TODO: Need to propagate this value down to children and ensure their specific enable/disable values
+                //       are preserved.
+            }
         }
 
         /// <summary>

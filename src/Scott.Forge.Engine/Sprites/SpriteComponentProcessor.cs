@@ -116,6 +116,11 @@ namespace Scott.Forge.Engine.Sprites
         {
             for (var index = 0; index < mComponents.Count; ++index)
             {
+                if (!mComponents[index].Enabled)
+                {
+                    continue;
+                }
+
                 var component = mComponents[index];
                 var transform = component.Owner.Transform;
 

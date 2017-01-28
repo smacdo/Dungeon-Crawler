@@ -70,10 +70,15 @@ namespace Scott.DungeonCrawler.Actions
         /// <param name="gameTime">Current simulation time</param>
         public void Update(IGameObject actorGameObject, double currentTimeSeconds, double deltaTime)
         {
+            var actorSprite = actorGameObject.Get<SpriteComponent>();
+
             var actor = actorGameObject.Get<ActorComponent>();
             var direction = actor.Direction;
 
-            var sprite = actorGameObject.Get<SpriteComponent>();
+            // Get the weapon game object for animation (Which is attached to the character).
+            //  TODO: Use GameObject.FindByName or search children... don't assume the first child.
+            var weaponGameObject = actorGameObject.FirstChild;
+            var weaponSprite = (weaponGameObject != null ? weaponGameObject.Get<SpriteComponent>() : null);
 
             var currentTime = TimeSpan.FromSeconds(currentTimeSeconds);;
             var waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
@@ -86,8 +91,14 @@ namespace Scott.DungeonCrawler.Actions
                     mAttackStatus = ActionAttackStatus.StartingUp;
 
                     // Enable the weapon sprite, and animate the attack
-                    sprite.PlayAnimation( "Slash", direction );
-                    //sprite.EnableLayer( "Weapon", true );
+                    actorSprite.PlayAnimation( "Slash", direction );
+                    
+                    if (weaponSprite != null)
+                    {
+                        weaponGameObject.Enabled = true;
+                        weaponSprite.PlayAnimation("Slash", direction);
+                    }
+
                     break;
 
                 case ActionAttackStatus.StartingUp:
