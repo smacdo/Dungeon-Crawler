@@ -39,17 +39,28 @@ namespace Scott.Forge.Engine.Sprites
         }
 
         /// <summary>
-        ///  Get the current animation frame index.
+        ///  Get or set the current animation frame index.
         /// </summary>
         /// <remarks>
-        ///  This should be changed only by animation routines.
+        ///  This field should only be set by the Sprite componenet processor.
         /// </remarks>
         public int AnimationFrameIndex { get; internal set; }
 
         /// <summary>
-        ///  Get the time that the current animation frame was first shown.
+        ///  Get or set the number of seconds that the current animation has been playing.
         /// </summary>
-        public TimeSpan AnimationFrameStartTime { get; internal set; }
+        /// <remarks>
+        ///  This field should only be set by the Sprite componenet processor.
+        /// </remarks>
+        public double AnimationSecondsActive { get; internal set; }
+
+        /// <summary>
+        ///  Get or set the number of seconds that the current animation frame has been shown.
+        /// </summary>
+        /// <remarks>
+        ///  This field should only be set by the Sprite componenet processor.
+        /// </remarks>
+        public double AnimationFrameSecondsActive { get; internal set; }
 
         /// <summary>
         ///  Get or set sprite animation set definition.
@@ -57,8 +68,11 @@ namespace Scott.Forge.Engine.Sprites
         public AnimationSetDefinition Animations { get; internal set; }
 
         /// <summary>
-        ///  Get the current sprite animation definition.
+        ///  Get or set the current sprite animation definition.
         /// </summary>
+        /// <remarks>
+        ///  This field should only be set by the Sprite componenet processor.
+        /// </remarks>
         public AnimationDefinition CurrentAnimation { get; internal set; }
 
         /// <summary>
@@ -174,7 +188,11 @@ namespace Scott.Forge.Engine.Sprites
             CurrentAnimation = animation;
             Direction = direction;
             EndingAction = endingAction;
-            AnimationFrameStartTime = TimeSpan.MinValue;
+
+            AnimationSecondsActive = 0.0;
+            AnimationFrameSecondsActive = 0.0;
+            
+            AnimationFrameIndex = 0;
         }
 
         /// <summary>

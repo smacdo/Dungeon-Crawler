@@ -211,6 +211,7 @@ namespace Scott.DungeonCrawler
 
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
+                System.Diagnostics.Debug.WriteLine("Requesting...");
                 playerActor.Perform( new ActionSlashAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )

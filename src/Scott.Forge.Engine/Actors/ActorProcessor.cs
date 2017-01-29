@@ -40,19 +40,14 @@ namespace Scott.Forge.Engine.Actors
         /// </summary>
         private void ProcessActionRequest(ActorComponent actor, double currentTime, double deltaTime)
         {
-            var currentAction = actor.CurrentAction;
-            var requestedAction = actor.RequestedAction;
-
             // Activate the next requested action if so long as the actor is idle.
-            if (currentAction == null && requestedAction != null)
+            if (actor.CurrentAction == null && actor.RequestedAction != null)
             {
                 var movement = actor.Owner.Get<MovementComponent>();
+                System.Diagnostics.Debug.WriteLine("Create action!!! {0}", currentTime);
 
-                actor.CurrentAction = requestedAction;
+                actor.CurrentAction = actor.RequestedAction;
                 actor.RequestedAction = null;
-
-                currentAction = requestedAction;
-                requestedAction = null;
             }
         }
 
@@ -61,18 +56,15 @@ namespace Scott.Forge.Engine.Actors
         /// </summary>
         private void UpdateCurrentAction(ActorComponent actor, double currentTime, double deltaTime)
         {
-            var currentAction = actor.CurrentAction;
-
-            if (currentAction != null)
+            if (actor.CurrentAction != null)
             {
-                if (currentAction.IsFinished)
+                if (actor.CurrentAction.IsFinished)
                 {
                     actor.CurrentAction = null;
-                    currentAction = null;
                 }
                 else
                 {
-                    currentAction.Update(actor.Owner, currentTime, deltaTime);
+                    actor.CurrentAction.Update(actor.Owner, currentTime, deltaTime);
                 }
             }
         }
