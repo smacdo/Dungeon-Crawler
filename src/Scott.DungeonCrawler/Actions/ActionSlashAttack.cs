@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,30 +32,23 @@ namespace Scott.DungeonCrawler.Actions
 
     public class ActionSlashAttack : IActorAction
     {
-        private const float WAIT_TIME = 0.2f;
-        private const float ACTION_TIME = 0.6f;     // how long the attack lasts, sync to animation
+        private const double StartupSeconds = 0.2f;
+        private const double SweepSeconds = 0.6f;     // how long the attack lasts, sync to animation
+        private const string MeleeWeaponName = "MeleeWeapon";
+        private const string SlashAnimationName = "Slash";
 
-        private TimeSpan mTimeStarted = TimeSpan.MinValue;
+        private double mSecondsSinceStart = 0.0f;
         private ActionAttackStatus mAttackStatus = ActionAttackStatus.NotStarted;
 
         /// <summary>
-        /// Check if the action has finished
+        ///  Get if action has finished.
         /// </summary>
-        public bool IsFinished
-        {
-            get
-            {
-                return mAttackStatus == ActionAttackStatus.Finished;
-            }
-        }
+        public bool IsFinished { get { return mAttackStatus == ActionAttackStatus.Finished; } }
 
-        public bool CanMove
-        {
-            get
-            {
-                return false;
-            }
-        }
+        /// <summary>
+        ///  Get if actor can move while performing this action.
+        /// </summary>
+        public bool CanMove { get { return false; } }
 
         /// <summary>
         ///  Constructor
@@ -76,51 +69,55 @@ namespace Scott.DungeonCrawler.Actions
             var direction = actor.Direction;
 
             // Get the weapon game object for animation (Which is attached to the character).
-            //  TODO: Use GameObject.FindByName or search children... don't assume the first child.
-            var weaponGameObject = actorGameObject.FirstChild;
+            var weaponGameObject = actorGameObject.FindChildByName(MeleeWeaponName);
             var weaponSprite = (weaponGameObject != null ? weaponGameObject.Get<SpriteComponent>() : null);
-
-            var currentTime = TimeSpan.FromSeconds(currentTimeSeconds);;
-            var waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
-            var actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
-            
+                        
             switch ( mAttackStatus )
             {
                 case ActionAttackStatus.NotStarted:
-                    mTimeStarted = currentTime;
-                    mAttackStatus = ActionAttackStatus.StartingUp;
-
                     // Enable the weapon sprite, and animate the attack
-                    actorSprite.PlayAnimation( "Slash", direction );
+                    actorSprite.PlayAnimation(SlashAnimationName, direction );
                     
                     if (weaponSprite != null)
                     {
-                        weaponGameObject.Enabled = true;
-                        weaponSprite.PlayAnimation("Slash", direction);
+                        weaponGameObject.Active = true;
+                        weaponSprite.PlayAnimation(SlashAnimationName, direction);
                     }
+
+                    // Start animation.
+                    mAttackStatus = ActionAttackStatus.StartingUp;
 
                     break;
 
                 case ActionAttackStatus.StartingUp:
-                    // Are we still waiting for the attack to begin?
-                    if (mTimeStarted.Add(waitTimeSpan) <= currentTime)
+                    // Wait for slash animation to begin sweep animation.
+                    if (mSecondsSinceStart < StartupSeconds)
+                    {
+                        mSecondsSinceStart += deltaTime;
+                    }
+                    else
                     {
                         mAttackStatus = ActionAttackStatus.Performing;
                     }
                     break;
 
                 case ActionAttackStatus.Performing:
-                    // Have we finished the attack?
-                    if (mTimeStarted.Add(actionTimeSpan) <= currentTime)
-                    {
-                        // Disable the weapon sprite now that the attack has finished
-                        //sprite.EnableLayer( "Weapon", false );
-                        mAttackStatus = ActionAttackStatus.Finished;
-                    }
-                    else
+                    // Perform attack hit detection until the animation completes.
+                    if (mSecondsSinceStart < StartupSeconds + SweepSeconds)
                     {
                         // Perform attack hit detection
                         DrawHitBox(actorGameObject, currentTimeSeconds);
+                        mSecondsSinceStart += deltaTime;
+                    }
+                    else
+                    {
+                        // Disable the weapon sprite now that the attack has finished
+                        if (weaponGameObject != null)
+                        {
+                            weaponGameObject.Active = false;
+                        }
+
+                        mAttackStatus = ActionAttackStatus.Finished;
                     }
                     break;
 
