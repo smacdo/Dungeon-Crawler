@@ -131,7 +131,7 @@ namespace Scott.DungeonCrawler.GameObjects
         private GameObject InstantiateSword()
         {
             // Create the player blue print.
-            var weapon = new GameObject("weapon");
+            var weapon = new GameObject("MeleeWeapon");
 
             // Create the sprite and set it up.
             var sprite = SpriteProcessor.Add(weapon);

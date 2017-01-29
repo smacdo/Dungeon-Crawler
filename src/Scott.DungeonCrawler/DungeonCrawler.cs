@@ -227,7 +227,7 @@ namespace Scott.DungeonCrawler
             {
                 if ( GameRoot.Random.NextDouble() < 0.75 || firstSpawn )
                 {
-                    SpawnSkeleton();
+                    //SpawnSkeleton();
                     firstSpawn = false;
                 }
 

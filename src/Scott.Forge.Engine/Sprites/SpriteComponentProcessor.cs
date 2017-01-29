@@ -30,7 +30,6 @@ namespace Scott.Forge.Engine.Sprites
             // Don't update if component is not playing animation.
             if (component.CurrentAnimation == null)
             {
-
                 return;
             }
 
@@ -57,8 +56,13 @@ namespace Scott.Forge.Engine.Sprites
                 component.AnimationFrameIndex += 1;
 
                 // Are we at the end of this animation?
+                var atlasOffset = Vector2.Zero;
+
                 if (component.AnimationFrameIndex == component.CurrentAnimation.FrameCount)
                 {
+                    // Animation has completed.
+                    var animation = component.CurrentAnimation;
+
                     switch (component.EndingAction)
                     {
                         case AnimationEndingAction.Loop:
@@ -66,36 +70,30 @@ namespace Scott.Forge.Engine.Sprites
                             break;
 
                         case AnimationEndingAction.Stop:
-                            component.CurrentAnimation = null;
                             component.AnimationFrameIndex -= 1;
                             OnAnimationComplete(component);
+                            component.CurrentAnimation = null;
+                            
                             break;
 
                         case AnimationEndingAction.StopAndReset:
-                            component.CurrentAnimation = null;
                             component.AnimationFrameIndex = 0;
                             OnAnimationComplete(component);
+                            component.CurrentAnimation = null;
                             break;
                     }
+
+                    // The animation has completed so use the last animation frame index for the atlas rect.
+                    atlasOffset = animation.GetSpriteFrame(component.Direction, component.AnimationFrameIndex);
                 }
-
-                // Load the texture atlas rect for the next animation frame. If the animation has completed then use
-                // the default sprite offset.
-                var atlasOffset = Vector2.Zero;
-
-                if (component.CurrentAnimation != null)
+                else
                 {
+                    // Load the texture atlas rect for the next animation frame. 
                     atlasOffset = component.CurrentAnimation.GetSpriteFrame(
                         component.Direction,
                         component.AnimationFrameIndex);
                 }
-                else
-                {
-                    // Animation has no more frames, use the default.
-                    // TODO: Is this the best way?
-                    atlasOffset = component.Sprites[0].StartingOffset;
-                }
-
+                
                 // Update sprite atlas rectangles for the renderer.
                 for (var layer = 0; layer < component.Sprites.Length; layer++)
                 {
