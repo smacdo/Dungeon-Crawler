@@ -88,22 +88,18 @@ namespace Scott.Forge.Engine.Actors
             var requestedMovement = actor.RequestedMovement;
             actor.RequestedMovement = Vector2.Zero;
 
-            var requestedDirection = DirectionNameHelper.FromVector(requestedMovement);
-
-            // TODO: Don't start walking if movemnt speed is too high.
-            //const float MaxSpeed = 64.0f * 64.0f;
-
             if (movementAllowed && requestedMovement != Vector2.Zero)
             {
                 // Linearly interpolate speed from zero up to requested speed to simulate acceleration.
                 var interpFactor = MathHelper.Clamp(actor.WalkAccelerationSeconds, 0.0f, 0.1f) * 10.0f;
                 var requestedSpeed = requestedMovement.Length;
+                var requestedDirection = requestedMovement.Normalized();
                 var actualSpeed = Interpolation.Lerp(0.0f, requestedSpeed, interpFactor);
-
-                mover.Velocity = DirectionNameHelper.ToVector(requestedDirection) * (float)actualSpeed;
+                
+                mover.Velocity = requestedDirection * (float)actualSpeed;
 
                 // Update actor state.
-                actor.Direction = requestedDirection;
+                actor.Direction = DirectionNameHelper.FromVector(requestedDirection);
                 actor.WalkAccelerationSeconds += deltaTime;
 
                 // Walk animation.
@@ -112,14 +108,14 @@ namespace Scott.Forge.Engine.Actors
                 if (sprite.IsAnimating)
                 {
                     if (sprite.CurrentAnimation.Name != Constants.WalkAnimationName ||
-                        sprite.Direction != requestedDirection)
+                        sprite.Direction != actor.Direction)
                     {
-                        sprite.PlayAnimationLooping(Constants.WalkAnimationName, requestedDirection);
+                        sprite.PlayAnimationLooping(Constants.WalkAnimationName, actor.Direction);
                     }
                 }
                 else
                 {
-                    sprite.PlayAnimationLooping(Constants.WalkAnimationName, requestedDirection);
+                    sprite.PlayAnimationLooping(Constants.WalkAnimationName, actor.Direction);
                 }
             }
             else

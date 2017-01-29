@@ -70,6 +70,17 @@ namespace Scott.Forge.Engine.Actors
         /// <remarks>This movement will be performed the next time Actor processor runs.</remarks>
         /// <param name="direction"></param>
         /// <param name="speed"></param>
+        public void Move(Vector2 direction)
+        {
+            RequestedMovement = direction;
+        }
+
+        /// <summary>
+        ///  Requests the actor move in a given direction and speed.
+        /// </summary>
+        /// <remarks>This movement will be performed the next time Actor processor runs.</remarks>
+        /// <param name="direction"></param>
+        /// <param name="speed"></param>
         public void Move(DirectionName direction, float speed)
         {
             RequestedMovement = DirectionNameHelper.ToVector(direction) * speed;

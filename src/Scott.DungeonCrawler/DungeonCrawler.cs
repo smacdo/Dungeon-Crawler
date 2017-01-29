@@ -193,7 +193,7 @@ namespace Scott.DungeonCrawler
             GameRoot.Debug.PreUpdate( gameTime );
 
             // Perform any requested actions based on user input.
-            mInputManager.Update();
+            mInputManager.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             if ( mInputManager.WasTriggered( InputAction.ExitGame ) )
             {
@@ -202,16 +202,16 @@ namespace Scott.DungeonCrawler
 
             // Player movement.
             var playerActor = mPlayer.Get<ActorComponent>();
-            DirectionName playerDirection;
+            var playerMovement = mInputManager.GetAxis(InputAction.Move);
 
-            if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
+            if (playerMovement.LengthSquared > 0.01)
             {
-                playerActor.Move(playerDirection, 125.0f);
+                playerActor.Move(playerMovement * 125.0f);
             }
 
+            // Player actions.
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
-                System.Diagnostics.Debug.WriteLine("Requesting...");
                 playerActor.Perform( new ActionSlashAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
