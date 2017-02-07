@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using System;
+using System.Collections.Generic;
 using Scott.Forge;
 using Scott.Forge.Engine;
 using Scott.Forge.Engine.Actors;
@@ -30,12 +31,28 @@ namespace Scott.DungeonCrawler.Actions
         Finished
     }
 
+    /// <summary>
+    ///  Actor attack logic and animation.
+    /// </summary>
+    /// <remarks>
+    ///  TODO: Right now some of the animations do not match the hitbox. The attack sweep north and west animations
+    ///  are opposite. Best solution is to store start/finish angles in an array for each direction possibility.
+    /// </remarks>
     public class ActionSlashAttack : IActorAction
     {
-        private const double StartupSeconds = 0.2f;
-        private const double SweepSeconds = 0.6f;     // how long the attack lasts, sync to animation
+        private const float StartupSeconds = 0.2f;
+        private const float AttackSeconds = 0.3f;     // how long the attack lasts, sync to animation.
+        private const float AttackAngleDegreesStart = 80.0f;
+        private const float AttackAngleDegreesEnd = -80.0f;
         private const string MeleeWeaponName = "MeleeWeapon";
         private const string SlashAnimationName = "Slash";
+
+        private const float WeaponOffsetX = 32;
+        private const float WeaponOffsetY = 32;
+        private const float WeaponWidth = 50;
+        private const float WeaponHeight = 10;
+        private const float WeaponPivotX = 0;
+        private const float WeaponPivotY = 5;
 
         private double mSecondsSinceStart = 0.0f;
         private ActionAttackStatus mAttackStatus = ActionAttackStatus.NotStarted;
@@ -103,10 +120,10 @@ namespace Scott.DungeonCrawler.Actions
 
                 case ActionAttackStatus.Performing:
                     // Perform attack hit detection until the animation completes.
-                    if (mSecondsSinceStart < StartupSeconds + SweepSeconds)
+                    if (mSecondsSinceStart < StartupSeconds + AttackSeconds)
                     {
                         // Perform attack hit detection
-                        DrawHitBox(actorGameObject, currentTimeSeconds);
+                        DrawHitBox(actor, (float)mSecondsSinceStart);
                         mSecondsSinceStart += deltaTime;
                     }
                     else
@@ -129,54 +146,61 @@ namespace Scott.DungeonCrawler.Actions
         /// <summary>
         /// Draws a hit box for the game
         /// </summary>
-        private void DrawHitBox(IGameObject actor, double currentTimeSeconds)
+        private void DrawHitBox(ActorComponent actor, float elapsedSeconds)
         {
-            /*double startedAt   = mTimeStarted.TotalSeconds + WAIT_TIME;
-            double finishedAt  = startedAt + ACTION_TIME - WAIT_TIME;
-            double weightedAmount = MathHelper.NormalizeToZeroOneRange(currentTimeSeconds, startedAt, finishedAt );
-            
-            float angleDeg = Interpolation.Lerp( 170.0f, 10.0f, (float) weightedAmount );
-            float radians = MathHelper.DegreeToRadian( angleDeg );
+            // Calculate progress of weapon attack animation as a value in the range [0, 1).
+            const float AnimationStartTime = StartupSeconds;
+            const float AnimationFinishTime = StartupSeconds + AttackSeconds;
 
-            var actorPosition = actor.Transform.Position;
-            var weaponOffset = new Vector2( 32, 32 );
-            var weaponSize = new Vector2( 55, 10 );
-            var weaponPivot = new Vector2( 0, 5 );
+            var animationPosition = MathHelper.Clamp(
+                MathHelper.NormalizeToZeroOneRange(elapsedSeconds, AnimationStartTime, AnimationFinishTime),
+                0.0f,
+                1.0f);
 
-            var weaponWorldPos = actorPosition + weaponOffset;
+            // Calculate the rotation of the weapon hitbox as a function of the animation progress and the actor's
+            // current direction.
+            var startAngle = MathHelper.DegreeToRadian(AttackAngleDegreesStart);
+            var endAngle = MathHelper.DegreeToRadian(AttackAngleDegreesEnd);
 
-            var weaponRect = new RectF(weaponWorldPos.X,  weaponWorldPos.Y, weaponSize.X, weaponSize.Y);
-            var bounds = new BoundingArea( weaponRect, radians, weaponPivot + weaponWorldPos );
-                                                //    new Vector2( 0.0f, 10.0f / 2.0f ) );
+            var actorRotationRad = actor.Direction.ToRotationRadians();
+            var interpolatedRad = Interpolation.Lerp(startAngle, endAngle, animationPosition);
+            var finalRad = MathHelper.NormalizeAngleTwoPi(interpolatedRad + actorRotationRad);
+            var radians = finalRad;
 
-            GameRoot.Debug.DrawBoundingBox( bounds, Color.HotPink );
+            // Generate weapon hitbox.
+            var bounds = new BoundingArea(
+                actor.Owner.Transform.WorldPosition + new Vector2(WeaponOffsetX, WeaponOffsetY),    // Top left.
+                new SizeF(WeaponWidth, WeaponHeight),                                               // Size.
+                radians,                                                                            // Rotation.
+                new Vector2(WeaponPivotX, WeaponPivotY));                                           // Rotation pivot.
 
+            // Draw the bounding area for visualization testing.
+            GameRoot.Debug.DrawBoundingArea(
+                bounds,
+                Microsoft.Xna.Framework.Color.HotPink);
+
+            // Now find all objects touching the hitbox.
+            //  TODO: This should be moved into the collision processor (and Scene class).
 
             // Test all the other skeletons out there
-            List<GameObject> collisions = new List<GameObject>();
-
             for ( int i = 0; i < GameRoot.Enemies.Count; ++i )
             {
-                GameObject obj = GameRoot.Enemies[i];
-                Vector2 pos = obj.Position;
+                var obj = GameRoot.Enemies[i];
+                var pos = obj.Transform.WorldPosition;
 
-                Rectangle staticInnerRect = new Rectangle( (int) pos.X, (int) pos.Y, 64, 64 );
-                BoundingRect staticRect = new BoundingRect( staticInnerRect );
-                GameRoot.Debug.DrawBoundingBox( staticRect, Color.PowderBlue );
+                var staticInnerRect = new RectF( pos.X, pos.Y, 64.0f, 64.0f);
+                GameRoot.Debug.DrawRect(staticInnerRect, Microsoft.Xna.Framework.Color.PowderBlue );
 
-                // lets see what happens
-                if ( bounds.Intersects( staticRect ) )
+                // lets see what happens.
+                //  TODO: Do not generate a new bound area. Use the game object's!!
+                var objBoundingArea = new BoundingArea(staticInnerRect);
+                var minTranslationVector = Vector2.Zero;
+
+                if (objBoundingArea.Intersects(bounds, ref minTranslationVector))
                 {
-                    collisions.Add( obj );
-                    GameRoot.Debug.DrawFilledRect( staticInnerRect, Color.White );
+                    GameRoot.Debug.DrawFilledRect(staticInnerRect, Microsoft.Xna.Framework.Color.White);
                 }
             }
-
-            // Delete the other colliding game objects
-            for ( int i = 0; i < collisions.Count; ++i )
-            {
-                GameRoot.Enemies.Remove( collisions[i] );
-            }*/
         }
     }
 }

@@ -54,6 +54,8 @@ namespace Scott.DungeonCrawler
         private GameObject mPlayer;
         private List<GameObject> mEnemies = new List<GameObject>();
 
+        private bool mEnemySpawningEnabled = true;
+
         private SpriteComponentProcessor mSpriteProcessor = new SpriteComponentProcessor();
         private MovementProcessor mMovementProcessor = new MovementProcessor();
         private CollisionProcessor mCollisionProcessor = new CollisionProcessor();
@@ -226,9 +228,9 @@ namespace Scott.DungeonCrawler
             // Spawn some stuff
             if ( mNextSpawnTime <= gameTime.TotalGameTime && GameRoot.Enemies.Count < 32 )
             {
-                if ( GameRoot.Random.NextDouble() < 0.75 || firstSpawn )
+                if ((GameRoot.Random.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
                 {
-                    //SpawnSkeleton();
+                    SpawnSkeleton();
                     firstSpawn = false;
                 }
 

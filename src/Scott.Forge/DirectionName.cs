@@ -125,6 +125,32 @@ namespace Scott.Forge
         }
 
         /// <summary>
+        ///  Convert a Direction enumeration value to a rotational angle in radians.
+        /// </summary>
+        /// <param name="direction">Direction value to convert.</param>
+        /// <returns>Radian angle of rotation.</returns>
+        public static float ToRotationRadians(this DirectionName direction)
+        {
+            switch (direction)
+            {
+                case DirectionName.North:
+                    return (float)Math.PI * 1.5f;
+
+                case DirectionName.South:
+                    return (float)Math.PI * 0.5f;
+
+                case DirectionName.West:
+                    return (float)Math.PI;
+
+                case DirectionName.East:
+                    return 0.0f;
+
+                default:
+                    throw new InvalidOperationException("Unknown direction name");
+            }
+        }
+
+        /// <summary>
         ///  Convert a Direction enumeration value to a rotational vector.
         /// </summary>
         /// <param name="direction">Direction value to convert.</param>

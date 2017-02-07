@@ -179,6 +179,18 @@ namespace Scott.Forge
         }
 
         /// <summary>
+        ///  Check if two vectors are nearly equal.
+        /// </summary>
+        /// <param name="a">First value to check.</param>
+        /// <param name="b">Second value to check.</param>
+        /// <param name="epsilon">Maximal difference before they are not equal.</param>
+        /// <returns>If two floating point values are nearly equal.</returns>
+        public static bool NearlyEqual(Vector2 a, Vector2 b, float epsilon)
+        {
+            return NearlyEqual(a.X, b.X, epsilon) && NearlyEqual(a.Y, b.Y, epsilon);
+        }
+
+        /// <summary>
         ///  Calculate an approximated sin value using faster math than calling Math.Sin. X must
         ///  range between [0,PI].
         /// </summary>
@@ -438,6 +450,51 @@ namespace Scott.Forge
             }
 
             return x;
+        }
+
+        /// <summary>
+        ///  Linearly interpolate an angle in radians.
+        /// </summary>
+        /// <remarks>
+        ///  Implemented with help from: http://stackoverflow.com/q/2708476
+        /// </remarks>
+        /// <param name="start">Starting angle in radians.</param>
+        /// <param name="end">Ending angle in radians.</param>
+        /// <param name="t">Linear interpolation amount [0, 1).</param>
+        /// <returns>Angle in radians.</returns>
+        public static float LerpRadians(float start, float end, float t)
+        {
+            const float Pi = (float) Math.PI;
+            const float TwoPi = 2.0f * Pi;
+
+            var difference = Math.Abs(end - start);
+
+            // If the angle difference is larger than half the unit circle (causing part of the answer to over/under
+            // flow), adjust either the starting or ending angle by 2pi.
+            if (difference > Pi)
+            {
+                if (end > start)
+                {
+                    start += TwoPi;
+                }
+                else
+                {
+                    end += TwoPi;
+                }
+            }
+
+            // Calculate angle interpolation.
+            var value = (start + ((end - start) * t));
+
+            // Wrap value to unit circle and return.
+            if (value >= 0 && value <= TwoPi)
+            {
+                return value;
+            }
+            else
+            {
+                return value % TwoPi;
+            }
         }
     }
 }
