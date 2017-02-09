@@ -133,22 +133,11 @@ namespace Scott.Forge.GameObjects
                 {
                     component.Owner.Remove<TComponent>();
                 }
-            }
 
-            // Get the component from the game object, remove it from the processor and then delete the component from
-            // the game object itself.
-            var component = gameObject.TryGet<TComponent>();
-
-            if (component == null)
-            {
-                throw new ComponentDoesNotExistException(gameObject, typeof(TComponent));
+                // TODO: Terrible for performance.
+                return mComponents.Remove(component);
             }
-            else
-            {
-                gameObject.Remove<TComponent>();
-                mComponents.Remove(component);
-            }
-
+            
             return false;
         }
 
