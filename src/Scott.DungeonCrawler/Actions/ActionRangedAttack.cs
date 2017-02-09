@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 using System;
 using Scott.Forge.Engine.Actors;
+using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 
 namespace Scott.DungeonCrawler.Actions
@@ -28,10 +29,9 @@ namespace Scott.DungeonCrawler.Actions
 
     public class ActionRangedAttack : IActorAction
     {
-        private const float WAIT_TIME = 0.2f;
-        private const float ACTION_TIME = 1.3f;     // how long the attack lasts, sync to animation
+        private const double AnimationSeconds = 0.2;
 
-        private TimeSpan mTimeStarted = TimeSpan.MinValue;
+        private double mAnimationSecondsPlayed = 0.0f;
         private RangedAttackState mState = RangedAttackState.NotStarted;
 
         /// <summary>
@@ -67,30 +67,25 @@ namespace Scott.DungeonCrawler.Actions
         ///  Update the actor with the current state of our action.
         /// </summary>
         /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actor, double currentTime, double deltaTime)
+        public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
-            /*
-            IGameObject owner = actor.Owner;
-            Direction direction = owner.Transform.Direction;
-            SpriteComponent sprite = owner.Get<SpriteComponent>();
-            TimeSpan waitTimeSpan = TimeSpan.FromSeconds( WAIT_TIME );
-            TimeSpan actionTimeSpan = TimeSpan.FromSeconds( ACTION_TIME );
+            var actor = actorGameObject.Get<ActorComponent>();
+            var direction = actor.Direction;        // TODO: Use Transform.Direction.
 
-            switch ( mState )
+            var sprite = actorGameObject.Get<SpriteComponent>();
+            var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
+
+            switch (mState)
             {
                 case RangedAttackState.NotStarted:
-                    mTimeStarted = gameTime.TotalGameTime;
+                    mAnimationSecondsPlayed = 0.0f;
                     mState = RangedAttackState.Performing;
-
-                    // Enable the weapon sprite, and animate the attack
-                    sprite.PlayAnimation( "Bow", direction );
+                    sprite.PlayAnimation("Bow", direction);
                     break;
 
                 case RangedAttackState.Performing:
-                    // Have we finished the attack?
-                    if ( mTimeStarted.Add( actionTimeSpan ) <= gameTime.TotalGameTime )
+                    if (mAnimationSecondsPlayed < AnimationSeconds)
                     {
-                        // Disable the weapon sprite now that the attack has finished
                         mState = RangedAttackState.Finished;
                     }
                     break;
@@ -98,7 +93,6 @@ namespace Scott.DungeonCrawler.Actions
                 case RangedAttackState.Finished:
                     break;
             }
-             */
         }
     }
 }

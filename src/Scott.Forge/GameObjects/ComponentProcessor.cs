@@ -133,9 +133,20 @@ namespace Scott.Forge.GameObjects
                 {
                     component.Owner.Remove<TComponent>();
                 }
+            }
 
-                // Remove from processor.
-                return mComponents.Remove(component);  // TODO: Performance... ick.
+            // Get the component from the game object, remove it from the processor and then delete the component from
+            // the game object itself.
+            var component = gameObject.TryGet<TComponent>();
+
+            if (component == null)
+            {
+                throw new ComponentDoesNotExistException(gameObject, typeof(TComponent));
+            }
+            else
+            {
+                gameObject.Remove<TComponent>();
+                mComponents.Remove(component);
             }
 
             return false;
@@ -153,7 +164,10 @@ namespace Scott.Forge.GameObjects
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var index = 0; index < mComponents.Count; ++index)
             {
-                UpdateComponent(mComponents[index], currentTime, deltaTime);
+                if (mComponents[index].Active)
+                {
+                    UpdateComponent(mComponents[index], currentTime, deltaTime);
+                }
             }
         }
 

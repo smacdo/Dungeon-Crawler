@@ -149,13 +149,13 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="dimensions">Size of the rectangle.</param>
         /// <param name="color">Color of the rectangle.</param>
         [Conditional( "DEBUG" )]
-        public void DrawFilledRect( RectF dimensions, Color color )
+        public void DrawFilledRect( Rectangle dimensions, Color color )
         {
             DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
 
             r.Color = color;
             r.Filled = true;
-            r.Dimensions = dimensions.ToXnaRectangle();
+            r.Dimensions = dimensions;
             r.Enabled = true;
         }
 

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Scott.Forge
 {
@@ -38,15 +40,63 @@ namespace Scott.Forge
     /// TESTS NEEDED:
     ///   Rotation
     ///   LocalOffset
+    ///   
+    /// TODO: Add code that when deserialized the cached corners are recalculated. (Data contract and XML).
     /// </summary>
+    [DataContract]
     public class BoundingArea
     {
+        // TODO: Add private fields, then make pulbic properties set-able (and recalculate) + unit tests.
+
+        /// <summary>
+        ///  Get or set the bounding area width.
+        /// </summary>
+        [XmlAttribute]
+        [DataMember(Name = "Width", Order = 0, IsRequired = true)]
         public float Width { get; private set; }
+
+        /// <summary>
+        ///  Get or set the bounding area height.
+        /// </summary>
+        [XmlAttribute]
+        [DataMember(Name = "Height", Order = 1, IsRequired = true)]
         public float Height { get; private set; }
+
+        /// <summary>
+        ///  Get or set the bounding area rotation in radians.
+        /// </summary>
+        [XmlAttribute]
+        [DataMember(Name = "Rotation", Order = 2, IsRequired = false)]
         public float Rotation { get; private set; }
+
+        /// <summary>
+        ///  Get or set the bounding area top left position in world space.
+        /// </summary>
+        [XmlAttribute]
+        [DataMember(Name = "Position", Order = 3, IsRequired = false)]
         public Vector2 WorldPosition { get; set; }
 
-        public Vector2 Size { get { return new Vector2( Width, Height ); } }
+        /// <summary>
+        ///  Get or set the rotational pivot in local space.
+        /// </summary>
+        [XmlAttribute]
+        [DataMember(Name = "Pivot", Order = 4, IsRequired = false)]
+        public Vector2 Pivot { get; set; }
+
+        /// <summary>
+        ///  Get if the bounding area rectangle is empty.
+        /// </summary>
+        /// <remarks>
+        ///  A bounding area that has a width or height of zero is considered empty.
+        /// </remarks>
+        public bool IsEmpty { get { return Width == 0.0f || Height == 0.0f; } }
+
+        /// <summary>
+        ///  Get the width and height of the bounding area rectangle.
+        /// </summary>
+        [XmlAttribute]
+        [DataMember(Name = "Size", Order = 4, IsRequired = true)]
+        public SizeF Size { get { return new SizeF( Width, Height ); } }
 
         public Vector2 UpperLeft { get { return WorldPosition + LocalUpperLeft; } }
         public Vector2 UpperRight { get { return WorldPosition + LocalUpperRight; } }
@@ -82,44 +132,54 @@ namespace Scott.Forge
         public Vector2 LocalLowerRight { get; private set; }
 
         /// <summary>
-        /// Bounding box constructor
+        ///  Default constructor.
         /// </summary>
-        /// <param name="dimensions">Bounding box dimensions</param>
-        public BoundingArea(RectF box)
-            : this(box.TopLeft, new Vector2(box.Width, box.Height))
+        public BoundingArea()
+            : this(new Vector2(0.0f, 0.0f), SizeF.Empty, 0.0f)
+        {
+        }
+
+        /// <summary>
+        /// Bounding box constructor.
+        /// </summary>
+        /// <param name="box">Rectangle defining the bounding area in world space.</param>
+        /// <param name="rotation">Angle of rotation in radians.</param>
+        public BoundingArea(RectF box, float rotation = 0.0f)
+            : this(box.TopLeft, box.Size, rotation)
+        {
+        }
+
+        /// <summary>
+        /// Bounding box constructor.
+        /// </summary>
+        /// <param name="topLeft">Top left corner of bounding area in world space.</param>
+        /// <param name="size">Bounding area width and height.</param>
+        /// <param name="rotation">Angle of rotation in radians.</param>
+        public BoundingArea(Vector2 topLeft, SizeF size, float rotation = 0.0f)
+            : this(topLeft, size, rotation, Vector2.Zero)
         {
         }
 
         /// <summary>
         /// Bounding box constructor
         /// </summary>
-        /// <param name="dimensions">Bounding box dimensions</param>
-        public BoundingArea( Vector2 topLeft, Vector2 dimensions )
-            : this( topLeft, dimensions, Vector2.Zero )
+        /// <param name="topLeft">Top left corner of bounding area in world space.</param>
+        /// <param name="size">Bounding area width and height.</param>
+        /// <param name="rotation">Angle of rotation in radians.</param>
+        /// <param name="pivot">Location of rotation pivot in local space.</param>
+        public BoundingArea(
+            Vector2 topLeft,
+            SizeF size,
+            float rotation,
+            Vector2 pivot)
         {
-        }
+            Width = size.Width;
+            Height = size.Height;
+            Rotation = rotation;
+            WorldPosition = topLeft;
+            Pivot = pivot;
 
-        /// <summary>
-        /// Bounding box constructor
-        /// </summary>
-        /// <param name="dimensions">Original dimensions of bounding box</param>
-        public BoundingArea( Vector2 topLeft, Vector2 dimensions, Vector2 offset )
-        {
-            Width         = dimensions.X;
-            Height        = dimensions.Y;
-            Rotation      = 0.0f;
-            WorldPosition = topLeft + offset;
-
-            RecalculateCachedCorners( Rotation, dimensions / 2.0f );
-        }
-
-        /// <summary>
-        ///  Moves the bounding box.
-        /// </summary>
-        /// <param name="delta">Distance to move the bounding box.</param>
-        public void Move( Vector2 delta )
-        {
-            WorldPosition += delta;
+            RecalculateCachedCorners(Rotation, Pivot);
         }
 
         /// <summary>
@@ -129,13 +189,12 @@ namespace Scott.Forge
         /// <returns></returns>
         public bool Intersects(BoundingArea other, ref Vector2 minimumTranslationVector)
         {
-            // Generate the potential seperating axis vectors between our bounding rect
-            // and the provided rect. We avoid the use of arrays here so we can avoid
-            // garbage collection
-            Vector2 v0 = LocalUpperRight - LocalUpperLeft + WorldPosition;
-            Vector2 v1 = LocalUpperRight - LocalLowerRight + WorldPosition;
-            Vector2 v2 = other.LocalUpperLeft - other.LocalLowerLeft + WorldPosition;
-            Vector2 v3 = other.LocalUpperLeft - other.LocalUpperRight + WorldPosition;
+            // Generate the potential seperating axis vectors between this bounding rectangle and the provided bounding
+            // rectangle.
+            var v0 = UpperRight - UpperLeft;
+            var v1 = UpperRight - LowerRight;
+            var v2 = other.UpperLeft - other.LowerLeft;
+            var v3 = other.UpperLeft - other.UpperRight;
 
             // Test for collision by seeing if the interval distance is less than zero. The sensitivity of the test can
             // be tweaked by changing the < 0.0f to <= 0.0f. A symbol less than seems to allow for a small amount of
@@ -152,23 +211,29 @@ namespace Scott.Forge
             return collides;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="otherRect"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
         private bool IsAxisCollision(BoundingArea otherRect, Vector2 axis)
         {
             // Project the four corners of the bounding box we are checking onto the axis,
             // and get a scalar value of that projection for comparison.
             Vector2 axisNormalized = Vector2.Normalize( axis );
 
-            float a0 = Vector2.Dot( otherRect.LocalUpperLeft, axisNormalized );
-            float a1 = Vector2.Dot( otherRect.LocalUpperRight, axisNormalized );
-            float a2 = Vector2.Dot( otherRect.LocalLowerLeft, axisNormalized );
-            float a3 = Vector2.Dot( otherRect.LocalLowerRight, axisNormalized );
+            float a0 = Vector2.Dot( otherRect.UpperLeft, axisNormalized );
+            float a1 = Vector2.Dot( otherRect.UpperRight, axisNormalized );
+            float a2 = Vector2.Dot( otherRect.LowerLeft, axisNormalized );
+            float a3 = Vector2.Dot( otherRect.LowerRight, axisNormalized );
 
             // Project the four corners of our bounding rect onto the requested axis, and
             // get scalar values for those projections
-            float b0 = Vector2.Dot( LocalUpperLeft, axisNormalized );
-            float b1 = Vector2.Dot( LocalUpperRight, axisNormalized );
-            float b2 = Vector2.Dot( LocalLowerLeft, axisNormalized );
-            float b3 = Vector2.Dot( LocalLowerRight, axisNormalized );
+            float b0 = Vector2.Dot( UpperLeft, axisNormalized );
+            float b1 = Vector2.Dot( UpperRight, axisNormalized );
+            float b2 = Vector2.Dot( LowerLeft, axisNormalized );
+            float b3 = Vector2.Dot( LowerRight, axisNormalized );
 
             // Get the maximum and minimum scalar values for each of the rectangles
             float aMin = Math.Min( Math.Min( a0, a1 ), Math.Min( a2, a3 ) );
@@ -189,44 +254,38 @@ namespace Scott.Forge
         /// <param name="pivot">Position (in world coordintes) of the rotational pivot point</param>
         private void RecalculateCachedCorners( float radians, Vector2 pivot )
         {
-            Rotation = MathHelper.Wrap(radians, 0f, (float)Math.PI * 2.0f);     // TODO: Verify this is safe way to wrap angle?
+            // Find unrotated vertex points.
+            LocalUpperLeft  = new Vector2(0, 0);
+            LocalUpperRight = new Vector2(Width, 0);
+            LocalLowerLeft  = new Vector2(0, Height);
+            LocalLowerRight = new Vector2(Width, Height);
 
-            // Find unrotated vertex points
-            /*Vector2 oUpperLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y );
-            Vector2 oUpperRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y );
-            Vector2 oLowerLeft  = new Vector2( WorldPosition.X,         WorldPosition.Y + Height );
-            Vector2 oLowerRight = new Vector2( WorldPosition.X + Width, WorldPosition.Y + Height )*/
+            // Rotate bounding rect vertices.
+            if (radians != 0)
+            {
+                var cosTheta = (float)Math.Cos(radians);
+                var sinTheta = (float)Math.Sin(radians);
 
-            Vector2 oUpperLeft  = new Vector2(0, 0);
-            Vector2 oUpperRight = new Vector2(Width, 0);
-            Vector2 oLowerLeft  = new Vector2(0, Height);
-            Vector2 oLowerRight = new Vector2(Width, Height);
-
-            // Rotate and calculate our new rotated vertex points
-            LocalUpperLeft  = RotatePoint( oUpperLeft, pivot, radians );
-            LocalUpperRight = RotatePoint( oUpperRight, pivot, radians );
-            LocalLowerLeft  = RotatePoint( oLowerLeft, pivot, radians );
-            LocalLowerRight = RotatePoint( oLowerRight, pivot, radians );
+                LocalUpperLeft = RotatePoint(LocalUpperLeft, pivot, cosTheta, sinTheta);
+                LocalUpperRight = RotatePoint(LocalUpperRight, pivot, cosTheta, sinTheta);
+                LocalLowerLeft = RotatePoint(LocalLowerLeft, pivot, cosTheta, sinTheta);
+                LocalLowerRight = RotatePoint(LocalLowerRight, pivot, cosTheta, sinTheta);
+            }
         }
 
         /// <summary>
-        /// Rotates a vector around a pivot point
+        ///  Rotate a point around another point.
         /// </summary>
-        /// <param name="vector">Vector to rotate</param>
-        /// <param name="origin">Pivot to rotate around</param>
-        /// <param name="amount">Amount of rotation to apply</param>
-        /// <returns>Rotated vector</returns>
-        public static Vector2 RotatePoint( Vector2 vector, Vector2 origin, float amount )
+        /// <param name="vector">Point to rotate.</param>
+        /// <param name="origin">Point to rotate around.</param>
+        /// <param name="amount">Cosine of rotation angle in radians.</param>
+        /// <param name="sinTheta">Sin of rotation angle in radians.</param>
+        /// <returns>Rotated point.</returns>
+        private static Vector2 RotatePoint(Vector2 vector, Vector2 origin, float cosTheta, float sinTheta)
         {
-            if ( amount == 0 )
-            {
-                return vector;
-            }
-            else
-            {
-                return new Vector2( (float) ( origin.X + ( vector.X - origin.X ) * Math.Cos( amount ) - ( vector.Y - origin.Y ) * Math.Sin( amount ) ),
-                                    (float) ( origin.Y + ( vector.Y - origin.Y ) * Math.Cos( amount ) + ( vector.X - origin.X ) * Math.Sin( amount ) ) );
-            }
+            return new Vector2(
+                cosTheta * (vector.X - origin.X) - sinTheta * (vector.Y - origin.Y) + origin.X,
+                sinTheta * (vector.X - origin.X) + cosTheta * (vector.Y - origin.Y) + origin.Y);
         }
 
         // NOTE: THIS ONLY WORKS FOR AABB!! Once we resume rotating the bounding area we're kinda screwed and need to

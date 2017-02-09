@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,17 @@ namespace Scott.Forge.GameObjects
     /// </summary>
     public interface IComponent : IDisposable
     {
+        /// <summary>
+        ///  Get the active status of this component.
+        /// </summary>
+        /// <remarks>
+        ///  Inactive components are not updated by their respective component processor.
+        /// </remarks>
+        bool Active { get; set; }
+
+        /// <summary>
+        ///  Get or set the game object that owns this component.
+        /// </summary>
         IGameObject Owner { get; set; }
     }
 
@@ -34,7 +45,8 @@ namespace Scott.Forge.GameObjects
     /// </remarks>
     public abstract class Component : IComponent
     {
-        private bool mDisposed;
+        private bool mDisposed = false;
+        private bool mActive = true;
         private IGameObject mOwner;
         private IComponentDestroyedCallback mDestroyCallback;
 
@@ -60,6 +72,18 @@ namespace Scott.Forge.GameObjects
         ~Component()
         {
             Dispose(false);
+        }
+
+        /// <summary>
+        ///  Get the active status of this component.
+        /// </summary>
+        /// <remarks>
+        ///  Inactive components are not updated by their respective component processor.
+        /// </remarks>
+        public bool Active
+        {
+            get { return mActive && (Owner != null ? Owner.Active : true); }
+            set { mActive = value; }
         }
 
         /// <summary>

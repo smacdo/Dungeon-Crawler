@@ -79,6 +79,8 @@ namespace Scott.DungeonCrawler.GameObjects
             // Create the sprite and set it up.
             var sprite = SpriteProcessor.Add(player);
 
+            sprite.RendererIgnoreTransformRotation = true;
+
             sprite.SetMultipleSpriteCount((int) ActorEquipmentSlot.Count);
             sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male"));
 
@@ -115,9 +117,29 @@ namespace Scott.DungeonCrawler.GameObjects
             var collision = CollisionProcessor.Add(player);
             collision.Initialize(movement.MoveBox, new Vector2(16, 12));
 
-            // TODO: Test what happens when collision bounds is not set...
+            // Create sword and center the object on the character.
+            //  TODO: Don't hard code the values.
+            var weaponGameObject = InstantiateSword();
+            weaponGameObject.Parent = player;
+
+            weaponGameObject.Transform.LocalPosition = new Vector2(-192 / 2 + 32, -192 / 2 + 32);
+            weaponGameObject.Active = false;
 
             return player;
+        }
+
+        private GameObject InstantiateSword()
+        {
+            // Create the player blue print.
+            var weapon = new GameObject("MeleeWeapon");
+
+            // Create the sprite and set it up.
+            var sprite = SpriteProcessor.Add(weapon);
+            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword"));
+
+            //sprite.RendererIgnoreTransformRotation = true;
+
+            return weapon;
         }
 
         private GameObject InstantiateSkeleton()
@@ -126,6 +148,7 @@ namespace Scott.DungeonCrawler.GameObjects
             var sprite = SpriteProcessor.Add(enemy);
 
             sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
+            sprite.RendererIgnoreTransformRotation = true;
 
             ActorProcessor.Add(enemy);
             AiProcessor.Add(enemy);

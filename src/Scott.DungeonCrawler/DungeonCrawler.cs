@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Scott.DungeonCrawler.Actions;
 using Scott.DungeonCrawler.GameObjects;
 using Scott.Forge;
 using Scott.Forge.Engine;
@@ -53,6 +54,8 @@ namespace Scott.DungeonCrawler
         private GameObject mPlayer;
         private List<GameObject> mEnemies = new List<GameObject>();
 
+        private bool mEnemySpawningEnabled = true;
+
         private SpriteComponentProcessor mSpriteProcessor = new SpriteComponentProcessor();
         private MovementProcessor mMovementProcessor = new MovementProcessor();
         private CollisionProcessor mCollisionProcessor = new CollisionProcessor();
@@ -62,7 +65,7 @@ namespace Scott.DungeonCrawler
         private DungeonCrawlerGameObjectFactory mGameObjectFactory;
 
         private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
-        private ContentManagerX mContent;
+        private ForgeContentManager mContent;
         int mEnemyCount = 0;
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace Scott.DungeonCrawler
             mGraphicsDevice.ApplyChanges();
 
             // Create our custom content manager.
-            mContent = new ContentManagerX( Services, "Content" );
+            mContent = new ForgeContentManager( Services, "Content" );
             this.Content = mContent;
 
             // Initialize systems.
@@ -128,7 +131,7 @@ namespace Scott.DungeonCrawler
         {
             // Instruct the content manager to search our content dir to find game assets that we
             // can load.
-            mContent.SearchContentDirForAssets( true );
+            mContent.SearchForContentItems( true );
 
             // Create the player blue print.
             mPlayer = mGameObjectFactory.Instantiate("Player");
@@ -150,7 +153,7 @@ namespace Scott.DungeonCrawler
             int width = Screen.Width - 64;
             int height = Screen.Height - 64;
 
-            skeleton.Transform.Position = new Scott.Forge.Vector2(
+            skeleton.Transform.WorldPosition = new Scott.Forge.Vector2(
                 (int) ( GameRoot.Random.NextDouble() * width ),
                 (int) ( GameRoot.Random.NextDouble() * height ) );
 
@@ -160,9 +163,12 @@ namespace Scott.DungeonCrawler
             mEnemies.Add(skeleton);
 
             // temp hack
-            skeleton.Transform.Direction = (DirectionName) GameRoot.Random.Next(0, 3);
+            var initialDirection = (DirectionName) GameRoot.Random.Next(0, 3);
 
-            skeleton.Get<SpriteComponent>().PlayAnimation("Walk", skeleton.Transform.Direction, AnimationEndingAction.Loop);
+            var actor = skeleton.Get<ActorComponent>();
+            actor.Direction = initialDirection;
+
+            skeleton.Get<SpriteComponent>().PlayAnimation("Walk", initialDirection, AnimationEndingAction.Loop);
         }
 
         /// <summary>
@@ -189,7 +195,7 @@ namespace Scott.DungeonCrawler
             GameRoot.Debug.PreUpdate( gameTime );
 
             // Perform any requested actions based on user input.
-            mInputManager.Update();
+            mInputManager.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             if ( mInputManager.WasTriggered( InputAction.ExitGame ) )
             {
@@ -198,30 +204,31 @@ namespace Scott.DungeonCrawler
 
             // Player movement.
             var playerActor = mPlayer.Get<ActorComponent>();
-            DirectionName playerDirection;
+            var playerMovement = mInputManager.GetAxis(InputAction.Move);
 
-            if ( mInputManager.WasTriggered( InputAction.Move, out playerDirection ) )
+            if (playerMovement.LengthSquared > 0.01)
             {
-                playerActor.Move(playerDirection, 125.0f);
+                playerActor.Move(playerMovement * 125.0f);
             }
 
+            // Player actions.
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
-                //playerActor.Perform( new ActionSlashAttack() );
+                playerActor.Perform( new ActionSlashAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
             {
-                //playerActor.Perform( new ActionRangedAttack() );
+                playerActor.Perform( new ActionRangedAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.CastSpell ) )
             {
-                //playerActor.Perform( new ActionCastSpell() );
+                playerActor.Perform(new ActionCastSpell());
             }
 
             // Spawn some stuff
             if ( mNextSpawnTime <= gameTime.TotalGameTime && GameRoot.Enemies.Count < 32 )
             {
-                if ( GameRoot.Random.NextDouble() < 0.75 || firstSpawn )
+                if ((GameRoot.Random.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
                 {
                     SpawnSkeleton();
                     firstSpawn = false;

@@ -24,54 +24,47 @@ namespace Scott.Forge.Engine.Actors
     /// </summary>
     public class ActorProcessor : ComponentProcessor<ActorComponent>
     {
-        protected override void UpdateComponent(ActorComponent component, double currentTime, double deltaTime)
+        /// <summary>
+        ///  Update actor component.
+        /// </summary>
+        protected override void UpdateComponent(ActorComponent actor, double currentTime, double deltaTime)
         {
-            ProcessMovementRequest(component, currentTime, deltaTime);
-            
-            ProcessActionRequest(component, currentTime, deltaTime);
-            UpdateCurrentAction(component, currentTime, deltaTime);
+            ProcessMovementRequest(actor, currentTime, deltaTime);
+
+            UpdateCurrentAction(actor, currentTime, deltaTime);
+            ProcessActionRequest(actor, currentTime, deltaTime);
         }
 
         /// <summary>
-        ///  Check if there was an action requested, and if so attempt to perform it.
+        ///  Perform any requested actions for this actor.
         /// </summary>
-        private void ProcessActionRequest(ActorComponent component, double currentTime, double deltaTime)
+        private void ProcessActionRequest(ActorComponent actor, double currentTime, double deltaTime)
         {
-            var currentAction = component.CurrentAction;
-            var requestedAction = component.RequestedAction;
-
-            // Check if the actor is idle and there's a requested action to perform. If so, schedule it for
-            // execution.
-            if (currentAction == null && requestedAction != null)
+            // Activate the next requested action if so long as the actor is idle.
+            if (actor.CurrentAction == null && actor.RequestedAction != null)
             {
-                var movement = component.Owner.Get<MovementComponent>();
-                movement.RequestStopMovement();
+                var movement = actor.Owner.Get<MovementComponent>();
+                System.Diagnostics.Debug.WriteLine("Create action!!! {0}", currentTime);
 
-                component.CurrentAction = requestedAction;
-                component.RequestedAction = null;
-
-                currentAction = requestedAction;
-                requestedAction = null;
+                actor.CurrentAction = actor.RequestedAction;
+                actor.RequestedAction = null;
             }
         }
 
         /// <summary>
         ///  Update the state of the actor component's current action.
         /// </summary>
-        private void UpdateCurrentAction(ActorComponent component, double currentTime, double deltaTime)
+        private void UpdateCurrentAction(ActorComponent actor, double currentTime, double deltaTime)
         {
-            var currentAction = component.CurrentAction;
-
-            if (currentAction != null)
+            if (actor.CurrentAction != null)
             {
-                if (currentAction.IsFinished)
+                if (actor.CurrentAction.IsFinished)
                 {
-                    component.CurrentAction = null;
-                    currentAction = null;
+                    actor.CurrentAction = null;
                 }
                 else
                 {
-                    currentAction.Update(component.Owner, currentTime, deltaTime);
+                    actor.CurrentAction.Update(actor.Owner, currentTime, deltaTime);
                 }
             }
         }
@@ -79,45 +72,50 @@ namespace Scott.Forge.Engine.Actors
         /// <summary>
         ///  Process an actor component's movement request.
         /// </summary>
-        private void ProcessMovementRequest(ActorComponent component, double currentTime, double deltaTime)
+        private void ProcessMovementRequest(ActorComponent actor, double currentTime, double deltaTime)
         {
-            var mover = component.Owner.Get<MovementComponent>();
+            // Skip movement if the actor is performing an action that prevents movement.
+            bool movementAllowed = true;
 
-            var requestedMovement = component.RequestedMovement;
-            component.RequestedMovement = Vector2.Zero;
+            if (actor.CurrentAction != null && !actor.CurrentAction.CanMove)
+            {
+                movementAllowed = false;
+            }
 
-            var requestedDirection = DirectionNameHelper.FromVector(requestedMovement);
+            // Calculate the a movement vector from the request.
+            var mover = actor.Owner.Get<MovementComponent>();
 
-            // TODO: Don't start walking if movemnt speed is too high.
-            //const float MaxSpeed = 64.0f * 64.0f;
+            var requestedMovement = actor.RequestedMovement;
+            actor.RequestedMovement = Vector2.Zero;
 
-            if (requestedMovement != Vector2.Zero)
+            if (movementAllowed && requestedMovement != Vector2.Zero)
             {
                 // Linearly interpolate speed from zero up to requested speed to simulate acceleration.
-                var interpFactor = MathHelper.Clamp(component.WalkAccelerationSeconds, 0.0f, 0.1f) * 10.0f;
+                var interpFactor = MathHelper.Clamp(actor.WalkAccelerationSeconds, 0.0f, 0.1f) * 10.0f;
                 var requestedSpeed = requestedMovement.Length;
+                var requestedDirection = requestedMovement.Normalized();
                 var actualSpeed = Interpolation.Lerp(0.0f, requestedSpeed, interpFactor);
+                
+                mover.Velocity = requestedDirection * (float)actualSpeed;
 
-                System.Console.WriteLine("{0} {1} {2} ({3})", interpFactor, requestedSpeed, actualSpeed, component.WalkAccelerationSeconds);
-
-                mover.Velocity = DirectionNameHelper.ToVector(requestedDirection) * (float)actualSpeed;
-
-                component.WalkAccelerationSeconds += deltaTime;
+                // Update actor state.
+                actor.Direction = DirectionNameHelper.FromVector(requestedDirection);
+                actor.WalkAccelerationSeconds += deltaTime;
 
                 // Walk animation.
-                var sprite = component.Owner.Get<SpriteComponent>();
+                var sprite = actor.Owner.Get<SpriteComponent>();
 
                 if (sprite.IsAnimating)
                 {
-                    if (sprite.CurrentAnimation.Name == Constants.WalkAnimationName &&
-                        sprite.Direction != requestedDirection)
+                    if (sprite.CurrentAnimation.Name != Constants.WalkAnimationName ||
+                        sprite.Direction != actor.Direction)
                     {
-                        sprite.PlayAnimationLooping(Constants.WalkAnimationName, requestedDirection);
+                        sprite.PlayAnimationLooping(Constants.WalkAnimationName, actor.Direction);
                     }
                 }
                 else
                 {
-                    sprite.PlayAnimationLooping(Constants.WalkAnimationName, requestedDirection);
+                    sprite.PlayAnimationLooping(Constants.WalkAnimationName, actor.Direction);
                 }
             }
             else
@@ -126,14 +124,14 @@ namespace Scott.Forge.Engine.Actors
                 // current speed down to zero with a quick deceleration window.s
                 // TODO: Actually do deceleration.
                 mover.Velocity = Vector2.Zero;
-                component.WalkAccelerationSeconds = 0.0f;
+                actor.WalkAccelerationSeconds = 0.0f;
 
-                // Actor is not walking, terminate any walking animation.
-                var sprite = component.Owner.Get<SpriteComponent>();
+                // Actor is not walking - return them to the idle animation.
+                var sprite = actor.Owner.Get<SpriteComponent>();
 
                 if (sprite.IsAnimating && sprite.CurrentAnimation.Name == "Walk")
                 {
-                    sprite.AbortCurrentAnimation();
+                    sprite.PlayAnimationLooping("Idle", actor.Direction);
                 }
             }
         }

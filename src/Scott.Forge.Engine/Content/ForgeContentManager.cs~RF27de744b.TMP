@@ -31,7 +31,7 @@ namespace Scott.Forge.Engine.Content
     ///        
     ///  NOTE: THIS CLASS SHOULD BE THREADSAFE + CACHE, THREAD AND ASYNC HAPPY.
     /// </summary>
-    public class ContentManagerX : ContentManager, IContentManager
+    public class ForgeContentManager : ContentManager, IContentManager
     {
         /// <summary>
         ///  List of content readers, which process an asset file into a loadable instance.
@@ -76,7 +76,7 @@ namespace Scott.Forge.Engine.Content
         /// <summary>
         ///  Static constructor. Set up the content readers and their extension information.
         /// </summary>
-        static ContentManagerX()
+        static ForgeContentManager()
         {
             InitContentReaderList();
         }
@@ -84,7 +84,7 @@ namespace Scott.Forge.Engine.Content
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public ContentManagerX( IServiceProvider provider, string rootDirectory )
+        public ForgeContentManager( IServiceProvider provider, string rootDirectory )
             : base( provider, rootDirectory )
         {
             mContentDir = rootDirectory;
@@ -112,7 +112,7 @@ namespace Scott.Forge.Engine.Content
         /// <returns>True if it was loaded, false otherwise.</returns>
         public bool WasLoaded( string assetName )
         {
-            return mAssetFiles.ContainsKey( NormalizeAssetName( assetName ) );
+            return mAssetFiles.ContainsKey( NormalizeFilePath( assetName ) );
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Scott.Forge.Engine.Content
         public override T Load<T>( string assetName )
         {
             // Make sure the asset name is normalized so we don't get funky path issues.
-            assetName = NormalizeAssetName( assetName );
+            assetName = NormalizeFilePath( assetName );
 
             // Was the asset already loaded into our item cache? If so return a duplicated version
             // of the original.
@@ -192,7 +192,7 @@ namespace Scott.Forge.Engine.Content
         {
             // Make sure the asset name is normalized so we don't get funky path issues and then
             // load information for the asset.
-            AssetInfo asset = FindAssetInfoFor( NormalizeAssetName( assetName ) );
+            AssetInfo asset = FindAssetInfoFor( NormalizeFilePath( assetName ) );
 
             // What kind of asset file was it? Is it located on disk, or is it located in a bundle
             // archive?
@@ -259,90 +259,81 @@ namespace Scott.Forge.Engine.Content
         }
 
         /// <summary>
-        ///  Recursively search this directory for a list of assets.
+        ///  Search the given directory recursively and add any game content files to the provided dictionary.
         /// </summary>
-        /// <param name="dirpath">Path to the content directory being searched.</param>
-        /// <param name="items">
-        ///  List of assets to add assets found in this content directory.
-        /// </param>
-        private void SearchDirForContent( string rootDir,
-                                          string currentDir,
-                                          Dictionary<string, AssetInfo> items )
+        /// <param name="contentDir">The path to the game's content directory.</param>
+        /// <param name="currentDir">The directory path to be searched.</param>
+        /// <param name="items">Dictionary holding a list of discovered assets.</param>
+        private void SearchDirForContent(string contentDir,
+                                         string currentDir,
+                                         Dictionary<string, AssetInfo> items )
         {
-            // Remove the root content dir to get our asset's base directory that we use for its
-            // asset name.
-            int index = currentDir.IndexOf( rootDir + Path.DirectorySeparatorChar );
-            string contentDir = ( index < 0
-                                    ? currentDir
-                                    : currentDir.Remove( index, rootDir.Length + 1 ) );
+            // Extract a relative path for the asset to the game's content directory.
+            // Ex: "C:\game\content\sprite\a.sprite" ==> "sprite\a.sprite".
+            var index = currentDir.IndexOf(contentDir + Path.DirectorySeparatorChar);
+            var relativeDirectory = (index < 0 ? currentDir : currentDir.Remove(index, contentDir.Length + 1));
 
             // First recursively search the directories.
-            foreach ( string path in Directory.GetDirectories( currentDir ) )
+            foreach (var childDirPath in Directory.GetDirectories(currentDir))
             {
-                SearchDirForContent( rootDir, path, items );
+                SearchDirForContent(contentDir, childDirPath, items);
             }
 
-            // Now get a list of files in this directory, and add files that match asset
-            // extensions to the list of asset items.
-            foreach ( string path in Directory.GetFiles( currentDir ) )
+            // Now get a list of files in this directory, and add files that match asset extensions to the list of
+            // asset items.
+            foreach (var filePath in Directory.GetFiles(currentDir))
             {
-                string baseName  = Path.GetFileNameWithoutExtension( path );
-                string assetName = Path.Combine( contentDir, baseName );
+                var baseName  = Path.GetFileNameWithoutExtension(filePath);
+                var itemName = NormalizeFilePath(Path.Combine(relativeDirectory, baseName));
 
-                // Normalize asset names to use backslash as the path separator.
-                assetName = NormalizeAssetName( assetName );
-
-                // Was this asset already loaded? If so throw an error and bail out.
-                if ( WasLoaded( assetName ) )
+                // Check if the resource was loaded more than once (it should not have been).
+                // TODO: Change this logic to reload the resource rather than throw an error.
+                if (WasLoaded(itemName))
                 {
                     throw new GameContentException(
                         "Asset name '{0}' was already loaded. Is this a duplicate?"
-                        .With( assetName )
-                    );
+                        .With(itemName));
                 }
 
-                // What kind of file did we find? There are several different types of files that the
-                // content manager can support, we'll need to deal with them differently.
-                AssetInfo asset = new AssetInfo( assetName, path );
+                // Check the type of file that was encountered and read it appropriately.
+                var asset = new AssetInfo(itemName, filePath);
 
-                if ( path.EndsWith( ".xnb" ) )
+                if (filePath.EndsWith(".xnb"))
                 {
-                    // A precompiled XNA asset...
+                    // This is a precompiled XNA asset. Set a flag indicating this and let the legacy XNA loader handle
+                    // loading the file.
                     asset.IsXnb = true;
-                    items.Add( assetName, asset );
+                    items.Add(itemName, asset);
                 }
-                else if ( path.EndsWith( ".bundle" ) )
+                else if (filePath.EndsWith(".bundle"))
                 {
                     // A compressed bundle of assets.
-                    SearchBundleForAssets( path, items );
+                    SearchBundleForAssets(filePath, items);
                 }
-                else if ( IsValidAssetExtension( path ) )
+                else if (IsValidAssetExtension(filePath))
                 {
                     // A valid raw asset file that can be loaded by the content manager.
-                    ContentReaderInfo readerInfo = GetContentReaderInfo( asset );
+                    var readerInfo = GetContentReaderInfo( asset );
                     asset.ContentType = readerInfo.ContentType;
                     asset.ReaderType = readerInfo.ReaderType;
 
-                    items.Add( assetName, asset );
+                    items.Add(itemName, asset);
                 }
             }
         }
 
         /// <summary>
-        ///  Searches a zip bundle for game assets.
+        ///  Searches a compressed bundle for game assets.
         /// </summary>
         /// <param name="bundleFileName">Path to the asset bundle.</param>
-        /// <param name="items">
-        ///  List of assets to add assets found in this bundle.
-        /// </param>
-        private void SearchBundleForAssets( string bundleFileName,
-                                            Dictionary<string, AssetInfo> items )
+        /// <param name="items">Dictionary holding a list of discovered assets.</param>
+        private void SearchBundleForAssets(string bundleFileName, Dictionary<string, AssetInfo> items)
         {
-            FileStream fs   = File.OpenRead( bundleFileName );
-            ZipFile zipFile = new ZipFile( fs );
+            var fs = File.OpenRead(bundleFileName);
+            var zipFile = new ZipFile(fs);
 
-            // Track the loaded zip files.
-            mBundleArchives.Add( zipFile );
+            // Cache the zip file.
+            mBundleArchives.Add(zipFile);
 
             // Iterate through the bundle and make note of the asset files contained within.
             foreach ( ZipEntry entry in zipFile )
@@ -575,7 +566,7 @@ namespace Scott.Forge.Engine.Content
                 assetName = Path.Combine( Path.GetDirectoryName( assetPath ), baseName );
             }
 
-            return NormalizeAssetName( assetName );
+            return NormalizeFilePath( assetName );
         }
 
         /// <summary>
@@ -583,7 +574,7 @@ namespace Scott.Forge.Engine.Content
         /// </summary>
         /// <param name="assetName">Asset name</param>
         /// <returns>Normalized asset name</returns>
-        private static string NormalizeAssetName( string assetName )
+        private static string NormalizeFilePath( string assetName )
         {
             return assetName.Replace( '\\', '/' );
         }

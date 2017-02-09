@@ -79,8 +79,7 @@ namespace Scott.Forge.Engine.Input
             public InputActionData(TAction type, Keys k, DirectionName direction)
             {
                 InputAction = type;
-                IsDirectional = true;
-                KeyboardKeys[(int) direction] = k;
+                KeyboardKeys[0] = k;
             }
         }
 
@@ -96,6 +95,7 @@ namespace Scott.Forge.Engine.Input
         private MouseState mLastMouseState;
         private MouseState mCurrentMouseState;
 
+        private int mPlayerCount = 1;
         private PlayerIndex[] mPlayerIndices = new PlayerIndex[1];
 
         /// <summary>
@@ -138,20 +138,34 @@ namespace Scott.Forge.Engine.Input
 
             if (mActions.TryGetValue(actionType, out action))
             {
-                // Make sure this is a directional action. No sense on combining the two concepts together... it'll
-                // only end in sadness.
-                if (!action.IsDirectional)
+                action = new InputActionData(actionType, key, dir);
+                mActions.Add(actionType, action);
+            }
+
+            InputActionData action = FindActionForType( actionType );
+
+            if ( action != null )
+            {
+                // The action exists. Does it already contain this keyboard key?
+                if ( action.KeyboardKeys.ContainsKey( key ) )
                 {
-                    throw new ArgumentException("Tried to add directional key to non directional action");
+                    throw new ArgumentException( "Input action already contains this input key" );
                 }
 
-                // Add the new keyboard binding.
-                action.KeyboardKeys[(int) dir] = key;
+                // Make sure this is a directional action. No sense on combining the two concepts
+                // together... it'll only end in sadness.
+                if (! action.IsDirectional )
+                {
+                    throw new ArgumentException( "Tried to add directional key to non directional action" );
+                }
+
+                // Register the new key press!
+                action.KeyboardKeys.Add( key, dir );
             }
             else
             {
-                action = new InputActionData(actionType, key, dir);
-                mActions.Add(actionType, action);
+                // The action did not exist. Create it now.
+                mActions.Add( actionType, new InputActionData( actionType, key, dir ) );
             }
         }
 
@@ -183,16 +197,12 @@ namespace Scott.Forge.Engine.Input
             if (mActions.TryGetValue(action, out actionData))
             {
                 // Check keyboard keys.
-                int keyCount = (actionData.IsDirectional ? Constants.DirectionCount : 1);
-
-                for (int i = 0; i < keyCount; i++)
+                foreach (var pair in actionData.KeyboardKeys)
                 {
-                    var key = actionData.KeyboardKeys[i];
-
-                    if (mCurrentKeyboardState.IsKeyDown(key) && !mLastKeyboardState.IsKeyDown(key))
+                    if (mCurrentKeyboardState.IsKeyDown(pair.Key) && !mLastKeyboardState.IsKeyDown(pair.Key))
                     {
                         wasTriggered = true;
-                        direction = (DirectionName) i;
+                        direction = pair.Value;
                         break;
                     }
                 }
@@ -218,27 +228,15 @@ namespace Scott.Forge.Engine.Input
             if (mActions.TryGetValue(action, out actionData))
             {
                 // TODO: Check gamepad and mouse.
-
-                // Check keyboard keys and combine multiple presses into a vector. Only consider the keyboard if
-                // there was no valid input from the gamepad.
-                if (axisValue == Vector2.Zero)
+                
+                // Check keyboard keys.
+                // TODO: Combine multiple buttons into single vector.
+                foreach (var pair in actionData.KeyboardKeys)
                 {
-                    int keyCount = (actionData.IsDirectional ? Constants.DirectionCount : 1);
-
-                    for (int i = 0; i < keyCount; i++)
+                    if (mCurrentKeyboardState.IsKeyDown(pair.Key))
                     {
-                        var key = actionData.KeyboardKeys[i];
-
-                        if (mCurrentKeyboardState.IsKeyDown(key))
-                        {
-                            axisValue += ((DirectionName) i).ToVector();
-                        }
-                    }
-
-                    // Normalize movement vector to prevent diagonal movement from moving faster than max speed.
-                    if (axisValue.LengthSquared > 0.0f)
-                    {
-                        axisValue.Normalize();
+                        axisValue = pair.Value.ToVector();
+                        break;
                     }
                 }
             }

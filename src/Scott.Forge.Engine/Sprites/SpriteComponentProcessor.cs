@@ -23,78 +23,88 @@ namespace Scott.Forge.Engine.Sprites
     /// </summary>
     public class SpriteComponentProcessor : ComponentProcessor<SpriteComponent>
     {
-        protected override void UpdateComponent(SpriteComponent component, double currentTime, double deltaTime)
+        /// <summary>
+        ///  Update sprite component.
+        /// </summary>
+        protected override void UpdateComponent(
+            SpriteComponent sprite,
+            double currentTimeSeconds,
+            double deltaTimeSeconds)
         {
-            var totalGameTime = TimeSpan.FromSeconds(currentTime);
+            var totalGameTime = TimeSpan.FromSeconds(currentTimeSeconds);
 
-            // Don't update if component is not playing animation.
-            if (component.CurrentAnimation == null)
+            // Do not update component if no animation is being played.
+            if (sprite.CurrentAnimation == null)
             {
                 return;
             }
 
-            // Check if this is the first time we've updated this sprite. If so, initialize our
-            // animation values for the next call to update. Otherwise proceed as normal.
-            // TODO: Rewrite this.
-            if (component.AnimationFrameStartTime == TimeSpan.MinValue)        // start the clock
-            {
-                component.AnimationFrameStartTime = totalGameTime;
-                component.AnimationFrameIndex = 0;
-            }
+            // Update animation timing.
+            sprite.AnimationFrameSecondsActive += deltaTimeSeconds;
+            sprite.AnimationSecondsActive += deltaTimeSeconds;
 
-            // How long does each frame last? When did we last flip a frame?
-            TimeSpan lastFrameTime = component.AnimationFrameStartTime;
-            TimeSpan lengthOfFrame = TimeSpan.FromSeconds(component.CurrentAnimation.FrameSeconds);
+            // Update the animation by advancing as many animation frames as possible in the amount of time that has
+            // elapsed since the last animation update.
+            bool animationCompleted = false;
 
-            // Update the current frame index by seeing how much time has passed, and then
-            // moving to the correct frame.
-            lastFrameTime = lastFrameTime.Add(lengthOfFrame);     // account for the current frame.
-
-            while (lastFrameTime <= totalGameTime)
+            while (sprite.AnimationFrameSecondsActive >= sprite.CurrentAnimation.FrameSeconds)
             {
                 // Move to the next frame.
-                component.AnimationFrameIndex += 1;
+                sprite.AnimationFrameIndex += 1;
 
                 // Are we at the end of this animation?
-                if (component.AnimationFrameIndex == component.CurrentAnimation.FrameCount)
+                var atlasOffset = Vector2.Zero;
+
+                if (sprite.AnimationFrameIndex == sprite.CurrentAnimation.FrameCount)
                 {
-                    switch (component.EndingAction)
+                    // Animation has completed.
+                    var animation = sprite.CurrentAnimation;
+
+                    switch (sprite.EndingAction)
                     {
                         case AnimationEndingAction.Loop:
-                            component.AnimationFrameIndex = 0;
+                            sprite.AnimationFrameIndex = 0;
                             break;
 
                         case AnimationEndingAction.Stop:
-                            component.CurrentAnimation = null;
-                            component.AnimationFrameIndex -= 1;
-                            OnAnimationComplete(component);
+                            sprite.AnimationFrameIndex -= 1;
+                            OnAnimationComplete(sprite);
+
+                            animationCompleted = true;
                             break;
 
                         case AnimationEndingAction.StopAndReset:
-                            component.CurrentAnimation = null;
-                            component.AnimationFrameIndex = 0;
-                            OnAnimationComplete(component);
+                            sprite.AnimationFrameIndex = 0;
+                            OnAnimationComplete(sprite);
+
+                            animationCompleted = true;
                             break;
                     }
                 }
 
-                // Load the texture atlas rect for the next animtaion frame.
-                var atlasOffset = component.CurrentAnimation.GetSpriteFrame(
-                    component.Direction,
-                    component.AnimationFrameIndex);
-
-                for (var layer = 0; layer < component.Sprites.Length; layer++)
+                // Load the texture atlas rect for the next animation frame. 
+                atlasOffset = sprite.CurrentAnimation.GetSpriteFrame(
+                    sprite.Direction,
+                    sprite.AnimationFrameIndex);
+                
+                // Update sprite atlas rectangles for the renderer.
+                for (var layer = 0; layer < sprite.Sprites.Length; layer++)
                 {
-                    component.SpriteRects[layer] = new Microsoft.Xna.Framework.Rectangle(
+                    sprite.SpriteRects[layer] = new Microsoft.Xna.Framework.Rectangle(
                         (int) atlasOffset.X,
                         (int) atlasOffset.Y,
-                        (int) component.Sprites[layer].Size.Width,      // TODO: Have width on SPriteComponent.
-                        (int) component.Sprites[layer].Size.Height);
+                        (int) sprite.Sprites[layer].Size.Width,
+                        (int) sprite.Sprites[layer].Size.Height);
                 }
 
                 // Update the time when this animation frame was first displayed
-                component.AnimationFrameStartTime = totalGameTime;
-                lastFrameTime = lastFrameTime.Add(lengthOfFrame);
+                sprite.AnimationFrameSecondsActive -= sprite.CurrentAnimation.FrameSeconds;
+            }
+
+            // Reset animation state if the current animation has completed.
+            if (animationCompleted)
+            {
+                sprite.CurrentAnimation = null;
             }
         }
 
@@ -102,16 +112,28 @@ namespace Scott.Forge.Engine.Sprites
         {
             for (var index = 0; index < mComponents.Count; ++index)
             {
+                if (!mComponents[index].Active)
+                {
+                    continue;
+                }
+
                 var component = mComponents[index];
-                var origin = component.Owner.Transform.Position;
+                var transform = component.Owner.Transform;
 
                 for (var layer = 0; layer < component.Sprites.Length; layer++)
                 {
                     GameRoot.Renderer.Draw(
                         component.Sprites[layer].Texture,
                         component.SpriteRects[layer],
-                        origin);
+                        transform.WorldPosition,
+                        (component.RendererIgnoreTransformRotation ? 0.0f : transform.WorldRotation));
                 }
+
+                // Draw debug rotation.
+                //var rotationLineStart = transform.WorldPosition;
+                //var rotationLineEnd = transform.WorldPosition + (transform.Forward * 16.0f);
+
+                //GameRoot.Debug.DrawLine(rotationLineStart, rotationLineEnd, Microsoft.Xna.Framework.Color.Red);
             }
         }
 

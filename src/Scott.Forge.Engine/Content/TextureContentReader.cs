@@ -42,7 +42,7 @@ namespace Scott.Forge.Engine.Content
         public override Texture2D Read( Stream input,
                                         string assetName,
                                         string contentDir,
-                                        ContentManagerX content )
+                                        ForgeContentManager content )
         {
             IServiceProvider provider = content.ServiceProvider;
             IGraphicsDeviceService iGraphics =

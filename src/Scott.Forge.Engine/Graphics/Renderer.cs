@@ -33,13 +33,24 @@ namespace Scott.Forge.Engine.Graphics
             public Texture2D TextureAtlas;
             public Rectangle OffsetRect;
             public Vector2 Position;
+            public float Rotation;
 
-            public SpriteRenderInfo( Texture2D atlas, Rectangle offset, Vector2 pos )
+            public SpriteRenderInfo(Texture2D atlas, Rectangle offset, Vector2 pos)
                 : this()
             {
                 TextureAtlas = atlas;
                 OffsetRect = offset;
                 Position = pos;
+                Rotation = 0.0f;
+            }
+
+            public SpriteRenderInfo(Texture2D atlas, Rectangle offset, Vector2 pos, float rotation)
+                : this()
+            {
+                TextureAtlas = atlas;
+                OffsetRect = offset;
+                Position = pos;
+                Rotation = rotation;
             }
         }
 
@@ -73,8 +84,12 @@ namespace Scott.Forge.Engine.Graphics
 
         public void Draw( Texture2D atlas, Rectangle offset, Vector2 position )
         {
-            Debug.Assert( atlas != null, "Texture must be valid" );
-            mSpritesToDraw.Add( new SpriteRenderInfo( atlas, offset, position ) );
+            mSpritesToDraw.Add(new SpriteRenderInfo(atlas, offset, position));
+        }
+
+        public void Draw(Texture2D atlas, Rectangle offset, Vector2 position, float rotation)
+        {
+            mSpritesToDraw.Add(new SpriteRenderInfo(atlas, offset, position, rotation));
         }
 
         public void DrawScreen( GameTime renderTime )
@@ -86,10 +101,16 @@ namespace Scott.Forge.Engine.Graphics
 
             foreach ( SpriteRenderInfo sprite in mSpritesToDraw )
             {
-                mSpriteBatch.Draw( sprite.TextureAtlas,
-                                   sprite.Position.ToXnaVector2(),
-                                   sprite.OffsetRect,
-                                   Color.White );
+                mSpriteBatch.Draw(
+                    sprite.TextureAtlas,
+                    sprite.Position.ToXnaVector2(),
+                    sprite.OffsetRect,
+                    Color.White,
+                    sprite.Rotation,
+                    Microsoft.Xna.Framework.Vector2.Zero,
+                    Microsoft.Xna.Framework.Vector2.One,
+                    SpriteEffects.None,
+                    0.0f);
             }
 
             mSpriteBatch.End();

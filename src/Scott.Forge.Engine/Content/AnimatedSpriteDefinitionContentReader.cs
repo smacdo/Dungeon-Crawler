@@ -48,7 +48,7 @@ namespace Scott.Forge.Engine.Content
         public override AnimatedSpriteDefinition Read( Stream input,
                                          string assetName,
                                          string contentDir,
-                                         ContentManagerX content )
+                                         ForgeContentManager content )
         {
             XmlDocument xml  = new XmlDocument();
             xml.Load( input );
@@ -63,14 +63,14 @@ namespace Scott.Forge.Engine.Content
         /// <param name="contentDir"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        private AnimatedSpriteDefinition ImportSpriteData(XmlNode spriteNode, string contentDir, ContentManagerX content)
+        private AnimatedSpriteDefinition ImportSpriteData(XmlNode spriteNode, string contentDir, ForgeContentManager content)
         {
             return new AnimatedSpriteDefinition(
                 ImportSpriteDefinition(spriteNode, content),
                 ImportAnimationSetDefintion(spriteNode));
         }
         
-        private SpriteDefinition ImportSpriteDefinition(XmlNode rootNode, ContentManagerX content)
+        private SpriteDefinition ImportSpriteDefinition(XmlNode rootNode, ForgeContentManager content)
         {
             // What is the name of this sprite?
             string spriteName = rootNode.Attributes["name"].Value;

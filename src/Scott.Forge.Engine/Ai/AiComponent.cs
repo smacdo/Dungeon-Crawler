@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,29 @@ using Scott.Forge.GameObjects;
 namespace Scott.Forge.Engine.Ai
 {
     /// <summary>
+    ///  AI state.
+    /// </summary>
+    public enum AiState
+    {
+        Idle,
+        Walking
+    }
+
+    /// <summary>
     ///  Artifical intelligence.
+    ///  TODO: Move this class to the Game itself.
     /// </summary>
     public class AiComponent : Component
     {
         /// <summary>
-        /// The last time this AI made a decision
+        ///  The number of seconds
         /// </summary>
-        public TimeSpan LastDecisionTime { get; set; }
+        public double SecondsSinceLastStateChange { get; set; }
+
+        /// <summary>
+        ///  Get or set the current AI state.
+        /// </summary>
+        public AiState CurrentState { get; set; }
 
         /// <summary>
         /// Constructor
@@ -35,7 +50,7 @@ namespace Scott.Forge.Engine.Ai
         /// <param name="owner">Game object who owns this AI controller</param>
         public AiComponent()
         {
-            LastDecisionTime = TimeSpan.MinValue;
+            SecondsSinceLastStateChange = 0.0f;
         }
     }
 }

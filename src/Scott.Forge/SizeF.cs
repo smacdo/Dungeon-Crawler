@@ -43,6 +43,11 @@ namespace Scott.Forge
         private float mHeight;
 
         /// <summary>
+        ///  Get an empty (Width and height zero) SizeF value.
+        /// </summary>
+        public static SizeF Empty { get { return new SizeF(0.0f, 0.0f); } }
+
+        /// <summary>
         ///  Initializes a new instance of the <see cref="SizeF"/> struct.
         /// </summary>
         /// <param name="width">Initial width.</param>

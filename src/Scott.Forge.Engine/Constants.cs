@@ -19,7 +19,7 @@ namespace Scott.Forge.Engine
     public static partial class Constants
     {
         public const int DirectionCount = 4;
-        public const DirectionName DefaultDirection = DirectionName.East;
+        public const DirectionName DefaultDirection = DirectionName.South;
         public const string WalkAnimationName = "Walk";
     }
 }

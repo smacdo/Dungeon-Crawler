@@ -219,28 +219,21 @@ namespace Scott.Forge.Engine.Input
             {
                 // TODO: Check gamepad and mouse.
 
-                // Check keyboard keys and combine multiple presses into a vector. Only consider the keyboard if
-                // there was no valid input from the gamepad.
-                if (axisValue == Vector2.Zero)
+                // Check keyboard keys and combine multiple presses into a vector.
+                int keyCount = (actionData.IsDirectional ? Constants.DirectionCount : 1);
+
+                for (int i = 0; i < keyCount; i++)
                 {
-                    int keyCount = (actionData.IsDirectional ? Constants.DirectionCount : 1);
+                    var key = actionData.KeyboardKeys[i];
 
-                    for (int i = 0; i < keyCount; i++)
+                    if (mCurrentKeyboardState.IsKeyDown(key))
                     {
-                        var key = actionData.KeyboardKeys[i];
-
-                        if (mCurrentKeyboardState.IsKeyDown(key))
-                        {
-                            axisValue += ((DirectionName) i).ToVector();
-                        }
-                    }
-
-                    // Normalize movement vector to prevent diagonal movement from moving faster than max speed.
-                    if (axisValue.LengthSquared > 0.0f)
-                    {
-                        axisValue.Normalize();
+                        axisValue += ((DirectionName) i).ToVector();
                     }
                 }
+
+                // Only normalize movement vector from keyboard.
+                axisValue.Normalize();
             }
             else
             {

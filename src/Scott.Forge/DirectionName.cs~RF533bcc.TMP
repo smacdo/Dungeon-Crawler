@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2017 Scott MacDonald
+ * Copyright 2012-2014 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,10 @@ namespace Scott.Forge
     /// </remarks>
     public enum DirectionName
     {
-        East,
-        South,
+        North,
         West,
-        North
+        South,
+        East
     }
 
     /// <summary>
@@ -46,6 +46,12 @@ namespace Scott.Forge
     /// </summary>
     public static class DirectionNameHelper
     {
+        /// <summary>
+        ///  The intial starting value for Directions. Please seek remarks on the DirectionName enumeration type for
+        ///  more details.
+        /// </summary>
+        public const DirectionName DefaultDirection = DirectionName.North;
+
         /// <summary>
         ///  Convert an angular rotation (in degrees) into a Directional enum.
         /// </summary>
@@ -125,32 +131,6 @@ namespace Scott.Forge
         }
 
         /// <summary>
-        ///  Convert a Direction enumeration value to a rotational angle in radians.
-        /// </summary>
-        /// <param name="direction">Direction value to convert.</param>
-        /// <returns>Radian angle of rotation.</returns>
-        public static float ToRotationRadians(this DirectionName direction)
-        {
-            switch (direction)
-            {
-                case DirectionName.North:
-                    return (float)Math.PI * 1.5f;
-
-                case DirectionName.South:
-                    return (float)Math.PI * 0.5f;
-
-                case DirectionName.West:
-                    return (float)Math.PI;
-
-                case DirectionName.East:
-                    return 0.0f;
-
-                default:
-                    throw new InvalidOperationException("Unknown direction name");
-            }
-        }
-
-        /// <summary>
         ///  Convert a Direction enumeration value to a rotational vector.
         /// </summary>
         /// <param name="direction">Direction value to convert.</param>
@@ -177,7 +157,7 @@ namespace Scott.Forge
         }
 
         /// <summary>
-        ///  Get a unit vector that is 90 degrees right of the direction.
+        ///  Returns a unit vector that is 90 degrees right of the direction.
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
@@ -198,15 +178,10 @@ namespace Scott.Forge
                     return new Vector2(0, 1);
 
                 default:
-                    throw new InvalidOperationException("Unknown direction name");
+                    throw new ArgumentException("Why on earth is there a fifth direction?");
             }
         }
 
-        /// <summary>
-        ///  Parse string containing Direction value.
-        /// </summary>
-        /// <param name="directionText">String value with direction.</param>
-        /// <returns>Matching direction.</returns>
         public static DirectionName Parse(string directionText)
         {
             if (string.IsNullOrWhiteSpace(directionText))
