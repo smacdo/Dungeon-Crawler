@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,12 @@ namespace Scott.Forge.GameObjects
     public interface IComponentProcessor<TComponent>
         where TComponent : class, IComponent, new()
     {
+        void Add(TComponent component);
         TComponent Add(IGameObject gameObject);
 
-        void Remove(IGameObject gameObject);
+        bool Remove(TComponent component);
 
-        int GameObjectCount { get; }
+        int ComponetnCount { get; }
 
         void Update(double currentTime, double deltaTime);
     }
@@ -40,6 +41,11 @@ namespace Scott.Forge.GameObjects
     ///  component processor gets an update call it will loop through all the components that it added and process them
     ///  in a batch.
     /// </summary>
+    /// <remarks>
+    ///  TODO: Switch mComponents to a fixed size array set at processor creation time, and use a list/linked list to
+    ///  manage overflow components.
+    ///  TODO: 
+    /// </remarks>
     public abstract class ComponentProcessor<TComponent> : IComponentProcessor<TComponent>
         where TComponent : class, IComponent, new()
     {
@@ -64,7 +70,7 @@ namespace Scott.Forge.GameObjects
         /// <summary>
         ///  Get the number of game objects registered in this component processor.
         /// </summary>
-        public int GameObjectCount
+        public int ComponetnCount
         {
             get { return mComponents.Count; }
         }
@@ -82,12 +88,26 @@ namespace Scott.Forge.GameObjects
 
             // Instantiate the component, and add it to the game object.
             var component = CreateComponent(gameObject);
+            Add(component);
+
             gameObject.Add(component);
-
-            // Add the component to the processor's list of components for updating.
-            mComponents.Add(component);
-
             return component;
+        }
+
+        /// <summary>
+        ///  Add a component instance to the processor.
+        /// </summary>
+        /// <param name="component">Instance to add.</param>
+        public void Add(TComponent component)
+        {
+            // Cannot add null.
+            if (component == null)
+            {
+                throw new ArgumentNullException("component");
+            }
+
+            // Add.
+            mComponents.Add(component);
         }
 
         /// <summary>
@@ -101,29 +121,24 @@ namespace Scott.Forge.GameObjects
         }
 
         /// <summary>
-        ///  Adds the game object to this object processor for future updates.
+        ///  Remove component instance from processor.
         /// </summary>
-        /// <param name="gameObject">The game object to track.</param>
-        public void Remove(IGameObject gameObject)
+        /// <param name="component">Component to remove.</param>
+        public bool Remove(TComponent component)
         {
-            if (gameObject == null)
+            if (component != null)
             {
-                throw new ArgumentNullException("gameObject");
+                // Remove from game object (if attached).
+                if (component.Owner != null)
+                {
+                    component.Owner.Remove<TComponent>();
+                }
+
+                // Remove from processor.
+                return mComponents.Remove(component);  // TODO: Performance... ick.
             }
 
-            // Get the component from the game object, remove it from the processor and then delete the component from
-            // the game object itself.
-            var component = gameObject.Find<TComponent>();
-
-            if (component == null)
-            {
-                throw new ComponentDoesNotExistException(gameObject, typeof(TComponent));
-            }
-            else
-            {
-                gameObject.Remove<TComponent>();
-                mComponents.Remove(component);
-            }
+            return false;
         }
 
         /// <summary>

@@ -25,13 +25,13 @@ namespace Scott.Forge.Tests.GameObjectsTests
         [TestCategory("Forge/GameObjects/ComponentProcessor")]
         public void AddGameObjectsIncrementsCount()
         {
-            Assert.AreEqual(0, mProcessor.GameObjectCount);
+            Assert.AreEqual(0, mProcessor.ComponetnCount);
 
             mProcessor.Add(new GameObject());
-            Assert.AreEqual(1, mProcessor.GameObjectCount);
+            Assert.AreEqual(1, mProcessor.ComponetnCount);
 
             mProcessor.Add(new GameObject());
-            Assert.AreEqual(2, mProcessor.GameObjectCount);
+            Assert.AreEqual(2, mProcessor.ComponetnCount);
         }
 
 
@@ -65,14 +65,6 @@ namespace Scott.Forge.Tests.GameObjectsTests
 
         [TestMethod]
         [TestCategory("Forge/GameObjects/ComponentProcessor")]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void AddNullGameObjectThrowsException()
-        {
-            mProcessor.Add(null);
-        }
-
-        [TestMethod]
-        [TestCategory("Forge/GameObjects/ComponentProcessor")]
         public void AddAndRemoveGameObjectsFromProcessor()
         {
             var gameObject1 = new GameObject();
@@ -82,48 +74,40 @@ namespace Scott.Forge.Tests.GameObjectsTests
             var component1 = mProcessor.Add(gameObject1);
             var component2 = mProcessor.Add(gameObject2);
 
-            Assert.AreEqual(2, mProcessor.GameObjectCount);
+            Assert.AreEqual(2, mProcessor.ComponetnCount);
             Assert.AreSame(component1, gameObject1.Get<TestComponent>());
             Assert.AreSame(component2, gameObject2.Get<TestComponent>());
 
             // Remove first game object, make sure component was removed.
-            mProcessor.Remove(gameObject1);
+            Assert.IsTrue(mProcessor.Remove(component1));
             Assert.IsFalse(gameObject1.Contains<TestComponent>());
-            Assert.AreEqual(1, mProcessor.GameObjectCount);
+            Assert.AreEqual(1, mProcessor.ComponetnCount);
 
             // Add game object back, make sure game object count is correct.
             var component1b = mProcessor.Add(gameObject1);
 
-            Assert.AreEqual(2, mProcessor.GameObjectCount);
+            Assert.AreEqual(2, mProcessor.ComponetnCount);
             Assert.AreSame(component1b, gameObject1.Get<TestComponent>());
             Assert.AreSame(component2, gameObject2.Get<TestComponent>());
             Assert.AreNotSame(component1, component1b);
 
             // Remove the second game object.
-            mProcessor.Remove(gameObject2);
+            Assert.IsTrue(mProcessor.Remove(component2));
             Assert.IsFalse(gameObject2.Contains<TestComponent>());
-            Assert.AreEqual(1, mProcessor.GameObjectCount);
+            Assert.AreEqual(1, mProcessor.ComponetnCount);
 
             // Remove the first game object.
-            mProcessor.Remove(gameObject1);
+            Assert.IsTrue(mProcessor.Remove(component1b));
             Assert.IsFalse(gameObject1.Contains<TestComponent>());
-            Assert.AreEqual(0, mProcessor.GameObjectCount);
+            Assert.AreEqual(0, mProcessor.ComponetnCount);
         }
 
         [TestMethod]
         [TestCategory("Forge/GameObjects/ComponentProcessor")]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void RemoveNullGameObjectThrowsException()
+        public void RemovingNotAddedComponentReturnsFalse()
         {
-            mProcessor.Remove(null);
-        }
-
-        [TestMethod]
-        [TestCategory("Forge/GameObjects/ComponentProcessor")]
-        [ExpectedException(typeof(ComponentDoesNotExistException))]
-        public void RemoveGameObjectThatWasNotAddedThrowsException()
-        {
-            mProcessor.Remove(new GameObject());
+            Assert.IsFalse(mProcessor.Remove(null));
+            Assert.IsFalse(mProcessor.Remove(new TestComponent()));
         }
 
         [TestMethod]
@@ -156,7 +140,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component2].DeltaTime);
 
             // Update with one game object removed.
-            mProcessor.Remove(gameObject1);
+            mProcessor.Remove(component1);
             mProcessor.Update(7.5f, 3.0f);
 
             Assert.AreEqual(2, mProcessor.UpdatedComponents.Count);
@@ -166,7 +150,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.AreEqual(3.0f, mProcessor.UpdatedComponents[component2].DeltaTime);
 
             // Update with all game objects removed.
-            mProcessor.Remove(gameObject2);
+            mProcessor.Remove(component2);
             mProcessor.Update(17.5f, 10.0f);
 
             Assert.AreEqual(2, mProcessor.UpdatedComponents.Count);
