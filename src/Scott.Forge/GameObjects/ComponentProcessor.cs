@@ -30,7 +30,7 @@ namespace Scott.Forge.GameObjects
 
         bool Remove(TComponent component);
 
-        int ComponetnCount { get; }
+        int ComponentCount { get; }
 
         void Update(double currentTime, double deltaTime);
     }
@@ -70,7 +70,7 @@ namespace Scott.Forge.GameObjects
         /// <summary>
         ///  Get the number of game objects registered in this component processor.
         /// </summary>
-        public int ComponetnCount
+        public int ComponentCount
         {
             get { return mComponents.Count; }
         }

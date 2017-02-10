@@ -60,17 +60,7 @@ namespace Scott.Forge.Engine.Movement
 
             // Calculate new position.
             var newPosition = transform.WorldPosition + (movement.Velocity * (float) deltaTime);
-
-            // Check for collisions and other situations that can lead to an invalid position.
-            RectF moveBox = movement.MoveBox;
-            moveBox.Offset(newPosition);
-
-            if (IsInLevelBounds(moveBox))
-            {
-                // Calculate movement component's new position and direction.
-                transform.WorldPosition = newPosition;
-//                transform.Direction = DirectionNameHelper.FromVector(movement.Velocity);
-            }
+            transform.WorldPosition = newPosition;
 
             DrawDebugVisualization(movement, transform);
 
@@ -92,18 +82,6 @@ namespace Scott.Forge.Engine.Movement
                 Microsoft.Xna.Framework.Color.Yellow);*/
         }
 
-        /// <summary>
-        ///  Check if the given area is inside of the level bounds.
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        private bool IsInLevelBounds(RectF bounds)
-        {
-            return bounds.TopLeft.X > 0 &&
-                   bounds.TopRight.X < Screen.Width &&
-                   bounds.TopLeft.Y > 0 &&
-                   bounds.BottomLeft.Y < Screen.Height;
-        }
+        
     }
 }

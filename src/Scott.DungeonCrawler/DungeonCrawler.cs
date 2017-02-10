@@ -135,6 +135,7 @@ namespace Scott.DungeonCrawler
 
             // Create the player blue print.
             mPlayer = mGameObjectFactory.Instantiate("Player");
+            mPlayer.Transform.WorldPosition = new Forge.Vector2(200, 200);
 
             // Now that we have loaded the game's contents, we should force a garbage collection
             // before proceeding to play mode.

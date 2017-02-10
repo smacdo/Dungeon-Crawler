@@ -71,6 +71,8 @@ namespace Scott.Forge
 
         /// <summary>
         ///  Get or set the bounding area top left position in world space.
+        ///  
+        ///  TODO: Strongly consider getting rid of this (speed up performance?) and make callers do the transform.
         /// </summary>
         [XmlAttribute]
         [DataMember(Name = "Position", Order = 3, IsRequired = false)]
@@ -102,6 +104,23 @@ namespace Scott.Forge
         public Vector2 UpperRight { get { return WorldPosition + LocalUpperRight; } }
         public Vector2 LowerLeft { get { return WorldPosition + LocalLowerLeft; } }
         public Vector2 LowerRight { get { return WorldPosition + LocalLowerRight; } }
+        public Vector2 AxisAlignedMinPoint { get { return WorldPosition + LocalAxisAlignedMinPoint; } }
+        public Vector2 AxisAlignedMaxPoint {  get { return WorldPosition + LocalAxisAlignedMaxPoint; } }
+
+        public RectF AABB
+        {
+            get { return new RectF(AxisAlignedMinPoint, AxisAlignedMaxPoint); }
+        }
+
+        /// <summary>
+        ///  Get the minimum point of an axis aligned bounding rectangle that encloses the bounding area.
+        /// </summary>
+        public Vector2 LocalAxisAlignedMinPoint { get; private set; }
+
+        /// <summary>
+        ///  Get the maximum point of an axis aligned bounding rectangle that encloses the bounding area.
+        /// </summary>
+        public Vector2 LocalAxisAlignedMaxPoint { get; private set; }
 
         /// <summary>
         /// The rotated rectangle's upper left vertex. This is the original upper left vertex from
@@ -271,6 +290,19 @@ namespace Scott.Forge
                 LocalLowerLeft = RotatePoint(LocalLowerLeft, pivot, cosTheta, sinTheta);
                 LocalLowerRight = RotatePoint(LocalLowerRight, pivot, cosTheta, sinTheta);
             }
+
+            // Find an axis aligned bounding box that encloses the bounding area.
+            var minX =
+                Math.Min(LocalUpperLeft.X, Math.Min(LocalUpperRight.X, Math.Min(LocalLowerLeft.X, LocalLowerRight.X)));
+            var minY =
+                Math.Min(LocalUpperLeft.Y, Math.Min(LocalUpperRight.Y, Math.Min(LocalLowerLeft.Y, LocalLowerRight.Y)));
+            var maxX =
+                Math.Max(LocalUpperLeft.X, Math.Max(LocalUpperRight.X, Math.Max(LocalLowerLeft.X, LocalLowerRight.X)));
+            var maxY =
+                Math.Max(LocalUpperLeft.Y, Math.Max(LocalUpperRight.Y, Math.Max(LocalLowerLeft.Y, LocalLowerRight.Y)));
+
+            LocalAxisAlignedMinPoint = new Vector2(minX, minY);
+            LocalAxisAlignedMaxPoint = new Vector2(maxX, maxY);
         }
 
         /// <summary>

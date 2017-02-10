@@ -25,13 +25,13 @@ namespace Scott.Forge.Tests.GameObjectsTests
         [TestCategory("Forge/GameObjects/ComponentProcessor")]
         public void AddGameObjectsIncrementsCount()
         {
-            Assert.AreEqual(0, mProcessor.ComponetnCount);
+            Assert.AreEqual(0, mProcessor.ComponentCount);
 
             mProcessor.Add(new GameObject());
-            Assert.AreEqual(1, mProcessor.ComponetnCount);
+            Assert.AreEqual(1, mProcessor.ComponentCount);
 
             mProcessor.Add(new GameObject());
-            Assert.AreEqual(2, mProcessor.ComponetnCount);
+            Assert.AreEqual(2, mProcessor.ComponentCount);
         }
 
 
@@ -74,19 +74,19 @@ namespace Scott.Forge.Tests.GameObjectsTests
             var component1 = mProcessor.Add(gameObject1);
             var component2 = mProcessor.Add(gameObject2);
 
-            Assert.AreEqual(2, mProcessor.ComponetnCount);
+            Assert.AreEqual(2, mProcessor.ComponentCount);
             Assert.AreSame(component1, gameObject1.Get<TestComponent>());
             Assert.AreSame(component2, gameObject2.Get<TestComponent>());
 
             // Remove first game object, make sure component was removed.
             Assert.IsTrue(mProcessor.Remove(component1));
             Assert.IsFalse(gameObject1.Contains<TestComponent>());
-            Assert.AreEqual(1, mProcessor.ComponetnCount);
+            Assert.AreEqual(1, mProcessor.ComponentCount);
 
             // Add game object back, make sure game object count is correct.
             var component1b = mProcessor.Add(gameObject1);
 
-            Assert.AreEqual(2, mProcessor.ComponetnCount);
+            Assert.AreEqual(2, mProcessor.ComponentCount);
             Assert.AreSame(component1b, gameObject1.Get<TestComponent>());
             Assert.AreSame(component2, gameObject2.Get<TestComponent>());
             Assert.AreNotSame(component1, component1b);
@@ -94,12 +94,12 @@ namespace Scott.Forge.Tests.GameObjectsTests
             // Remove the second game object.
             Assert.IsTrue(mProcessor.Remove(component2));
             Assert.IsFalse(gameObject2.Contains<TestComponent>());
-            Assert.AreEqual(1, mProcessor.ComponetnCount);
+            Assert.AreEqual(1, mProcessor.ComponentCount);
 
             // Remove the first game object.
             Assert.IsTrue(mProcessor.Remove(component1b));
             Assert.IsFalse(gameObject1.Contains<TestComponent>());
-            Assert.AreEqual(0, mProcessor.ComponetnCount);
+            Assert.AreEqual(0, mProcessor.ComponentCount);
         }
 
         [TestMethod]

@@ -108,14 +108,16 @@ namespace Scott.DungeonCrawler.GameObjects
 
             // Add movement component.
             var movement = MovementProcessor.Add(player);
-            movement.MoveBox = new RectF(new Vector2(15, 32), new SizeF(32, 50));
 
             // Add actor component.
             var actor = ActorProcessor.Add(player);
 
             // Add collision.
             var collision = CollisionProcessor.Add(player);
-            collision.Initialize(movement.MoveBox, new Vector2(16, 12));
+            var collisonBox = new RectF(new Vector2(15, 32), new SizeF(32, 50));
+
+            collision.Bounds = new BoundingArea(collisonBox);
+            collision.Offset = new Vector2(16, 12);
 
             // Create sword and center the object on the character.
             //  TODO: Don't hard code the values.
@@ -154,10 +156,12 @@ namespace Scott.DungeonCrawler.GameObjects
             AiProcessor.Add(enemy);
             
             var movement = MovementProcessor.Add(enemy);
-            movement.MoveBox = new RectF(new Vector2(129, 32), new SizeF(32, 50));
 
             var collision = CollisionProcessor.Add(enemy);
-            collision.Initialize(movement.MoveBox, new Vector2(16, 14));
+            var collisionBox = new RectF(new Vector2(129, 32), new SizeF(32, 50));
+
+            collision.Bounds = new BoundingArea(collisionBox);
+            collision.Offset = new Vector2(16, 14);
 
             return enemy;
         }

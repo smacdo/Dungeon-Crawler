@@ -48,23 +48,74 @@ namespace Scott.Forge.Engine.Physics
         {
             mCollisions.Clear();
 
-            ResetAllCollisions();
+            UpdateCollisionComponents();
             FindCollisions(mCollisions);
             ResolveCollisions(mCollisions);
 
             DrawCollisionBoxes();
         }
 
-        private void ResetAllCollisions()
+        /// <summary>
+        ///  Update collision component position and rotation from the owner's transform and then update the scene
+        ///  graph's spatial index to allow for fast spatial queries.
+        /// </summary>
+        private void UpdateCollisionComponents()
         {
+            // TODO: Reset the spatial scene graph.
+            // TODO: Is there a way to speed this up by not resetting everyone?
+
+            // Iterate through all collision components and update the scene spatial index.
             for (int i = 0; i < mComponents.Count; ++i)
             {
-                mComponents[i].Update();
+                var collider = mComponents[i];
+
+                // Calculate new position for collider.
+                // TODO: Fix this up, it is messy.
+                // TODO: Remove broad phase box, use broad phase from bounding area.
+                var position = collider.Owner.Transform.WorldPosition;
+
+                var currentAABB = collider.Bounds.AABB;
+                var potentialAABB = collider.Bounds.AABB;
+
+                potentialAABB.Position = position;
+                
+                // Make sure collider is still in the world bounds.
+                // TODO: If collide with world bound, carefully check rotated bounding area.
+                // TODO: Move the collider as close to the edge of the world bound rather than simply not updating the
+                //       position.
+                // TODO: Handle case where original box position is outside world bounds.
+                if (IsInLevelBounds(potentialAABB))
+                {
+                    // Update collision box with new position.
+                    collider.Bounds.WorldPosition = position + collider.Offset;
+
+                    // TODO: Update spatial index.
+                }
+                else
+                {
+                    // Cannot move the object because it is no longer in the world boundaries. Change the object
+                    // position back to the previous valid position.
+                    // TODO: When the logic is updated to snap to world edge, update the spatial index.
+                    position = currentAABB.Position - collider.Offset;
+
+                    collider.Owner.Transform.WorldPosition = position;
+                    collider.Bounds.WorldPosition = position + collider.Offset;
+
+                    // TODO: This is a collision with the world edge. Should raise this as a collision too.
+                }
+
+                collider.CollisionThisFrame = false;
             }
         }
 
+        /// <summary>
+        ///  Find collisions between objects and resolve them.
+        /// </summary>
+        /// <param name="collisions"></param>
         private void FindCollisions(List<Pair<CollisionComponent, CollisionComponent>> collisions)
         {
+            Vector2 minimumTranslationVector = Vector2.Zero;
+
             for (int i = 0; i < mComponents.Count; ++i)
             {
                 var first = mComponents[i];
@@ -74,7 +125,8 @@ namespace Scott.Forge.Engine.Physics
                     var second = mComponents[j];
 
                     // Perform a fast broadphase check for collision.
-                    if (first.BroadPhaseBox.Intersects(second.BroadPhaseBox))
+                    
+                    if (first.Bounds.Intersects(second.Bounds, ref minimumTranslationVector))
                     {
                         collisions.Add(new Pair<CollisionComponent, CollisionComponent>(first, second));
 
@@ -85,6 +137,10 @@ namespace Scott.Forge.Engine.Physics
             }
         }
 
+        /// <summary>
+        ///  Resolve collisions.
+        /// </summary>
+        /// <param name="collisions"></param>
         private void ResolveCollisions(List<Pair<CollisionComponent, CollisionComponent>> collisions)
         {
             var minimumTranslation = Vector2.Zero;
@@ -93,6 +149,8 @@ namespace Scott.Forge.Engine.Physics
             {
                 var first = collisions[i].First;
                 var second = collisions[i].Second;
+
+                // TODO: If the owner has a movement component attached then apply separation force.
 
                 if (first.Bounds.Intersects(second.Bounds, ref minimumTranslation))
                 {
@@ -124,14 +182,17 @@ namespace Scott.Forge.Engine.Physics
         /// <summary>
         ///  Check if the given area is inside of the level bounds.
         /// </summary>
+        /// <remarks>
+        ///  TODO: Use the scene dimensions rather than screen dimensions!
+        /// </remarks>
         /// <param name="owner"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        private bool IsInLevelBounds(RectF bounds)
+        public static bool IsInLevelBounds(RectF bounds)
         {
-            return bounds.TopLeft.X > 0 &&
+            return bounds.TopLeft.X >= 0 &&
                    bounds.TopRight.X < Screen.Width &&
-                   bounds.TopLeft.Y > 0 &&
+                   bounds.TopLeft.Y >= 0 &&
                    bounds.BottomLeft.Y < Screen.Height;
         }
     }

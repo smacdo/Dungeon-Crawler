@@ -23,9 +23,15 @@ namespace Scott.Forge.Engine.Physics
     /// </summary>
     public class CollisionComponent : Component
     {
-        private RectF mBroadPhaseBox;
-        private BoundingArea mBounds;
-        private Vector2 Offset;
+        public BoundingArea Bounds { get; set; }
+
+        /// <summary>
+        ///  Offset from game object top left corner for collision bound.
+        /// </summary>
+        public Vector2 Offset { get; set; }
+
+        // TODO: Switch to an event system instead.
+        public bool CollisionThisFrame { get; set; }
 
         /// <summary>
         /// Constructor
@@ -33,35 +39,5 @@ namespace Scott.Forge.Engine.Physics
         public CollisionComponent()
         {
         }
-
-        public void Initialize(RectF boundingBox, Vector2 offset)
-        {
-            Offset = offset;
-
-            mBroadPhaseBox = boundingBox;
-            mBounds = new BoundingArea(BroadPhaseBox);
-
-            Update();
-        }
-
-        public void Update()
-        {
-            var position = Owner.Transform.WorldPosition;
-            mBroadPhaseBox.Position = position + Offset;
-            mBounds.WorldPosition = position + Offset;
-            CollisionThisFrame = false;
-        }
-
-        /// <summary>
-        ///  Rectangle defining which part of the game object is used for movement related
-        ///  collision detection.
-        /// </summary>
-        public RectF BroadPhaseBox {  get { return mBroadPhaseBox; } }
-
-        public BoundingArea Bounds { get { return mBounds; } }
-        
-        public bool CollisionThisFrame { get; set; }
-        
-
     }
 }
