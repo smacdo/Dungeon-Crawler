@@ -77,6 +77,8 @@
     <Compile Include="GameObjects\IBlueprintFactory.cs" />
     <Compile Include="RectF.cs" />
     <Compile Include="SizeF.cs" />
+    <Compile Include="Spatial\SimpleSpatialIndex.cs" />
+    <Compile Include="Spatial\SpatialIndex.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector3.cs" />
     <Compile Include="Vector4.cs" />

@@ -206,6 +206,17 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
+        public bool Intersects(BoundingArea other)
+        {
+            Vector2 temp = Vector2.Zero;
+            return Intersects(other, ref temp);
+        }
+
+        /// <summary>
+        /// Check if the bounding rectangle intersects this bounding rectangle.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Intersects(BoundingArea other, ref Vector2 minimumTranslationVector)
         {
             // Generate the potential seperating axis vectors between this bounding rectangle and the provided bounding
@@ -261,7 +272,7 @@ namespace Scott.Forge
             float bMax = Math.Max( Math.Min( b0, b1 ), Math.Max( b2, b3 ) );
 
             // Test if there is an overlap between the minimum of a and the maximum values of the two rectangles.
-            return (bMin <= aMax && bMax >= aMax) || (aMin <= bMax && aMax >= bMax);
+            return (bMin < aMax && bMax > aMax) || (aMin < bMax && aMax > bMax);
         }
 
         /// <summary>

@@ -19,6 +19,7 @@ using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Engine.Sprites;
 using System.Diagnostics;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Engine.Physics
 {
@@ -38,21 +39,32 @@ namespace Scott.Forge.Engine.Physics
     public class CollisionProcessor : ComponentProcessor<CollisionComponent>
     {
         private List<Pair<CollisionComponent, CollisionComponent>> mCollisions;
+        private List<CollisionComponent> mCollisionQueryList;
+        private ISpatialIndex<CollisionComponent> mSpatialIndex;
 
         public CollisionProcessor()
         {
             mCollisions = new List<Pair<CollisionComponent, CollisionComponent>>(1024);
+            mCollisionQueryList = new List<CollisionComponent>(100);
+
+            mSpatialIndex = new SimpleSpatialIndex<CollisionComponent>(10000, 10000);
         }
 
         public override void Update(double currentTime, double deltaTime)
         {
             mCollisions.Clear();
+            mCollisionQueryList.Clear();
 
             UpdateCollisionComponents();
             FindCollisions(mCollisions);
-            ResolveCollisions(mCollisions);
+            //ResolveCollisions(mCollisions);
 
             DrawCollisionBoxes();
+        }
+
+        protected override void UpdateComponent(CollisionComponent component, double currentTime, double deltaTime)
+        {
+
         }
 
         /// <summary>
@@ -63,6 +75,7 @@ namespace Scott.Forge.Engine.Physics
         {
             // TODO: Reset the spatial scene graph.
             // TODO: Is there a way to speed this up by not resetting everyone?
+            mSpatialIndex.Clear();
 
             // Iterate through all collision components and update the scene spatial index.
             for (int i = 0; i < mComponents.Count; ++i)
@@ -88,14 +101,11 @@ namespace Scott.Forge.Engine.Physics
                 {
                     // Update collision box with new position.
                     collider.Bounds.WorldPosition = position + collider.Offset;
-
-                    // TODO: Update spatial index.
                 }
                 else
                 {
                     // Cannot move the object because it is no longer in the world boundaries. Change the object
                     // position back to the previous valid position.
-                    // TODO: When the logic is updated to snap to world edge, update the spatial index.
                     position = currentAABB.Position - collider.Offset;
 
                     collider.Owner.Transform.WorldPosition = position;
@@ -104,6 +114,9 @@ namespace Scott.Forge.Engine.Physics
                     // TODO: This is a collision with the world edge. Should raise this as a collision too.
                 }
 
+                // Update spatial index with new collision bounds.
+                mSpatialIndex.Add(collider, collider.Bounds);
+                
                 collider.CollisionThisFrame = false;
             }
         }
@@ -118,23 +131,64 @@ namespace Scott.Forge.Engine.Physics
 
             for (int i = 0; i < mComponents.Count; ++i)
             {
-                var first = mComponents[i];
-
-                for (int j = i + 1; j < mComponents.Count; ++j)
-                {
-                    var second = mComponents[j];
-
-                    // Perform a fast broadphase check for collision.
-                    
-                    if (first.Bounds.Intersects(second.Bounds, ref minimumTranslationVector))
-                    {
-                        collisions.Add(new Pair<CollisionComponent, CollisionComponent>(first, second));
-
-                        first.CollisionThisFrame = true;
-                        second.CollisionThisFrame = true;
-                    }
-                }
+                ResolveCollisionsFor(mComponents[i]);
             }
+        }
+
+        private void ResolveCollisionsFor(CollisionComponent collider, int depth = 0)
+        {
+            if (mSpatialIndex.Query(collider.Bounds, collider, mCollisionQueryList))
+            {
+                Debug.Assert(depth < 3);
+
+                foreach (var collidee in mCollisionQueryList)
+                {
+                    // TODO: Do not recalculate collision to get displacement angle.
+                    var minimumDisplacement = Vector2.Zero;
+                    collider.Bounds.Intersects(collidee.Bounds, ref minimumDisplacement);
+
+                    // Mark components as having collided this frame.
+                    // TODO: Raise an event instead.
+                    collider.CollisionThisFrame = true;
+                    collidee.CollisionThisFrame = true;
+
+                    // Do not adjust position if this is a glancing collision.
+                    if (minimumDisplacement.IsZero)
+                    {
+                        continue;
+                    }
+
+                    // Displace the object along the smaller of the two axis from the displacement vector.
+                    var displacement = Vector2.Zero;
+                    float minDX = minimumDisplacement.X;
+                    float minDY = minimumDisplacement.Y;
+
+                    if (minDY == 0.0f || Math.Abs(minDX) <= Math.Abs(minDY))
+                    {
+                        displacement.X = minDX;
+                    }
+                    else
+                    {
+                        displacement.Y = minDY;
+                    }
+
+                    collider.Owner.Transform.WorldPosition += displacement;
+                    collider.Bounds.WorldPosition += displacement;
+
+                    // Update spatial index with collider's new bounding area.
+                    mSpatialIndex.Update(collider, collider.Bounds);
+
+                    // ...
+                    // TODO: This is terribly written. Clean up.
+                    mCollisions.Clear();
+                    ResolveCollisionsFor(collider, depth + 1);
+                    break;
+                }
+
+                mCollisions.Clear();
+            }
+
+            mCollisions.Clear();
         }
 
         /// <summary>
@@ -159,6 +213,9 @@ namespace Scott.Forge.Engine.Physics
             }
         }
 
+        /// <summary>
+        ///  Draw debug collision information.
+        /// </summary>
         private void DrawCollisionBoxes()
         {
             for (int i = 0; i < mComponents.Count; ++i)
@@ -172,11 +229,6 @@ namespace Scott.Forge.Engine.Physics
                     cc.Bounds,
                     color);
             }
-        }
-
-        protected override void UpdateComponent(CollisionComponent cc, double time, double deltaTime)
-        {
-
         }
 
         /// <summary>
