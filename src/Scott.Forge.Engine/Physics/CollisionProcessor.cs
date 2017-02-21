@@ -85,38 +85,35 @@ namespace Scott.Forge.Engine.Physics
                 // Calculate new position for collider.
                 // TODO: Fix this up, it is messy.
                 // TODO: Remove broad phase box, use broad phase from bounding area.
-                var position = collider.Owner.Transform.WorldPosition;
+                //   var desiredPosition = collider.Owner.Transform.WorldPosition;
+                //   var startingPosition = collider.ActualPosition; // Actual position from last update call.
 
-                var currentAABB = collider.Bounds.AABB;
-                var potentialAABB = collider.Bounds.AABB;
 
-                potentialAABB.Position = position;
-                
                 // Make sure collider is still in the world bounds.
                 // TODO: If collide with world bound, carefully check rotated bounding area.
                 // TODO: Move the collider as close to the edge of the world bound rather than simply not updating the
                 //       position.
                 // TODO: Handle case where original box position is outside world bounds.
-                if (IsInLevelBounds(potentialAABB))
+
+                var desiredBounds = collider.Bounds.AABB;
+                desiredBounds.Position = collider.Owner.Transform.WorldPosition + collider.Offset;
+
+                if (!IsInLevelBounds(desiredBounds))
                 {
-                    // Update collision box with new position.
-                    collider.Bounds.WorldPosition = position + collider.Offset;
+                    // TODO: Correctly move back to boundary rather than this snap back.
+                    collider.DesiredPosition = collider.ActualPosition;
+                    collider.Owner.Transform.WorldPosition = collider.ActualPosition;
                 }
                 else
                 {
-                    // Cannot move the object because it is no longer in the world boundaries. Change the object
-                    // position back to the previous valid position.
-                    position = currentAABB.Position - collider.Offset;
-
-                    collider.Owner.Transform.WorldPosition = position;
-                    collider.Bounds.WorldPosition = position + collider.Offset;
-
-                    // TODO: This is a collision with the world edge. Should raise this as a collision too.
+                    collider.DesiredPosition = collider.Owner.Transform.WorldPosition;
                 }
-
-                // Update spatial index with new collision bounds.
-                mSpatialIndex.Add(collider, collider.Bounds);
                 
+                // Update spatial index with new collision bounds.
+                var initialBounds = collider.Bounds.AABB;
+                initialBounds.Position = collider.ActualPosition + collider.Offset;
+
+                mSpatialIndex.Add(collider, collider.Bounds);
                 collider.CollisionThisFrame = false;
             }
         }
@@ -135,60 +132,77 @@ namespace Scott.Forge.Engine.Physics
             }
         }
 
-        private void ResolveCollisionsFor(CollisionComponent collider, int depth = 0)
+        private void ResolveCollisionsFor(CollisionComponent collider)
         {
+            mCollisions.Clear();
+
+            // Calculate the desired position for this collider and see what it collides with.
+            // TODO: Horrible code.
+            collider.Bounds.WorldPosition = collider.DesiredPosition + collider.Offset;
+
             if (mSpatialIndex.Query(collider.Bounds, collider, mCollisionQueryList))
             {
-                Debug.Assert(depth < 3);
+                var collidee = mCollisionQueryList[0];
+                
+                // TODO: Do not recalculate collision to get displacement angle.
+                var minimumDisplacement = Vector2.Zero;
+                collider.Bounds.Intersects(collidee.Bounds, ref minimumDisplacement);
 
-                foreach (var collidee in mCollisionQueryList)
+                // Mark components as having collided this frame.
+                // TODO: Raise an event instead.
+                collider.CollisionThisFrame = true;
+                collidee.CollisionThisFrame = true;
+
+                // Do not adjust position if this is a glancing collision.
+                if (minimumDisplacement.IsZero)
                 {
-                    // TODO: Do not recalculate collision to get displacement angle.
-                    var minimumDisplacement = Vector2.Zero;
-                    collider.Bounds.Intersects(collidee.Bounds, ref minimumDisplacement);
-
-                    // Mark components as having collided this frame.
-                    // TODO: Raise an event instead.
-                    collider.CollisionThisFrame = true;
-                    collidee.CollisionThisFrame = true;
-
-                    // Do not adjust position if this is a glancing collision.
-                    if (minimumDisplacement.IsZero)
-                    {
-                        continue;
-                    }
-
-                    // Displace the object along the smaller of the two axis from the displacement vector.
-                    var displacement = Vector2.Zero;
-                    float minDX = minimumDisplacement.X;
-                    float minDY = minimumDisplacement.Y;
-
-                    if (minDY == 0.0f || Math.Abs(minDX) <= Math.Abs(minDY))
-                    {
-                        displacement.X = minDX;
-                    }
-                    else
-                    {
-                        displacement.Y = minDY;
-                    }
-
-                    collider.Owner.Transform.WorldPosition += displacement;
-                    collider.Bounds.WorldPosition += displacement;
-
-                    // Update spatial index with collider's new bounding area.
-                    mSpatialIndex.Update(collider, collider.Bounds);
-
-                    // ...
-                    // TODO: This is terribly written. Clean up.
-                    mCollisions.Clear();
-                    ResolveCollisionsFor(collider, depth + 1);
-                    break;
+                    collider.ActualPosition = collider.DesiredPosition;
                 }
 
-                mCollisions.Clear();
-            }
+                // Displace the object along the smaller of the two axis from the displacement vector.
+                var displacement = Vector2.Zero;
+                float minDX = minimumDisplacement.X;
+                float minDY = minimumDisplacement.Y;
 
-            mCollisions.Clear();
+                if (minDX == 0.0f)
+                {
+                    displacement.Y = minDY;
+                }
+                else if (minDY == 0.0f)
+                {
+                    displacement.X = minDX;
+                }
+                else if (Math.Abs(minDX) <= Math.Abs(minDY))
+                {
+                    displacement.X = minDX;
+                }
+                else
+                {
+                    displacement.Y = minDY;
+                }
+                    
+                /*Debug.WriteLine("Collision depth {0}, displacement ({1}, {2}), actual ({3}, {4})",
+                    0,
+                    minDX, minDY,
+                    displacement.X, displacement.Y);
+                Debug.WriteLine("Collider rect was {0}, collidee rect was {1}",
+                    collider.Bounds.AABB,
+                    collidee.Bounds.AABB);*/
+
+                collider.Owner.Transform.WorldPosition += displacement;
+                collider.Bounds.WorldPosition += displacement;
+                collider.ActualPosition = collider.Owner.Transform.WorldPosition;
+
+                /*Debug.WriteLine("Collider new rect is {0} and pos {1}",
+                    collider.Bounds.AABB,
+                    collider.Owner.Transform.WorldPosition);*/
+
+                // Update spatial index with collider's new bounding area.
+                mSpatialIndex.Update(collider, collider.Bounds);
+
+                // ...
+                // TODO: This is terribly written. Clean up.
+            }
         }
 
         /// <summary>

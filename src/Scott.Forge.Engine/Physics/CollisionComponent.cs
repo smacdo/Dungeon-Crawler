@@ -23,11 +23,20 @@ namespace Scott.Forge.Engine.Physics
     /// </summary>
     public class CollisionComponent : Component
     {
+        // TODO: Make these positions are center based. and document them.
+        public Vector2 LastPosition { get; set; }
+        public Vector2 StartingPosition { get; set; }
+        public Vector2 DesiredPosition { get; set; }
+        public Vector2 ActualPosition { get; set; }
+
         public BoundingArea Bounds { get; set; }
 
         /// <summary>
         ///  Offset from game object top left corner for collision bound.
         /// </summary>
+        /// <remarks>
+        ///  TODO: Stop using this, and use a center based rectangle instead.
+        /// </remarks>
         public Vector2 Offset { get; set; }
 
         // TODO: Switch to an event system instead.

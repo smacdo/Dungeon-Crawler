@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoundingArea.cs" />
+    <Compile Include="BoundingRect.cs" />
     <Compile Include="DirectionName.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ForgeException.cs" />
