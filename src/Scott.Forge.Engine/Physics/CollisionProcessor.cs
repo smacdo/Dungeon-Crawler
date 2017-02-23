@@ -46,7 +46,7 @@ namespace Scott.Forge.Engine.Physics
         public CollisionProcessor()
         {
             mCollisionQueryList = new List<CollisionComponent>(100);
-            mSpatialIndex = new SimpleSpatialIndex<CollisionComponent>(10000, 10000);
+            mSpatialIndex = new SimpleSpatialIndex<CollisionComponent>();
         }
 
         public override void Update(double currentTime, double deltaTime)
@@ -65,8 +65,7 @@ namespace Scott.Forge.Engine.Physics
         }
 
         /// <summary>
-        ///  Update collision component position and rotation from the owner's transform and then update the scene
-        ///  graph's spatial index to allow for fast spatial queries.
+        ///  Iterate through the list of collision components and update their position in the spatial index.
         /// </summary>
         private void UpdateCollisionComponents()
         {
@@ -100,12 +99,12 @@ namespace Scott.Forge.Engine.Physics
                 var initialBounds = collider.Bounds.AABB;
                 initialBounds.Position = collider.ActualPosition + collider.Offset;
 
-                mSpatialIndex.Add(collider, collider.Bounds);
+                mSpatialIndex.Add(collider, collider.Bounds.AABB);
             }
         }
 
         /// <summary>
-        ///  Find collisions between objects and resolve them.
+        ///  Iterate through all collision components and resolve and pending collisions.
         /// </summary>
         /// <param name="collisions"></param>
         private void FindCollisions()
@@ -118,18 +117,20 @@ namespace Scott.Forge.Engine.Physics
             }
         }
 
+        /// <summary>
+        ///  Resolve a collisions with the given collision component.
+        /// </summary>
+        /// <param name="collider"></param>
         private void ResolveCollisionsFor(CollisionComponent collider)
         {
             mCollisionQueryList.Clear();
 
             // Calculate the desired position for this collider and see what it collides with.
-            // TODO: Horrible code.
             collider.Bounds.WorldPosition = collider.DesiredPosition + collider.Offset;
+            var collidee = mSpatialIndex.QueryOne(collider.Bounds.AABB, collider);
 
-            if (mSpatialIndex.Query(collider.Bounds, collider, mCollisionQueryList))
-            {
-                var collidee = mCollisionQueryList[0];
-                
+            if (collidee != null)
+            {                
                 // TODO: Do not recalculate collision to get displacement angle.
                 var minimumDisplacement = Vector2.Zero;
                 collider.Bounds.Intersects(collidee.Bounds, ref minimumDisplacement);
@@ -167,26 +168,14 @@ namespace Scott.Forge.Engine.Physics
                 }
 
                 // TODO: If the owner has a movement component attached then consider apply separation force.
-
-
-                /*Debug.WriteLine("Collision depth {0}, displacement ({1}, {2}), actual ({3}, {4})",
-                    0,
-                    minDX, minDY,
-                    displacement.X, displacement.Y);
-                Debug.WriteLine("Collider rect was {0}, collidee rect was {1}",
-                    collider.Bounds.AABB,
-                    collidee.Bounds.AABB);*/
+                
 
                 collider.Owner.Transform.WorldPosition += displacement;
                 collider.Bounds.WorldPosition += displacement;
                 collider.ActualPosition = collider.Owner.Transform.WorldPosition;
-
-                /*Debug.WriteLine("Collider new rect is {0} and pos {1}",
-                    collider.Bounds.AABB,
-                    collider.Owner.Transform.WorldPosition);*/
-
+                
                 // Update spatial index with collider's new bounding area.
-                mSpatialIndex.Update(collider, collider.Bounds);
+                mSpatialIndex.Update(collider, collider.Bounds.AABB);
             }
         }
 

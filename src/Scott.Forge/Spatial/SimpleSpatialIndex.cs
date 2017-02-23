@@ -25,56 +25,51 @@ namespace Scott.Forge.Spatial
     /// <summary>
     ///  A simple brute force spatial grid implementatiaon with no optimizations.
     /// </summary>
+    /// <remarks>
+    ///  TODO: Unit testing!
+    /// </remarks>
     public class SimpleSpatialIndex<TObject> : ISpatialIndex<TObject> where TObject : new()
     {
         public const int DefaultCapacity = 1000;
 
-        // TODO: Make default capacity configurable.
-        // TODO: Use an array not a list for speed.
-        private List<Pair<TObject, BoundingArea>> mList = new List<Pair<TObject, BoundingArea>>(DefaultCapacity);
+        private Pair<TObject, RectF>[] mItems;
+        private int mItemCount = 0;
 
-        // TODO: Add overflow if capacity is exceeded since it is temporary.
+        // TODO: Add support for item overflow with a linked list. Generate a pool of unused nodes and then add/remove
+        //       them as needed at runtime. If the number of needed nodes is exceeded at runtime then allocate new ones
+        //       and remember to delete them to return to initial pool capacity.
 
         /// <summary>
-        ///  Create a new simple spatial index.
+        ///  Constructor.
         /// </summary>
-        /// <param name="width">Width of the spatial index in world units.</param>
-        /// <param name="height">Height of the spatial index in world units.</param>
-        public SimpleSpatialIndex(float width, float height)
+        public SimpleSpatialIndex()
+            : this(DefaultCapacity)
         {
-            if (width <= 0)
-            {
-                throw new ArgumentException("Width must be larger than zero", "width");
-            }
-
-            if (height <= 0)
-            {
-                throw new ArgumentException("Height must be larger than zero", "height");
-            }
-
-            Width = width;
-            Height = height;
         }
 
         /// <summary>
-        ///  Maximum height of the spatial index.
+        ///  Constructor.
         /// </summary>
-        /// <remarks>
-        ///  Spatial index uses the Forge coordinate system where Y increases as it goes down from the top left origin.
-        /// </remarks>
-        public float Height { get; private set; }
+        /// <param name="capacity">Starting object capacity.</param>
+        public SimpleSpatialIndex(int capacity)
+        {
+            if (capacity < 1)
+            {
+                throw new ArgumentOutOfRangeException("Capacity must be larger than one", nameof(capacity));
+            }
 
-        /// <summary>
-        ///  Maximum width of the spatial index.
-        /// </summary>
-        public float Width { get; private set; }
+            mItems = new Pair<TObject, RectF>[capacity];
+        }
 
         /// <summary>
         ///  Clear the spatial index.
         /// </summary>
         public void Clear()
         {
-            mList.Clear();
+            mItemCount = 0;
+
+            // Reset item array to null to zero out live instances (allow garbage collection to kick in).
+            Array.Clear(mItems, 0, mItems.Length);
         }
 
         /// <summary>
@@ -84,62 +79,54 @@ namespace Scott.Forge.Spatial
         /// <param name="exclude">Object ot exclude from matches (null if not required).</param>
         /// <param name="results">List that will receive query results.</param>
         /// <returns>True if at least one object was in the area, false otherwise.</returns>
-        public void Add(TObject obj, BoundingArea bounds)
+        public void Add(TObject obj, RectF bounds)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             if (bounds == null)
             {
-                throw new ArgumentNullException("bounds");
+                throw new ArgumentNullException(nameof(bounds));
             }
 
-            // Check dimensions, make sure valid before inserting into grid.
-            var aabb = bounds.AABB;
-
-            /*if (aabb.Left < 0 || aabb.Right >= Width || aabb.Top < 0 || aabb.Bottom >= Height)
+            // Check if initial item array is full.
+            // TODO: Implement overflow mechanics.
+            if (mItemCount + 1 >= mItems.Length)
             {
-                throw new ArgumentException("Object bounding area out of bounds", "bounds");
-            }*/
+                throw new InvalidOperationException("Spatial index out of space");
+            }
 
-            // Add object to end of object array.
-            mList.Add(new Pair<TObject, BoundingArea>(obj, bounds));
+            // Add item to list.
+            mItems[mItemCount++] = new Pair<TObject, RectF>(obj, bounds);
         }
 
         /// <summary>
         ///  Update an object bounding area.
         /// </summary>
-        /// <param name="obj">Object to update.</param>
-        /// <param name="bounds">New bounding area for object.</param>
+        /// <param name=nameof(obj)>Object to update.</param>
+        /// <param name=nameof(bounds)>New bounding area for object.</param>
         /// <returns>True if the object was found and updated, false if the object was added.</returns>
-        public bool Update(TObject obj, BoundingArea bounds)
+        public bool Update(TObject obj, RectF bounds)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             if (bounds == null)
             {
-                throw new ArgumentNullException("bounds");
+                throw new ArgumentNullException(nameof(bounds));
             }
 
-            // Check dimensions, make sure valid before inserting into grid.
-            var aabb = bounds.AABB;
-
-            /*if (aabb.Left < 0 || aabb.Right >= Width || aabb.Top < 0 || aabb.Bottom >= Height)
-            {
-                throw new ArgumentException("Object bounding area out of bounds", "bounds");
-            }*/
-
             // Search the list for the given object and update the bounds if found.
+            // TODO: Add search in overflow list once overflow is supported.
             bool didFindObject = false;
 
-            for (int i = 0; i < mList.Count && !didFindObject; i++)
+            for (int i = 0; i < mItemCount && !didFindObject; i++)
             {
-                var entry = mList[i];
+                var entry = mItems[i];
 
                 if (ReferenceEquals(obj, entry.First))
                 {
@@ -151,7 +138,7 @@ namespace Scott.Forge.Spatial
             // Add the object if it was not found in the object list.
             if (!didFindObject)
             {
-                mList.Add(new Pair<TObject, BoundingArea>(obj, bounds));
+                Add(obj, bounds);
             }
 
             return didFindObject;   
@@ -160,7 +147,7 @@ namespace Scott.Forge.Spatial
         /// <summary>
         ///  Remove an object from the spatial index.
         /// </summary>
-        /// <param name="obj">Object to remove.</param>
+        /// <param name=nameof(obj)>Object to remove.</param>
         /// <returns>True if the object was found and rmeoved, false otherwise.</returns>
         public bool Remove(TObject obj)
         {
@@ -169,25 +156,26 @@ namespace Scott.Forge.Spatial
             // Search for the object.
             bool didFind = false;
 
-            for (int i = 0; i < mList.Count && !didFind; i++)
+            for (int i = 0; i < mItemCount && !didFind; i++)
             {
-                var o = mList[i].First;
+                var o = mItems[i].First;
 
                 // Check if this is the object.
                 if (ReferenceEquals(obj, o))
                 {
                     didFind = true;
+
                     // Move object to the last entry in the array.
-                    var lastIndex = mList.Count - 1;
+                    var lastIndex = mItemCount - 1;
 
                     if (i < lastIndex)
                     {
-                        mList[i] = mList[lastIndex];
+                        mItems[i] = mItems[lastIndex];
                     }
 
-                    // Remove last entry in array. This should not be a performance problem because List<T> will not
-                    // resize; it will keep entry as extra capacity.
-                    mList.RemoveAt(lastIndex);
+                    // Remove last entry in array and then shrink item count.
+                    mItems[lastIndex] = default(Pair<TObject, RectF>);
+                    mItemCount -= 1;
                 }
             }
 
@@ -195,40 +183,65 @@ namespace Scott.Forge.Spatial
         }
 
         /// <summary>
-        ///  Store an object in the spatial index with the given bounding area.
+        ///  Query the spatial index to find the first object occupying the requested region.
         /// </summary>
-        /// <param name="obj">Object to store.</param>
-        /// <param name="bounds">Object's bounding area.</param>
-        public bool Query(BoundingArea queryBounds, TObject excludes, List<TObject> results)
+        /// <param name=nameof(bounds)>Spatial region to search.</param>
+        /// <param name="excludes">Object to exclude from matches (null if not required).</param>
+        /// <returns>The first object that was found, or null for none.</returns>
+        public TObject QueryOne(RectF bounds, TObject excludes)
         {
-            bool didFindAnything = false;
+            var queryResults = Query(bounds, excludes).GetEnumerator();
+            TObject result = default(TObject);
 
-            foreach (var p in mList)
+            if (queryResults.MoveNext())
             {
-                if (!ReferenceEquals(p.First, excludes))
-                {
-                    if (queryBounds.Intersects(p.Second))
-                    {
-                        didFindAnything = true;
-                        results.Add(p.First);
-                    }
-                }
+                result = queryResults.Current;
             }
 
-            return didFindAnything;
+            return result;
         }
 
+        /// <summary>
+        ///  Query the spatial index to find a list of objects occupying the requested query region.
+        /// </summary>
+        /// <param name="queryBounds">Spatial region to search.</param>
+        /// <param name="exclude">Object to exclude from matches (null if not required).</param>
+        /// <param name="results">List that will receive query results.</param>
+        /// <returns>True if at least one object was in the area, false otherwise.</returns>
+        public bool Query(RectF queryBounds, TObject excludes, IList<TObject> results)
+        {
+            bool didFind = false;
+
+            foreach (var q in Query(queryBounds, excludes))
+            {
+                results.Add(q);
+                didFind = true;
+            }
+
+            return didFind;
+        }
 
         /// <summary>
-        ///  Results of a query.
+        ///  Query the spatial index to find a list of objects occupying the requested query region.
+        /// </summary>
+        /// <param name="queryBounds">Spatial region to search.</param>
+        /// <param name="exclude">Object to exclude from matches (null if not required).</param>
+        /// <returns>Iterator with the results of the query.</returns>
+        public QueryResult Query(RectF queryBounds, TObject excludes)
+        {
+            return new QueryResult(this, queryBounds, excludes);
+        }
+
+        /// <summary>
+        ///  Holds the results of a spatial query and has an iterator to easily iterate through the results.
         /// </summary>
         public struct QueryResult
         {
             private readonly SimpleSpatialIndex<TObject> mSpatial;
-            private readonly BoundingArea mQueryBounds;
+            private readonly RectF mQueryBounds;
             private readonly TObject mExcludes;
             
-            public QueryResult(SimpleSpatialIndex<TObject> spatial, BoundingArea bounds, TObject excludes)
+            public QueryResult(SimpleSpatialIndex<TObject> spatial, RectF bounds, TObject excludes)
             {
                 mSpatial = spatial;
                 mQueryBounds = bounds;
@@ -241,14 +254,20 @@ namespace Scott.Forge.Spatial
             }
         }
 
+        /// <summary>
+        ///  Implementation of a value enumerator.
+        /// </summary>
+        /// <remarks>
+        ///  A struct value enumerator is used to avoid garbage generation for performance reasons.
+        /// </remarks>
         public struct QueryEnumerator
         {
             private readonly SimpleSpatialIndex<TObject> mSpatial;
-            private readonly BoundingArea mQueryBounds;
+            private readonly RectF mQueryBounds;
             private readonly TObject mExcludes;
             private int mIndex;
 
-            public QueryEnumerator(SimpleSpatialIndex<TObject> spatial, BoundingArea bounds, TObject excludes)
+            public QueryEnumerator(SimpleSpatialIndex<TObject> spatial, RectF bounds, TObject excludes)
             {
                 mSpatial = spatial;
                 mQueryBounds = bounds;
@@ -260,15 +279,15 @@ namespace Scott.Forge.Spatial
             {
                 get
                 {
-                    return mSpatial.mList[mIndex].First;
+                    return mSpatial.mItems[mIndex - 1].First;
                 }
             }
 
             public bool MoveNext()
             {
-                while (mIndex < mSpatial.mList.Count)
+                while (mIndex < mSpatial.mItemCount)
                 {
-                    var p = mSpatial.mList[mIndex];
+                    var p = mSpatial.mItems[mIndex++];
 
                     if (!ReferenceEquals(p.First, mExcludes))
                     {
@@ -278,8 +297,6 @@ namespace Scott.Forge.Spatial
                             return true;
                         }
                     }
-
-                    mIndex++;
                 }
 
                 // No more results.
