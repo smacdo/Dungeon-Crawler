@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,21 @@ namespace Scott.Forge.Engine.Physics
     /// </summary>
     public class CollisionComponent : Component
     {
-        // TODO: Make these positions are center based. and document them.
-        public Vector2 LastPosition { get; set; }
-        public Vector2 StartingPosition { get; set; }
-        public Vector2 DesiredPosition { get; set; }
-        public Vector2 ActualPosition { get; set; }
+        public delegate void CollisionCallback(IGameObject other);
 
+        /// <summary>
+        ///  Get or set the desired position for the game object.
+        /// </summary>
+        public Vector2 DesiredPosition { get; internal set; }
+
+        /// <summary>
+        ///  Get or set the actual positon for the game object.
+        /// </summary>
+        public Vector2 ActualPosition { get; internal set; }
+
+        /// <summary>
+        ///  Get or set the collision bounding area for the game object.
+        /// </summary>
         public BoundingArea Bounds { get; set; }
 
         /// <summary>
@@ -39,14 +48,38 @@ namespace Scott.Forge.Engine.Physics
         /// </remarks>
         public Vector2 Offset { get; set; }
 
-        // TODO: Switch to an event system instead.
-        public bool CollisionThisFrame { get; set; }
+        /// <summary>
+        ///  Add or remove a callback that is triggered when this component collides with another component.
+        /// </summary>
+        public event CollisionCallback OnCollision;
 
         /// <summary>
-        /// Constructor
+        ///  Add or remove a callback that is triggered when this component collides with the level boundaries and
+        ///  must be moved back into a valid location.
         /// </summary>
-        public CollisionComponent()
+        public event CollisionCallback OnLevelBoundsCollision;
+
+        /// <summary>
+        ///  Raise a collision event with another game object.
+        /// </summary>
+        /// <param name="other"></param>
+        internal void RaiseOnCollisionEvent(IGameObject other)
         {
+            if (OnCollision != null)
+            {
+                OnCollision(other);
+            }
+        }
+
+        /// <summary>
+        ///  Raise a level boundary collision event.
+        /// </summary>
+        internal void RaiseOnLevelBoundsCollision()
+        {
+            if (OnLevelBoundsCollision != null)
+            {
+                OnLevelBoundsCollision(null);
+            }
         }
     }
 }

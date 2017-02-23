@@ -1,17 +1,39 @@
-Things to do in the future, once we get a basic framework going
-	- Game polls input manager and directly acts on that. Instead,
-	  the input manager should create command objects and return those
-	  to the game for execution.
+Very important
+====================
 
-- performance overlay
-    - frames/sec
-    - update speed
-    - draw speed
-    - num sprites drawn
+ - Change RectF, Transform and gameplay code to use a center origin system with an inverted Y axis rather  than the
+   current top left origin.
+ - Remove Offset from Collision component once using center rather than top left.
+ - Only spawn enemies if the area is clear (check collision).
+ - Combine the physics movemnet and collision processors into a Physics component (physics moves and collision checks).
+ - Create a struct based iterator for collision checks for high performance queries.
+ - Remove actor "facing" direction and instead use Rotation. Need to change weapon code to handle this!
+   - Adjust how sprite selects animation direction with respect to transform rotation. Should use Right/Left in most
+     cases rather than Up/Down.
 
-- create a RectangleF class
-- overhaul the collision / boundingrect class
-	- use floats everywhere or at least round
-	- axis align rectangle that fits the rotated rectangle
-		- draw this on debug overlay
-	- is aligned in local space
+Future
+================================================
+
+Combat
+------------------------------------------------
+* Melee
+
+Levels and Data Loading
+------------------------------------------------
+* Tile grid with collision
+* Load Tiled maps
+* Switch between maps
+* Better asset pipeline
+
+Debugging
+------------------------------------------------
+* Draw: GC.GetTotalMemory() on screen.
+* performance overlay
+    * frames/sec
+    * update speed
+    * draw speed
+    * num sprites drawn
+
+Misc
+------------------------------------------------
+* Switch to xUnit testing

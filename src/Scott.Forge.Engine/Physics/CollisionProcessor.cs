@@ -38,26 +38,23 @@ namespace Scott.Forge.Engine.Physics
     /// </summary>
     public class CollisionProcessor : ComponentProcessor<CollisionComponent>
     {
-        private List<Pair<CollisionComponent, CollisionComponent>> mCollisions;
         private List<CollisionComponent> mCollisionQueryList;
         private ISpatialIndex<CollisionComponent> mSpatialIndex;
 
+        public ISpatialIndex<CollisionComponent> SpatialIndex { get { return mSpatialIndex; } }
+
         public CollisionProcessor()
         {
-            mCollisions = new List<Pair<CollisionComponent, CollisionComponent>>(1024);
             mCollisionQueryList = new List<CollisionComponent>(100);
-
             mSpatialIndex = new SimpleSpatialIndex<CollisionComponent>(10000, 10000);
         }
 
         public override void Update(double currentTime, double deltaTime)
         {
-            mCollisions.Clear();
             mCollisionQueryList.Clear();
 
             UpdateCollisionComponents();
-            FindCollisions(mCollisions);
-            //ResolveCollisions(mCollisions);
+            FindCollisions();
 
             DrawCollisionBoxes();
         }
@@ -82,31 +79,21 @@ namespace Scott.Forge.Engine.Physics
             {
                 var collider = mComponents[i];
 
-                // Calculate new position for collider.
-                // TODO: Fix this up, it is messy.
-                // TODO: Remove broad phase box, use broad phase from bounding area.
-                //   var desiredPosition = collider.Owner.Transform.WorldPosition;
-                //   var startingPosition = collider.ActualPosition; // Actual position from last update call.
-
-
-                // Make sure collider is still in the world bounds.
-                // TODO: If collide with world bound, carefully check rotated bounding area.
-                // TODO: Move the collider as close to the edge of the world bound rather than simply not updating the
-                //       position.
-                // TODO: Handle case where original box position is outside world bounds.
+                // Create a bounding box for the desired position of this game object. If the collider is outside of
+                // the level boundaries then nudge it back into the world before proceeding with collision detection.
+                collider.DesiredPosition = collider.Owner.Transform.WorldPosition;
 
                 var desiredBounds = collider.Bounds.AABB;
-                desiredBounds.Position = collider.Owner.Transform.WorldPosition + collider.Offset;
+                desiredBounds.Position = collider.DesiredPosition + collider.Offset;
 
                 if (!IsInLevelBounds(desiredBounds))
                 {
-                    // TODO: Correctly move back to boundary rather than this snap back.
-                    collider.DesiredPosition = collider.ActualPosition;
-                    collider.Owner.Transform.WorldPosition = collider.ActualPosition;
-                }
-                else
-                {
-                    collider.DesiredPosition = collider.Owner.Transform.WorldPosition;
+                    var displacemnet = GetLevelOutOfBoundsDisplacement(desiredBounds);
+
+                    collider.DesiredPosition += displacemnet;
+                    collider.Owner.Transform.WorldPosition += displacemnet;
+
+                    collider.RaiseOnLevelBoundsCollision();
                 }
                 
                 // Update spatial index with new collision bounds.
@@ -114,7 +101,6 @@ namespace Scott.Forge.Engine.Physics
                 initialBounds.Position = collider.ActualPosition + collider.Offset;
 
                 mSpatialIndex.Add(collider, collider.Bounds);
-                collider.CollisionThisFrame = false;
             }
         }
 
@@ -122,7 +108,7 @@ namespace Scott.Forge.Engine.Physics
         ///  Find collisions between objects and resolve them.
         /// </summary>
         /// <param name="collisions"></param>
-        private void FindCollisions(List<Pair<CollisionComponent, CollisionComponent>> collisions)
+        private void FindCollisions()
         {
             Vector2 minimumTranslationVector = Vector2.Zero;
 
@@ -134,7 +120,7 @@ namespace Scott.Forge.Engine.Physics
 
         private void ResolveCollisionsFor(CollisionComponent collider)
         {
-            mCollisions.Clear();
+            mCollisionQueryList.Clear();
 
             // Calculate the desired position for this collider and see what it collides with.
             // TODO: Horrible code.
@@ -148,10 +134,9 @@ namespace Scott.Forge.Engine.Physics
                 var minimumDisplacement = Vector2.Zero;
                 collider.Bounds.Intersects(collidee.Bounds, ref minimumDisplacement);
 
-                // Mark components as having collided this frame.
-                // TODO: Raise an event instead.
-                collider.CollisionThisFrame = true;
-                collidee.CollisionThisFrame = true;
+                // Notify components of collision.
+                collider.RaiseOnCollisionEvent(collidee.Owner);
+                collidee.RaiseOnCollisionEvent(collider.Owner);
 
                 // Do not adjust position if this is a glancing collision.
                 if (minimumDisplacement.IsZero)
@@ -180,7 +165,10 @@ namespace Scott.Forge.Engine.Physics
                 {
                     displacement.Y = minDY;
                 }
-                    
+
+                // TODO: If the owner has a movement component attached then consider apply separation force.
+
+
                 /*Debug.WriteLine("Collision depth {0}, displacement ({1}, {2}), actual ({3}, {4})",
                     0,
                     minDX, minDY,
@@ -199,31 +187,6 @@ namespace Scott.Forge.Engine.Physics
 
                 // Update spatial index with collider's new bounding area.
                 mSpatialIndex.Update(collider, collider.Bounds);
-
-                // ...
-                // TODO: This is terribly written. Clean up.
-            }
-        }
-
-        /// <summary>
-        ///  Resolve collisions.
-        /// </summary>
-        /// <param name="collisions"></param>
-        private void ResolveCollisions(List<Pair<CollisionComponent, CollisionComponent>> collisions)
-        {
-            var minimumTranslation = Vector2.Zero;
-
-            for (int i = 0; i < collisions.Count; ++i)
-            {
-                var first = collisions[i].First;
-                var second = collisions[i].Second;
-
-                // TODO: If the owner has a movement component attached then apply separation force.
-
-                if (first.Bounds.Intersects(second.Bounds, ref minimumTranslation))
-                {
-                    first.Owner.Transform.WorldPosition += minimumTranslation;
-                }
             }
         }
 
@@ -235,7 +198,7 @@ namespace Scott.Forge.Engine.Physics
             for (int i = 0; i < mComponents.Count; ++i)
             {
                 var cc = mComponents[i];
-                var color = cc.CollisionThisFrame ? 
+                var color = false/*cc.CollisionThisFrame*/ ? 
                     Microsoft.Xna.Framework.Color.Red :
                     Microsoft.Xna.Framework.Color.Yellow;
 
@@ -260,6 +223,31 @@ namespace Scott.Forge.Engine.Physics
                    bounds.TopRight.X < Screen.Width &&
                    bounds.TopLeft.Y >= 0 &&
                    bounds.BottomLeft.Y < Screen.Height;
+        }
+
+        public static Vector2 GetLevelOutOfBoundsDisplacement(RectF bounds)
+        {
+            var result = Vector2.Zero;
+            
+            if (bounds.Left < 0)
+            {
+                result.X = -bounds.Left;
+            }
+            else if (bounds.Right > Screen.Width)
+            {
+                result.X = -(bounds.Right - Screen.Width);
+            }
+            
+            if (bounds.Top < 0)
+            {
+                result.Y = -bounds.Top;
+            }
+            else if (bounds.Bottom > Screen.Height)
+            {
+                result.Y = -(bounds.Bottom - Screen.Height);
+            }
+
+            return result;
         }
     }
 }

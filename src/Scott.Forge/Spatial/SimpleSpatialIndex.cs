@@ -27,9 +27,11 @@ namespace Scott.Forge.Spatial
     /// </summary>
     public class SimpleSpatialIndex<TObject> : ISpatialIndex<TObject> where TObject : new()
     {
+        public const int DefaultCapacity = 1000;
+
         // TODO: Make default capacity configurable.
         // TODO: Use an array not a list for speed.
-        private List<Pair<TObject, BoundingArea>> mList = new List<Pair<TObject, BoundingArea>>(1000);
+        private List<Pair<TObject, BoundingArea>> mList = new List<Pair<TObject, BoundingArea>>(DefaultCapacity);
 
         // TODO: Add overflow if capacity is exceeded since it is temporary.
 
@@ -97,10 +99,10 @@ namespace Scott.Forge.Spatial
             // Check dimensions, make sure valid before inserting into grid.
             var aabb = bounds.AABB;
 
-            if (aabb.Left < 0 || aabb.Right >= Width || aabb.Top < 0 || aabb.Bottom >= Height)
+            /*if (aabb.Left < 0 || aabb.Right >= Width || aabb.Top < 0 || aabb.Bottom >= Height)
             {
                 throw new ArgumentException("Object bounding area out of bounds", "bounds");
-            }
+            }*/
 
             // Add object to end of object array.
             mList.Add(new Pair<TObject, BoundingArea>(obj, bounds));
@@ -127,10 +129,10 @@ namespace Scott.Forge.Spatial
             // Check dimensions, make sure valid before inserting into grid.
             var aabb = bounds.AABB;
 
-            if (aabb.Left < 0 || aabb.Right >= Width || aabb.Top < 0 || aabb.Bottom >= Height)
+            /*if (aabb.Left < 0 || aabb.Right >= Width || aabb.Top < 0 || aabb.Bottom >= Height)
             {
                 throw new ArgumentException("Object bounding area out of bounds", "bounds");
-            }
+            }*/
 
             // Search the list for the given object and update the bounds if found.
             bool didFindObject = false;
@@ -215,6 +217,80 @@ namespace Scott.Forge.Spatial
 
             return didFindAnything;
         }
-        
+
+
+        /// <summary>
+        ///  Results of a query.
+        /// </summary>
+        public struct QueryResult
+        {
+            private readonly SimpleSpatialIndex<TObject> mSpatial;
+            private readonly BoundingArea mQueryBounds;
+            private readonly TObject mExcludes;
+            
+            public QueryResult(SimpleSpatialIndex<TObject> spatial, BoundingArea bounds, TObject excludes)
+            {
+                mSpatial = spatial;
+                mQueryBounds = bounds;
+                mExcludes = excludes;
+            }
+
+            public QueryEnumerator GetEnumerator()
+            {
+                return new QueryEnumerator(mSpatial, mQueryBounds, mExcludes);
+            }
+        }
+
+        public struct QueryEnumerator
+        {
+            private readonly SimpleSpatialIndex<TObject> mSpatial;
+            private readonly BoundingArea mQueryBounds;
+            private readonly TObject mExcludes;
+            private int mIndex;
+
+            public QueryEnumerator(SimpleSpatialIndex<TObject> spatial, BoundingArea bounds, TObject excludes)
+            {
+                mSpatial = spatial;
+                mQueryBounds = bounds;
+                mExcludes = excludes;
+                mIndex = 0;
+            }
+
+            public TObject Current
+            {
+                get
+                {
+                    return mSpatial.mList[mIndex].First;
+                }
+            }
+
+            public bool MoveNext()
+            {
+                while (mIndex < mSpatial.mList.Count)
+                {
+                    var p = mSpatial.mList[mIndex];
+
+                    if (!ReferenceEquals(p.First, mExcludes))
+                    {
+                        if (mQueryBounds.Intersects(p.Second))
+                        {
+                            // Object matches!
+                            return true;
+                        }
+                    }
+
+                    mIndex++;
+                }
+
+                // No more results.
+                return false;
+            }
+
+            public void Reset()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
     }
 }

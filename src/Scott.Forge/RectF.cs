@@ -616,5 +616,53 @@ namespace Scott.Forge
             return new RectF(min, new SizeF(dims.X, dims.Y));
         }
 
+        /// <summary>
+        ///  Calculate the minimum displacement vector for two axis aligned rectangles.
+        /// </summary>
+        /// <remarks>
+        ///  The displacement vector will be aligned on either the X or Y axis and is used to displace the first
+        ///  rectangle enough to no longer instersect the second rectangle.
+        /// </remarks>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static Vector2 FindMinimumDisplacement(RectF a, RectF b)
+        {
+            var result = Vector2.Zero;
+            
+            var left = b.Left - a.Right;
+            var right = b.Right - a.Left;
+            var bottom = b.Top - a.Bottom;
+            var top = b.Bottom - a.Top;
+
+            if (Math.Abs(left) > right)
+            {
+                result.X = right;
+            }
+            else
+            {
+                result.X = left;
+            }
+
+            if (Math.Abs(bottom) > top)
+            {
+                result.Y = top;
+            }
+            else
+            {
+                result.Y = bottom;
+            }
+
+            if (Math.Abs(result.X) < Math.Abs(result.Y))
+            {
+                result.Y = 0;
+            }
+            else
+            {
+                result.X = 0;
+            }
+
+            return result;
+        }
     }
 }
