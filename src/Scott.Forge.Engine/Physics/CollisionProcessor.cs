@@ -83,7 +83,7 @@ namespace Scott.Forge.Engine.Physics
                 collider.DesiredPosition = collider.Owner.Transform.WorldPosition;
 
                 var desiredBounds = collider.Bounds.AABB;
-                desiredBounds.Position = collider.DesiredPosition + collider.Offset;
+                desiredBounds.TopLeft = collider.DesiredPosition + collider.Offset;
 
                 if (!IsInLevelBounds(desiredBounds))
                 {
@@ -97,7 +97,7 @@ namespace Scott.Forge.Engine.Physics
                 
                 // Update spatial index with new collision bounds.
                 var initialBounds = collider.Bounds.AABB;
-                initialBounds.Position = collider.ActualPosition + collider.Offset;
+                initialBounds.TopLeft = collider.ActualPosition + collider.Offset;
 
                 mSpatialIndex.Add(collider, collider.Bounds.AABB);
             }

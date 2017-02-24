@@ -21,13 +21,14 @@ namespace Scott.Forge
 {
     /// <summary>
     ///  A two dimensional axis aligned bounding rectangle that is defined by a center position and its half width/
-    ///  height extents. Similiar to the BoundingRect class but different [TODO: Elaborate].
+    ///  height extents. Similiar to the RectF in functionality.
     /// </summary>
     [DataContract]
-    [System.Diagnostics.DebuggerDisplay("Center = ({X}, Y={Y}) Width={Width}, Height={Height}")]
+    [System.Diagnostics.DebuggerDisplay("X = {X}, Y={Y}, HalfW={HalfWidth}, HalfH={HalfHeight}")]
     public struct BoundingRect : IEquatable<BoundingRect>
     {
         private static readonly BoundingRect mEmpty = new BoundingRect(0.0f, 0.0f, 0.0f, 0.0f);
+
         private float mX;
         private float mY;
         private float mHalfWidth;
@@ -45,12 +46,12 @@ namespace Scott.Forge
         {
             if (halfWidth < 0.0f)
             {
-                throw new ArgumentException("Width extent cannot be less than zero", "halfWidth");
+                throw new ArgumentException("Half width cannot be less than zero", nameof(halfWidth));
             }
 
             if (halfHeight < 0.0f)
             {
-                throw new ArgumentException("Height extent cannot be less than zero", "halfHeight");
+                throw new ArgumentException("Half height cannot be less than zero", nameof(halfHeight));
             }
 
             mX = centerX;
@@ -59,22 +60,36 @@ namespace Scott.Forge
             mHalfHeight = halfHeight;
         }
 
+        /// <summary>
+        ///  Initializes a new instance of the BoundingRect structure that is defined by the given center position
+        ///  and the provided extent size.
+        /// </summary>
+        /// <param name="center">Rectangle center position.</param>
+        /// <param name="rectSize">Size of the width and height extents.</param>
         public BoundingRect(Vector2 center, SizeF rectSize)
             : this(center.X, center.Y, rectSize.Width, rectSize.Height)
         {
         }
 
         /// <summary>
-        ///  Initializes a new instance of the BoundingRect structure that is defined by the given top
-        ///  left and bottom right points.
+        ///  Initializes a new instance of the BoundingRect structure that is defined by the top left and bottom
+        ///  right corners.
         /// </summary>
         /// <param name="topLeft">Top left corner of the new rectangle.</param>
         /// <param name="bottomRight">Bottom right corner of the new rectangle.</param>
         public BoundingRect(Vector2 topLeft, Vector2 bottomRight)
-            : this(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y)
+            : this(
+                  centerX: topLeft.X + (bottomRight.X - topLeft.X) * 0.5f,
+                  centerY: topLeft.Y + (bottomRight.Y - topLeft.Y) * 0.5f,
+                  halfWidth: (bottomRight.X - topLeft.X) * 0.5f,
+                  halfHeight: (bottomRight.Y - topLeft.Y) * 0.5f)
         {
         }
 
+        /// <summary>
+        ///  Initializes a new instance of the BoundingRect structure copied from another BoundingRect.
+        /// </summary>
+        /// <param name="rect">BoundingRect object to copy values from.</param>
         public BoundingRect(BoundingRect rect)
             : this(rect.mX, rect.mY, rect.mHalfWidth, rect.mHalfHeight)
         {
@@ -90,21 +105,25 @@ namespace Scott.Forge
         public static BoundingRect Empty { get { return Empty; } }
 
         /// <summary>
-        ///  Get or set the left-most X position of the rectangle.
+        ///  Get or set the center X position of the rectangle.
         /// </summary>
-        [DataMember(Name = "CenterX", Order = 0, IsRequired = true)]
+        [DataMember(Name = "x", Order = 0, IsRequired = true)]
         public float X { get { return mX; } set { mX = value; } }
 
         /// <summary>
-        ///  Get or set the top-most Y position of the rectangle.
+        ///  Get or set the center Y position of the rectangle.
         /// </summary>
-        [DataMember(Name = "CenterY", Order = 1, IsRequired = true)]
+        [DataMember(Name = "y", Order = 1, IsRequired = true)]
         public float Y { get { return mY; } set { mY = value; } }
 
         /// <summary>
         ///  Get or set the width extent.
         /// </summary>
-        [DataMember(Name = "HalfWidth", Order = 2, IsRequired = true)]
+        /// <remarks>
+        ///  The width extent is half the width of the rectangle (it is the distance from the center to left or right
+        ///  edge). It cannot be less than zero, and if the value is exactly zero the object is considered to be empty.
+        /// </remarks>
+        [DataMember(Name = "halfWidth", Order = 2, IsRequired = true)]
         public float HalfWidth
         {
             get { return mHalfWidth; }
@@ -112,7 +131,7 @@ namespace Scott.Forge
             {
                 if (mHalfWidth < 0.0f)
                 {
-                    throw new ArgumentException("Half width cannot be less than zero", "HalfWidth");
+                    throw new ArgumentException("Half width cannot be less than zero", nameof(HalfWidth));
                 }
 
                 mHalfWidth = value;
@@ -120,9 +139,13 @@ namespace Scott.Forge
         }
 
         /// <summary>
-        ///  Get or set the height extent;.
+        ///  Get or set the height extent.
         /// </summary>
-        [DataMember(Name = "HalfHeight", Order = 3, IsRequired = true)]
+        /// <remarks>
+        ///  The height extent is half the height of the rectangle (it is the distance from the center to top or bottom
+        ///  edge). It cannot be less than zero, and if the value is exactly zero the object is considered to be empty.
+        /// </remarks>
+        [DataMember(Name = "halfHeight", Order = 3, IsRequired = true)]
         public float HalfHeight
         {
             get { return mHalfHeight; }
@@ -130,7 +153,7 @@ namespace Scott.Forge
             {
                 if (mHalfHeight < 0.0f)
                 {
-                    throw new ArgumentException("Half height cannot be less than zero", "HalfHeight");
+                    throw new ArgumentException("Half height cannot be less than zero", nameof(HalfHeight));
                 }
 
                 mHalfHeight = value;
@@ -140,6 +163,10 @@ namespace Scott.Forge
         /// <summary>
         ///  Get or set the width of the rectangle.
         /// </summary>
+        /// <remarks>
+        ///  The width of the rectangle cannot be less than zero, and if the value is exactly zero the object is
+        ///  considered to be empty.
+        /// </remarks>
         [System.Xml.Serialization.XmlIgnore]
         public float Width
         {
@@ -148,7 +175,7 @@ namespace Scott.Forge
             {
                 if (value < 0.0f)
                 {
-                    throw new ArgumentException("Width cannot be less than zero", "Width");
+                    throw new ArgumentException("Width cannot be less than zero", nameof(Width));
                 }
 
                 mHalfWidth = value * 0.5f;
@@ -158,6 +185,10 @@ namespace Scott.Forge
         /// <summary>
         ///  Get or set the height of the rectangle.
         /// </summary>
+        /// <remarks>
+        ///  The height of the rectangle cannot be less than zero, and if the value is exactly zero the object is
+        ///  considered to be empty.
+        /// </remarks>
         [System.Xml.Serialization.XmlIgnore]
         public float Height
         {
@@ -166,7 +197,7 @@ namespace Scott.Forge
             {
                 if (value < 0.0f)
                 {
-                    throw new ArgumentException("Height cannot be less than zero", "Height");
+                    throw new ArgumentException("Height cannot be less than zero", nameof(Height));
                 }
 
                 mHalfHeight = value * 0.5f;
@@ -187,7 +218,7 @@ namespace Scott.Forge
         }
 
         /// <summary>
-        ///  Get the maximum extent of the rectangle.
+        ///  Get or set the maximum extent of the rectangle.
         /// </summary>
         public Vector2 MaxPoint
         {
@@ -249,16 +280,16 @@ namespace Scott.Forge
                 HalfHeight = value.Height;
             }
         }
-        
+
         /// <summary>
-        ///  Check if the given point is contained inside of the rectangle. A point is contained
-        ///  if lies on or inside of the rectangle borders.
+        ///  Check if the given point is contained inside of the rectangle.
         /// </summary>
-        /// <param name="pointX">X component of the point.</param>
-        /// <param name="pointY">Y component of the point.</param>
-        /// <returns>
-        ///  True if the point is contained inside of the rectangle, false otherwise.
-        /// </returns>
+        /// <remarks>
+        ///  A point is contained if lies on or inside of the rectangle borders.
+        /// </remarks>
+        /// <param name="pointX">X position of the point.</param>
+        /// <param name="pointY">Y position of the point.</param>
+        /// <returns>True if the point is contained inside of the rectangle, false otherwise.</returns>
         public bool Contains(float pointX, float pointY)
         {
             return
@@ -269,33 +300,36 @@ namespace Scott.Forge
         }
 
         /// <summary>
-        ///  Check if the given point is contained inside of the rectangle. A point is contained
-        ///  if lies on or inside of the rectangle borders.
+        ///  Check if the given point is contained inside of the rectangle.
         /// </summary>
+        /// <remarks>
+        ///  A point is contained if lies on or inside of the rectangle borders.
+        /// </remarks>
         /// <param name="vector">Point to test.</param>
-        /// <returns>
-        ///  True if the point is contained inside of the rectangle, false otherwise.
-        /// </returns>       
+        /// <returns>True if the point is contained inside of the rectangle, false otherwise.</returns>       
         public bool Contains(Vector2 vector)
         {
             return Contains(vector.X, vector.Y);
         }
         
         /// <summary>
-        ///  Check if another rectangle equals this rectangle's value.
+        ///  Check if the given bounding rect equals this object.
         /// </summary>
-        /// <returns>True if the rectangles have the same value, false otherwise.</returns>
+        /// <remarks>
+        ///  Two bounding rects are considered equal if their center and extents match exactly.
+        /// </remarks>
+        /// <returns>True if the bounding rect matches, false otherwise.</returns>
         public bool Equals(BoundingRect other)
         {
             // ReSharper disable CompareOfFloatsByEqualityOperator
-            return (X == other.X && Y == other.Y && Width == other.HalfWidth && Height == other.HalfHeight);
+            return (X == other.mX && Y == other.mY && Width == other.mHalfWidth && Height == other.mHalfHeight);
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         /// <summary>
-        ///  Check if another object equals this rectangle's value.
+        ///  Check if the given bounding rect equals this object.
         /// </summary>
-        /// <returns>True if the rectangles have the same value, false otherwise.</returns>
+        /// <returns>True if the bounding rect matches, false otherwise.</returns>
         public override bool Equals(Object obj)
         {
             if (obj is BoundingRect)
@@ -315,7 +349,7 @@ namespace Scott.Forge
         public override string ToString()
         {
             return String.Format(
-                "cx: {0}, cy: {1}, hw: {2}, hh: {3}",
+                "x: {0}, y: {1}, halfW: {2}, halfH: {3}",
                 X,
                 Y,
                 HalfWidth,
@@ -341,11 +375,23 @@ namespace Scott.Forge
             }
         }
 
+        /// <summary>
+        ///  Equality operator.
+        /// </summary>
+        /// <param name="left">Left hand side.</param>
+        /// <param name="right">Right hand side.</param>
+        /// <returns>True if the two bounding rects are equal, false otherwise.</returns>
         public static bool operator ==(BoundingRect left, BoundingRect right)
         {
             return left.Equals(right);
         }
 
+        /// <summary>
+        ///  Inequality operator.
+        /// </summary>
+        /// <param name="left">Left hand side.</param>
+        /// <param name="right">Right hand side.</param>
+        /// <returns>True if the bounding rects are equal, false otherwise.</returns>
         public static bool operator !=(BoundingRect left, BoundingRect right)
         {
             return !(left == right);

@@ -166,7 +166,7 @@ namespace Scott.Forge.Tests
             Assert.AreEqual(6.0f, a.Width);
 
             // Make sure height, and position did not change.
-            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.Position);
+            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.TopLeft);
             Assert.AreEqual(10.0f, a.Height);
         }
 
@@ -225,7 +225,7 @@ namespace Scott.Forge.Tests
             Assert.AreEqual(6.0f, a.Height);
 
             // Make sure width, and position did not change.
-            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.Position);
+            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.TopLeft);
             Assert.AreEqual(5.0f, a.Width);
         }
 
@@ -243,52 +243,31 @@ namespace Scott.Forge.Tests
         public void GetAndSetPosition()
         {
             var a = new RectF(-2.0f, 3.0f, 5.0f, 10.0f);
-            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.Position);
+            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.TopLeft);
 
-            a.Position = new Vector2(3.0f, 1.0f);
-            Assert.AreEqual(new Vector2(3.0f, 1.0f), a.Position);
+            a.TopLeft = new Vector2(3.0f, 1.0f);
+            Assert.AreEqual(new Vector2(3.0f, 1.0f), a.TopLeft);
 
             // Make sure size did not change.
             Assert.AreEqual(5.0f, a.Width);
             Assert.AreEqual(10.0f, a.Height);
         }
-
-        [TestMethod]
-        [TestCategory("Forge/RectF")]
-        public void MinAndMaxPoint()
-        {
-            var a = new RectF(0.0f, 0.0f, 0.0f, 0.0f);
-            Assert.AreEqual(new Vector2(0.0f, 0.0f), a.MinPoint);
-            Assert.AreEqual(new Vector2(0.0f, 0.0f), a.MaxPoint);
-
-            a = new RectF(5.0f, 6.0f, 0.0f, 0.0f);
-            Assert.AreEqual(new Vector2(5.0f, 6.0f), a.MinPoint);
-            Assert.AreEqual(new Vector2(5.0f, 6.0f), a.MaxPoint);
-
-            a = new RectF(-2.0f, 3.0f, 5.0f, 10.0f);
-            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.MinPoint);
-            Assert.AreEqual(new Vector2(3.0f, 13.0f), a.MaxPoint);
-
-            a = new RectF(-2.0f, -3.0f, 1.0f, 4.0f);
-            Assert.AreEqual(new Vector2(-2.0f, -3.0f), a.MinPoint);
-            Assert.AreEqual(new Vector2(-1.0f, 1.0f), a.MaxPoint);
-        }
-
+        
         [TestMethod]
         [TestCategory("Forge/RectF")]
         public void Position()
         {
             var a = new RectF(0.0f, 0.0f, 0.0f, 0.0f);
-            Assert.AreEqual(new Vector2(0.0f, 0.0f), a.Position);
+            Assert.AreEqual(new Vector2(0.0f, 0.0f), a.TopLeft);
 
             a = new RectF(5.0f, 6.0f, 0.0f, 0.0f);
-            Assert.AreEqual(new Vector2(5.0f, 6.0f), a.Position);
+            Assert.AreEqual(new Vector2(5.0f, 6.0f), a.TopLeft);
 
             a = new RectF(-2.0f, 3.0f, 5.0f, 10.0f);
-            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.Position);
+            Assert.AreEqual(new Vector2(-2.0f, 3.0f), a.TopLeft);
 
             a = new RectF(-2.0f, -3.0f, 1.0f, 4.0f);
-            Assert.AreEqual(new Vector2(-2.0f, -3.0f), a.Position);
+            Assert.AreEqual(new Vector2(-2.0f, -3.0f), a.TopLeft);
         }
 
         [TestMethod]
