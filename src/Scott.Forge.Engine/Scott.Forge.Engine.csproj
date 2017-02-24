@@ -64,6 +64,8 @@
     <Compile Include="Ai\AiComponent.cs" />
     <Compile Include="Ai\AiProcessor.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Debugging\DebugComponent.cs" />
+    <Compile Include="Debugging\DebugComponentProcessor.cs" />
     <Compile Include="ForgeExtensions.cs" />
     <Compile Include="GameObjects\ComponentCollection.cs" />
     <Compile Include="Content\ForgeContentManager.cs" />

@@ -23,6 +23,11 @@ namespace Scott.Forge.Engine.Graphics
     /// <summary>
     /// It draws the game
     /// </summary>
+    /// <remarks>
+    ///  TODO: Better documentation for the class.
+    ///  TODO: Use Spriteatch to draw objects rather than queuing them. Don't see performance benefit for
+    ///        the increased complexity.
+    /// </remarks>
     public class Renderer
     {
         /// <summary>
@@ -84,12 +89,15 @@ namespace Scott.Forge.Engine.Graphics
 
         public void Draw( Texture2D atlas, Rectangle offset, Vector2 position )
         {
-            mSpritesToDraw.Add(new SpriteRenderInfo(atlas, offset, position));
+            Draw(atlas, offset, position, 0.0f);
         }
 
+        // TODO: Document, note that position is center not top left!
         public void Draw(Texture2D atlas, Rectangle offset, Vector2 position, float rotation)
         {
-            mSpritesToDraw.Add(new SpriteRenderInfo(atlas, offset, position, rotation));
+            // Convert center origin to top left origin for XNA.
+            var topLeft = position - new Vector2(offset.Width * 0.5f, offset.Height * 0.5f);
+            mSpritesToDraw.Add(new SpriteRenderInfo(atlas, offset, topLeft, rotation));
         }
 
         public void DrawScreen( GameTime renderTime )

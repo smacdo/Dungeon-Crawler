@@ -92,6 +92,24 @@ namespace Scott.Forge.Engine.Graphics
         }
 
         /// <summary>
+        ///  Draw a point on the screen.
+        /// </summary>
+        /// <param name="point"></param>
+        public void DrawPoint(Vector2 point, float size, Color color)
+        {
+            DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
+
+            r.Color = color;
+            r.Filled = true;
+            r.Dimensions = new Rectangle(
+                (int)(point.X - size * 0.5f),
+                (int)(point.Y - size * 0.5f), 
+                (int)size,
+                (int)size);
+            r.Enabled = true;
+        }
+
+        /// <summary>
         /// Draw a rectangle on the screen
         /// </summary>
         /// <param name="dimensions">Dimensions of rectangle</param>
@@ -156,6 +174,21 @@ namespace Scott.Forge.Engine.Graphics
             r.Color = color;
             r.Filled = true;
             r.Dimensions = dimensions.ToXnaRectangle();
+            r.Enabled = true;
+        }
+
+        [Conditional("DEBUG")]
+        public void DrawBoundingRect(BoundingRect rect, Color color)
+        {
+            DebugRectangle r = FindNextUnused<DebugRectangle>( mRectsToDraw );
+
+            r.Color = color;
+            r.Filled = false;
+            r.Dimensions = new Rectangle(
+                (int)rect.MinPoint.X,
+                (int)rect.MinPoint.Y,
+                (int)rect.Width,
+                (int)rect.Height);
             r.Enabled = true;
         }
 
