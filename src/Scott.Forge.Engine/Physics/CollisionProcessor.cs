@@ -78,12 +78,20 @@ namespace Scott.Forge.Engine.Physics
             {
                 var collider = mComponents[i];
 
+                // Temporarily reset the object's position while calculating collision response. Record the current
+                // position as the "desired" position (a position that the processor will try to use) and set the
+                // transform back to the previous position.
+//                var desiredPosition = collider.Owner.Transform.WorldPosition;
+     
+//                collider.Owner.Transform.WorldPosition = collider.DesiredPosition;
+//                collider.DesiredPosition = desiredPosition;
+
                 // Create a bounding box for the desired position of this game object. If the collider is outside of
                 // the level boundaries then nudge it back into the world before proceeding with collision detection.
                 collider.DesiredPosition = collider.Owner.Transform.WorldPosition;
 
-                var desiredBounds = collider.Bounds;
-                desiredBounds.Center = collider.DesiredPosition;
+                var desiredBounds = collider.WorldBounds;
+                desiredBounds.Center = collider.DesiredPosition + collider.CenterOffset;
 
                 if (!IsInLevelBounds(desiredBounds))
                 {
@@ -96,10 +104,7 @@ namespace Scott.Forge.Engine.Physics
                 }
                 
                 // Update spatial index with new collision bounds.
-                var initialBounds = collider.Bounds;
-                initialBounds.Center = collider.ActualPosition;
-
-                mSpatialIndex.Add(collider, collider.Bounds);
+                mSpatialIndex.Add(collider, collider.WorldBounds);
             }
         }
 
@@ -125,26 +130,20 @@ namespace Scott.Forge.Engine.Physics
         {
             mCollisionQueryList.Clear();
 
-            // Calculate the desired position for this collider and see what it collides with.
-            var colliderBounds = collider.Bounds;
-            colliderBounds.Center = collider.DesiredPosition;
+            // Place collider at its desired position and see what objects it collides with.
+            var colliderBounds = collider.WorldBounds;
+            colliderBounds.Center = collider.DesiredPosition + collider.CenterOffset;
 
             var collidee = mSpatialIndex.QueryOne(colliderBounds, collider);
 
             if (collidee != null)
             {                
                 // TODO: Do not recalculate collision to get displacement angle.
-                var minimumDisplacement = colliderBounds.GetMinimumDisplacementAngle(collidee.Bounds);
+                var minimumDisplacement = colliderBounds.GetMinimumDisplacementAngle(collidee.WorldBounds);
 
                 // Notify components of collision.
                 collider.RaiseOnCollisionEvent(collidee.Owner);
                 collidee.RaiseOnCollisionEvent(collider.Owner);
-
-                // Do not adjust position if this is a glancing collision.
-                if (minimumDisplacement.IsZero)
-                {
-                    collider.ActualPosition = collider.DesiredPosition;
-                }
 
                 // Displace the object along the smaller of the two axis from the displacement vector.
                 var displacement = Vector2.Zero;
@@ -170,14 +169,10 @@ namespace Scott.Forge.Engine.Physics
 
                 // TODO: If the owner has a movement component attached then consider apply separation force.
                 collider.Owner.Transform.WorldPosition += displacement;
-                collider.ActualPosition = collider.Owner.Transform.WorldPosition;
-
-                colliderBounds.Center += displacement;
             }
 
             // Update collider bounding rect with selected position and update the spatial index.
-            collider.Bounds = colliderBounds;
-            mSpatialIndex.Update(collider, collider.Bounds);
+            mSpatialIndex.Update(collider, collider.WorldBounds);
         }
 
         /// <summary>
@@ -193,7 +188,7 @@ namespace Scott.Forge.Engine.Physics
                     Microsoft.Xna.Framework.Color.Yellow;
 
                 GameRoot.Debug.DrawBoundingRect(
-                    cc.Bounds,
+                    cc.WorldBounds,
                     color);
             }
         }

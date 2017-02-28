@@ -33,13 +33,30 @@ namespace Scott.Forge.Engine.Physics
         /// <summary>
         ///  Get or set the actual positon for the game object.
         /// </summary>
-        public Vector2 ActualPosition { get; internal set; }
+//        public Vector2 WorldPosition { get; internal set; }
 
         /// <summary>
-        ///  Get or set the collision bounding area for the game object.
+        ///  Get or set the size of the collision bounding rect.
         /// </summary>
-        public BoundingRect Bounds { get; set; }
-        
+        public SizeF Size { get; set; }
+
+        /// <summary>
+        ///  Get or set the offset from the world position center.
+        /// </summary>
+        public Vector2 CenterOffset { get; set; }
+
+        /// <summary>
+        ///  Get or set the collision bounding box (in world space) for the game object.
+        /// </summary>
+        public BoundingRect WorldBounds
+        {
+            get
+            {
+                var worldPosition = (Owner != null ? Owner.Transform.WorldPosition : Vector2.Zero);
+                return new BoundingRect(worldPosition + CenterOffset, Size);
+            }
+        }
+
         /// <summary>
         ///  Add or remove a callback that is triggered when this component collides with another component.
         /// </summary>
