@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ using Scott.Forge.Content;
 using Scott.Forge.Engine.Actors;
 using Scott.Forge.Engine.Ai;
 using Scott.Forge.Engine.Sprites;
-using Scott.Forge.Engine.Graphics;
-using Scott.Forge.Engine.Movement;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Engine.Physics;
 
@@ -38,11 +36,10 @@ namespace Scott.DungeonCrawler.GameObjects
     {
         public IContentManager Content { get; set; }
         public SpriteComponentProcessor SpriteProcessor { get; set; }        // TODO: Remove.
-        public MovementProcessor MovementProcessor { get; set; }    // TODO: Remove.
         public ActorProcessor ActorProcessor { get; set; }          // TODO: Remove.
         public AiProcessor AiProcessor { get; set; }                // TODO: Remove.
 
-        public CollisionProcessor CollisionProcessor { get; set; }
+        public PhysicsComponentProcessor PhysicsProcessor { get; set; }
 
         public DungeonCrawlerGameObjectFactory(IContentManager content)
         {
@@ -106,17 +103,14 @@ namespace Scott.DungeonCrawler.GameObjects
                 (int) ActorEquipmentSlot.Belt,
                 Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather").Sprite);
 
-            // Add movement component.
-            var movement = MovementProcessor.Add(player);
-
             // Add actor component.
             var actor = ActorProcessor.Add(player);
 
-            // Add collision.
-            var collision = CollisionProcessor.Add(player);
+            // Add physics.
+            var physics = PhysicsProcessor.Add(player);
 
-            collision.Size = new SizeF(16, 25);
-            collision.CenterOffset = new Vector2(0, 6);
+            physics.Size = new SizeF(16, 25);
+            physics.CenterOffset = new Vector2(0, 6);
 
             // Create sword and center the object on the character.
             //  TODO: Don't hard code the values.
@@ -154,9 +148,7 @@ namespace Scott.DungeonCrawler.GameObjects
             ActorProcessor.Add(enemy);
             AiProcessor.Add(enemy);
             
-            var movement = MovementProcessor.Add(enemy);
-
-            var collision = CollisionProcessor.Add(enemy);
+            var collision = PhysicsProcessor.Add(enemy);
 
             collision.Size = new SizeF(16, 25);
             collision.CenterOffset = new Vector2(0, 6);

@@ -21,12 +21,12 @@ namespace Scott.Forge.Engine.Physics
     /// <summary>
     ///  Tracks object collisions.
     /// </summary>
-    public class CollisionComponent : Component
+    public class PhysicsComponent : Component
     {
         public delegate void CollisionCallback(IGameObject other);
 
         /// <summary>
-        ///  Get or set the desired position for the game object.
+        ///  Get or set the desired position (in world space) for the game object.
         /// </summary>
         public Vector2 DesiredPosition { get; internal set; }
 
@@ -56,6 +56,34 @@ namespace Scott.Forge.Engine.Physics
                 return new BoundingRect(worldPosition + CenterOffset, Size);
             }
         }
+
+        public BoundingRect DesiredWorldBounds
+        {
+            get
+            {
+                return new BoundingRect(DesiredPosition + CenterOffset, Size);
+            }
+        }
+
+        public Vector2 Acceleration { get; set; } = Vector2.Zero;
+
+        /// <summary>
+        ///  Get the current movement velocity.
+        /// </summary>
+        public Vector2 Velocity { get; set; } = Vector2.Zero;
+
+        /// <summary>
+        ///  Is this component moving?
+        /// </summary>
+        public bool IsMoving
+        {
+            get
+            {
+                return (Velocity.LengthSquared > 0.1f || Acceleration.LengthSquared > 0.1f);
+            }
+        }
+
+        public float MaxSpeed { get; set; } = 128;
 
         /// <summary>
         ///  Add or remove a callback that is triggered when this component collides with another component.

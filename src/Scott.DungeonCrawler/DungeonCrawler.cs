@@ -26,7 +26,6 @@ using Scott.Forge.Engine.Ai;
 using Scott.Forge.Engine.Content;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.Engine.Input;
-using Scott.Forge.Engine.Movement;
 using Scott.Forge.Engine.Physics;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
@@ -57,8 +56,7 @@ namespace Scott.DungeonCrawler
         private bool mEnemySpawningEnabled = true;
 
         private SpriteComponentProcessor mSpriteProcessor = new SpriteComponentProcessor();
-        private MovementProcessor mMovementProcessor = new MovementProcessor();
-        private CollisionProcessor mCollisionProcessor = new CollisionProcessor();
+        private PhysicsComponentProcessor mPhysicsProcessor = new PhysicsComponentProcessor();
         private ActorProcessor mActorProcessor = new ActorProcessor();
         private AiProcessor mAiProcessor = new AiProcessor();
 
@@ -102,10 +100,9 @@ namespace Scott.DungeonCrawler
             mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent)
             {
                 SpriteProcessor = mSpriteProcessor,
-                MovementProcessor = mMovementProcessor,
                 ActorProcessor = mActorProcessor,
                 AiProcessor = mAiProcessor,
-                CollisionProcessor = mCollisionProcessor
+                PhysicsProcessor = mPhysicsProcessor
             };
 
             // Initialize input system with default settings.
@@ -242,8 +239,7 @@ namespace Scott.DungeonCrawler
             // We resolve movement and collision first, before the player or AI gets chance
             // to do anything. Hence the current position of all objects (and collision)
             // that is displayed is actually one frame BEFORE this update
-            mMovementProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-            mCollisionProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            mPhysicsProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
 
             // Update game ai and character actions
             mAiProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);

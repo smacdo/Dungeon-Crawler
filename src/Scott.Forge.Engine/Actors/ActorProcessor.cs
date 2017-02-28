@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Scott.Forge.Engine.Movement;
+using Scott.Forge.Engine.Physics;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 
@@ -43,7 +43,6 @@ namespace Scott.Forge.Engine.Actors
             // Activate the next requested action if so long as the actor is idle.
             if (actor.CurrentAction == null && actor.RequestedAction != null)
             {
-                var movement = actor.Owner.Get<MovementComponent>();
                 System.Diagnostics.Debug.WriteLine("Create action!!! {0}", currentTime);
 
                 actor.CurrentAction = actor.RequestedAction;
@@ -83,7 +82,7 @@ namespace Scott.Forge.Engine.Actors
             }
 
             // Calculate the a movement vector from the request.
-            var mover = actor.Owner.Get<MovementComponent>();
+            var physics = actor.Owner.Get<PhysicsComponent>();
 
             var requestedMovement = actor.RequestedMovement;
             actor.RequestedMovement = Vector2.Zero;
@@ -96,7 +95,7 @@ namespace Scott.Forge.Engine.Actors
                 var requestedDirection = requestedMovement.Normalized();
                 var actualSpeed = Interpolation.Lerp(0.0f, requestedSpeed, interpFactor);
                 
-                mover.Velocity = requestedDirection * (float)actualSpeed;
+                physics.Velocity = requestedDirection * (float)actualSpeed;
 
                 // Update actor state.
                 actor.Direction = DirectionNameHelper.FromVector(requestedDirection);
@@ -123,7 +122,7 @@ namespace Scott.Forge.Engine.Actors
                 // The actor is not walking. Simulate deceleration (rather than hard stopping) by lerping from the
                 // current speed down to zero with a quick deceleration window.s
                 // TODO: Actually do deceleration.
-                mover.Velocity = Vector2.Zero;
+                physics.Velocity = Vector2.Zero;
                 actor.WalkAccelerationSeconds = 0.0f;
 
                 // Actor is not walking - return them to the idle animation.

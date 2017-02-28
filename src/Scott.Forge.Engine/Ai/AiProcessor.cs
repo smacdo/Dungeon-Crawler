@@ -15,7 +15,7 @@
  */
 using System;
 using Scott.Forge.Engine.Actors;
-using Scott.Forge.Engine.Movement;
+using Scott.Forge.Engine.Physics;
 using Scott.Forge.GameObjects;
 
 namespace Scott.Forge.Engine.Ai
@@ -44,7 +44,6 @@ namespace Scott.Forge.Engine.Ai
             var gameObject = ai.Owner;
 
             var actor = gameObject.Get<ActorComponent>();
-            var movement = gameObject.Get<MovementComponent>();
 
             switch (ai.CurrentState)
             {
