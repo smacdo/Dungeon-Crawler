@@ -32,7 +32,7 @@ namespace Scott.Forge.Spatial
     {
         public const int DefaultCapacity = 1000;
 
-        private Pair<TObject, RectF>[] mItems;
+        private Pair<TObject, BoundingRect>[] mItems;
         private int mItemCount = 0;
 
         // TODO: Add support for item overflow with a linked list. Generate a pool of unused nodes and then add/remove
@@ -58,7 +58,7 @@ namespace Scott.Forge.Spatial
                 throw new ArgumentOutOfRangeException("Capacity must be larger than one", nameof(capacity));
             }
 
-            mItems = new Pair<TObject, RectF>[capacity];
+            mItems = new Pair<TObject, BoundingRect>[capacity];
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Scott.Forge.Spatial
         /// <param name="exclude">Object ot exclude from matches (null if not required).</param>
         /// <param name="results">List that will receive query results.</param>
         /// <returns>True if at least one object was in the area, false otherwise.</returns>
-        public void Add(TObject obj, RectF bounds)
+        public void Add(TObject obj, BoundingRect bounds)
         {
             if (obj == null)
             {
@@ -99,7 +99,7 @@ namespace Scott.Forge.Spatial
             }
 
             // Add item to list.
-            mItems[mItemCount++] = new Pair<TObject, RectF>(obj, bounds);
+            mItems[mItemCount++] = new Pair<TObject, BoundingRect>(obj, bounds);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Scott.Forge.Spatial
         /// <param name=nameof(obj)>Object to update.</param>
         /// <param name=nameof(bounds)>New bounding area for object.</param>
         /// <returns>True if the object was found and updated, false if the object was added.</returns>
-        public bool Update(TObject obj, RectF bounds)
+        public bool Update(TObject obj, BoundingRect bounds)
         {
             if (obj == null)
             {
@@ -174,7 +174,7 @@ namespace Scott.Forge.Spatial
                     }
 
                     // Remove last entry in array and then shrink item count.
-                    mItems[lastIndex] = default(Pair<TObject, RectF>);
+                    mItems[lastIndex] = default(Pair<TObject, BoundingRect>);
                     mItemCount -= 1;
                 }
             }
@@ -188,7 +188,7 @@ namespace Scott.Forge.Spatial
         /// <param name=nameof(bounds)>Spatial region to search.</param>
         /// <param name="excludes">Object to exclude from matches (null if not required).</param>
         /// <returns>The first object that was found, or null for none.</returns>
-        public TObject QueryOne(RectF bounds, TObject excludes)
+        public TObject QueryOne(BoundingRect bounds, TObject excludes)
         {
             var queryResults = Query(bounds, excludes).GetEnumerator();
             TObject result = default(TObject);
@@ -208,7 +208,7 @@ namespace Scott.Forge.Spatial
         /// <param name="exclude">Object to exclude from matches (null if not required).</param>
         /// <param name="results">List that will receive query results.</param>
         /// <returns>True if at least one object was in the area, false otherwise.</returns>
-        public bool Query(RectF queryBounds, TObject excludes, IList<TObject> results)
+        public bool Query(BoundingRect queryBounds, TObject excludes, IList<TObject> results)
         {
             bool didFind = false;
 
@@ -227,7 +227,7 @@ namespace Scott.Forge.Spatial
         /// <param name="queryBounds">Spatial region to search.</param>
         /// <param name="exclude">Object to exclude from matches (null if not required).</param>
         /// <returns>Iterator with the results of the query.</returns>
-        public QueryResult Query(RectF queryBounds, TObject excludes)
+        public QueryResult Query(BoundingRect queryBounds, TObject excludes)
         {
             return new QueryResult(this, queryBounds, excludes);
         }
@@ -238,10 +238,10 @@ namespace Scott.Forge.Spatial
         public struct QueryResult
         {
             private readonly SimpleSpatialIndex<TObject> mSpatial;
-            private readonly RectF mQueryBounds;
+            private readonly BoundingRect mQueryBounds;
             private readonly TObject mExcludes;
             
-            public QueryResult(SimpleSpatialIndex<TObject> spatial, RectF bounds, TObject excludes)
+            public QueryResult(SimpleSpatialIndex<TObject> spatial, BoundingRect bounds, TObject excludes)
             {
                 mSpatial = spatial;
                 mQueryBounds = bounds;
@@ -263,11 +263,11 @@ namespace Scott.Forge.Spatial
         public struct QueryEnumerator
         {
             private readonly SimpleSpatialIndex<TObject> mSpatial;
-            private readonly RectF mQueryBounds;
+            private readonly BoundingRect mQueryBounds;
             private readonly TObject mExcludes;
             private int mIndex;
 
-            public QueryEnumerator(SimpleSpatialIndex<TObject> spatial, RectF bounds, TObject excludes)
+            public QueryEnumerator(SimpleSpatialIndex<TObject> spatial, BoundingRect bounds, TObject excludes)
             {
                 mSpatial = spatial;
                 mQueryBounds = bounds;

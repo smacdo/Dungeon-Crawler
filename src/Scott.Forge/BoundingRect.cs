@@ -311,7 +311,62 @@ namespace Scott.Forge
         {
             return Contains(vector.X, vector.Y);
         }
-        
+
+        /// <summary>
+        ///  Check if the given rectangle intersects this rectangle.
+        /// </summary>
+        /// <param name="other">The rectangle to check against.</param>
+        /// <returns>True if the other rectangle intersects this rectangle.</returns>
+        public bool Intersects(BoundingRect other)
+        {
+            return
+                (mX - mHalfWidth < other.mX + other.mHalfWidth) &&
+                (mY - mHalfHeight < other.mY + other.mHalfHeight) &&
+                (mX + mHalfWidth > other.mX - other.mHalfWidth) &&
+                (mY + mHalfHeight > other.mY + other.mHalfHeight);
+        }
+
+        public Vector2 GetMinimumDisplacementAngle(BoundingRect other)
+        {
+            var minimumDisplacement = Vector2.Zero;
+
+            // Calculate each separating axis. (+X, -X, +Y, -Y).
+            var left = (other.mX - other.mHalfWidth) - (mX + mHalfWidth);
+            var right = (other.mX + other.mHalfWidth) - (mX - mHalfWidth);
+            var bottom = (other.mY - other.mHalfHeight) - (mY + mHalfHeight);
+            var top = (other.mY + other.mHalfHeight) - (mY - mHalfHeight);
+
+            // Find smallest displacement axis.
+            if (Math.Abs(left) > right)
+            {
+                minimumDisplacement.X = right;
+            }
+            else
+            {
+                minimumDisplacement.X = left;
+            }
+
+            if (Math.Abs(bottom) > top)
+            {
+                minimumDisplacement.Y = top;
+            }
+            else
+            {
+                minimumDisplacement.Y = bottom;
+            }
+
+            if (Math.Abs(minimumDisplacement.X) < Math.Abs(minimumDisplacement.Y))
+            {
+                minimumDisplacement.Y = 0;
+            }
+            else
+            {
+                minimumDisplacement.X = 0;
+            }
+
+            return minimumDisplacement;
+        }
+
         /// <summary>
         ///  Check if the given bounding rect equals this object.
         /// </summary>

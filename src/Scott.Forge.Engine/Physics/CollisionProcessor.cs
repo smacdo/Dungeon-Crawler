@@ -82,8 +82,8 @@ namespace Scott.Forge.Engine.Physics
                 // the level boundaries then nudge it back into the world before proceeding with collision detection.
                 collider.DesiredPosition = collider.Owner.Transform.WorldPosition;
 
-                var desiredBounds = collider.Bounds.AABB;
-                desiredBounds.TopLeft = collider.DesiredPosition + collider.Offset;
+                var desiredBounds = collider.Bounds;
+                desiredBounds.Center = collider.DesiredPosition;
 
                 if (!IsInLevelBounds(desiredBounds))
                 {
@@ -96,10 +96,10 @@ namespace Scott.Forge.Engine.Physics
                 }
                 
                 // Update spatial index with new collision bounds.
-                var initialBounds = collider.Bounds.AABB;
-                initialBounds.TopLeft = collider.ActualPosition + collider.Offset;
+                var initialBounds = collider.Bounds;
+                initialBounds.Center = collider.ActualPosition;
 
-                mSpatialIndex.Add(collider, collider.Bounds.AABB);
+                mSpatialIndex.Add(collider, collider.Bounds);
             }
         }
 
@@ -126,14 +126,15 @@ namespace Scott.Forge.Engine.Physics
             mCollisionQueryList.Clear();
 
             // Calculate the desired position for this collider and see what it collides with.
-            collider.Bounds.WorldPosition = collider.DesiredPosition + collider.Offset;
-            var collidee = mSpatialIndex.QueryOne(collider.Bounds.AABB, collider);
+            var colliderBounds = collider.Bounds;
+            colliderBounds.Center = collider.DesiredPosition;
+
+            var collidee = mSpatialIndex.QueryOne(colliderBounds, collider);
 
             if (collidee != null)
             {                
                 // TODO: Do not recalculate collision to get displacement angle.
-                var minimumDisplacement = Vector2.Zero;
-                collider.Bounds.Intersects(collidee.Bounds, ref minimumDisplacement);
+                var minimumDisplacement = colliderBounds.GetMinimumDisplacementAngle(collidee.Bounds);
 
                 // Notify components of collision.
                 collider.RaiseOnCollisionEvent(collidee.Owner);
@@ -168,15 +169,15 @@ namespace Scott.Forge.Engine.Physics
                 }
 
                 // TODO: If the owner has a movement component attached then consider apply separation force.
-                
-
                 collider.Owner.Transform.WorldPosition += displacement;
-                collider.Bounds.WorldPosition += displacement;
                 collider.ActualPosition = collider.Owner.Transform.WorldPosition;
-                
-                // Update spatial index with collider's new bounding area.
-                mSpatialIndex.Update(collider, collider.Bounds.AABB);
+
+                colliderBounds.Center += displacement;
             }
+
+            // Update collider bounding rect with selected position and update the spatial index.
+            collider.Bounds = colliderBounds;
+            mSpatialIndex.Update(collider, collider.Bounds);
         }
 
         /// <summary>
@@ -191,7 +192,7 @@ namespace Scott.Forge.Engine.Physics
                     Microsoft.Xna.Framework.Color.Red :
                     Microsoft.Xna.Framework.Color.Yellow;
 
-                GameRoot.Debug.DrawBoundingArea(
+                GameRoot.Debug.DrawBoundingRect(
                     cc.Bounds,
                     color);
             }
@@ -206,34 +207,40 @@ namespace Scott.Forge.Engine.Physics
         /// <param name="owner"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public static bool IsInLevelBounds(RectF bounds)
+        public static bool IsInLevelBounds(BoundingRect bounds)
         {
-            return bounds.TopLeft.X >= 0 &&
-                   bounds.TopRight.X < Screen.Width &&
-                   bounds.TopLeft.Y >= 0 &&
-                   bounds.BottomLeft.Y < Screen.Height;
+            return
+                bounds.MinPoint.X >= 0 &&
+                bounds.MaxPoint.X < Screen.Width &&
+                bounds.MinPoint.Y >= 0 &&
+                bounds.MaxPoint.Y < Screen.Height;
         }
 
-        public static Vector2 GetLevelOutOfBoundsDisplacement(RectF bounds)
+        public static Vector2 GetLevelOutOfBoundsDisplacement(BoundingRect bounds)
         {
             var result = Vector2.Zero;
+
+            var left = bounds.MinPoint.X;
+            var right = bounds.MaxPoint.X;
+            var top = bounds.MinPoint.Y;
+            var bottom = bounds.MaxPoint.Y;
             
-            if (bounds.Left < 0)
+            if (left < 0)
             {
-                result.X = -bounds.Left;
+                result.X = -left;
             }
-            else if (bounds.Right > Screen.Width)
+            else if (right > Screen.Width)
             {
-                result.X = -(bounds.Right - Screen.Width);
+                result.X = -(right - Screen.Width);
             }
             
-            if (bounds.Top < 0)
+            if (top < 0)
             {
-                result.Y = -bounds.Top;
+                result.Y = -top;
             }
-            else if (bounds.Bottom > Screen.Height)
+            else if (bottom > Screen.Height)
             {
-                result.Y = -(bounds.Bottom - Screen.Height);
+                result.Y = -(bottom - Screen.Height);
             }
 
             return result;

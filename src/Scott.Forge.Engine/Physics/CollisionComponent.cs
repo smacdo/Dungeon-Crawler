@@ -38,16 +38,8 @@ namespace Scott.Forge.Engine.Physics
         /// <summary>
         ///  Get or set the collision bounding area for the game object.
         /// </summary>
-        public BoundingArea Bounds { get; set; }
-
-        /// <summary>
-        ///  Offset from game object top left corner for collision bound.
-        /// </summary>
-        /// <remarks>
-        ///  TODO: Stop using this, and use a center based rectangle instead.
-        /// </remarks>
-        public Vector2 Offset { get; set; }
-
+        public BoundingRect Bounds { get; set; }
+        
         /// <summary>
         ///  Add or remove a callback that is triggered when this component collides with another component.
         /// </summary>
