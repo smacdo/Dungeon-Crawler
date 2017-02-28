@@ -19,22 +19,21 @@ using Scott.Forge.GameObjects;
 namespace Scott.Forge.Engine.Physics
 {
     /// <summary>
-    ///  Tracks object collisions.
+    ///  Contains information for movement and collision for an object.
     /// </summary>
     public class PhysicsComponent : Component
     {
         public delegate void CollisionCallback(IGameObject other);
 
         /// <summary>
-        ///  Get or set the desired position (in world space) for the game object.
+        ///  Get or set the object's desired position in world space.
         /// </summary>
+        /// <remarks>
+        ///  The desired position defines where the object would like to be placed in the game world, not necessarily
+        ///  the actual position it will be placed. This value is set at the start of a call to the physics processor.
+        /// </remarks>
         public Vector2 DesiredPosition { get; internal set; }
-
-        /// <summary>
-        ///  Get or set the actual positon for the game object.
-        /// </summary>
-//        public Vector2 WorldPosition { get; internal set; }
-
+        
         /// <summary>
         ///  Get or set the size of the collision bounding rect.
         /// </summary>
@@ -43,10 +42,14 @@ namespace Scott.Forge.Engine.Physics
         /// <summary>
         ///  Get or set the offset from the world position center.
         /// </summary>
+        /// <remarks>
+        ///  This vector will offset collision rects from the center of the object which is useful when the object's
+        ///  bounding rectangle isn't perfectly centered.
+        /// </remarks>
         public Vector2 CenterOffset { get; set; }
 
         /// <summary>
-        ///  Get or set the collision bounding box (in world space) for the game object.
+        ///  Get this object's world space collision bounding rectangle.
         /// </summary>
         public BoundingRect WorldBounds
         {
@@ -57,6 +60,9 @@ namespace Scott.Forge.Engine.Physics
             }
         }
 
+        /// <summary>
+        ///  Get this object's world space collision bounding rectangle centered on the object's desired position.
+        /// </summary>
         public BoundingRect DesiredWorldBounds
         {
             get
@@ -65,24 +71,19 @@ namespace Scott.Forge.Engine.Physics
             }
         }
 
+        /// <summary>
+        ///  Get or set this object's acceleration.
+        /// </summary>
         public Vector2 Acceleration { get; set; } = Vector2.Zero;
 
         /// <summary>
-        ///  Get the current movement velocity.
+        ///  Get or set this object's velocity.
         /// </summary>
         public Vector2 Velocity { get; set; } = Vector2.Zero;
-
+        
         /// <summary>
-        ///  Is this component moving?
+        ///  Get or set the maximum speed of this object.
         /// </summary>
-        public bool IsMoving
-        {
-            get
-            {
-                return (Velocity.LengthSquared > 0.1f || Acceleration.LengthSquared > 0.1f);
-            }
-        }
-
         public float MaxSpeed { get; set; } = 128;
 
         /// <summary>
@@ -102,10 +103,7 @@ namespace Scott.Forge.Engine.Physics
         /// <param name="other"></param>
         internal void RaiseOnCollisionEvent(IGameObject other)
         {
-            if (OnCollision != null)
-            {
-                OnCollision(other);
-            }
+            OnCollision?.Invoke(other);
         }
 
         /// <summary>
@@ -113,10 +111,7 @@ namespace Scott.Forge.Engine.Physics
         /// </summary>
         internal void RaiseOnLevelBoundsCollision()
         {
-            if (OnLevelBoundsCollision != null)
-            {
-                OnLevelBoundsCollision(null);
-            }
+            OnLevelBoundsCollision?.Invoke(null);
         }
     }
 }

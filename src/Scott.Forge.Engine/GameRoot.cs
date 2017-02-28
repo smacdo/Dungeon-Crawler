@@ -31,6 +31,7 @@ namespace Scott.Forge.Engine
         public static DebugRenderer Debug { get; private set; }
         public static Renderer Renderer { get; private set; }
         public static System.Random Random { get; private set; }
+        public static GameSettings Settings { get; private set; }
 
         /// <summary>
         /// THIS IS A HUGE HACK THAT WAS ONLY PUT HERE SO WE CAN GET A FINAL BUILD
@@ -55,6 +56,7 @@ namespace Scott.Forge.Engine
             mGraphicsDevice = graphics;
             Renderer = new Renderer( graphics );
             Random = new System.Random(); //  new Scott.Common.Random( Common.RandomGeneratorType.MersenneTwister );
+            Settings = new GameSettings();
         }
 
         /// <summary>
@@ -66,6 +68,7 @@ namespace Scott.Forge.Engine
             mGraphicsDevice = null;
             Renderer = null;
             Debug = null;
+            Settings = null;
         }
     }
 }

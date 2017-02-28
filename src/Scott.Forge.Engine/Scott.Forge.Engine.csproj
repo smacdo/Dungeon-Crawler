@@ -73,6 +73,7 @@
     <Compile Include="Content\ContentManagerExceptions.cs" />
     <Compile Include="GameEngineException.cs" />
     <Compile Include="GameRoot.cs" />
+    <Compile Include="GameSettings.cs" />
     <Compile Include="Graphics\DebugRenderer.cs" />
     <Compile Include="Graphics\IDrawable.cs" />
     <Compile Include="Graphics\Renderer.cs" />

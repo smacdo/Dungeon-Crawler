@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Spatial;
@@ -22,17 +21,12 @@ using Scott.Forge.Spatial;
 namespace Scott.Forge.Engine.Physics
 {
     /// <summary>
-    ///  A simple proof of concept collision detection and response processor.
+    ///  A simple proof of concept physics based movemen engine and collision response solver.
     /// </summary>
     /// <remarks>
-    ///  TODO: Make the collision detection algorithm not suck nearly as much. Right now I am using
-    ///        an N^2 algorithm.
-    /// 
-    ///  Good overal documentation, has a list of high level steps to perform in order. Also talks a lot about grid
-    ///  partitioning.
+    ///  Some reference documents that were consulted while building the physics engine.
     ///  http://buildnewgames.com/broad-phase-collision-detection/
-    /// 
-    /// http://elancev.name/oliver/2D%20polygon.htm
+    ///  http://elancev.name/oliver/2D%20polygon.htm
     /// </summary>
     public class PhysicsComponentProcessor : ComponentProcessor<PhysicsComponent>
     {
@@ -50,7 +44,7 @@ namespace Scott.Forge.Engine.Physics
             CalculateDesiredMovements(currentTime, deltaTime);
             FindAndResolveCollisions();
 
-            DrawCollisionBoxes();
+            DrawDebugInfo();
         }
 
         /// <summary>
@@ -136,12 +130,11 @@ namespace Scott.Forge.Engine.Physics
         private void ResolveCollisionsFor(PhysicsComponent physics)
         {
             // Check if this object is outside level bounds and nudge it back in.
-            // TODO: Combine the check and displacement calculation functions into one function.
-            if (!IsInLevelBounds(physics.DesiredWorldBounds))
-            {
-                var displacemnet = GetLevelOutOfBoundsDisplacement(physics.DesiredWorldBounds);
-                physics.DesiredPosition += displacemnet;
+            var outOfBoundsDisplacement = Vector2.Zero;
 
+            if (!IsInLevelBounds(physics.DesiredWorldBounds, ref outOfBoundsDisplacement))
+            {
+                physics.DesiredPosition += outOfBoundsDisplacement;
                 physics.RaiseOnLevelBoundsCollision();
             }
 
@@ -150,7 +143,7 @@ namespace Scott.Forge.Engine.Physics
 
             if (collidee == null)
             {
-                // Nothing is colliding with this object so simply set the object's actual position to be its desired
+                // Nothing is colliding with this object so set the object's actual position to be its desired
                 // position.
                 physics.Owner.Transform.WorldPosition = physics.DesiredPosition;
             }
@@ -199,69 +192,69 @@ namespace Scott.Forge.Engine.Physics
         /// <summary>
         ///  Draw debug collision information.
         /// </summary>
-        private void DrawCollisionBoxes()
+        [System.Diagnostics.Conditional("DEBUG")]
+        private void DrawDebugInfo()
         {
-            for (int i = 0; i < mComponents.Count; ++i)
+            if (GameRoot.Settings.DrawPhysicsDebug)
             {
-                var cc = mComponents[i];
-                var color = false/*cc.CollisionThisFrame*/ ? 
-                    Microsoft.Xna.Framework.Color.Red :
-                    Microsoft.Xna.Framework.Color.Yellow;
+                for (int i = 0; i < mComponents.Count; ++i)
+                {
+                    var cc = mComponents[i];
+                    var color = Microsoft.Xna.Framework.Color.Yellow;
 
-                GameRoot.Debug.DrawBoundingRect(
-                    cc.WorldBounds,
-                    color);
+                    GameRoot.Debug.DrawBoundingRect(
+                        cc.WorldBounds,
+                        color);
+                }
             }
         }
 
         /// <summary>
-        ///  Check if the given area is inside of the level bounds.
+        ///  Check if the given bounding rectangle is inside of the level boundaries. If not then calculate a
+        ///  displacement vector to nudge the rectangle back.
         /// </summary>
         /// <remarks>
         ///  TODO: Use the scene dimensions rather than screen dimensions!
         /// </remarks>
-        /// <param name="owner"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        public static bool IsInLevelBounds(BoundingRect bounds)
+        /// <param name="bounds">Bounding rect to check.</param>
+        /// <param name="displacement">Receives a displacement if bounding rect is not in level.</param>
+        /// <returns>True if bounding rect is in level, false otherwise.</returns>
+        public static bool IsInLevelBounds(BoundingRect bounds, ref Vector2 displacement)
         {
-            return
+            bool isInBounds =
                 bounds.MinPoint.X >= 0 &&
                 bounds.MaxPoint.X < Screen.Width &&
                 bounds.MinPoint.Y >= 0 &&
                 bounds.MaxPoint.Y < Screen.Height;
+
+            if (!isInBounds)
+            {
+                var left = bounds.MinPoint.X;
+                var right = bounds.MaxPoint.X;
+                var top = bounds.MinPoint.Y;
+                var bottom = bounds.MaxPoint.Y;
+
+                if (left < 0)
+                {
+                    displacement.X = -left;
+                }
+                else if (right > Screen.Width)
+                {
+                    displacement.X = -(right - Screen.Width);
+                }
+
+                if (top < 0)
+                {
+                    displacement.Y = -top;
+                }
+                else if (bottom > Screen.Height)
+                {
+                    displacement.Y = -(bottom - Screen.Height);
+                }
+            }
+
+            return isInBounds;
         }
-
-        public static Vector2 GetLevelOutOfBoundsDisplacement(BoundingRect bounds)
-        {
-            var result = Vector2.Zero;
-
-            var left = bounds.MinPoint.X;
-            var right = bounds.MaxPoint.X;
-            var top = bounds.MinPoint.Y;
-            var bottom = bounds.MaxPoint.Y;
-            
-            if (left < 0)
-            {
-                result.X = -left;
-            }
-            else if (right > Screen.Width)
-            {
-                result.X = -(right - Screen.Width);
-            }
-            
-            if (top < 0)
-            {
-                result.Y = -top;
-            }
-            else if (bottom > Screen.Height)
-            {
-                result.Y = -(bottom - Screen.Height);
-            }
-
-            return result;
-        }
-
 
         protected override void UpdateComponent(PhysicsComponent component, double currentTime, double deltaTime)
         {
