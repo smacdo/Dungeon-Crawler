@@ -189,8 +189,7 @@ namespace Scott.DungeonCrawler
         protected override void Update( GameTime gameTime )
         {
             // Allow game play systems to perform any pre-update logic that might be needed
-            GameRoot.Renderer.ClearQueuedItems();
-            GameRoot.Debug.PreUpdate( gameTime );
+            GameRoot.Debug.PreUpdate(gameTime);
 
             // Perform any requested actions based on user input.
             mInputManager.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
@@ -261,11 +260,12 @@ namespace Scott.DungeonCrawler
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            // Walk through the game scene and collect all sprites for drawing.
+            // Render game sprites.
+            GameRoot.Renderer.StartDrawing(clearScreen: true);
             mSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            GameRoot.Renderer.FinishDrawing();
 
-            // Draw all requested game sprites
-            GameRoot.Renderer.DrawScreen( gameTime );
+            // Debug drawing.
             GameRoot.Debug.Draw( gameTime );
 
             base.Draw( gameTime );

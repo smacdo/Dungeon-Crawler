@@ -28,8 +28,8 @@ namespace Scott.Forge.Engine
     /// </summary>
     public static class GameRoot
     {
-        public static DebugRenderer Debug { get; private set; }
-        public static Renderer Renderer { get; private set; }
+        public static DebugOverlay Debug { get; private set; }
+        public static GameRenderer Renderer { get; private set; }
         public static System.Random Random { get; private set; }
         public static GameSettings Settings { get; private set; }
 
@@ -52,9 +52,9 @@ namespace Scott.Forge.Engine
         public static void Initialize( GraphicsDevice graphics, ContentManager content )
         {
             Enemies = new List<GameObject>();
-            Debug = new DebugRenderer( graphics, content );
+            Debug = new DebugOverlay( graphics, content );
             mGraphicsDevice = graphics;
-            Renderer = new Renderer( graphics );
+            Renderer = new GameRenderer( graphics );
             Random = new System.Random(); //  new Scott.Common.Random( Common.RandomGeneratorType.MersenneTwister );
             Settings = new GameSettings();
         }

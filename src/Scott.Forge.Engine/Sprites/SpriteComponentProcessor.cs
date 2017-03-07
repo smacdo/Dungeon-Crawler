@@ -139,11 +139,11 @@ namespace Scott.Forge.Engine.Sprites
                 }
 
                 // Draw transform position and location.
-                GameRoot.Debug.DrawPoint(transform.WorldPosition, 4, Microsoft.Xna.Framework.Color.Blue);
+                GameRoot.Debug.DrawPoint(transform.WorldPosition, Microsoft.Xna.Framework.Color.Blue, 4.0f);
                 GameRoot.Debug.DrawLine(
                     transform.WorldPosition,
                     transform.WorldPosition + (transform.Forward * 16.0f),
-                    Microsoft.Xna.Framework.Color.LightBlue);
+                    color: Microsoft.Xna.Framework.Color.LightBlue);
             }
         }
 

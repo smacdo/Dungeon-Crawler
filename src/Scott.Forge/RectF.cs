@@ -39,11 +39,11 @@ namespace Scott.Forge
         ///  Initializes a new instance of the RectF structure that is defined by the provided x, y, width and height
         ///  values.
         /// </summary>
-        /// <param name="top">Top X coordinate for the rectangle.</param>
-        /// <param name="left">Top Y coordinate for the rectangle.</param>
+        /// <param name="left">Top X coordinate for the rectangle.</param>
+        /// <param name="top">Top Y coordinate for the rectangle.</param>
         /// <param name="width">Width of the new rectangle.</param>
         /// <param name="height">Height of the new rectangle.</param>
-        public RectF(float top, float left, float width, float height)
+        public RectF(float left, float top, float width, float height)
         {
             if (width < 0.0f)
             {
