@@ -103,8 +103,8 @@ namespace Scott.Forge.Engine.Graphics
             r.BorderColor = null;
             
             r.Dimensions = new RectF(
-                top: point.X - size * 0.5f,
-                left: point.Y - size * 0.5f, 
+                left: point.X - size * 0.5f,
+                top: point.Y - size * 0.5f, 
                 width: size,
                 height: size);
         }

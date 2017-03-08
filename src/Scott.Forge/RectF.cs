@@ -55,8 +55,8 @@ namespace Scott.Forge
                 throw new ArgumentException("Height cannot be less than zero", nameof(height));
             }
 
-            mX = top;
-            mY = left;
+            mX = left;
+            mY = top;
             mWidth = width;
             mHeight = height;
         }
@@ -69,8 +69,8 @@ namespace Scott.Forge
         /// <param name="rectSize">Size of the new rectangle.</param>
         public RectF(Vector2 topLeft, SizeF rectSize)
             : this(
-                  top: topLeft.X,
-                  left: topLeft.Y,
+                  left: topLeft.X,
+                  top: topLeft.Y,
                   width: rectSize.Width,
                   height: rectSize.Height)
         {
@@ -84,8 +84,8 @@ namespace Scott.Forge
         /// <param name="bottomRight">Bottom right corner of the new rectangle.</param>
         public RectF(Vector2 topLeft, Vector2 bottomRight)
             : this(
-                  top: topLeft.X,
-                  left: topLeft.Y,
+                  left: topLeft.X,
+                  top: topLeft.Y,
                   width: bottomRight.X - topLeft.X,
                   height: bottomRight.Y - topLeft.Y)
         {
@@ -97,8 +97,8 @@ namespace Scott.Forge
         /// <param name="rect">The RectF object to copy from.</param>
         public RectF(RectF rect)
             : this(
-                  top: rect.mX,
-                  left: rect.mY,
+                  left: rect.mX,
+                  top: rect.mY,
                   width: rect.mWidth,
                   height: rect.mHeight)
         {
@@ -407,10 +407,10 @@ namespace Scott.Forge
         public RectF Inflate(float horizontalAmount, float verticalAmount)
         {
             return new RectF(
-                X - horizontalAmount,
-                Y - verticalAmount,
-                Width + horizontalAmount * 2.0f,
-                Height + verticalAmount * 2.0f);
+                left: X - horizontalAmount,
+                top: Y - verticalAmount,
+                width: Width + horizontalAmount * 2.0f,
+                height: Height + verticalAmount * 2.0f);
         }
 
         /// <summary>
