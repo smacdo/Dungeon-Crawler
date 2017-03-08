@@ -155,12 +155,12 @@ namespace Scott.Forge.Tests
         public void CheckAdjacentIntersectingAreas()
         {
             var a = new BoundingArea(new Vector2(0, 1), new SizeF(2, 3));
-            var b = new BoundingArea(new Vector2(1, 4), new SizeF(1, 2));
+            var b = new BoundingArea(new Vector2(2, 1), new SizeF(1, 2));
             var v = Vector2.Zero;
 
             var result = a.Intersects(b, ref v);
 
-            Assert.IsTrue(result);
+            Assert.IsFalse(result);
             Assert.IsTrue(v.IsZero);
         }
 
