@@ -189,7 +189,7 @@ namespace Scott.DungeonCrawler.Actions
                 var pos = obj.Transform.WorldPosition;
 
                 var staticInnerRect = new RectF( pos.X, pos.Y, 64.0f, 64.0f);
-                GameRoot.Debug.DrawRect(staticInnerRect, Microsoft.Xna.Framework.Color.PowderBlue );
+                GameRoot.Debug.DrawRectBorder(staticInnerRect, Microsoft.Xna.Framework.Color.PowderBlue );
 
                 // lets see what happens.
                 //  TODO: Do not generate a new bound area. Use the game object's!!

@@ -90,11 +90,7 @@ namespace Scott.Forge.Engine.Sprites
                 // Update sprite atlas rectangles for the renderer.
                 for (var layer = 0; layer < sprite.Sprites.Length; layer++)
                 {
-                    sprite.SpriteRects[layer] = new Microsoft.Xna.Framework.Rectangle(
-                        (int) atlasOffset.X,
-                        (int) atlasOffset.Y,
-                        (int) sprite.Sprites[layer].Size.Width,
-                        (int) sprite.Sprites[layer].Size.Height);
+                    sprite.SpriteRects[layer] = new RectF(atlasOffset, sprite.Sprites[layer].Size);
                 }
 
                 // Update the time when this animation frame was first displayed
@@ -132,8 +128,8 @@ namespace Scott.Forge.Engine.Sprites
                     var spriteRect = new BoundingRect(
                         transform.WorldPosition.X,
                         transform.WorldPosition.Y,
-                        component.SpriteRects[layer].Size.X / 2,
-                        component.SpriteRects[layer].Size.Y / 2);
+                        component.SpriteRects[layer].Size.Width / 2,
+                        component.SpriteRects[layer].Size.Height / 2);
 
                     GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
                 }

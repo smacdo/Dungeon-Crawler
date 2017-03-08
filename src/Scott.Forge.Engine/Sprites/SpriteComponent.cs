@@ -27,7 +27,7 @@ namespace Scott.Forge.Engine.Sprites
     public class SpriteComponent : Component
     {
         private SpriteDefinition[] mSprites;
-        private Rectangle[] mSpriteRects;
+        private RectF[] mSpriteRects;
 
         /// <summary>
         /// Default constructor
@@ -35,7 +35,7 @@ namespace Scott.Forge.Engine.Sprites
         public SpriteComponent()
         {
             mSprites = new SpriteDefinition[1];
-            mSpriteRects = new Rectangle[1];
+            mSpriteRects = new RectF[1];
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Scott.Forge.Engine.Sprites
         /// <summary>
         ///  Get list of composite sprites.
         /// </summary>
-        internal Rectangle[] SpriteRects { get { return mSpriteRects; } }
+        internal RectF[] SpriteRects { get { return mSpriteRects; } }
 
         /// <summary>
         ///  Set a single sprite to be displayed.
@@ -153,11 +153,9 @@ namespace Scott.Forge.Engine.Sprites
             }
 
             Sprites[layerIndex] = spriteDefinition;
-            mSpriteRects[layerIndex] = new Rectangle(
-                (int) Sprites[layerIndex].StartingOffset.X,
-                (int) Sprites[layerIndex].StartingOffset.Y,
-                (int) Sprites[layerIndex].Size.Width,
-                (int) Sprites[layerIndex].Size.Height);
+            mSpriteRects[layerIndex] = new RectF(
+                Sprites[layerIndex].StartingOffset,
+                Sprites[layerIndex].Size);
         }
 
         /// <summary>
@@ -211,11 +209,7 @@ namespace Scott.Forge.Engine.Sprites
         {
             for (int i = 0; i < mSpriteRects.Length; i++)
             {
-                mSpriteRects[i] = new Rectangle(
-                    (int) atlasOffset.X,
-                    (int) atlasOffset.Y,
-                    (int) Sprites[i].Size.Width,
-                    (int) Sprites[i].Size.Height);
+                mSpriteRects[i] = new RectF(atlasOffset, Sprites[i].Size);
             }
         }
 

@@ -98,9 +98,9 @@ namespace Scott.Forge.Engine.Graphics
             var size = sizeIn ?? DefaultPointSize;
 
             r.Enabled = true;
-            r.Filled = true;
             r.TimeToLive = timeToLive ?? TimeSpan.Zero;
-            r.Color = color ?? DefaultColor;
+            r.FillColor = color ?? DefaultColor;
+            r.BorderColor = null;
             
             r.Dimensions = new RectF(
                 top: point.X - size * 0.5f,
@@ -117,7 +117,7 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="borderSize">Size of the border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
         [Conditional("DEBUG")]
-        public void DrawRect(
+        public void DrawRectBorder(
             RectF dimensions,
             Color? borderColor = null,
             float? borderSize = null,
@@ -126,9 +126,9 @@ namespace Scott.Forge.Engine.Graphics
             var r = FindNextUnused(mRectsToDraw);
 
             r.Enabled = true;
-            r.Filled = false;
-            r.Color = borderColor ?? DefaultColor;
-            r.BorderWidth = borderSize ?? DefaultBorderWidth;
+            r.BorderColor = borderColor ?? DefaultColor;
+            r.BorderSize = borderSize ?? DefaultBorderWidth;
+            r.FillColor = null;
             r.TimeToLive = timeToLive ?? TimeSpan.Zero;
             r.Dimensions = dimensions;
         }
@@ -141,7 +141,7 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="borderSize">Size of the border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
         [Conditional("DEBUG")]
-        public void DrawRect(
+        public void DrawRectBorder(
             Rectangle dimensions,
             Color? borderColor = null,
             float? borderSize = null,
@@ -150,9 +150,9 @@ namespace Scott.Forge.Engine.Graphics
             var r = FindNextUnused(mRectsToDraw);
 
             r.Enabled = true;
-            r.Filled = false;
-            r.Color = borderColor ?? DefaultColor;
-            r.BorderWidth = borderSize ?? DefaultBorderWidth;
+            r.BorderColor = borderColor ?? DefaultColor;
+            r.BorderSize = borderSize ?? DefaultBorderWidth;
+            r.FillColor = null;
             r.TimeToLive = timeToLive ?? TimeSpan.Zero;
 
             r.Dimensions = new RectF(
@@ -177,8 +177,8 @@ namespace Scott.Forge.Engine.Graphics
             var r = FindNextUnused(mRectsToDraw);
 
             r.Enabled = true;
-            r.Filled = true;
-            r.Color = color ?? DefaultColor;
+            r.BorderColor = null;
+            r.FillColor = color ?? DefaultColor;
             r.TimeToLive = timeToLive ?? TimeSpan.Zero;
 
             r.Dimensions = dimensions;
@@ -201,9 +201,9 @@ namespace Scott.Forge.Engine.Graphics
             var r = FindNextUnused(mRectsToDraw);
 
             r.Enabled = true;
-            r.Filled = false;
-            r.Color = borderColor ?? DefaultColor;
-            r.BorderWidth = borderSize ?? DefaultBorderWidth;
+            r.BorderColor = borderColor ?? DefaultColor;
+            r.BorderSize = borderSize ?? DefaultBorderWidth;
+            r.FillColor = null;
             r.TimeToLive = timeToLive ?? TimeSpan.Zero;
             
             r.Dimensions = new RectF(
@@ -281,8 +281,7 @@ namespace Scott.Forge.Engine.Graphics
             t.Text = text;
             t.Position = pos;
             t.Color = textColor ?? DefaultColor;
-            t.BackgroundColor = backgroundColor ?? DefaultColor;
-            t.DrawBackground = backgroundColor.HasValue;
+            t.BackgroundColor = backgroundColor;
             t.TimeToLive = timeToLive ?? TimeSpan.Zero;
         }
 
@@ -318,15 +317,11 @@ namespace Scott.Forge.Engine.Graphics
 
                 // TODO: Remove when Enabled is removed (and use Count+move to end).
                 if (!o.Enabled) { break; }
-
-                if (o.Filled)
-                {
-                    GameRoot.Renderer.DrawFilledRectangle(o.Dimensions, o.Color);
-                }
-                else
-                {
-                    GameRoot.Renderer.DrawRectangleBorder(o.Dimensions, o.Color);
-                }
+                GameRoot.Renderer.DrawRectangle(
+                    o.Dimensions,
+                    fillColor: o.FillColor,
+                    borderColor: o.BorderColor,
+                    borderSize: o.BorderSize);
             }
 
             for (int i = 0; i < mLinesToDraw.Count; i++)
@@ -334,7 +329,7 @@ namespace Scott.Forge.Engine.Graphics
                 var o = mLinesToDraw[i];
                 // TODO: Remove when Enabled is removed (and use Count+move to end).
                 if (!o.Enabled) { break; }
-                GameRoot.Renderer.DrawLine(o.Start, o.Stop, o.Color, (int)o.Width);
+                GameRoot.Renderer.DrawLine(o.Start, o.Stop, o.Color, o.Width);
             }
             
             for (int i = 0; i < mTextToDraw.Count; i++)
@@ -342,14 +337,7 @@ namespace Scott.Forge.Engine.Graphics
                 var o = mTextToDraw[i];
                 // TODO: Remove when Enabled is removed (and use Count+move to end).
                 if (!o.Enabled) { break; }
-                if (o.DrawBackground)
-                {
-                    GameRoot.Renderer.DrawText(o.Text, o.Position, mDebugFont, o.Color, o.BackgroundColor);
-                }
-                else
-                {
-                    GameRoot.Renderer.DrawText(o.Text, o.Position, mDebugFont, o.Color, null);
-                }
+                GameRoot.Renderer.DrawText(o.Text, o.Position, mDebugFont, o.Color, o.BackgroundColor);
             }
 
             // TODO: Draw name in bottom right corner.
@@ -374,9 +362,9 @@ namespace Scott.Forge.Engine.Graphics
         {
             if ( renderTime.IsRunningSlowly )
             {
-                GameRoot.Renderer.DrawRectangleBorder(
+                GameRoot.Renderer.DrawRectangle(
                     new RectF(top: 0, left: 0, width: 20, height: 20),
-                    Color.Red);
+                    fillColor: Color.Red);
             }
             else
             {
@@ -386,9 +374,9 @@ namespace Scott.Forge.Engine.Graphics
                 {
                     // TODO: Actually calculate how close it is to 16ms and draw an appropriately
                     // shaded color
-                    GameRoot.Renderer.DrawRectangleBorder(
+                    GameRoot.Renderer.DrawRectangle(
                         new RectF(top: 0, left: 22, width: 20, height: 20),
-                        Color.Yellow);
+                        fillColor: Color.Yellow);
                 }
             }
         }
@@ -485,7 +473,6 @@ namespace Scott.Forge.Engine.Graphics
         {
             public bool Enabled = false;
             public TimeSpan TimeToLive = TimeSpan.Zero;
-            public Color Color = Color.White;
         }
         
         /// <summary>
@@ -494,8 +481,9 @@ namespace Scott.Forge.Engine.Graphics
         class DebugRectangle : DebugPrimitive
         {
             public RectF Dimensions;
-            public bool Filled = false;
-            public float BorderWidth = 1.0f;
+            public Color? BorderColor;
+            public Color? FillColor;
+            public float BorderSize = 1.0f;
         }
 
         /// <summary>
@@ -505,6 +493,7 @@ namespace Scott.Forge.Engine.Graphics
         {
             public Vector2 Start;
             public Vector2 Stop;
+            public Color Color;
             public float Width = 1.0f;
         }
 
@@ -515,8 +504,8 @@ namespace Scott.Forge.Engine.Graphics
         {
             public string Text;
             public Vector2 Position;
-            public Color BackgroundColor;
-            public bool DrawBackground;
+            public Color Color;
+            public Color? BackgroundColor;
         }
     }
 }

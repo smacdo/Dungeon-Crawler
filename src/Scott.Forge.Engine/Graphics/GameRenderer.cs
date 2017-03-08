@@ -55,13 +55,30 @@ namespace Scott.Forge.Engine.Graphics
             mWhitePixel = new Texture2D(mGraphicsDevice, 1, 1);
             mWhitePixel.SetData(new[] { Color.White });
         }
-        
+
         /// <summary>
         ///  Draw a texture atlas slice centered on the given screen space point with a rotation.
         /// </summary>
-        /// <remarks>
-        ///  TODO: Convert XNA Rectangle argument to either RectF or BoundingRect. Also convert Sprite to use this.
-        /// </remarks>
+        /// <param name="atlas">Texture atlas to use.</param>
+        /// <param name="offset">Rectangle section of texture atlas to draw.</param>
+        /// <param name="position">Center position in screen space to draw at.</param>
+        /// <param name="rotation">Rotation (in radians) to rotate texture while drawing.</param>
+        public void Draw(Texture2D atlas, RectF offset, Vector2 position, float rotation = 0.0f)
+        {
+            Draw(
+                atlas,
+                new Rectangle(
+                    x: (int)offset.Left,
+                    y: (int)offset.Top,
+                    width: (int)offset.Width,
+                    height: (int)offset.Height),
+                position,
+                rotation);
+        }
+
+        /// <summary>
+        ///  Draw a texture atlas slice centered on the given screen space point with a rotation.
+        /// </summary>
         /// <param name="atlas">Texture atlas to use.</param>
         /// <param name="offset">Rectangle section of texture atlas to draw.</param>
         /// <param name="position">Center position in screen space to draw at.</param>
@@ -84,17 +101,17 @@ namespace Scott.Forge.Engine.Graphics
         }
 
         /// <summary>
-        ///  Draw a colored line segment on the screen.
+        ///  Draw a colored line segment.
         /// </summary>
-        /// <param name="startPosition">Point to start drawing in screen space.</param>
-        /// <param name="endPosition">Point to stop drawing in screen space.</param>
-        /// <param name="color">Optional line color (White by default).</param>
-        /// <param name="width">Optional line width (1 by default).</param>
+        /// <param name="startPosition">Screen space position to start drawing.</param>
+        /// <param name="endPosition">Screen space position to stop drawing.</param>
+        /// <param name="color">Optional line color.</param>
+        /// <param name="width">Optional line width.</param>
         public void DrawLine(
             Vector2 startPosition,
             Vector2 endPosition,
             Color? color,
-            int? width)
+            float? width)
         {
             float angle  = (float) Math.Atan2(endPosition.Y - startPosition.Y, endPosition.X - startPosition.X);
             float length = Vector2.Distance(startPosition, endPosition);
@@ -117,8 +134,8 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="text">Text string to draw.</param>
         /// <param name="position">Top left corner in screen space to start drawing at.</param>
         /// <param name="font">XNA sprite font class to use.</param>
-        /// <param name="textColor">Optional color of the text (null for default white).</param>
-        /// <param name="backgroundColor">Optional background color (null for none).</param>
+        /// <param name="textColor">Optional color of the text.</param>
+        /// <param name="backgroundColor">Optional background color.</param>
         public void DrawText(
             string text,
             Vector2 position,
@@ -138,7 +155,7 @@ namespace Scott.Forge.Engine.Graphics
             }
 
             // Draw a colored background rectangle behind the sprite text if requested.
-            if (backgroundColor != null)
+            if (backgroundColor.HasValue)
             {
                 // Draw a colored rectangle that is slightly larger than the requested text.
                 var size = font.MeasureString(text);
@@ -160,38 +177,45 @@ namespace Scott.Forge.Engine.Graphics
         }
 
         /// <summary>
-        ///  Draw rectangle outline.
+        ///  Draw a rectangle with an optional border and background color.
         /// </summary>
         /// <param name="rect">Size and position of the rectangle in screen space.</param>
-        /// <param name="color">Optional color, white by default.</param>
-        public void DrawFilledRectangle(RectF rect, Color? color)
+        /// <param name="borderColor">Optional border color.</param>
+        /// <param name="borderSize">Optional border size.</param>
+        /// <param name="fillColor">Optional fill color.</param>
+        public void DrawRectangle(
+            RectF rect,
+            Color? fillColor = null,
+            Color? borderColor = null,
+            float? borderSize = null)
         {
-            mSpriteBatch.Draw(
-                mWhitePixel,
-                new Rectangle((int) rect.Left, (int) rect.Top, (int) rect.Width, (int) rect.Height),
-                color ?? Color.White);
-        }
+            // Draw rectangle background first.
+            if (fillColor.HasValue)
+            {
+                mSpriteBatch.Draw(
+                    mWhitePixel,
+                    new Rectangle((int) rect.Left, (int) rect.Top, (int) rect.Width, (int) rect.Height),
+                    fillColor.Value);
+            }
 
-        /// <summary>
-        ///  Draw a rectangle.
-        /// </summary>
-        /// <param name="rect">size and position of the rectangle in screen space.</param>
-        /// <param name="color">Optional color, white by default.</param>
-        public void DrawRectangleBorder(RectF rect, Color? color)
-        {
-            color = color ?? Color.White;
+            // Draw rectangle border if requested.
+            if (borderColor.HasValue || borderSize.HasValue)
+            {
+                var color = borderColor ?? Color.White;
+                var size = borderSize ?? 1.0f;
 
-            int left = (int) rect.Left;
-            int right = (int) rect.Right;
-            int top = (int) rect.Top;
-            int bottom = (int) rect.Bottom;
-            int width = (int) rect.Width;
-            int height = (int) rect.Height;
+                int left = (int) rect.Left;
+                int right = (int) rect.Right;
+                int top = (int) rect.Top;
+                int bottom = (int) rect.Bottom;
+                int width = (int) rect.Width;
+                int height = (int) rect.Height;
 
-            mSpriteBatch.Draw(mWhitePixel, new Rectangle(left, top, width, 1), color.Value);
-            mSpriteBatch.Draw(mWhitePixel, new Rectangle(left, top, 1, height), color.Value);
-            mSpriteBatch.Draw(mWhitePixel, new Rectangle(left, bottom, width, 1), color.Value);
-            mSpriteBatch.Draw(mWhitePixel, new Rectangle(right, top, 1, height), color.Value);
+                DrawLine(new Vector2(left, top), new Vector2(left + width, top), color, size);
+                DrawLine(new Vector2(left, top), new Vector2(left, top + height), color, size);
+                DrawLine(new Vector2(left, top + height), new Vector2(left + width, top + height), color, size);
+                DrawLine(new Vector2(left + width, top + height), new Vector2(left + width, top), color, size);
+            }
         }
 
         /// <summary>

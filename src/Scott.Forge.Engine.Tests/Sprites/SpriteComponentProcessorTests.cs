@@ -7,7 +7,7 @@ using Scott.Forge.Engine.Sprites;
 namespace Scott.Forge.Engine.Tests.Sprites
 {
     [TestClass]
-    public class SpriteTests
+    public class SpriteComponentProcessorTests
     {
         [TestMethod]
         [TestCategory("ForgeEngine/Sprites/Sprite")]
