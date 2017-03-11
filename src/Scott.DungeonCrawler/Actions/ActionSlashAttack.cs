@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using Scott.Forge;
 using Scott.Forge.Engine;
 using Scott.Forge.Engine.Actors;
+using Scott.Forge.Engine.Physics;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 
@@ -180,27 +181,27 @@ namespace Scott.DungeonCrawler.Actions
                 Microsoft.Xna.Framework.Color.HotPink);
 
             // Now find all objects touching the hitbox.
-            //  TODO: This should be moved into the collision processor (and Scene class).
+            //  TODO: Find only enemies or are tagged enemy.
+            //  TODO: Add bounding region to spatial index query.
+            //  TODO: Remove cast from IScene -> Scene once Core/Engine are merged and once IGameObject/IGameScene
+            //        interfaces are removed.
+            var physics = actor.Owner.Get<PhysicsComponent>();
+            var bbrect = new BoundingRect(bounds.AxisAlignedMinPoint, bounds.AxisAlignedMaxPoint);
+            var go = (GameObject) actor.Owner;
+            var scene = (GameScene) go.Scene;
 
-            // Test all the other skeletons out there
-            for ( int i = 0; i < GameRoot.Enemies.Count; ++i )
+            foreach (var result in scene.Physics.SpatialIndex.Query(bbrect, physics))
             {
-                var obj = GameRoot.Enemies[i];
-                var pos = obj.Transform.WorldPosition;
-
-                var staticInnerRect = new RectF( pos.X, pos.Y, 64.0f, 64.0f);
-                GameRoot.Debug.DrawRectBorder(staticInnerRect, Microsoft.Xna.Framework.Color.PowderBlue );
-
-                // lets see what happens.
-                //  TODO: Do not generate a new bound area. Use the game object's!!
-                var objBoundingArea = new BoundingArea(staticInnerRect);
-                var minTranslationVector = Vector2.Zero;
-
-                if (objBoundingArea.Intersects(bounds, ref minTranslationVector))
+#if DEBUG
+                if (GameRoot.Settings.DrawWeaponHitDebug)
                 {
-                    GameRoot.Debug.DrawFilledRect(staticInnerRect, Microsoft.Xna.Framework.Color.White);
+                    GameRoot.Debug.DrawFilledRect(
+                        new RectF(result.WorldBounds.MinPoint, result.WorldBounds.MaxPoint),
+                        Microsoft.Xna.Framework.Color.Red);
                 }
+#endif
             }
+
         }
     }
 }

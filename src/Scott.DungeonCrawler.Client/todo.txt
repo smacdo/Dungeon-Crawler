@@ -1,12 +1,9 @@
 Very important
 ====================
 
- - Change RectF, Transform and gameplay code to use a center origin system with an inverted Y axis rather  than the
-   current top left origin.
- - Remove Offset from Collision component once using center rather than top left.
+- Remove IGameObject
+- Merge Core and Engine
  - Only spawn enemies if the area is clear (check collision).
- - Combine the physics movemnet and collision processors into a Physics component (physics moves and collision checks).
- - Create a struct based iterator for collision checks for high performance queries.
  - Remove actor "facing" direction and instead use Rotation. Need to change weapon code to handle this!
    - Adjust how sprite selects animation direction with respect to transform rotation. Should use Right/Left in most
      cases rather than Up/Down.
@@ -33,7 +30,3 @@ Debugging
     * update speed
     * draw speed
     * num sprites drawn
-
-Misc
-------------------------------------------------
-* Switch to xUnit testing

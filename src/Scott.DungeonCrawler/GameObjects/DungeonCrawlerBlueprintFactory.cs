@@ -22,6 +22,7 @@ using Scott.Forge.Engine.Ai;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Engine.Physics;
+using Scott.Forge.Engine;
 
 namespace Scott.DungeonCrawler.GameObjects
 {
@@ -32,14 +33,9 @@ namespace Scott.DungeonCrawler.GameObjects
     ///  TODO: Generize this (engine/forge) since it has no dependency on game code... it just reads nested key/value
     ///        information and creates blueprints.
     /// </summary>
-    public class DungeonCrawlerGameObjectFactory : IBlueprintFactory
+    public class DungeonCrawlerGameObjectFactory
     {
         public IContentManager Content { get; set; }
-        public SpriteComponentProcessor SpriteProcessor { get; set; }        // TODO: Remove.
-        public ActorProcessor ActorProcessor { get; set; }          // TODO: Remove.
-        public AiProcessor AiProcessor { get; set; }                // TODO: Remove.
-
-        public PhysicsComponentProcessor PhysicsProcessor { get; set; }
 
         public DungeonCrawlerGameObjectFactory(IContentManager content)
         {
@@ -51,15 +47,15 @@ namespace Scott.DungeonCrawler.GameObjects
         /// </summary>
         /// <param name="blueprintName"></param>
         /// <returns></returns>
-        public GameObject Instantiate( string blueprintName )
+        public GameObject Instantiate(GameScene scene, string blueprintName )
         {
             if ( blueprintName == "Player" )
             {
-                return InstantiatePlayer();
+                return InstantiatePlayer(scene);
             }
             else if ( blueprintName == "Skeleton" )
             {
-                return InstantiateSkeleton();
+                return InstantiateSkeleton(scene);
             }
             else
             {
@@ -68,13 +64,13 @@ namespace Scott.DungeonCrawler.GameObjects
             }
         }
 
-        private GameObject InstantiatePlayer()
+        private GameObject InstantiatePlayer(GameScene scene)
         {
             // Create the player blue print.
             var player = new GameObject("player");
 
             // Create the sprite and set it up.
-            var sprite = SpriteProcessor.Add(player);
+            var sprite = scene.Sprites.Create(player);
 
             sprite.RendererIgnoreTransformRotation = true;
 
@@ -104,17 +100,17 @@ namespace Scott.DungeonCrawler.GameObjects
                 Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather").Sprite);
 
             // Add actor component.
-            var actor = ActorProcessor.Add(player);
+            var actor = scene.Actors.Create(player);
 
             // Add physics.
-            var physics = PhysicsProcessor.Add(player);
+            var physics = scene.Physics.Create(player);
 
             physics.Size = new SizeF(16, 25);
             physics.CenterOffset = new Vector2(0, 6);
 
             // Create sword and center the object on the character.
             //  TODO: Don't hard code the values.
-            var weaponGameObject = InstantiateSword();
+            var weaponGameObject = InstantiateSword(scene);
             weaponGameObject.Parent = player;
 
             weaponGameObject.Transform.LocalPosition = new Vector2(-192 / 2 + 32, -192 / 2 + 32);
@@ -123,13 +119,13 @@ namespace Scott.DungeonCrawler.GameObjects
             return player;
         }
 
-        private GameObject InstantiateSword()
+        private GameObject InstantiateSword(GameScene scene)
         {
             // Create the player blue print.
             var weapon = new GameObject("MeleeWeapon");
 
             // Create the sprite and set it up.
-            var sprite = SpriteProcessor.Add(weapon);
+            var sprite = scene.Sprites.Create(weapon);
             sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword"));
 
             //sprite.RendererIgnoreTransformRotation = true;
@@ -137,18 +133,18 @@ namespace Scott.DungeonCrawler.GameObjects
             return weapon;
         }
 
-        private GameObject InstantiateSkeleton()
+        private GameObject InstantiateSkeleton(GameScene scene)
         {
             var enemy = new GameObject("skeleton");
-            var sprite = SpriteProcessor.Add(enemy);
+            var sprite = scene.Sprites.Create(enemy);
 
             sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>( "sprites/Humanoid_Skeleton" ) );
             sprite.RendererIgnoreTransformRotation = true;
 
-            ActorProcessor.Add(enemy);
-            AiProcessor.Add(enemy);
+            scene.Actors.Create(enemy);
+            scene.AI.Create(enemy);
             
-            var collision = PhysicsProcessor.Add(enemy);
+            var collision = scene.Physics.Create(enemy);
 
             collision.Size = new SizeF(16, 25);
             collision.CenterOffset = new Vector2(0, 6);

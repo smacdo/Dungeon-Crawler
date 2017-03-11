@@ -51,20 +51,19 @@ namespace Scott.DungeonCrawler
 
         private readonly GraphicsDeviceManager mGraphicsDevice;
         private GameObject mPlayer;
-        private List<GameObject> mEnemies = new List<GameObject>();
 
         private bool mEnemySpawningEnabled = true;
 
-        private SpriteComponentProcessor mSpriteProcessor = new SpriteComponentProcessor();
-        private PhysicsComponentProcessor mPhysicsProcessor = new PhysicsComponentProcessor();
-        private ActorProcessor mActorProcessor = new ActorProcessor();
-        private AiProcessor mAiProcessor = new AiProcessor();
-
         private DungeonCrawlerGameObjectFactory mGameObjectFactory;
+        private GameScene mLevelScene;
 
         private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
         private ForgeContentManager mContent;
         int mEnemyCount = 0;
+
+
+        bool firstSpawn = true;
+        TimeSpan mNextSpawnTime = TimeSpan.Zero;
 
         /// <summary>
         ///  Constructor.
@@ -97,13 +96,7 @@ namespace Scott.DungeonCrawler
             Screen.Initialize( mGraphicsDevice.GraphicsDevice );
 
             // Initialize default game level.
-            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent)
-            {
-                SpriteProcessor = mSpriteProcessor,
-                ActorProcessor = mActorProcessor,
-                AiProcessor = mAiProcessor,
-                PhysicsProcessor = mPhysicsProcessor
-            };
+            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent);
 
             // Initialize input system with default settings.
             mInputManager.AddAction( InputAction.ExitGame, Keys.Escape );
@@ -130,9 +123,13 @@ namespace Scott.DungeonCrawler
             // can load.
             mContent.SearchForContentItems( true );
 
+            mLevelScene = new GameScene();
+
             // Create the player blue print.
-            mPlayer = mGameObjectFactory.Instantiate("Player");
+            mPlayer = mGameObjectFactory.Instantiate(mLevelScene, "Player");
             mPlayer.Transform.WorldPosition = new Forge.Vector2(200, 200);
+
+            mLevelScene.Add(mPlayer);
 
             // Now that we have loaded the game's contents, we should force a garbage collection
             // before proceeding to play mode.
@@ -145,7 +142,7 @@ namespace Scott.DungeonCrawler
         private void SpawnSkeleton()
         {
             // Spawn the skeleton enemy.
-            GameObject skeleton = mGameObjectFactory.Instantiate("Skeleton");
+            var skeleton = mGameObjectFactory.Instantiate(mLevelScene, "Skeleton");
 
             // Pick a spot to place the skeleton enemy.
             int width = Screen.Width - 64;
@@ -156,9 +153,9 @@ namespace Scott.DungeonCrawler
                 (int) ( GameRoot.Random.NextDouble() * height ) );
 
             // Add the newly spawned skeleton to our list of enemies.
-            GameRoot.Enemies.Add( skeleton );
+            // TODO: Check if location is clear before spawning!
+            mLevelScene.Add( skeleton );
             mEnemyCount += 1;
-            mEnemies.Add(skeleton);
 
             // temp hack
             var initialDirection = (DirectionName) GameRoot.Random.Next(0, 3);
@@ -178,8 +175,6 @@ namespace Scott.DungeonCrawler
             GameRoot.Unload();
         }
 
-        bool firstSpawn = true;
-        TimeSpan mNextSpawnTime = TimeSpan.Zero;
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -223,7 +218,7 @@ namespace Scott.DungeonCrawler
             }
 
             // Spawn some stuff
-            if ( mNextSpawnTime <= gameTime.TotalGameTime && GameRoot.Enemies.Count < 32 )
+            if ( mNextSpawnTime <= gameTime.TotalGameTime && mEnemyCount < 32 )
             {
                 if ((GameRoot.Random.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
                 {
@@ -234,20 +229,8 @@ namespace Scott.DungeonCrawler
                 mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
             }
 
-            // Update the world //////////////////////////////
-            // We resolve movement and collision first, before the player or AI gets chance
-            // to do anything. Hence the current position of all objects (and collision)
-            // that is displayed is actually one frame BEFORE this update
-            mPhysicsProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-
-            // Update game ai and character actions
-            mAiProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-            mActorProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-
-            // Make sure animations are primed and updated (we need to trigger the
-            // correct animation events even if we are not drawwing)
-            mSpriteProcessor.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-
+            mLevelScene.Update(gameTime);
+           
             base.Update( gameTime );
 
             // Post update
@@ -260,15 +243,10 @@ namespace Scott.DungeonCrawler
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            // Render game sprites.
             GameRoot.Renderer.StartDrawing(clearScreen: true);
-            mSpriteProcessor.Draw(
-                GameRoot.Renderer,
-                gameTime.TotalGameTime.TotalSeconds,
-                gameTime.ElapsedGameTime.TotalSeconds);
+            mLevelScene.Draw(gameTime);
             GameRoot.Renderer.FinishDrawing();
 
-            // Debug drawing.
             GameRoot.Debug.Draw( gameTime );
 
             base.Draw( gameTime );

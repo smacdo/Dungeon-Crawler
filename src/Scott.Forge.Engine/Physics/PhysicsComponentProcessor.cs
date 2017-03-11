@@ -30,10 +30,9 @@ namespace Scott.Forge.Engine.Physics
     /// </summary>
     public class PhysicsComponentProcessor : ComponentProcessor<PhysicsComponent>
     {
-        private ISpatialIndex<PhysicsComponent> mSpatialIndex = new SimpleSpatialIndex<PhysicsComponent>();
+        public SpatialIndex<PhysicsComponent> SpatialIndex { get; private set; }
+            = new SpatialIndex<PhysicsComponent>();
 
-        public ISpatialIndex<PhysicsComponent> SpatialIndex { get { return mSpatialIndex; } }
-        
         /// <summary>
         ///  Update all attached physics components.
         /// </summary>
@@ -57,14 +56,14 @@ namespace Scott.Forge.Engine.Physics
         {
             // Reset the spatial index to clear all physics components and their positions.
             // TODO: Is there a way to speed this up by not resetting everyone every update cycle?
-            mSpatialIndex.Clear();
+            SpatialIndex.Clear();
 
             for (int i = 0; i < mComponents.Count; i++)
             {
                 var c = mComponents[i];
 
                 // Add physics component to the spatial index.
-                mSpatialIndex.Add(c, c.WorldBounds);
+                SpatialIndex.Add(c, c.WorldBounds);
 
                 // Calculate the new desired position of this physics componet. This value will be fed into the
                 // collision and collison response solver.
@@ -139,7 +138,7 @@ namespace Scott.Forge.Engine.Physics
             }
 
             // Check for collisions at the object's desired location.
-            var collidee = mSpatialIndex.QueryOne(physics.DesiredWorldBounds, physics);
+            var collidee = SpatialIndex.QueryOne(physics.DesiredWorldBounds, physics);
 
             if (collidee == null)
             {
@@ -186,7 +185,7 @@ namespace Scott.Forge.Engine.Physics
             }
 
             // Update spatial index with the final position of this physics component.
-            mSpatialIndex.Update(physics, physics.WorldBounds);
+            SpatialIndex.Update(physics, physics.WorldBounds);
         }
 
         /// <summary>

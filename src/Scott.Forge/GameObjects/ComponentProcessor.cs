@@ -26,7 +26,7 @@ namespace Scott.Forge.GameObjects
         where TComponent : class, IComponent, new()
     {
         void Add(TComponent component);
-        TComponent Add(IGameObject gameObject);
+        TComponent Create(IGameObject gameObject);
 
         bool Remove(TComponent component);
 
@@ -79,7 +79,7 @@ namespace Scott.Forge.GameObjects
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
-        public TComponent Add(IGameObject gameObject)
+        public TComponent Create(IGameObject gameObject)
         {
             if (gameObject == null)
             {

@@ -14,5 +14,6 @@ namespace Scott.Forge.Engine
         public bool DrawPhysicsDebug { get; set; } = true;
         public bool DrawSpriteDebug { get; set; } = true;
         public bool DrawTransformDebug { get; set; } = true;
+        public bool DrawWeaponHitDebug { get; set; } = true;
     }
 }

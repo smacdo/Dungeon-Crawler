@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Scott.Forge.GameObjects;
 
-using Scott.Forge.Content;
-
-namespace Scott.Forge.GameObjects
+namespace Scott.Forge
 {
-    /// <summary>
-    ///  Creates GameObjects from blueprints.
-    /// </summary>
-    public interface IBlueprintFactory
+    public interface IGameScene
     {
-        IContentManager Content { get; set; }
-        GameObject Instantiate( string blueprintName );
     }
 }

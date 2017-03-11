@@ -29,7 +29,8 @@ namespace Scott.Forge.GameObjects
 
         private bool mDisposed = false;
         private GameObject mParent = null;
-        
+        private IGameScene mScene = null;
+
         private Dictionary<System.Type, IComponent> mComponents =
             new Dictionary<Type, IComponent>(InitialComponentCapacity);
 
@@ -183,6 +184,36 @@ namespace Scott.Forge.GameObjects
         {
             get { return Parent; }
             set { Parent = (GameObject) value; }
+        }
+
+        /// <summary>
+        ///  Get or set the scene that this game object exists in.
+        /// </summary>
+        /// <remarks>
+        ///  TODO: Mark this as "internal set" once the Core/Engine merge happens.
+        ///  TODO: Don't recursively search.
+        /// </remarks>
+        public IGameScene Scene
+        {
+            get
+            {
+                if (mScene != null)
+                {
+                    return mScene;
+                }
+                else
+                {
+                    if (Parent != null)
+                    {
+                        return Parent.Scene;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            set { mScene = value; }
         }
 
         /// <summary>

@@ -70,6 +70,7 @@
     <Compile Include="Content\ContentManagerExceptions.cs" />
     <Compile Include="GameEngineException.cs" />
     <Compile Include="GameRoot.cs" />
+    <Compile Include="GameScene.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="Graphics\DebugOverlay.cs" />
     <Compile Include="Graphics\GameRenderer.cs" />
@@ -101,6 +102,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

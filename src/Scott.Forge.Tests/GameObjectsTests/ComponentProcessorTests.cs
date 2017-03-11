@@ -27,10 +27,10 @@ namespace Scott.Forge.Tests.GameObjectsTests
         {
             Assert.AreEqual(0, mProcessor.ComponentCount);
 
-            mProcessor.Add(new GameObject());
+            mProcessor.Create(new GameObject());
             Assert.AreEqual(1, mProcessor.ComponentCount);
 
-            mProcessor.Add(new GameObject());
+            mProcessor.Create(new GameObject());
             Assert.AreEqual(2, mProcessor.ComponentCount);
         }
 
@@ -42,7 +42,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             var gameObject = new GameObject();
             Assert.IsFalse(gameObject.Contains<TestComponent>());
 
-            var component = mProcessor.Add(gameObject);
+            var component = mProcessor.Create(gameObject);
 
             Assert.IsTrue(gameObject.Contains<TestComponent>());
             Assert.AreSame(component, gameObject.Get<TestComponent>());
@@ -55,8 +55,8 @@ namespace Scott.Forge.Tests.GameObjectsTests
             var gameObject1 = new GameObject();
             var gameObject2 = new GameObject();
 
-            var component1 = mProcessor.Add(gameObject1);
-            var component2 = mProcessor.Add(gameObject2);
+            var component1 = mProcessor.Create(gameObject1);
+            var component2 = mProcessor.Create(gameObject2);
 
             Assert.AreSame(component1, gameObject1.Get<TestComponent>());
             Assert.AreSame(component2, gameObject2.Get<TestComponent>());
@@ -71,8 +71,8 @@ namespace Scott.Forge.Tests.GameObjectsTests
             var gameObject2 = new GameObject();
 
             // Add two game objects.
-            var component1 = mProcessor.Add(gameObject1);
-            var component2 = mProcessor.Add(gameObject2);
+            var component1 = mProcessor.Create(gameObject1);
+            var component2 = mProcessor.Create(gameObject2);
 
             Assert.AreEqual(2, mProcessor.ComponentCount);
             Assert.AreSame(component1, gameObject1.Get<TestComponent>());
@@ -84,7 +84,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.AreEqual(1, mProcessor.ComponentCount);
 
             // Add game object back, make sure game object count is correct.
-            var component1b = mProcessor.Add(gameObject1);
+            var component1b = mProcessor.Create(gameObject1);
 
             Assert.AreEqual(2, mProcessor.ComponentCount);
             Assert.AreSame(component1b, gameObject1.Get<TestComponent>());
@@ -122,7 +122,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.AreEqual(0, mProcessor.UpdatedComponents.Count);
 
             // Update with one game object.
-            var component1 = mProcessor.Add(gameObject1);
+            var component1 = mProcessor.Create(gameObject1);
             mProcessor.Update(2.5f, 1.5f);
 
             Assert.AreEqual(1, mProcessor.UpdatedComponents.Count);
@@ -130,7 +130,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             Assert.AreEqual(1.5f, mProcessor.UpdatedComponents[component1].DeltaTime);
 
             // Update with two game objects.
-            var component2 = mProcessor.Add(gameObject2);
+            var component2 = mProcessor.Create(gameObject2);
             mProcessor.Update(4.5f, 2.0f);
 
             Assert.AreEqual(2, mProcessor.UpdatedComponents.Count);

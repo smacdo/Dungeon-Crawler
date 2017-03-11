@@ -34,17 +34,6 @@ namespace Scott.Forge.Engine
         public static GameSettings Settings { get; private set; }
         public static bool UnitTests { get; private set; } = false;
 
-        /// <summary>
-        /// THIS IS A HUGE HACK THAT WAS ONLY PUT HERE SO WE CAN GET A FINAL BUILD
-        /// DONE TONIGHT.
-        /// 
-        /// DO NOT USE THIS AGAIN. Instead refactor the codebase where components are
-        /// created by processors (aka factories). The player should then request the
-        /// bounding box component factory, and query for any bounding boxes located in
-        /// the requested area.
-        /// </summary>
-        public static List<GameObject> Enemies { get; private set; }
-
         private static GraphicsDevice mGraphicsDevice;
 
         /// <summary>
@@ -59,8 +48,6 @@ namespace Scott.Forge.Engine
                 Debug = new StandardDebugOverlay(graphics, content);
                 Renderer = new GameRenderer(graphics);
             }
-
-            Enemies = new List<GameObject>();
             
             Random = new System.Random();
             Settings = new GameSettings();
