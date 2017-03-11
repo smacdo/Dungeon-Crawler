@@ -64,9 +64,6 @@
     <Compile Include="Ai\AiComponent.cs" />
     <Compile Include="Ai\AiProcessor.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Debugging\DebugComponent.cs" />
-    <Compile Include="Debugging\DebugComponentProcessor.cs" />
-    <Compile Include="ForgeExtensions.cs" />
     <Compile Include="GameObjects\ComponentCollection.cs" />
     <Compile Include="Content\ForgeContentManager.cs" />
     <Compile Include="Content\ContentReader.cs" />
@@ -91,7 +88,6 @@
     <Compile Include="Sprites\SpriteComponentProcessor.cs" />
     <Compile Include="Input\InputException.cs" />
     <Compile Include="Input\InputManager.cs" />
-    <Compile Include="IUpdatable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Content\AnimatedSpriteDefinitionContentReader.cs" />
     <Compile Include="Content\TextureContentReader.cs" />
