@@ -262,7 +262,10 @@ namespace Scott.DungeonCrawler
         {
             // Render game sprites.
             GameRoot.Renderer.StartDrawing(clearScreen: true);
-            mSpriteProcessor.Draw(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            mSpriteProcessor.Draw(
+                GameRoot.Renderer,
+                gameTime.TotalGameTime.TotalSeconds,
+                gameTime.ElapsedGameTime.TotalSeconds);
             GameRoot.Renderer.FinishDrawing();
 
             // Debug drawing.

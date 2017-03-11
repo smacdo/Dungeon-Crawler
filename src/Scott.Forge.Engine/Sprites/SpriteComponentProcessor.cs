@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 using System;
+using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
 
 namespace Scott.Forge.Engine.Sprites
 {
     /// <summary>
     ///  Processes sprite components.
+    ///  TODO: Don't update sprites that are not active.
     /// </summary>
     public class SpriteComponentProcessor : ComponentProcessor<SpriteComponent>
     {
@@ -32,6 +34,13 @@ namespace Scott.Forge.Engine.Sprites
             double deltaTimeSeconds)
         {
             var totalGameTime = TimeSpan.FromSeconds(currentTimeSeconds);
+
+            // Was there a request to start playing an animation?
+            if (sprite.RequestedAnimation.HasValue)
+            {
+                ProcessAnimationRequest(sprite);
+                sprite.RequestedAnimation = null;
+            }
 
             // Do not update component if no animation is being played.
             if (sprite.CurrentAnimation == null)
@@ -53,8 +62,6 @@ namespace Scott.Forge.Engine.Sprites
                 sprite.AnimationFrameIndex += 1;
 
                 // Are we at the end of this animation?
-                var atlasOffset = Vector2.Zero;
-
                 if (sprite.AnimationFrameIndex == sprite.CurrentAnimation.FrameCount)
                 {
                     // Animation has completed.
@@ -68,30 +75,22 @@ namespace Scott.Forge.Engine.Sprites
 
                         case AnimationEndingAction.Stop:
                             sprite.AnimationFrameIndex -= 1;
-                            OnAnimationComplete(sprite);
-
                             animationCompleted = true;
                             break;
 
                         case AnimationEndingAction.StopAndReset:
                             sprite.AnimationFrameIndex = 0;
-                            OnAnimationComplete(sprite);
-
                             animationCompleted = true;
                             break;
                     }
                 }
 
-                // Load the texture atlas rect for the next animation frame. 
-                atlasOffset = sprite.CurrentAnimation.GetSpriteFrame(
+                // Update sprite texture atlas positions for the next animation frame. 
+                var atlasPosition = sprite.CurrentAnimation.GetAtlasPosition(
                     sprite.Direction,
                     sprite.AnimationFrameIndex);
-                
-                // Update sprite atlas rectangles for the renderer.
-                for (var layer = 0; layer < sprite.Sprites.Length; layer++)
-                {
-                    sprite.SpriteRects[layer] = new RectF(atlasOffset, sprite.Sprites[layer].Size);
-                }
+
+                UpdateSpriteTextureAtlasPosition(sprite, atlasPosition);
 
                 // Update the time when this animation frame was first displayed
                 sprite.AnimationFrameSecondsActive -= sprite.CurrentAnimation.FrameSeconds;
@@ -101,10 +100,71 @@ namespace Scott.Forge.Engine.Sprites
             if (animationCompleted)
             {
                 sprite.CurrentAnimation = null;
+                sprite.NotifyAnimationComplete();
             }
         }
 
-        public void Draw(double currentTime, double deltaTime)
+        /// <summary>
+        ///  Do the work of starting a new animation from an animation request.
+        /// </summary>
+        /// <param name="sprite"></param>
+        private void ProcessAnimationRequest(SpriteComponent sprite)
+        {
+            var request = sprite.RequestedAnimation.Value;
+
+            // Are we about to abort a currently playing animation?
+            if (sprite.IsAnimating)
+            {
+                sprite.CurrentAnimation = null;
+            }
+
+            // Get the animation definition for the requested animation. Verify it has the requested direction before
+            // playing.
+            var animation = sprite.Animations.Get(request.Name);
+            var directionInt = (int)request.Direction;
+
+            if (animation.Frames.GetLength(0) <= directionInt)
+            {
+                throw new AnimationDirectionNotFoundException(request.Name, request.Direction);
+            }
+
+            // Update state of the sprite component to start playing animation.
+            sprite.CurrentAnimation = animation;
+            sprite.Direction = request.Direction;
+            sprite.EndingAction = request.EndingAction;
+
+            sprite.AnimationSecondsActive = 0.0;            // TODO: Should this be zero or time when request was made?
+            sprite.AnimationFrameSecondsActive = 0.0;       //  ... request time is time at last update.
+
+            sprite.AnimationFrameIndex = 0;
+
+            // Initialize sprite frames to start of animation.
+            var atlasPosition = sprite.CurrentAnimation.GetAtlasPosition(
+                    sprite.Direction,
+                    sprite.AnimationFrameIndex);
+
+            UpdateSpriteTextureAtlasPosition(sprite, atlasPosition);
+        }
+
+        /// <summary>
+        ///  Set all sprites in a sprite component to have the given texture atlas position.
+        /// </summary>
+        /// <param name="sprite">Sprite component to update.</param>
+        /// <param name="atlasPosition">New texture atlas size.</param>
+        private void UpdateSpriteTextureAtlasPosition(SpriteComponent sprite, Vector2 atlasPosition)
+        {
+            for (var layer = 0; layer < sprite.Sprites.Length; layer++)
+            {
+                sprite.SpriteRects[layer] = new RectF(atlasPosition, sprite.Sprites[layer].Size);
+            }
+        }
+
+        /// <summary>
+        ///  Draw all sprites from this component processor.
+        /// </summary>
+        /// <param name="currentTime">Current time in seconds.</param>
+        /// <param name="deltaTime">Time since last draw call in seconds.</param>
+        public void Draw(IGameRenderer renderer, double currentTime, double deltaTime)
         {
             for (var index = 0; index < mComponents.Count; ++index)
             {
@@ -118,37 +178,40 @@ namespace Scott.Forge.Engine.Sprites
 
                 for (var layer = 0; layer < component.Sprites.Length; layer++)
                 {
-                    GameRoot.Renderer.Draw(
-                        component.Sprites[layer].Texture,
+                    renderer.Draw(
+                        component.Sprites[layer].Atlas,
                         component.SpriteRects[layer],
                         transform.WorldPosition,
                         (component.RendererIgnoreTransformRotation ? 0.0f : transform.WorldRotation));
 
+#if DEBUG
                     // Draw sprite rectangles.
-                    var spriteRect = new BoundingRect(
-                        transform.WorldPosition.X,
-                        transform.WorldPosition.Y,
-                        component.SpriteRects[layer].Size.Width / 2,
-                        component.SpriteRects[layer].Size.Height / 2);
+                    if (GameRoot.Settings.DrawSpriteDebug)
+                    {
+                        var spriteRect = new BoundingRect(
+                            centerX: transform.WorldPosition.X,
+                            centerY: transform.WorldPosition.Y,
+                            halfWidth: component.SpriteRects[layer].Size.Width / 2,
+                            halfHeight: component.SpriteRects[layer].Size.Height / 2);
 
-                    GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
+                        GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
+                    }
+#endif
+
                 }
-
+                
+#if DEBUG
                 // Draw transform position and location.
-                GameRoot.Debug.DrawPoint(transform.WorldPosition, Microsoft.Xna.Framework.Color.Blue, 4.0f);
-                GameRoot.Debug.DrawLine(
-                    transform.WorldPosition,
-                    transform.WorldPosition + (transform.Forward * 16.0f),
-                    color: Microsoft.Xna.Framework.Color.LightBlue);
+                if (GameRoot.Settings.DrawTransformDebug)
+                {
+                    GameRoot.Debug.DrawPoint(transform.WorldPosition, Microsoft.Xna.Framework.Color.Blue, 4.0f);
+                    GameRoot.Debug.DrawLine(
+                        transform.WorldPosition,
+                        transform.WorldPosition + (transform.Forward * 16.0f),
+                        color: Microsoft.Xna.Framework.Color.LightBlue);
+                }
+#endif                
             }
-        }
-
-        /// <summary>
-        ///  Called when an animation completes.
-        /// </summary>
-        /// <param name="animation"></param>
-        private void OnAnimationComplete(SpriteComponent component)
-        {
         }
     }
 }

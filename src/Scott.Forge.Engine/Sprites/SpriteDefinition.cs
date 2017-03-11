@@ -33,41 +33,33 @@ namespace Scott.Forge.Engine.Sprites
         /// <param name="name">Name of the sprite.</param>
         /// <param name="texture">Texture atlas that contains this sprite.</param>
         /// <param name="size">Width and height of the sprite.</param>
-        /// <param name="startingOffset">The X and Y atlas offset to use if the sprite is not animating.</param>
+        /// <param name="atlasPosition">Top left corner of sprite in the atlas.</param>
         public SpriteDefinition(
             string name,
             SizeF size,
-            Vector2 startingOffset,
+            Vector2 atlasPosition,
             Texture2D texture)
         {
             // Check arguments for errors.
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
-            if (size.Width <= 0)
+            if (size.IsEmpty)
             {
-                throw new ArgumentException("Sprite width must be larger than zero", "size");
-            }
-            else if (size.Height <= 0)
-            {
-                throw new ArgumentException("Sprite height must be larger than zero", "size");
+                throw new ArgumentException("Sprite size must be larger than zero", nameof(size));
             }
 
-            if (startingOffset.X < 0)
+            if (atlasPosition.X < 0 || atlasPosition.Y < 0)
             {
-                throw new ArgumentException("Sprite atlas x offset must be at least zero", "startingOffset");
-            }
-            else if (startingOffset.Y < 0)
-            {
-                throw new ArgumentException("Sprite atlas y offset must be at least zero", "startingOffset");
+                throw new ArgumentException("Sprite atlas position cannot be negative", nameof(atlasPosition));
             }
 
             // Copy properties.
             Name = name;
-            Texture = texture;
-            StartingOffset = startingOffset;
+            Atlas = texture;
+            AtlasPosition = atlasPosition;
             Size = size;
         }
 
@@ -77,18 +69,18 @@ namespace Scott.Forge.Engine.Sprites
         public string Name { get; private set; }
 
         /// <summary>
-        ///  Get the size of the sprite. (X is width, and Y is height).
+        ///  Get the size of the sprite.
         /// </summary>
         public SizeF Size { get; private set; }
 
         /// <summary>
-        ///  Get the X and Y atlas offset to use if the sprite is not animating.
+        ///  Get the X and Y atlas offset of the sprite.
         /// </summary>
-        public Vector2 StartingOffset { get; private set; }
+        public Vector2 AtlasPosition { get; private set; }
 
         /// <summar>y
         ///  Get the sprite texture atlas.
         /// </summary>
-        public Texture2D Texture { get; private set; }
+        public Texture2D Atlas { get; private set; }
     }
 }

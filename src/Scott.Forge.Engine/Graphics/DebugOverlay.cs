@@ -26,12 +26,144 @@ namespace Scott.Forge.Engine.Graphics
     /// <summary>
     /// Assists in drawing debug objects. Makes debugging stuff MUCH easier.
     /// </summary>
+    public interface IDebugOverlay
+    {
+        /// <summary>
+        /// Unload the debug renderer
+        /// </summary>
+        void Unload();
+
+        /// <summary>
+        ///  Draw a point on the screen.
+        /// </summary>
+        /// <param name="point">Center of the point in screen space.</param>
+        /// <param name="color">Color of the point, optional.</param>
+        /// <param name="sizeIn">Size of the point, optional.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawPoint(
+            Vector2 point,
+            Color? color = null,
+            float? sizeIn = null,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  Draws a rectangle border on the screen.
+        /// </summary>
+        /// <param name="dimensions">Rectangle dimensions in screen space.</param>
+        /// <param name="borderColor">Color of the rectangle border. (Optional, default is white).</param>
+        /// <param name="borderSize">Size of the border, optional.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawRectBorder(
+            RectF dimensions,
+            Color? borderColor = null,
+            float? borderSize = null,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  Draws a rectangle border on the screen.
+        /// </summary>
+        /// <param name="dimensions">Rectangle dimensions in screen space.</param>
+        /// <param name="borderColor">Color of the rectangle border, optional.</param>
+        /// <param name="borderSize">Size of the border, optional.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawRectBorder(
+            Rectangle dimensions,
+            Color? borderColor = null,
+            float? borderSize = null,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  Draws a filled rectangle on the screen.
+        /// </summary>
+        /// <param name="dimensions">Rectangle dimensions in screen space.</param>
+        /// <param name="color">Color of the rectangle border, optional.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawFilledRect(
+            RectF dimensions,
+            Color? color = null,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  Draws a rectangle border representing a bounding rect region.
+        /// </summary>
+        /// <param name="rect">Rectangle dimensions in screen space.</param>
+        /// <param name="borderColor">Color of the rectangle border, optional.</param>
+        /// <param name="borderSize">Size of the border, optional.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawBoundingRect(
+            BoundingRect rect,
+            Color? borderColor = null,
+            float? borderSize = null,
+            TimeSpan? timeToLive = null);
+        /// <summary>
+        ///  Draws a border representing a bounding area region.
+        /// </summary>
+        /// <param name="bounds">Bounding area dimensions in screen space.</param>
+        /// <param name="borderColor">Color of the bounding area border, optional.</param>
+        /// <param name="borderSize">Size of the border, optional.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawBoundingArea(
+            BoundingArea bounds,
+            Color? borderColor = null,
+            float? borderSize = null,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  Draws a line segment on the screen.
+        /// </summary>
+        /// <param name="start">Start of the line in screen space.</param>
+        /// <param name="end">End of the line in screen space.</param>
+        /// <param name="color">Color of the line. (Optional).</param>
+        /// <param name="width">Width of the line. (Optional).</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawLine(
+            Vector2 start,
+            Vector2 end,
+            Color? color = null,
+            float? width = null,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  Draws text on the screen for debugging.
+        /// </summary>
+        /// <param name="text">Text to draw on the screen.</param>
+        /// <param name="pos">Postion to draw the text in screen space coordinates.</param>
+        /// <param name="color">Color to draw the text.</param>
+        /// <param name="backgroundColor">Text rectangle background color.</param>
+        /// <param name="timeToLive">Amount of time to persist, optional.</param>
+        void DrawTextBox(
+            string text,
+            Vector2 pos,
+            Color? textColor,
+            Color? backgroundColor,
+            TimeSpan? timeToLive = null);
+
+        /// <summary>
+        ///  This should be called at the start of each update cycle, which allows the debug
+        ///  manager to reset geometry primitives. If this is not called often enough before a draw
+        ///  call then the manager will run out of geometry primitives.
+        ///  
+        ///  Best avoided by simply calling this method once at the start of every Update() call.
+        /// </summary>
+        /// <param name="gameTime">The current game time.</param>
+        void PreUpdate(GameTime gameTime);
+
+        /// <summary>
+        ///  Draws all queued debug draws.
+        /// </summary>
+        /// <param name="gameTime">The current game time.</param>
+        void Draw(GameTime renderTime);
+    }
+
+    /// <summary>
+    ///  Standard debug overlay implementation.
+    /// </summary>
     /// <remarks>
     ///  TODO: Convert primitives from list to array, with Count/Capacity tracking.
     ///  TODO: Convert primitives from class to struct to enable array of structs.
     ///   (This needs better deltee/prune logic).
     /// </remarks>
-    public class DebugOverlay
+    public class StandardDebugOverlay : IDebugOverlay
     {
         private const float DefaultLineWidth = 1.0f;
         private const float DefaultPointSize = 1.0f;
@@ -62,7 +194,7 @@ namespace Scott.Forge.Engine.Graphics
         /// Constructor
         /// </summary>
         /// <param name="graphics"></param>
-        public DebugOverlay( GraphicsDevice graphics, ContentManager content )
+        public StandardDebugOverlay( GraphicsDevice graphics, ContentManager content )
         {
             mDebugFont = content.Load<SpriteFont>(Path.Combine("fonts", "System10"));
 
@@ -87,7 +219,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="color">Color of the point, optional.</param>
         /// <param name="sizeIn">Size of the point, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawPoint(
             Vector2 point,
             Color? color = null,
@@ -116,7 +247,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="borderColor">Color of the rectangle border. (Optional, default is white).</param>
         /// <param name="borderSize">Size of the border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawRectBorder(
             RectF dimensions,
             Color? borderColor = null,
@@ -140,7 +270,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="borderColor">Color of the rectangle border, optional.</param>
         /// <param name="borderSize">Size of the border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawRectBorder(
             Rectangle dimensions,
             Color? borderColor = null,
@@ -168,7 +297,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="dimensions">Rectangle dimensions in screen space.</param>
         /// <param name="color">Color of the rectangle border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawFilledRect(
             RectF dimensions,
             Color? color = null,
@@ -191,7 +319,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="borderColor">Color of the rectangle border, optional.</param>
         /// <param name="borderSize">Size of the border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawBoundingRect(
             BoundingRect rect,
             Color? borderColor = null,
@@ -218,7 +345,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="borderColor">Color of the bounding area border, optional.</param>
         /// <param name="borderSize">Size of the border, optional.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawBoundingArea(
             BoundingArea bounds,
             Color? borderColor = null, 
@@ -240,7 +366,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="color">Color of the line. (Optional).</param>
         /// <param name="width">Width of the line. (Optional).</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawLine(
             Vector2 start,
             Vector2 end,
@@ -267,7 +392,6 @@ namespace Scott.Forge.Engine.Graphics
         /// <param name="color">Color to draw the text.</param>
         /// <param name="backgroundColor">Text rectangle background color.</param>
         /// <param name="timeToLive">Amount of time to persist, optional.</param>
-        [Conditional("DEBUG")]
         public void DrawTextBox(
             string text,
             Vector2 pos,
@@ -293,7 +417,6 @@ namespace Scott.Forge.Engine.Graphics
         ///  Best avoided by simply calling this method once at the start of every Update() call.
         /// </summary>
         /// <param name="gameTime">The current game time.</param>
-        [Conditional("DEBUG")]
         public void PreUpdate( GameTime gameTime )
         {
             PrunePrimitiveList(mRectsToDraw, gameTime);
@@ -305,7 +428,6 @@ namespace Scott.Forge.Engine.Graphics
         ///  Draws all queued debug draws.
         /// </summary>
         /// <param name="gameTime">The current game time.</param>
-        [Conditional("DEBUG")]
         public void Draw( GameTime renderTime )
         {
             GameRoot.Renderer.StartDrawing();

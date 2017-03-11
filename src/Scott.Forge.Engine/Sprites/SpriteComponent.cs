@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ namespace Scott.Forge.Engine.Sprites
     /// </summary>
     public class SpriteComponent : Component
     {
+        public delegate void AnimationCompletedDelegate();
+
         private SpriteDefinition[] mSprites;
         private RectF[] mSpriteRects;
 
@@ -37,6 +39,47 @@ namespace Scott.Forge.Engine.Sprites
             mSprites = new SpriteDefinition[1];
             mSpriteRects = new RectF[1];
         }
+
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="sprite">Sprite definition to use when initializing.</param>
+        public SpriteComponent(SpriteDefinition sprite)
+            : this()
+        {
+            if (sprite == null)
+            {
+                throw new ArgumentNullException(nameof(sprite));
+            }
+
+            mSprites[0] = sprite;
+            mSpriteRects[0] = new RectF(
+                left: sprite.AtlasPosition.X,
+                top: sprite.AtlasPosition.Y,
+                width: sprite.Size.Width,
+                height: sprite.Size.Height);
+        }
+
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="sprite"></param>
+        /// <param name="animation"></param>
+        public SpriteComponent(AnimatedSpriteDefinition sprite)
+            : this(sprite?.Sprite)
+        {
+            if (sprite == null)
+            {
+                throw new ArgumentNullException(nameof(sprite));
+            }
+
+            SetSprite(sprite);
+        }
+
+        /// <summary>
+        ///  Event notification for when sprite completes an animation.
+        /// </summary>
+        public event AnimationCompletedDelegate AnimationCompleted;
 
         /// <summary>
         ///  Get or set the current animation frame index.
@@ -91,6 +134,11 @@ namespace Scott.Forge.Engine.Sprites
         public bool RendererIgnoreTransformRotation { get; set; }
 
         /// <summary>
+        ///  Get or set the next requestion animation.
+        /// </summary>
+        internal AnimationRequest? RequestedAnimation { get; set; }
+
+        /// <summary>
         ///  Get it the sprite is playing an animation.
         /// </summary>
         public bool IsAnimating
@@ -123,6 +171,14 @@ namespace Scott.Forge.Engine.Sprites
             SetLayer(0, spriteDefinition.Sprite);
         }
 
+        /// <summary>
+        ///  Change the number of sprites that this sprite component can hold.
+        /// </summary>
+        /// <remarks>
+        ///  Each sprite that is added to the sprite component must use the same animation definition, or udefined
+        ///  results will occur.
+        /// </remarks>
+        /// <param name="newCount">Number of sprites.</param>
         public void SetMultipleSpriteCount(int newCount)
         {
             if (newCount < 1)
@@ -135,26 +191,29 @@ namespace Scott.Forge.Engine.Sprites
         }
 
         /// <summary>
-        ///  Adds a sprite for composite rendering.
+        ///  Set a sprite for composite rendering.
         /// </summary>
-        /// <param name="layerName">Name of the layer.</param>
+        /// <remarks>
+        ///  Each sprite that is added to the sprite component must use the same animation definition, or udefined
+        ///  results will occur.
+        /// </remarks>
+        /// <param name="layerIndex">Layer index.</param>
         /// <param name="spriteData">Sprite definition.</param>
-        /// <param name="enabled">True if layer is enabled by default, false otherwise.</param>
         public void SetLayer(int layerIndex, SpriteDefinition spriteDefinition)
         {
             if (layerIndex < 0 || layerIndex >= Sprites.Length)
             {
-                throw new ArgumentOutOfRangeException("layerIndex");
+                throw new ArgumentOutOfRangeException(nameof(layerIndex));
             }
 
             if (spriteDefinition == null)
             {
-                throw new ArgumentNullException("spriteDefinition");
+                throw new ArgumentNullException(nameof(spriteDefinition));
             }
 
             Sprites[layerIndex] = spriteDefinition;
             mSpriteRects[layerIndex] = new RectF(
-                Sprites[layerIndex].StartingOffset,
+                Sprites[layerIndex].AtlasPosition,
                 Sprites[layerIndex].Size);
         }
 
@@ -169,28 +228,12 @@ namespace Scott.Forge.Engine.Sprites
             DirectionName direction,
             AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset)
         {
-            // Are we about to abort a currently playing animation?
-            if (IsAnimating)
+            RequestedAnimation = new AnimationRequest
             {
-                AbortCurrentAnimation();
-            }
-
-            // Look up the requested animation definition and begin playing it.
-            AnimationDefinition animation = null;
-
-            if (!Animations.Animations.TryGetValue(animationName, out animation))
-            {
-                throw new ArgumentException("Animation not found", "animation");
-            }
-
-            CurrentAnimation = animation;
-            Direction = direction;
-            EndingAction = endingAction;
-
-            AnimationSecondsActive = 0.0;
-            AnimationFrameSecondsActive = 0.0;
-            
-            AnimationFrameIndex = 0;
+                Name = animationName,
+                Direction = direction,
+                EndingAction = endingAction
+            };
         }
 
         /// <summary>
@@ -201,24 +244,23 @@ namespace Scott.Forge.Engine.Sprites
         {
             PlayAnimation(baseAnimationName, direction, AnimationEndingAction.Loop);
         }
-
+        
         /// <summary>
-        ///  Update cached sprite atlas rects.
+        ///  Call animation completed event.
         /// </summary>
-        internal void SetAtlasRects(Vector2 atlasOffset)
+        internal void NotifyAnimationComplete()
         {
-            for (int i = 0; i < mSpriteRects.Length; i++)
+            if (AnimationCompleted != null)
             {
-                mSpriteRects[i] = new RectF(atlasOffset, Sprites[i].Size);
+                AnimationCompleted();
             }
         }
 
-        /// <summary>
-        ///  Kills the current animation.
-        /// </summary>
-        public void AbortCurrentAnimation()
+        internal struct AnimationRequest
         {
-            CurrentAnimation = null;
+            public string Name;
+            public DirectionName Direction;
+            public AnimationEndingAction EndingAction;
         }
     }
 }

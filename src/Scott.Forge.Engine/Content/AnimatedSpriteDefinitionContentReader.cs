@@ -100,7 +100,7 @@ namespace Scott.Forge.Engine.Content
                 if (animationName == defaultAnimationName)
                 {
                     var animation = ImportAnimationData(animNode);
-                    startingOffset = animation.GetSpriteFrame(Constants.DefaultDirection, 0);
+                    startingOffset = animation.GetAtlasPosition(Constants.DefaultDirection, 0);
                 }
             }
 

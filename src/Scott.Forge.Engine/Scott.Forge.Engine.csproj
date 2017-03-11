@@ -76,10 +76,12 @@
     <Compile Include="GameSettings.cs" />
     <Compile Include="Graphics\DebugOverlay.cs" />
     <Compile Include="Graphics\GameRenderer.cs" />
+    <Compile Include="Graphics\IGameRenderer.cs" />
     <Compile Include="Graphics\Screen.cs" />
     <Compile Include="Physics\PhysicsComponent.cs" />
     <Compile Include="Physics\PhysicsComponentProcessor.cs" />
     <Compile Include="Physics\CollisionResult.cs" />
+    <Compile Include="Sprites\AnimationExceptions.cs" />
     <Compile Include="Sprites\SpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationSetDefinition.cs" />
     <Compile Include="Sprites\SpriteComponent.cs" />

@@ -98,7 +98,19 @@ namespace Scott.Forge.Tests.GameObjectsTests
             get { throw new NotImplementedException(); }
         }
 
-        public GameObject Parent
+        public IGameObject Parent
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public IGameObject FirstChild
         {
             get
             {
@@ -106,15 +118,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
             }
         }
 
-        public GameObject FirstChild
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public GameObject NextSibling
+        public IGameObject NextSibling
         {
             get
             {

@@ -28,10 +28,11 @@ namespace Scott.Forge.Engine
     /// </summary>
     public static class GameRoot
     {
-        public static DebugOverlay Debug { get; private set; }
+        public static IDebugOverlay Debug { get; internal set; }
         public static GameRenderer Renderer { get; private set; }
         public static System.Random Random { get; private set; }
         public static GameSettings Settings { get; private set; }
+        public static bool UnitTests { get; private set; } = false;
 
         /// <summary>
         /// THIS IS A HUGE HACK THAT WAS ONLY PUT HERE SO WE CAN GET A FINAL BUILD
@@ -51,11 +52,17 @@ namespace Scott.Forge.Engine
         /// </summary>
         public static void Initialize( GraphicsDevice graphics, ContentManager content )
         {
-            Enemies = new List<GameObject>();
-            Debug = new DebugOverlay( graphics, content );
             mGraphicsDevice = graphics;
-            Renderer = new GameRenderer( graphics );
-            Random = new System.Random(); //  new Scott.Common.Random( Common.RandomGeneratorType.MersenneTwister );
+
+            if (graphics != null && content != null)
+            {
+                Debug = new StandardDebugOverlay(graphics, content);
+                Renderer = new GameRenderer(graphics);
+            }
+
+            Enemies = new List<GameObject>();
+            
+            Random = new System.Random();
             Settings = new GameSettings();
         }
 

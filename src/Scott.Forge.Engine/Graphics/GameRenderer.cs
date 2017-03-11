@@ -22,12 +22,12 @@ using System;
 namespace Scott.Forge.Engine.Graphics
 {
     /// <summary>
-    ///  Responsible for drawing 2d sprites.
+    ///  Responsible for drawing 2d primitives for a game.
     /// </summary>
     /// <remarks>
     ///  TODO: Replace SpriteFont with custom sprite font rendering (don't rely on XNA).
     /// </remarks>
-    public class GameRenderer
+    public class GameRenderer : IGameRenderer
     {
         private GraphicsDevice mGraphicsDevice;
         private SpriteBatch mSpriteBatch;
@@ -60,19 +60,19 @@ namespace Scott.Forge.Engine.Graphics
         ///  Draw a texture atlas slice centered on the given screen space point with a rotation.
         /// </summary>
         /// <param name="atlas">Texture atlas to use.</param>
-        /// <param name="offset">Rectangle section of texture atlas to draw.</param>
-        /// <param name="position">Center position in screen space to draw at.</param>
+        /// <param name="atlasRect">Rectangle section of texture atlas to draw.</param>
+        /// <param name="screenPosition">Center position in screen space to draw at.</param>
         /// <param name="rotation">Rotation (in radians) to rotate texture while drawing.</param>
-        public void Draw(Texture2D atlas, RectF offset, Vector2 position, float rotation = 0.0f)
+        public void Draw(Texture2D atlas, RectF atlasRect, Vector2 screenPosition, float rotation = 0.0f)
         {
             Draw(
                 atlas,
                 new Rectangle(
-                    x: (int)offset.Left,
-                    y: (int)offset.Top,
-                    width: (int)offset.Width,
-                    height: (int)offset.Height),
-                position,
+                    x: (int)atlasRect.Left,
+                    y: (int)atlasRect.Top,
+                    width: (int)atlasRect.Width,
+                    height: (int)atlasRect.Height),
+                screenPosition,
                 rotation);
         }
 

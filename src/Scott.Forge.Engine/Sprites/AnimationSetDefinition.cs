@@ -31,6 +31,8 @@ namespace Scott.Forge.Engine.Sprites
     /// </remarks>
     public class AnimationSetDefinition
     {
+        private Dictionary<string, AnimationDefinition> mAnimations;
+
         /// <summary>
         ///  List of animations contained in the set.
         /// </summary>
@@ -38,7 +40,7 @@ namespace Scott.Forge.Engine.Sprites
         public AnimationSetDefinition(List<AnimationDefinition> animationList)
         {
             var animationCount = (animationList != null ? animationList.Count : 0);
-            Animations = new Dictionary<string, AnimationDefinition>(animationCount);
+            mAnimations = new Dictionary<string, AnimationDefinition>(animationCount);
 
             for (int i = 0; i < animationCount; i++)
             {
@@ -49,14 +51,45 @@ namespace Scott.Forge.Engine.Sprites
                     throw new ArgumentException("Animation list contains a null animation defintion", "animationList");
                 }
 
-                Animations.Add(animation.Name, animation);
+                mAnimations.Add(animation.Name, animation);
             }
         }
 
+        /// <summary>
+        ///  Get animation by name.
+        /// </summary>
+        /// <param name="animationName">Name of animation.</param>
+        /// <returns>Animation definition.</returns>
+        public AnimationDefinition this[string animationName]
+        {
+            get
+            {
+                AnimationDefinition definition = null;
+
+                if (!mAnimations.TryGetValue(animationName, out definition))
+                {
+                    throw new AnimationNotFoundException("animationName");
+                }
+
+                return definition;
+            }
+        }
 
         /// <summary>
-        ///  Get a list of sprite animations.
+        ///  Get animation definition by name.
         /// </summary>
-        public Dictionary<string, AnimationDefinition> Animations { get; private set; }
+        /// <param name="animationName">Name of animation.</param>
+        /// <returns>Animation definition.</returns>
+        public AnimationDefinition Get(string animationName)
+        {
+            AnimationDefinition definition = null;
+
+            if (!mAnimations.TryGetValue(animationName, out definition))
+            {
+                throw new AnimationNotFoundException("animationName");
+            }
+
+            return definition;
+        }
     }
 }

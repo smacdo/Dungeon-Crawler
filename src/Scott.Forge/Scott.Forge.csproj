@@ -57,6 +57,7 @@
     <Compile Include="GameObjects\ComponentProcessor.cs" />
     <Compile Include="GameObjects\GameObjectExceptions.cs" />
     <Compile Include="GameObjects\IComponentFactory.cs" />
+    <Compile Include="GameObjects\IGameObject.cs" />
     <Compile Include="GameObjects\TransformComponent.cs">
       <SubType>Code</SubType>
     </Compile>
