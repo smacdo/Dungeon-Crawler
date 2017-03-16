@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Scott.Forge
+namespace Scott.Forge.Support
 {
     /// <summary>
     ///  Creates an efficient collection of pre-allocated objects for taking and returning to the pool.

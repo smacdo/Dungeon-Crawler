@@ -47,8 +47,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net45+win+wpa81+Xamarin.iOS10+MonoAndroid10+MonoTouch10\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.6.0.1625\lib\portable-net45+win8+wpa81\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -76,7 +76,7 @@
     <Compile Include="GameObjectsTests\ComponentProcessorTests.cs" />
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
-    <Compile Include="InstancePoolTests.cs" />
+    <Compile Include="Support\InstancePoolTests.cs" />
     <Compile Include="InterpolationTests.cs" />
     <Compile Include="MathHelperTests.cs" />
     <Compile Include="MersenneTwisterTests.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="StringExtensionMethodsTests.cs" />
     <Compile Include="PairTests.cs" />
     <Compile Include="RectFTests.cs" />
-    <Compile Include="BoundingAreaTests.cs" />
+    <Compile Include="Spatial\BoundingAreaTests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />

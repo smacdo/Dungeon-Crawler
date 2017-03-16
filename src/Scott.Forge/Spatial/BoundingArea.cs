@@ -18,7 +18,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
-namespace Scott.Forge
+namespace Scott.Forge.Spatial
 {
     /// <summary>
     /// Game component that detects, resolves and handles rotatable, rectangular collisions

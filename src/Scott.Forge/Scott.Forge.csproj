@@ -49,8 +49,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoundingArea.cs" />
-    <Compile Include="BoundingRect.cs" />
+    <Compile Include="Spatial\BoundingArea.cs" />
+    <Compile Include="Spatial\BoundingRect.cs" />
     <Compile Include="DirectionName.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ForgeException.cs" />
@@ -66,23 +66,21 @@
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
-    <Compile Include="InstancePool.cs" />
+    <Compile Include="Support\InstancePool.cs" />
     <Compile Include="Interpolation.cs" />
-    <Compile Include="IRecyclable.cs" />
+    <Compile Include="Support\IRecyclable.cs" />
     <Compile Include="MathHelper.cs" />
-    <Compile Include="Matrix2d.cs" />
-    <Compile Include="MersenneTwister.cs" />
+    <Compile Include="Matrix.cs" />
+    <Compile Include="Random\MersenneTwister.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Random.cs" />
+    <Compile Include="Random\Random.cs" />
     <Compile Include="GameObjects\Component.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="RectF.cs" />
     <Compile Include="SizeF.cs" />
     <Compile Include="Spatial\SpatialIndex.cs" />
-    <Compile Include="Vector2.cs" />
-    <Compile Include="Vector3.cs" />
-    <Compile Include="Vector4.cs" />
+    <Compile Include="Vector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,7 +15,7 @@
  */
 using System.Runtime.Serialization;
 
-namespace Scott.Forge
+namespace Scott.Forge.Random
 {
     /// <summary>
     ///  Type of random number generator to use.
@@ -69,7 +69,7 @@ namespace Scott.Forge
     ///  random generators.
     /// </summary>
     [DataContract]
-    public class Random : System.Random
+    public class ForgeRandom : System.Random
     {
         IRandom mRandom;
         RandomGeneratorType mType;
@@ -78,7 +78,7 @@ namespace Scott.Forge
         ///  Create a new random number generator of the specified type.
         /// </summary>
         /// <param name="type">Type of random number generator to create.</param>
-        public Random( RandomGeneratorType type )
+        public ForgeRandom( RandomGeneratorType type )
         {
             mType = type;
             mRandom = new MersenneTwister();
@@ -89,7 +89,7 @@ namespace Scott.Forge
         /// </summary>
         /// <param name="type">Type of random number generator to create.</param>
         /// <param name="seed">Random number generator seed.</param>
-        public Random( RandomGeneratorType type, int seed )
+        public ForgeRandom( RandomGeneratorType type, int seed )
         {
             mType = type;
             mRandom = new MersenneTwister( (uint) seed );

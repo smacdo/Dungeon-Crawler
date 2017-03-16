@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-namespace Scott.Forge
+namespace Scott.Forge.Support
 {
     /// <summary>
     ///  For objects that can be reset to their default state.

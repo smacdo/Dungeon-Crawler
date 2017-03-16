@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Scott.Forge
+namespace Scott.Forge.Spatial
 {
     /// <summary>
     ///  A two dimensional axis aligned bounding rectangle that is defined by a center position and its half width/

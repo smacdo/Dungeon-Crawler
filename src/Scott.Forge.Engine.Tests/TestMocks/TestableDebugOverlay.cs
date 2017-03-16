@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Scott.Forge.Engine.Graphics;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Engine.Tests.TestMocks
 {

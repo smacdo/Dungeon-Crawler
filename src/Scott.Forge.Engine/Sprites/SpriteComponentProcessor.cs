@@ -16,6 +16,7 @@
 using System;
 using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Engine.Sprites
 {

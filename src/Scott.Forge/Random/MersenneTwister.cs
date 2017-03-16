@@ -68,7 +68,7 @@ using System;
 using System.Runtime.Serialization;
 using Scott.Forge;
 
-namespace Scott.Forge
+namespace Scott.Forge.Random
 {
     /// <summary>
     ///  Random number generator that uses Mersenne Twister.

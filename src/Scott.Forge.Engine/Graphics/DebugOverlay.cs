@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Engine.Graphics
 {

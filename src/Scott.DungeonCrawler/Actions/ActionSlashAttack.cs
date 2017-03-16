@@ -21,6 +21,7 @@ using Scott.Forge.Engine.Actors;
 using Scott.Forge.Engine.Physics;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Spatial;
 
 namespace Scott.DungeonCrawler.Actions
 {

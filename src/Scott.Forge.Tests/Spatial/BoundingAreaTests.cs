@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Scott.Forge.Tests
+namespace Scott.Forge.Spatial.Tests
 {
     [TestClass]
     public class BoundingAreaTests

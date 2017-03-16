@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Support;
 
 namespace Scott.Forge.Engine.GameObjects
 {
