@@ -60,11 +60,15 @@
     <Compile Include="Actions\ActionRangedAttack.cs" />
     <Compile Include="Actions\ActionSlashAttack.cs" />
     <Compile Include="ActorEquipmentSlot.cs" />
-    <Compile Include="DungeonCrawler.cs" />
+    <Compile Include="DungeonCrawlerGame.cs" />
     <Compile Include="GameObjects\DungeonCrawlerBlueprintFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Scott.Forge.Engine.Tests\Scott.Forge.Engine.Tests.csproj">
+      <Project>{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}</Project>
+      <Name>Scott.Forge.Engine.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
       <Project>{07aaa29b-1006-4074-9c1f-ac12f09c35a6}</Project>
       <Name>Scott.Forge.Engine</Name>

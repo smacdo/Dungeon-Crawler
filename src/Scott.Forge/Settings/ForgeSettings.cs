@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Scott.Forge.Engine
+namespace Scott.Forge.Settings
 {
     /// <summary>
-    ///  Game engine core exception.
+    ///  Runtime game settings.
     /// </summary>
-    public class GameEngineException : ForgeException
+    public class ForgeSettings
     {
-        public GameEngineException()
-            : base()
-        {
-        }
-
-        public GameEngineException(string message)
-            : base(message)
-        {
-        }
-
-        public GameEngineException(string message, System.Exception innerException)
-            : base(message, innerException)
-        {
-        }
+        public bool DrawPhysicsDebug { get; set; } = true;
+        public bool DrawSpriteDebug { get; set; } = true;
+        public bool DrawTransformDebug { get; set; } = true;
+        public bool DrawWeaponHitDebug { get; set; } = true;
     }
 }

@@ -19,7 +19,7 @@ namespace Scott.Forge.Engine.Input
     /// <summary>
     ///  Represents a runtime error with the input system.
     /// </summary>
-    public class InputException : GameEngineException
+    public class InputException : ForgeException
     {
         public InputException( string message )
             : base( message )

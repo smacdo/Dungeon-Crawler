@@ -22,7 +22,7 @@ using System.Diagnostics;
 using System.IO;
 using Scott.Forge.Spatial;
 
-namespace Scott.Forge.Engine.Graphics
+namespace Scott.Forge.Graphics
 {
     /// <summary>
     /// Assists in drawing debug objects. Makes debugging stuff MUCH easier.
@@ -195,9 +195,14 @@ namespace Scott.Forge.Engine.Graphics
         /// Constructor
         /// </summary>
         /// <param name="graphics"></param>
-        public StandardDebugOverlay( GraphicsDevice graphics, ContentManager content )
+        public StandardDebugOverlay(SpriteFont debugFont)
         {
-            mDebugFont = content.Load<SpriteFont>(Path.Combine("fonts", "System10"));
+            if (debugFont == null)
+            {
+                throw new ArgumentNullException(nameof(debugFont));
+            }
+
+            mDebugFont = debugFont;
 
             mRectsToDraw = new List<DebugRectangle>(250);
             mLinesToDraw = new List<DebugLine>(250);

@@ -16,7 +16,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
-namespace Scott.Forge.Engine.Graphics
+namespace Scott.Forge.Graphics
 {
     /// <summary>
     ///  Contains information on the main game window screen.

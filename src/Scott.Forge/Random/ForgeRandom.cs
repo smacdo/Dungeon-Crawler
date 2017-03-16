@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
 using System.Runtime.Serialization;
 
 namespace Scott.Forge.Random
@@ -22,9 +23,7 @@ namespace Scott.Forge.Random
     /// </summary>
     public enum RandomGeneratorType
     {
-        /// <summary>
-        ///  Mersenne Twister
-        /// </summary>
+        Default,
         MersenneTwister
     }
 
@@ -69,16 +68,16 @@ namespace Scott.Forge.Random
     ///  random generators.
     /// </summary>
     [DataContract]
-    public class ForgeRandom : System.Random
+    public class ForgeRandom : System.Random, IRandom
     {
-        IRandom mRandom;
-        RandomGeneratorType mType;
-
+        private IRandom mRandom;
+        private RandomGeneratorType mType;
+        
         /// <summary>
         ///  Create a new random number generator of the specified type.
         /// </summary>
         /// <param name="type">Type of random number generator to create.</param>
-        public ForgeRandom( RandomGeneratorType type )
+        public ForgeRandom(RandomGeneratorType type)
         {
             mType = type;
             mRandom = new MersenneTwister();
@@ -100,6 +99,15 @@ namespace Scott.Forge.Random
         /// </summary>
         /// <returns>Random signed int.</returns>
         public override int Next()
+        {
+            return NextInt();
+        }
+
+        /// <summary>
+        ///  Return a random number from zero to the maximum integer value.
+        /// </summary>
+        /// <returns>Random signed int.</returns>
+        public int NextInt()
         {
             return mRandom.NextInt();
         }
@@ -125,7 +133,21 @@ namespace Scott.Forge.Random
         /// <returns>Random signed int from min to max.</returns>
         public override int Next( int min, int max )
         {
-            return mRandom.NextInt( min, max );
+            return NextInt(min, max);
+        }
+
+        /// <summary>
+        ///  Return a random number from min to max (inclusive).
+        /// </summary>
+        /// <remarks>
+        ///  This has a numerical bias, we should correct that.
+        /// </remarks>
+        /// <param name="min">Minimum value in the range.</param>
+        /// <param name="max">Maximum value in the range.</param>
+        /// <returns>Random signed int from min to max.</returns>
+        public int NextInt(int min, int max)
+        {
+            return mRandom.NextInt(min, max);
         }
 
         /// <summary>
@@ -184,6 +206,11 @@ namespace Scott.Forge.Random
         public override void NextBytes( byte[] bytes )
         {
             mRandom.NextBytes( bytes );
+        }
+
+        public float NextUIntAsFloat()
+        {
+            throw new NotImplementedException();
         }
     }
 }

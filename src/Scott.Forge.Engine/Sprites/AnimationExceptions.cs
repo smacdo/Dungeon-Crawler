@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scott.Forge.Engine.Sprites
 {
-    public class AnimationNotFoundException : GameEngineException
+    public class AnimationNotFoundException : ForgeException
     {
         public string AnimationName { get; private set; }
         public AnimationNotFoundException(string animationName)
@@ -16,7 +16,7 @@ namespace Scott.Forge.Engine.Sprites
         }
     }
 
-    public class AnimationDirectionNotFoundException : GameEngineException
+    public class AnimationDirectionNotFoundException : ForgeException
     {
         public string AnimationName { get; private set; }
         public DirectionName Direction { get; private set; }

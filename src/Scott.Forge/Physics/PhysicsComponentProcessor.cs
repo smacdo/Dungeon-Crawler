@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 using System;
-using Scott.Forge.Engine.Graphics;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Graphics;
 using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Engine.Physics

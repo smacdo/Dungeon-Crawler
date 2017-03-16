@@ -17,10 +17,11 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Scott.Forge.Engine.Graphics;
-using Scott.Forge.GameObjects;
+using Scott.Forge.Settings;
+using Scott.Forge.Graphics;
+using Scott.Forge.Random;
 
-namespace Scott.Forge.Engine
+namespace Scott.Forge
 {
     /// <summary>
     /// Global singleton that stores global systems, processors and the game object
@@ -29,28 +30,23 @@ namespace Scott.Forge.Engine
     public static class GameRoot
     {
         public static IDebugOverlay Debug { get; internal set; }
-        public static GameRenderer Renderer { get; private set; }
+        public static IGameRenderer Renderer { get; private set; }
         public static System.Random Random { get; private set; }
-        public static GameSettings Settings { get; private set; }
+        public static ForgeSettings Settings { get; private set; }
         public static bool UnitTests { get; private set; } = false;
-
-        private static GraphicsDevice mGraphicsDevice;
 
         /// <summary>
         /// Initialize the game root
         /// </summary>
-        public static void Initialize( GraphicsDevice graphics, ContentManager content )
+        public static void Initialize(
+            IGameRenderer renderer,
+            IDebugOverlay debugOverlay,
+            ForgeSettings settings)
         {
-            mGraphicsDevice = graphics;
-
-            if (graphics != null && content != null)
-            {
-                Debug = new StandardDebugOverlay(graphics, content);
-                Renderer = new GameRenderer(graphics);
-            }
-            
+            Settings = settings;
+            Renderer = renderer;
+            Debug = debugOverlay;
             Random = new System.Random();
-            Settings = new GameSettings();
         }
 
         /// <summary>
@@ -59,7 +55,6 @@ namespace Scott.Forge.Engine
         public static void Unload()
         {
             Debug.Unload();
-            mGraphicsDevice = null;
             Renderer = null;
             Debug = null;
             Settings = null;

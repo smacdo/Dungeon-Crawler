@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Scott.Forge.Engine.Sprites;
 using Scott.Forge.Engine.Tests.TestMocks;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Random;
+using Scott.Forge.Settings;
 
 namespace Scott.Forge.Engine.Tests.Sprites
 {
@@ -63,8 +65,10 @@ namespace Scott.Forge.Engine.Tests.Sprites
         [ClassInitialize]
         public static void SetUpEvironment(TestContext context)
         {
-            GameRoot.Initialize(null, null);
-            GameRoot.Debug = new TestableDebugOverlay();
+            GameRoot.Initialize(
+                new TestableGameRenderer(),
+                new TestableDebugOverlay(),
+                new ForgeSettings());
         }
     }
 }

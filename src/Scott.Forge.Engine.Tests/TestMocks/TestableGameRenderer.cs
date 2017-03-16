@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Scott.Forge.Graphics;
 
 namespace Scott.Forge.Engine.Tests.TestMocks
 {
     /// <summary>
     ///  Special testable implementation of game renderer.
     /// </summary>
-    public class TestableGameRenderer : Graphics.IGameRenderer
+    public class TestableGameRenderer : IGameRenderer
     {
         public IList<DrawCallDetails> Draws = new List<DrawCallDetails>();
 

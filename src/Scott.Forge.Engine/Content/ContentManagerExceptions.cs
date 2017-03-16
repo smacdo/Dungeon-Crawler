@@ -20,7 +20,7 @@ namespace Scott.Forge.Engine.Content
     /// <summary>
     ///  Represents an exception while loading game data.
     /// </summary>
-    public class ContentManagerException : GameEngineException
+    public class ContentManagerException : ForgeException
     {
         /// <summary>
         ///  Create a new GameDataException.
