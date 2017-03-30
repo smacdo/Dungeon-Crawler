@@ -53,6 +53,8 @@
     <Compile Include="Physics\CollisionResult.cs" />
     <Compile Include="Physics\PhysicsComponent.cs" />
     <Compile Include="Physics\PhysicsComponentProcessor.cs" />
+    <Compile Include="Random\DefaultRandomProvider.cs" />
+    <Compile Include="Random\IRandomProvider.cs" />
     <Compile Include="Settings\ForgeSettings.cs" />
     <Compile Include="Spatial\BoundingArea.cs" />
     <Compile Include="Spatial\BoundingRect.cs" />

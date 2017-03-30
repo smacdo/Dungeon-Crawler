@@ -74,7 +74,7 @@ namespace Scott.Forge.Random
     ///  Random number generator that uses Mersenne Twister.
     /// </summary>
     [DataContract]
-    public class MersenneTwister : IRandom
+    public class MersenneTwister /* : IRandomProvider */
     {
         private const int N = 624;
         private const int M = 397;
@@ -268,29 +268,6 @@ namespace Scott.Forge.Random
         public int NextInt()
         {
             return (int)( NextULong() >> 1 );
-        }
-
-        /// <summary>
-        ///  Return a random number from min to max (inclusive).
-        /// </summary>
-        /// <remarks>
-        ///  This has a numerical bias, we should correct that.
-        /// </remarks>
-        /// <param name="min">Minimum value in the range.</param>
-        /// <param name="max">Maximum value in the range.</param>
-        /// <returns>Random signed int from min to max.</returns>
-        public int NextInt( int min, int max )
-        {
-            return min + NextInt() % ( max - min + 1 );
-        }
-
-        /// <summary>
-        ///  Returns the next unsigned int as a floating point value.
-        /// </summary>
-        /// <returns></returns>
-        public float NextUIntAsFloat()
-        {
-            return (float) NextULong();
         }
 
         /// <summary>
