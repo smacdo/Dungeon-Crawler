@@ -91,7 +91,7 @@ namespace Scott.DungeonCrawler
 
             // Initialize systems.
             var renderer = new GameRenderer(mGraphicsDevice.GraphicsDevice);
-            var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10"));
+            var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10.xnb"));
             var debugOverlay = new StandardDebugOverlay(debugFont);
 
             GameRoot.Initialize(

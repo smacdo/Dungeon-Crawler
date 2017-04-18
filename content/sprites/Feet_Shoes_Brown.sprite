@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Feet_Shoes_Brown">
-  <atlas ref="sprites/atlases/Feet_Shoes_Brown" spriteWidth="64" spriteHeight="64" />
+  <atlas ref="sprites/atlases/Feet_Shoes_Brown.png" spriteWidth="64" spriteHeight="64" />
   <default animation="Idle" direction="South" />
   <originOffset x="0" y="0" />
   

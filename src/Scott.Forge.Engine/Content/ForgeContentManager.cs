@@ -100,7 +100,7 @@ namespace Scott.Forge.Engine.Content
 
             if (rootDirectory == null)
             {
-                throw new ArgumentNullException("rootDirectory");
+                throw new ArgumentNullException(nameof(rootDirectory));
             }
 
             mContentDir = rootDirectory;
@@ -315,29 +315,36 @@ namespace Scott.Forge.Engine.Content
 
             // Now get a list of files in this directory, and add files that match asset extensions to the list of
             // asset items.
+            var contentBaseDir = mContentDir + "/";
+
             foreach (var filePath in Directory.GetFiles(currentDir))
             {
-                var baseName  = Path.GetFileNameWithoutExtension(filePath);
-                var itemName = NormalizeFilePath(Path.Combine(relativeDirectory, baseName));
+                var assetPath = NormalizeFilePath(filePath);
+
+                // Remove content directory from asset path.
+                if (assetPath.StartsWith(contentBaseDir))
+                {
+                    assetPath = assetPath.Substring(contentBaseDir.Length, assetPath.Length - contentBaseDir.Length);
+                }
 
                 // Check if the resource was loaded more than once (it should not have been).
                 // TODO: Change this logic to reload the resource rather than throw an error.
-                if (WasLoaded(itemName))
+                if (WasLoaded(assetPath))
                 {
                     throw new ContentManagerException(
                         "Asset name '{0}' was already loaded. Is this a duplicate?"
-                        .With(itemName));
+                        .With(assetPath));
                 }
 
                 // Check the type of file that was encountered and read it appropriately.
-                var asset = new AssetInfo(itemName, filePath);
+                var asset = new AssetInfo(assetPath, filePath);
 
                 if (filePath.EndsWith(".xnb"))
                 {
                     // This is a precompiled XNA asset. Set a flag indicating this and let the legacy XNA loader handle
                     // loading the file.
                     asset.IsXnb = true;
-                    items.Add(itemName, asset);
+                    items.Add(assetPath, asset);
                 }
                 else if (filePath.EndsWith(".bundle"))
                 {
@@ -351,7 +358,7 @@ namespace Scott.Forge.Engine.Content
                     asset.ContentType = readerInfo.ContentType;
                     asset.ReaderType = readerInfo.ReaderType;
 
-                    items.Add(itemName, asset);
+                    items.Add(assetPath, asset);
                 }
             }
         }
@@ -380,7 +387,7 @@ namespace Scott.Forge.Engine.Content
 
                 // Convert the resource's zip path into an asset name.
                 var assetPath = entry.Name;
-                var assetName = ExtractAssetName(assetPath, null);
+                var assetName = assetPath;
 
                 // Was this asset already loaded? If so throw an error and bail out.
                 if (WasLoaded(assetName))
@@ -556,38 +563,6 @@ namespace Scott.Forge.Engine.Content
             return assetPath.EndsWith( ".xnb" );
         }
 
-        /// <summary>
-        ///  Extracts the asset name from an asset's filepath.
-        /// </summary>
-        /// <param name="assetPath">Path to the asset.</param>
-        /// <returns>Name of the asset.</returns>
-        private static string ExtractAssetName( string assetPath )
-        {
-            return ExtractAssetName( assetPath, null );
-        }
-
-        /// <summary>
-        ///  Extracts the asset name from an asset's filepath.
-        /// </summary>
-        /// <param name="assetPath">Path to the asset.</param>
-        /// <param name="contentDir">Path to the game's content directory.</param>
-        /// <returns>Name of the asset.</returns>
-        private static string ExtractAssetName( string assetPath, string contentDir )
-        {
-            string baseName  = Path.GetFileNameWithoutExtension( assetPath );
-            string assetName = "";
-
-            if ( !String.IsNullOrEmpty( contentDir ) )
-            {
-                assetName = Path.Combine( contentDir, baseName );
-            }
-            else
-            {
-                assetName = Path.Combine( Path.GetDirectoryName( assetPath ), baseName );
-            }
-
-            return NormalizeFilePath( assetName );
-        }
 
         /// <summary>
         ///  Normalize asset name so it is always the same name across all platforms.

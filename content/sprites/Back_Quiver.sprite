@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Back_Quiver">
-  <atlas ref="sprites/atlases/Back_Quiver" spriteWidth="64" spriteHeight="64" />
+  <atlas ref="sprites/atlases/Back_Quiver.png" spriteWidth="64" spriteHeight="64" />
   <default animation="Idle" direction="South" />
   <originOffset x="0" y="0" />
   
