@@ -17,11 +17,10 @@
 using System;
 using Scott.Forge;
 using Scott.Forge.Content;
-using Scott.Forge.Engine.Actors;
-using Scott.Forge.Engine.Ai;
-using Scott.Forge.Engine.Sprites;
+using Scott.Forge.Actors;
+using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
-using Scott.Forge.Engine.Physics;
+using Scott.Forge.Physics;
 using Scott.Forge.Engine;
 
 namespace Scott.DungeonCrawler.GameObjects

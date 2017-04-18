@@ -67,12 +67,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sprites\AnimationDefinitionTests.cs" />
-    <Compile Include="Sprites\SpriteComponentProcessorDrawTests.cs" />
-    <Compile Include="Sprites\SpriteComponentProcessorUpdateTests.cs" />
-    <Compile Include="Sprites\SpriteDefinitionTests.cs" />
-    <Compile Include="TestMocks\TestableDebugOverlay.cs" />
-    <Compile Include="TestMocks\TestableGameRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
@@ -84,11 +78,7 @@
       <Name>Scott.Forge</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameObjects\" />
-    <Folder Include="GameStates\" />
-    <Folder Include="Input\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

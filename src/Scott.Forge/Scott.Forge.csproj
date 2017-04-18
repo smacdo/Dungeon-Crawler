@@ -46,10 +46,20 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Actors\ActorAction.cs" />
+    <Compile Include="Actors\ActorComponent.cs" />
+    <Compile Include="Actors\ActorProcessor.cs" />
+    <Compile Include="Ai\AiComponent.cs" />
+    <Compile Include="Ai\AiProcessor.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="GameRoot.cs" />
+    <Compile Include="GameScene.cs" />
     <Compile Include="Graphics\DebugOverlay.cs" />
+    <Compile Include="Graphics\GameRenderer.cs" />
     <Compile Include="Graphics\IGameRenderer.cs" />
     <Compile Include="Graphics\Screen.cs" />
+    <Compile Include="Input\InputException.cs" />
+    <Compile Include="Input\InputManager.cs" />
     <Compile Include="Physics\CollisionResult.cs" />
     <Compile Include="Physics\PhysicsComponent.cs" />
     <Compile Include="Physics\PhysicsComponentProcessor.cs" />
@@ -73,6 +83,14 @@
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
+    <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
+    <Compile Include="Sprites\AnimationDefinition.cs" />
+    <Compile Include="Sprites\AnimationEndingAction.cs" />
+    <Compile Include="Sprites\AnimationExceptions.cs" />
+    <Compile Include="Sprites\AnimationSetDefinition.cs" />
+    <Compile Include="Sprites\SpriteComponent.cs" />
+    <Compile Include="Sprites\SpriteComponentProcessor.cs" />
+    <Compile Include="Sprites\SpriteDefinition.cs" />
     <Compile Include="Support\InstancePool.cs" />
     <Compile Include="Interpolation.cs" />
     <Compile Include="Support\IRecyclable.cs" />

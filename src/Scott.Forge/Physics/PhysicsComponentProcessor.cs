@@ -18,7 +18,7 @@ using Scott.Forge.GameObjects;
 using Scott.Forge.Graphics;
 using Scott.Forge.Spatial;
 
-namespace Scott.Forge.Engine.Physics
+namespace Scott.Forge.Physics
 {
     /// <summary>
     ///  A simple proof of concept physics based movemen engine and collision response solver.

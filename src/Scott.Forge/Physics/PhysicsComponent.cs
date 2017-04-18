@@ -17,7 +17,7 @@ using System;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Spatial;
 
-namespace Scott.Forge.Engine.Physics
+namespace Scott.Forge.Physics
 {
     /// <summary>
     ///  Contains information for movement and collision for an object.

@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using Scott.Forge;
 using Scott.Forge.Engine;
-using Scott.Forge.Engine.Actors;
-using Scott.Forge.Engine.Physics;
-using Scott.Forge.Engine.Sprites;
+using Scott.Forge.Actors;
+using Scott.Forge.Physics;
+using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Spatial;
 

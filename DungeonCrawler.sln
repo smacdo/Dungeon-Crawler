@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.DungeonCrawler.Client", "src\Scott.DungeonCrawler.Client\Scott.DungeonCrawler.Client.csproj", "{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.Forge", "src\Scott.Forge\Scott.Forge.csproj", "{FA4BE4B8-5043-46E9-A43A-0575E8C56DC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.Forge.Tests", "src\Scott.Forge.Tests\Scott.Forge.Tests.csproj", "{186D4C30-74F3-41E1-A677-478EF1C686DF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.Forge.Engine.Tests", "src\Scott.Forge.Engine.Tests\Scott.Forge.Engine.Tests.csproj", "{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.Forge.Game.Tests", "src\Scott.Forge.Game.Tests\Scott.Forge.Game.Tests.csproj", "{E1216114-5CB9-4417-B00E-0EC9956C1DDB}"
 EndProject
@@ -101,24 +99,6 @@ Global
 		{186D4C30-74F3-41E1-A677-478EF1C686DF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{186D4C30-74F3-41E1-A677-478EF1C686DF}.Release|x64.ActiveCfg = Release|Any CPU
 		{186D4C30-74F3-41E1-A677-478EF1C686DF}.Release|x86.ActiveCfg = Release|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|x64.Build.0 = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Debug|x86.Build.0 = Debug|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.DebugRelease|Any CPU.ActiveCfg = DebugRelease|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.DebugRelease|Mixed Platforms.ActiveCfg = DebugRelease|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.DebugRelease|Mixed Platforms.Build.0 = DebugRelease|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.DebugRelease|x64.ActiveCfg = DebugRelease|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.DebugRelease|x86.ActiveCfg = DebugRelease|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Release|x64.ActiveCfg = Release|Any CPU
-		{E2356FB3-1725-4DC7-9050-B2EF2D2FEE7F}.Release|x86.ActiveCfg = Release|Any CPU
 		{E1216114-5CB9-4417-B00E-0EC9956C1DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E1216114-5CB9-4417-B00E-0EC9956C1DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1216114-5CB9-4417-B00E-0EC9956C1DDB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

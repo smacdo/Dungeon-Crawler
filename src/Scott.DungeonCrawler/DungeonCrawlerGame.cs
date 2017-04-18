@@ -22,18 +22,12 @@ using Microsoft.Xna.Framework.Input;
 using Scott.DungeonCrawler.Actions;
 using Scott.DungeonCrawler.GameObjects;
 using Scott.Forge;
-using Scott.Forge.Engine;
-using Scott.Forge.Engine.Actors;
-using Scott.Forge.Engine.Ai;
+using Scott.Forge.Actors;
 using Scott.Forge.Engine.Content;
-using Scott.Forge.Engine.Graphics;
-using Scott.Forge.Engine.Input;
-using Scott.Forge.Engine.Physics;
-using Scott.Forge.Engine.Sprites;
-using Scott.Forge.Engine.Tests.TestMocks;
+using Scott.Forge.Input;
+using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Graphics;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Scott.DungeonCrawler
 {

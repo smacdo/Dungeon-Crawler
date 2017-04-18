@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2015 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
-namespace Scott.Forge.Physics
+namespace Scott.Forge
 {
+    public static partial class Constants
+    {
+        public const int DirectionCount = 4;
+        public const DirectionName DefaultDirection = DirectionName.South;
+        public const string WalkAnimationName = "Walk";
+    }
 }
+

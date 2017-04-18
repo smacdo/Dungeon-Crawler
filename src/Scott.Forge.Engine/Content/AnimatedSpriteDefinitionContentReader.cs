@@ -19,8 +19,7 @@ using System.IO;
 using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Scott.Forge.Engine.Graphics;
-using Scott.Forge.Engine.Sprites;
+using Scott.Forge.Sprites;
 
 namespace Scott.Forge.Engine.Content
 {

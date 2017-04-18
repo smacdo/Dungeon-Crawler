@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
-namespace Scott.Forge.Physics
+namespace Scott.Forge.Sprites
 {
+    /// <summary>
+    /// The action to perform when an action has ended
+    /// </summary>
+    public enum AnimationEndingAction
+    {
+        Stop,         // Freeze on the last played animation frame
+        Loop,         // Restart on animation frame zero and continue animating
+        StopAndReset, // Freeze on the first animation frame
+    }
 }

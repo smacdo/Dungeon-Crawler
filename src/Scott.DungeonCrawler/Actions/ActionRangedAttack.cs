@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 using System;
-using Scott.Forge.Engine.Actors;
-using Scott.Forge.Engine.Sprites;
+using Scott.Forge.Actors;
+using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 
 namespace Scott.DungeonCrawler.Actions

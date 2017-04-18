@@ -58,27 +58,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\ActorAction.cs" />
-    <Compile Include="Actors\ActorComponent.cs" />
-    <Compile Include="Actors\ActorProcessor.cs" />
-    <Compile Include="Ai\AiComponent.cs" />
-    <Compile Include="Ai\AiProcessor.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Content\ForgeContentManager.cs" />
     <Compile Include="Content\ContentReader.cs" />
     <Compile Include="Content\ContentManagerExceptions.cs" />
-    <Compile Include="GameScene.cs" />
-    <Compile Include="Graphics\GameRenderer.cs" />
-    <Compile Include="Sprites\AnimationExceptions.cs" />
-    <Compile Include="Sprites\SpriteDefinition.cs" />
-    <Compile Include="Sprites\AnimationSetDefinition.cs" />
-    <Compile Include="Sprites\SpriteComponent.cs" />
-    <Compile Include="Sprites\AnimationDefinition.cs" />
-    <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
-    <Compile Include="Sprites\AnimationEndingAction.cs" />
-    <Compile Include="Sprites\SpriteComponentProcessor.cs" />
-    <Compile Include="Input\InputException.cs" />
-    <Compile Include="Input\InputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Content\AnimatedSpriteDefinitionContentReader.cs" />
     <Compile Include="Content\TextureContentReader.cs" />
@@ -92,6 +74,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
