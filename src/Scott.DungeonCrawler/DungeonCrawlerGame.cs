@@ -126,8 +126,6 @@ namespace Scott.DungeonCrawler
         {
             // Instruct the content manager to search our content dir to find game assets that we
             // can load.
-            mContent.SearchForContentItems( true );
-
             mLevelScene = new GameScene();
 
             // Create the player blue print.

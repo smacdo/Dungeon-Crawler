@@ -64,11 +64,6 @@ namespace Scott.Forge.Engine.Content
         private bool mDisposed = false;
 
         /// <summary>
-        ///  A table of game content stored in the content directory, indexed by the asset name.
-        /// </summary>
-        private Dictionary<string, AssetInfo> mAssetFiles = new Dictionary<string, AssetInfo>();
-
-        /// <summary>
         ///  Holds a list of open zip handles required for reading resources.
         /// </summary>  
         private static List<ZipFile> mBundleArchives = new List<ZipFile>();
@@ -121,61 +116,71 @@ namespace Scott.Forge.Engine.Content
         }
 
         /// <summary>
-        ///  Check if the given asset was loaded by this content manager.
-        /// </summary>
-        /// <param name="assetName">Name of the asset to check.</param>
-        /// <returns>True if it was loaded, false otherwise.</returns>
-        public bool WasLoaded(string assetName)
-        {
-            if (string.IsNullOrEmpty(assetName))
-            {
-                throw new ArgumentException("Asset name is null or empty", "assetName");
-            }
-
-            return mAssetFiles.ContainsKey(NormalizeFilePath(assetName));
-        }
-
-        /// <summary>
         ///  Load an asset.
         /// </summary>
         /// <typeparam name="T">Content type to load.</typeparam>
-        /// <param name="assetName">Name of the asset.</param>
+        /// <param name="assetPath">Name of the asset.</param>
         /// <returns>Instance of the loaded asset.</returns>
-        public override T Load<T>(string assetName)
+        public override T Load<T>(string assetPath)
         {
-            if (string.IsNullOrEmpty(assetName))
+            if (string.IsNullOrEmpty(assetPath))
             {
-                throw new ArgumentException("Asset name is null or empty", "assetName");
+                throw new ArgumentException("Asset name is null or empty", nameof(assetPath));
             }
 
-            assetName = NormalizeFilePath(assetName);
+            assetPath = NormalizeFilePath(assetPath);
             
             // Check the asset cache if this item was already loaded. If so then return a reference to the cached
             // item rather than loading it again.
             System.Object cachedObject = null;
 
-            if (mAssetCache.TryGetValue(assetName, out cachedObject))
+            if (mAssetCache.TryGetValue(assetPath, out cachedObject))
             {
                 return (T) cachedObject;
             }
 
-            // The logic for loading an asset is different depending on the encoding type. If the object is a compiled
-            // XNB file then the request should be handed to the underlying XNA content manager for loading. Otherwise
-            // the asset is considered "raw" and a content reader should be used for loading this asset.
+            // Check the type of content file being loaded. XNB and raw content files both have special code paths to execute.
+            // TODO: Switch to stream loading for XNB so they can be in bundles.
+            // TODO: Add native content types in addition to raw content files.
+            var assetContentDirPath = Path.Combine(mContentDir, assetPath);
             var instance = default(T);
-            var info = FindAssetInfoFor(assetName);
-            
-            if (info.IsXnb)
+
+            if (IsXnbFile(assetContentDirPath))
             {
-                instance = base.Load<T>(assetName);
+                // Remove content directory from asset path.
+
+                var contentBaseDir = mContentDir + "\\";
+                if (assetContentDirPath.StartsWith(contentBaseDir))
+                {
+                    assetContentDirPath = assetContentDirPath.Substring(
+                        contentBaseDir.Length,
+                        assetContentDirPath.Length - contentBaseDir.Length);
+                }
+
+                // Remove .xnb from asset name.
+                var xnbExtension = ".xnb";
+                assetContentDirPath = assetContentDirPath.Substring(
+                    0,
+                    assetContentDirPath.Length - xnbExtension.Length);
+
+                instance = base.Load<T>(assetContentDirPath);
             }
             else
             {
-                instance = LoadAssetFromDisk<T>(info);
+                // Search the content directory for the asset before trying content bundles.
+                if (File.Exists(assetContentDirPath))
+                {
+                    instance = LoadAssetFromDisk<T>(assetContentDirPath);
+                }
+                else
+                {
+                    // TODO: Search content bundles.
+                    throw new NotImplementedException("Add support for bundle loading or file does not exist");
+                }
             }
 
             // Cache the asset instance before returning.
-            mAssetCache.Add(assetName, instance);
+            mAssetCache.Add(assetPath, instance);
             return instance;
         }
 
@@ -187,60 +192,26 @@ namespace Scott.Forge.Engine.Content
         ///  runtime form.
         /// </remarks>
         /// <typeparam name="T">The asset type to load.</typeparam>
-        /// <param name="assetInfo">Information on how to load the asset.</param>
+        /// <param name="assetInfo">File path of the asset.</param>
         /// <returns>Instance of the asset.</returns>
-        private T LoadAssetFromDisk<T>(AssetInfo assetInfo)
+        private T LoadAssetFromDisk<T>(string assetPath)
         {
-            if (assetInfo == null)
+            if (string.IsNullOrEmpty(assetPath))
             {
-                throw new ArgumentNullException("assetInfo");
+                throw new ArgumentNullException(nameof(assetPath));
             }
             
-            // Create an instance of the content reader for this asset and then slurp it into memory.
-            var contentReader = CreateContentReader<T>(assetInfo);
-            var assetName = assetInfo.AssetName;
+            // Use the content reader system to convert the asset into its runtime form.
+            var contentReader = CreateContentReader<T>(assetPath);
             var asset = default(T);
 
-            using (var stream = OpenStream(assetName))
+            using (var stream = File.OpenRead(assetPath))
             {
-                var contentDir = Path.GetDirectoryName(assetName);
-                asset = contentReader.Read(stream, assetName, contentDir, this);
+                var contentDir = Path.GetDirectoryName(assetPath);
+                asset = contentReader.Read(stream, assetPath, contentDir, this);
             }
 
             return asset;
-        }
-
-        /// <summary>
-        ///  Create and return a stream capable of loading the asset.
-        /// </summary>
-        /// <param name="assetName">Name of the asset to load.</param>
-        /// <returns>Stream containing the asset data.</returns>
-        protected override Stream OpenStream(string assetName)
-        {
-            if (string.IsNullOrEmpty(assetName))
-            {
-                throw new ArgumentException("assetName");
-            }
-
-            var asset = FindAssetInfoFor(NormalizeFilePath(assetName));
-
-            // Is the asset in a bundle or is it stored directly on disk?
-            if (asset.IsInBundle)
-            {
-                // Zip file streams are do not support random access so the file's compressed contents must be copied
-                // into a separate memory stream.
-                var zipStream = asset.BundleFile.GetInputStream(asset.BundleEntry);
-                var memStream = new MemoryStream();
-
-                zipStream.CopyTo(memStream);
-                memStream.Seek(0, SeekOrigin.Begin);
-
-                return memStream;
-            }
-            else
-            {
-                return File.OpenRead( asset.FilePath );
-            }
         }
 
         /// <summary>
@@ -253,44 +224,7 @@ namespace Scott.Forge.Engine.Content
         {
             base.Unload();
         }
-
-        /// <summary>
-        ///  Search the content directory for a list of all assets that can be loaded and cache all asset names for
-        ///  later loading. Also allows optional preloading of content.
-        /// </summary>
-        /// <remarks>
-        ///  TODO: Support asset reloading.
-        /// </remarks>
-        /// <param name="preload">True to preload all assets now or false to wait until load is requested.</param>
-        public void SearchForContentItems(bool preload)
-        {
-            // Only scan the content directory once.
-            if (mContentDirectoryScanned)
-            {
-                return;
-            }
-
-            // Make sure the content path exists before proceeding.
-            if (String.IsNullOrEmpty(mContentDir) || !Directory.Exists(mContentDir))
-            {
-                throw new ContentDirectoryMissingException(mContentDir);
-            }
-
-            // Now scan the directory for content.
-            SearchDirectoryForContent(mContentDir, mContentDir, ref mAssetFiles);
-            mContentDirectoryScanned = true;
-
-            // Preload assets if requested.
-            if (preload)
-            {
-                foreach (string assetName in mAssetFiles.Keys)
-                {
-                    // TODO: Implement this.
-                    throw new NotImplementedException();
-                }
-            }
-        }
-
+        
         /// <summary>
         ///  Search the given directory recursively and add any game content files to the provided dictionary.
         /// </summary>
@@ -327,15 +261,6 @@ namespace Scott.Forge.Engine.Content
                     assetPath = assetPath.Substring(contentBaseDir.Length, assetPath.Length - contentBaseDir.Length);
                 }
 
-                // Check if the resource was loaded more than once (it should not have been).
-                // TODO: Change this logic to reload the resource rather than throw an error.
-                if (WasLoaded(assetPath))
-                {
-                    throw new ContentManagerException(
-                        "Asset name '{0}' was already loaded. Is this a duplicate?"
-                        .With(assetPath));
-                }
-
                 // Check the type of file that was encountered and read it appropriately.
                 var asset = new AssetInfo(assetPath, filePath);
 
@@ -354,7 +279,7 @@ namespace Scott.Forge.Engine.Content
                 else if (IsValidAssetExtension(filePath))
                 {
                     // A valid raw asset file that can be loaded by the content manager.
-                    var readerInfo = GetContentReaderInfo( asset );
+                    var readerInfo = GetContentReaderInfo( filePath );
                     asset.ContentType = readerInfo.ContentType;
                     asset.ReaderType = readerInfo.ReaderType;
 
@@ -389,15 +314,6 @@ namespace Scott.Forge.Engine.Content
                 var assetPath = entry.Name;
                 var assetName = assetPath;
 
-                // Was this asset already loaded? If so throw an error and bail out.
-                if (WasLoaded(assetName))
-                {
-                    throw new ContentManagerException(
-                        "Asset name '{0}' was already loaded. Is this a duplicate?"
-                        .With(assetName)
-                    );
-                }
-
                 // Check the type of file that was encountered and read it appropriately. Skip any bundles inside this
                 // bundle.
                 var asset = new AssetInfo(assetName, assetPath);
@@ -415,7 +331,7 @@ namespace Scott.Forge.Engine.Content
                 else if (IsValidAssetExtension(assetPath))
                 {
                     // A valid raw asset file that can be loaded by the content manager.
-                    var readerInfo = GetContentReaderInfo(asset);
+                    var readerInfo = GetContentReaderInfo(assetPath);
                     asset.ContentType = readerInfo.ContentType;
                     asset.ReaderType  = readerInfo.ReaderType;
 
@@ -430,29 +346,34 @@ namespace Scott.Forge.Engine.Content
         /// <typeparam name="T">Content type to load.</typeparam>
         /// <param name="asset">Information on the asset.</param>
         /// <returns>Content reader capable of loading this asset.</returns>
-        private ContentReader<T> CreateContentReader<T>( AssetInfo asset )
+        private ContentReader<T> CreateContentReader<T>(string assetPath)
         {
-            string assetName = asset.AssetName;
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                throw new ArgumentNullException(nameof(assetPath));
+            }
 
             // Double check that the asset info is correct.
-            if (asset.ContentType == null)
+            var contentReaderInfo = GetContentReaderInfo(assetPath);
+
+            if (contentReaderInfo.ContentType == null)
             {
                 throw new ContentManagerException(
-                    "Asset '{0}' does not have a backing System.Type".With( assetName ) );
+                    "Asset '{0}' does not have a backing System.Type".With(assetPath));
             }
-            else if (asset.ReaderType == null)
+            else if (contentReaderInfo.ReaderType == null)
             {
                 throw new ContentManagerException(
-                    "Asset '{0}' does not have content reader type".With( assetName ) );
+                    "Asset '{0}' does not have content reader type".With(contentReaderInfo));
             }
 
             // Instantiate a copy of the content reader.
-            var reader = Activator.CreateInstance( asset.ReaderType ) as ContentReader<T>;
+            var reader = Activator.CreateInstance(contentReaderInfo.ReaderType) as ContentReader<T>;
 
             if (reader == null)
             {
                 throw new ContentManagerException(
-                    "Failed to instantiate ContentReader<T> for asset '{0}'".With( assetName ) );
+                    "Failed to instantiate ContentReader<T> for asset '{0}'".With(assetPath));
             }
 
             return reader;
@@ -464,42 +385,18 @@ namespace Scott.Forge.Engine.Content
         /// </summary>
         /// <param name="asset">Information on this asset.</param>
         /// <returns>Content reader type capable of loading this asset.</returns>
-        private ContentReaderInfo GetContentReaderInfo(AssetInfo asset)
+        private ContentReaderInfo GetContentReaderInfo(string assetPath)
         {
             foreach (var entry in mContentReaders)
             {
-                if (asset.FilePath.EndsWith(entry.Extension))
+                if (assetPath.EndsWith(entry.Extension))
                 {
                     return entry;
                 }
             }
 
             // Failed to locate matching content reader.
-            throw new ContentReaderMissingException(asset.FilePath);
-        }
-
-        /// <summary>
-        ///  Get asset information for the requested asset.
-        /// </summary>
-        /// <param name="assetName">Name of the asset.</param>
-        /// <returns>Information on the asset.</returns>
-        private AssetInfo FindAssetInfoFor(string assetName)
-        {
-            // Scan content directory if no such scan has happened yet.
-            if (!mContentDirectoryScanned)
-            {
-                SearchForContentItems(false);
-            }
-
-            // Locate the asset in our list of loaded assets.
-            AssetInfo asset;
-
-            if (!mAssetFiles.TryGetValue(assetName, out asset))
-            {
-                throw new MissingAssetException(assetName);
-            }
-
-            return asset;
+            throw new ContentReaderMissingException(assetPath);
         }
 
         /// <summary>
@@ -571,7 +468,7 @@ namespace Scott.Forge.Engine.Content
         /// <returns>Normalized asset name</returns>
         private static string NormalizeFilePath( string assetName )
         {
-            return assetName.Replace( '\\', '/' );
+            return assetName.Replace( '/', '\\' );
         }
 
         /// <summary>
