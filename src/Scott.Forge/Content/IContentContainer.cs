@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Scott.Forge.Content
 {
     /// <summary>
-    ///  Abstract interface for Forge content managers.
+    ///  Represents an abstract container of content. Could be a directory, zip file or something more exotic.
     /// </summary>
-    public interface IContentManager : IDisposable
+    public interface IContentContainer
     {
         /// <summary>
-        ///  Load an asset.
+        ///  Try to read a content item from the container.
         /// </summary>
-        /// <typeparam name="T">Runtime content type to load.</typeparam>
-        /// <param name="assetName">Name of the asset.</param>
-        /// <returns>An instance of the loaded asset.</returns>
-        TContent Load<TContent>(string assetName);
-
-        /// <summary>
-        ///  Disposes all assets loaded by this content manager.
-        /// </summary>
-        void Unload();
+        /// <param name="assetName">Name of the item.</param>
+        /// <param name="readStream">A stream that will be set if the container holds the item.</param>
+        /// <returns>True if the item is in this container, false otherwise.</returns>
+        bool TryReadItem(string assetName, ref Stream readStream);
     }
 }

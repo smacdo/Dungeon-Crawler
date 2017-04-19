@@ -18,27 +18,34 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework.Content;
 using Scott.Forge.Content;
 
 namespace Scott.Forge.Engine.Content
 {
     /// <summary>
+    ///  The content manager is responsible for the loading and unloading of game resources.
+    /// </summary>
+    /// 
     ///  Custom XNA content manager for the Forge game engine. This content manager implementation adds support for
     ///  compressed zip archives ("bundles"), asset preloading, name based references and the ability to use raw asset
     ///  files instead of compiled .xnb blobs.
     /// </summary>
     /// <remarks>
-    ///  Content objects are loaded when first requested, and then cached in memory. This means that every request to
-    ///  load for a named asset will return the same instance and care should be taken not to modify this object once
-    ///  loaded.
-    /// 
-    ///  TODO: Switch from ICSharpCode zip library to the built in zip library (if possible).
+    ///  The content manager is capable of loading several types of content items. It uses the XNA loader to load any
+    ///  .XNB files, built-in loaders to load Forge cooked resources and (if configured) it will use asset loaders to
+    ///  load uncooked resources at run time.
+    ///  
+    ///  Each content manager can be configured with multiple content containers that hold content. These containers
+    ///  serve two purposes. The first is to abstract how resources are stored - one container could be a physical file
+    ///  system directory, and another one could be the contents of a zip archive. The other benefit to containers is
+    ///  to provide a sorted list of places to search for content such that one container could provide an override to
+    ///  another container's resource. This allows for developers and players to support mod packs.
+    ///  
     ///  TODO: Ensure that the content reader system is compatable with XNA.
     ///  TODO: Add async / threaded loading support.
     ///  TODO: Add ability to load and unload groups of items.
-    ///  TODO: Use weak references to allow items to expire from the cache (if desired).
+    ///  
     /// </remarks>
     public class ForgeContentManager : ContentManager, IContentManager
     {
@@ -48,31 +55,14 @@ namespace Scott.Forge.Engine.Content
         private static List<ContentReaderInfo> mContentReaders = new List<ContentReaderInfo>();
 
         /// <summary>
-        /// A flag that is set to true when the content directory is scanned for asset entries. Callers can either
-        /// prescan at start up, or when the first content item is requested.
-        /// </summary>
-        private bool mContentDirectoryScanned = false;
-
-        /// <summary>
-        ///  The directory path to the game's content directory, relative to the path containing the game's binary.
-        /// </summary>
-        private string mContentDir = String.Empty;
-
-        /// <summary>
         ///  True if the instance has been disposed, false otherwise.
         /// </summary>
         private bool mDisposed = false;
 
         /// <summary>
-        ///  Holds a list of open zip handles required for reading resources.
+        ///  List of content containers.
         /// </summary>  
-        private static List<ZipFile> mBundleArchives = new List<ZipFile>();
-
-        /// <summary>
-        ///  Table of loaded assets indexed by asset name. Acts as a cache so only one instance of each item is loaded
-        ///  in memory.
-        /// </summary>
-        private Dictionary<string, System.Object> mAssetCache = new Dictionary<string, Object>();
+        private List<IContentContainer> mContentContainers = new List<IContentContainer>();
 
         /// <summary>
         ///  This static constructor will scan the game assembly for classes with a content reader attribute, and
@@ -98,7 +88,7 @@ namespace Scott.Forge.Engine.Content
                 throw new ArgumentNullException(nameof(rootDirectory));
             }
 
-            mContentDir = rootDirectory;
+            mContentContainers.Add(new DirectoryContentContainer(rootDirectory));
         }
 
         /// <summary>
@@ -118,303 +108,142 @@ namespace Scott.Forge.Engine.Content
         /// <summary>
         ///  Load an asset.
         /// </summary>
-        /// <typeparam name="T">Content type to load.</typeparam>
-        /// <param name="assetPath">Name of the asset.</param>
-        /// <returns>Instance of the loaded asset.</returns>
-        public override T Load<T>(string assetPath)
+        /// <typeparam name="T">Runtime content type to load.</typeparam>
+        /// <param name="assetName">Name of the asset.</param>
+        /// <returns>An instance of the loaded asset.</returns>
+        public override T Load<T>(string assetName)
         {
-            if (string.IsNullOrEmpty(assetPath))
+            if (string.IsNullOrEmpty(assetName))
             {
-                throw new ArgumentException("Asset name is null or empty", nameof(assetPath));
+                throw new InvalidAssetNameException(assetName);
             }
 
-            assetPath = NormalizeFilePath(assetPath);
-            
-            // Check the asset cache if this item was already loaded. If so then return a reference to the cached
-            // item rather than loading it again.
-            System.Object cachedObject = null;
+            // Use consistent directory separator characters.
+            assetName = NormalizeFilePath(assetName);
 
-            if (mAssetCache.TryGetValue(assetPath, out cachedObject))
+            // Check type of file being loaded. XNB files have a special codepath to take, all other content items are
+            // loaded using this class.
+            if (IsXnbFile(assetName))
             {
-                return (T) cachedObject;
-            }
-
-            // Check the type of content file being loaded. XNB and raw content files both have special code paths to execute.
-            // TODO: Switch to stream loading for XNB so they can be in bundles.
-            // TODO: Add native content types in addition to raw content files.
-            var assetContentDirPath = Path.Combine(mContentDir, assetPath);
-            var instance = default(T);
-
-            if (IsXnbFile(assetContentDirPath))
-            {
-                // Remove content directory from asset path.
-
-                var contentBaseDir = mContentDir + "\\";
-                if (assetContentDirPath.StartsWith(contentBaseDir))
-                {
-                    assetContentDirPath = assetContentDirPath.Substring(
-                        contentBaseDir.Length,
-                        assetContentDirPath.Length - contentBaseDir.Length);
-                }
-
-                // Remove .xnb from asset name.
-                var xnbExtension = ".xnb";
-                assetContentDirPath = assetContentDirPath.Substring(
-                    0,
-                    assetContentDirPath.Length - xnbExtension.Length);
-
-                instance = base.Load<T>(assetContentDirPath);
+                return base.Load<T>(assetName);
             }
             else
             {
-                // Search the content directory for the asset before trying content bundles.
-                if (File.Exists(assetContentDirPath))
+                return LoadForgeContent<T>(assetName);
+            }
+        }
+
+        /// <summary>
+        ///  Returns an open stream for reading the given asset name.
+        /// </summary>
+        /// <remarks>
+        ///  This is called both by the underlying class implementation (for .XNB files) and by the LoadForgeContent
+        ///  method. It will search the content containers and return a stream from the first valid container holding
+        ///  the asset.
+        /// </remarks>
+        /// <param name="assetName">Name of the asset to open.</param>
+        /// <returns>Open stream for reading the asset.</returns>
+        protected override Stream OpenStream(string assetName)
+        {
+            if (string.IsNullOrEmpty(assetName))
+            {
+                throw new ArgumentNullException(nameof(assetName));
+            }
+
+            // Search content containers for the first container that has the asset, and return a stream to the item.
+            Stream readStream = null;
+            
+            foreach (var container in mContentContainers)
+            {
+                if (container.TryReadItem(assetName, ref readStream))
                 {
-                    instance = LoadAssetFromDisk<T>(assetContentDirPath);
-                }
-                else
-                {
-                    // TODO: Search content bundles.
-                    throw new NotImplementedException("Add support for bundle loading or file does not exist");
+                    return readStream;
                 }
             }
 
-            // Cache the asset instance before returning.
-            mAssetCache.Add(assetPath, instance);
-            return instance;
+            // None of the content containers had the item listed so throw an exception.
+            throw new AssetNotFoundException(assetName);
         }
 
         /// <summary>
         ///  Load an asset using a content reader.
         /// </summary>
         /// <remarks>
-        ///  This method uses a content reader to read a raw (uncompiled) asset and convert it into its compiled
-        ///  runtime form.
+        ///  This will use the content reader systm to read an asset from a stream and turn it into the requested
+        ///  runtime form. It can use built-in readers for runtime types such as Sprite or Texture, or it can (if
+        ///  configured) use readers from the content pipeline to read raw uncooked assets.
         /// </remarks>
         /// <typeparam name="T">The asset type to load.</typeparam>
-        /// <param name="assetInfo">File path of the asset.</param>
+        /// <param name="assetInfo">Asset file name to load.</param>
         /// <returns>Instance of the asset.</returns>
-        private T LoadAssetFromDisk<T>(string assetPath)
+        private T LoadForgeContent<T>(string assetName)
         {
-            if (string.IsNullOrEmpty(assetPath))
+            if (string.IsNullOrEmpty(assetName))
             {
-                throw new ArgumentNullException(nameof(assetPath));
+                throw new InvalidAssetNameException(assetName);
             }
-            
+
             // Use the content reader system to convert the asset into its runtime form.
-            var contentReader = CreateContentReader<T>(assetPath);
+            var contentReader = CreateContentReader<T>(assetName);
             var asset = default(T);
 
-            using (var stream = File.OpenRead(assetPath))
+            using (var stream = OpenStream(assetName))
             {
-                var contentDir = Path.GetDirectoryName(assetPath);
-                asset = contentReader.Read(stream, assetPath, contentDir, this);
+                var contentDir = Path.GetDirectoryName(assetName);
+                asset = contentReader.Read(stream, assetName, contentDir, this);
             }
 
             return asset;
         }
-
-        /// <summary>
-        ///  Unload all content loaded by this content manager.
-        /// </summary>
-        /// <remarks>
-        ///  TODO: Make this work.
-        /// </remarks>
-        public override void Unload()
-        {
-            base.Unload();
-        }
         
         /// <summary>
-        ///  Search the given directory recursively and add any game content files to the provided dictionary.
-        /// </summary>
-        /// <param name="contentDir">The path to the game's content directory.</param>
-        /// <param name="currentDir">The directory path to be searched.</param>
-        /// <param name="items">Dictionary holding a list of discovered assets.</param>
-        private void SearchDirectoryForContent(
-            string contentDir,
-            string currentDir,
-            ref Dictionary<string, AssetInfo> items)
-        {
-            // Extract a relative path for the asset to the game's content directory.
-            // Ex: "C:\game\content\sprite\a.sprite" ==> "sprite\a.sprite".
-            var index = currentDir.IndexOf(contentDir + Path.DirectorySeparatorChar);
-            var relativeDirectory = (index < 0 ? currentDir : currentDir.Remove(index, contentDir.Length + 1));
-
-            // First recursively search the directories.
-            foreach (var childDirPath in Directory.GetDirectories(currentDir))
-            {
-                SearchDirectoryForContent(contentDir, childDirPath, ref items);
-            }
-
-            // Now get a list of files in this directory, and add files that match asset extensions to the list of
-            // asset items.
-            var contentBaseDir = mContentDir + "/";
-
-            foreach (var filePath in Directory.GetFiles(currentDir))
-            {
-                var assetPath = NormalizeFilePath(filePath);
-
-                // Remove content directory from asset path.
-                if (assetPath.StartsWith(contentBaseDir))
-                {
-                    assetPath = assetPath.Substring(contentBaseDir.Length, assetPath.Length - contentBaseDir.Length);
-                }
-
-                // Check the type of file that was encountered and read it appropriately.
-                var asset = new AssetInfo(assetPath, filePath);
-
-                if (filePath.EndsWith(".xnb"))
-                {
-                    // This is a precompiled XNA asset. Set a flag indicating this and let the legacy XNA loader handle
-                    // loading the file.
-                    asset.IsXnb = true;
-                    items.Add(assetPath, asset);
-                }
-                else if (filePath.EndsWith(".bundle"))
-                {
-                    // A compressed bundle of assets.
-                    SearchBundleForAssets(filePath, items);
-                }
-                else if (IsValidAssetExtension(filePath))
-                {
-                    // A valid raw asset file that can be loaded by the content manager.
-                    var readerInfo = GetContentReaderInfo( filePath );
-                    asset.ContentType = readerInfo.ContentType;
-                    asset.ReaderType = readerInfo.ReaderType;
-
-                    items.Add(assetPath, asset);
-                }
-            }
-        }
-
-        /// <summary>
-        ///  Searches a compressed bundle for game assets.
-        /// </summary>
-        /// <param name="bundleFileName">Path to the asset bundle.</param>
-        /// <param name="items">Dictionary holding a list of discovered assets.</param>
-        private void SearchBundleForAssets(string bundleFileName, Dictionary<string, AssetInfo> items)
-        {
-            var fs = File.OpenRead(bundleFileName);
-            var zipFile = new ZipFile(fs);
-
-            // Cache reference to the zip file so it remains open through the lifetime of this content manager.
-            mBundleArchives.Add(zipFile);
-
-            // Iterate through the archive and add any resources contained within.
-            foreach (ZipEntry entry in zipFile)
-            {
-                // Skip entries that are not files.
-                if (!entry.IsFile)
-                {
-                    continue;
-                }
-
-                // Convert the resource's zip path into an asset name.
-                var assetPath = entry.Name;
-                var assetName = assetPath;
-
-                // Check the type of file that was encountered and read it appropriately. Skip any bundles inside this
-                // bundle.
-                var asset = new AssetInfo(assetName, assetPath);
-
-                asset.BundleFile = zipFile;
-                asset.BundleEntry = entry;
-
-                if (IsXnbFile(assetPath))
-                {
-                    // This is a precompiled XNA asset. Set a flag indicating this and let the legacy XNA loader handle
-                    // loading the file.
-                    asset.IsXnb = true;
-                    items.Add(assetName, asset);
-                }
-                else if (IsValidAssetExtension(assetPath))
-                {
-                    // A valid raw asset file that can be loaded by the content manager.
-                    var readerInfo = GetContentReaderInfo(assetPath);
-                    asset.ContentType = readerInfo.ContentType;
-                    asset.ReaderType  = readerInfo.ReaderType;
-
-                    items.Add(assetName, asset);
-                }
-            }
-        }
-
-        /// <summary>
-        ///  Create a content reader that is capable of loading the given asset into memory.
+        ///  Creates a content reader that can load an asset as the requested content type.
         /// </summary>
         /// <typeparam name="T">Content type to load.</typeparam>
-        /// <param name="asset">Information on the asset.</param>
+        /// <param name="assetName">Asset file name.</param>
         /// <returns>Content reader capable of loading this asset.</returns>
-        private ContentReader<T> CreateContentReader<T>(string assetPath)
+        private ContentReader<T> CreateContentReader<T>(string assetName)
         {
-            if (string.IsNullOrEmpty(assetPath))
+            if (assetName == null)
             {
-                throw new ArgumentNullException(nameof(assetPath));
+                throw new ArgumentNullException(nameof(assetName));
             }
 
-            // Double check that the asset info is correct.
-            var contentReaderInfo = GetContentReaderInfo(assetPath);
+            // Find the right content reader type for this asset, instantiate and return the content reader.
+            var readerType = FindContentReaderTypeFor<T>(assetName);
+            var readerInstance = Activator.CreateInstance(readerType) as ContentReader<T>;
 
-            if (contentReaderInfo.ContentType == null)
-            {
-                throw new ContentManagerException(
-                    "Asset '{0}' does not have a backing System.Type".With(assetPath));
-            }
-            else if (contentReaderInfo.ReaderType == null)
-            {
-                throw new ContentManagerException(
-                    "Asset '{0}' does not have content reader type".With(contentReaderInfo));
-            }
+            Debug.Assert(readerInstance != null);
 
-            // Instantiate a copy of the content reader.
-            var reader = Activator.CreateInstance(contentReaderInfo.ReaderType) as ContentReader<T>;
-
-            if (reader == null)
-            {
-                throw new ContentManagerException(
-                    "Failed to instantiate ContentReader<T> for asset '{0}'".With(assetPath));
-            }
-
-            return reader;
+            return readerInstance;
         }
 
         /// <summary>
-        ///  Gets the content reader type capable of loading this asset into memory.
-        ///  
+        ///  Find the content reader type capable of loading this asset.
         /// </summary>
         /// <param name="asset">Information on this asset.</param>
         /// <returns>Content reader type capable of loading this asset.</returns>
-        private ContentReaderInfo GetContentReaderInfo(string assetPath)
+        private Type FindContentReaderTypeFor<T>(string assetName)
         {
             foreach (var entry in mContentReaders)
             {
-                if (assetPath.EndsWith(entry.Extension))
+                if (assetName.EndsWith(entry.Extension))
                 {
-                    return entry;
+                    if (entry.ContentType == null || entry.ContentType != typeof(T))
+                    {
+                        throw new ContentReaderWrongOutputTypeException(
+                            assetName,
+                            contentReaderType: entry.ReaderType,
+                            expectedOutputType: typeof(T),
+                            actualOutputType: entry.ContentType);
+                    }
+
+                    return entry.ReaderType;
                 }
             }
 
             // Failed to locate matching content reader.
-            throw new ContentReaderMissingException(assetPath);
-        }
-
-        /// <summary>
-        ///  Checks if the asset file extension is a valid and loadable content type.
-        /// </summary>
-        /// <param name="filename">Asset filename.</param>
-        /// <returns>True if this asset file name can be loaded.</returns>
-        private static bool IsValidAssetExtension( string filename )
-        {
-            foreach (var readerInfo in mContentReaders)
-            {
-                if (filename.EndsWith(readerInfo.Extension))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            throw new ContentReaderMissingException(assetName);
         }
 
         /// <summary>
@@ -437,8 +266,10 @@ namespace Scott.Forge.Engine.Content
 
                     if ( attribs.Length > 0 )
                     {
-                        ContentReaderAttribute attr = attribs[0] as ContentReaderAttribute;
-                        ContentReaderInfo entry    = new ContentReaderInfo();
+                        var attr = attribs[0] as ContentReaderAttribute;
+                        var entry = new ContentReaderInfo();
+
+                        Debug.Assert(attr.ContentType != null);
 
                         entry.ContentType = attr.ContentType;
                         entry.ReaderType = type;
@@ -460,7 +291,6 @@ namespace Scott.Forge.Engine.Content
             return assetPath.EndsWith( ".xnb" );
         }
 
-
         /// <summary>
         ///  Normalize asset name so it is always the same name across all platforms.
         /// </summary>
@@ -468,42 +298,17 @@ namespace Scott.Forge.Engine.Content
         /// <returns>Normalized asset name</returns>
         private static string NormalizeFilePath( string assetName )
         {
-            return assetName.Replace( '/', '\\' );
+            return assetName.Replace( '\\', '/' );
         }
 
         /// <summary>
         ///  Information on a content reader.
         /// </summary>
-        private struct ContentReaderInfo
+        private class ContentReaderInfo
         {
             public Type ContentType;
             public Type ReaderType;
             public string Extension;
-        }
-
-        /// <summary>
-        ///  Represents asset information.
-        /// </summary>
-        private class AssetInfo
-        {
-            public string AssetName { get; set; }
-            public string FilePath { get; set; }
-            public ZipEntry BundleEntry { get; set; }
-            public ZipFile BundleFile { get; set; }
-            public bool IsXnb { get; set; }
-            public Type ContentType { get; set; }
-            public Type ReaderType { get; set; }
-
-            public AssetInfo( string name, string path )
-            {
-                AssetName = name;
-                FilePath = path;
-                BundleEntry = null;
-                IsXnb = false;
-            }
-
-            // Check if asset is in a bundle.
-            public bool IsInBundle { get { return BundleEntry != null; } }
         }
     }
 }

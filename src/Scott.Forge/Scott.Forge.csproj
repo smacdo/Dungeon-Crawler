@@ -52,6 +52,10 @@
     <Compile Include="Ai\AiComponent.cs" />
     <Compile Include="Ai\AiProcessor.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Content\CachedContentManager.cs" />
+    <Compile Include="Content\ContentManagerExceptions.cs" />
+    <Compile Include="Content\IContentContainer.cs" />
+    <Compile Include="Content\XnaProxyContentManager.cs" />
     <Compile Include="GameRoot.cs" />
     <Compile Include="GameScene.cs" />
     <Compile Include="Graphics\DebugOverlay.cs" />
@@ -69,7 +73,7 @@
     <Compile Include="Spatial\BoundingArea.cs" />
     <Compile Include="Spatial\BoundingRect.cs" />
     <Compile Include="DirectionName.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="HelperClasses.cs" />
     <Compile Include="ForgeException.cs" />
     <Compile Include="GameObjects\ComponentProcessor.cs" />
     <Compile Include="GameObjects\GameObjectExceptions.cs" />

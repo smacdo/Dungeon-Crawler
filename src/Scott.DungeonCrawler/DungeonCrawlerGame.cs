@@ -28,6 +28,7 @@ using Scott.Forge.Input;
 using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Graphics;
+using Scott.Forge.Content;
 
 namespace Scott.DungeonCrawler
 {
@@ -56,7 +57,7 @@ namespace Scott.DungeonCrawler
         private GameScene mLevelScene;
 
         private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
-        private ForgeContentManager mContent;
+        private IContentManager mContent;
         int mEnemyCount = 0;
 
 
@@ -86,8 +87,8 @@ namespace Scott.DungeonCrawler
             mGraphicsDevice.ApplyChanges();
 
             // Create our custom content manager.
-            mContent = new ForgeContentManager( Services, "Content" );
-            this.Content = mContent;
+            mContent = new CachedContentManager(new ForgeContentManager(Services, "Content"));
+            this.Content = new XnaProxyContentManager(Services, "Content", mContent);
 
             // Initialize systems.
             var renderer = new GameRenderer(mGraphicsDevice.GraphicsDevice);

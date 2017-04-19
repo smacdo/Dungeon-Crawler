@@ -92,6 +92,7 @@
     <Compile Include="Spatial\BoundingAreaTests.cs" />
     <Compile Include="TestMocks\TestableDebugOverlay.cs" />
     <Compile Include="TestMocks\TestableGameRenderer.cs" />
+    <Compile Include="StringUtilsTests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />

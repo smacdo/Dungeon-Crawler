@@ -18,6 +18,56 @@ using System;
 namespace Scott.Forge
 {
     /// <summary>
+    ///  Simple utility functions for strings.
+    /// </summary>
+    public static class StringUtils
+    {
+        public static string RemovePrefix(string text, string prefix)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (prefix == null)
+            {
+                throw new ArgumentNullException(nameof(prefix));
+            }
+
+            if (text.StartsWith(prefix))
+            {
+                return text.Substring(prefix.Length, text.Length - prefix.Length);
+            }
+            else
+            {
+                return text;
+            }
+        }
+
+        public static string RemoveSuffix(string text, string suffix)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (suffix == null)
+            {
+                throw new ArgumentNullException(nameof(suffix));
+            }
+
+            if (text.EndsWith(suffix))
+            {
+                return text.Substring(0, text.Length - suffix.Length);
+            }
+            else
+            {
+                return text;
+            }
+        }
+    }
+
+    /// <summary>
     ///  String extension methods.
     /// </summary>
     public static class StringExtensions
