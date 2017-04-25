@@ -41,18 +41,17 @@ namespace Scott.Forge.Engine.Content
     ///  system directory, and another one could be the contents of a zip archive. The other benefit to containers is
     ///  to provide a sorted list of places to search for content such that one container could provide an override to
     ///  another container's resource. This allows for developers and players to support mod packs.
-    ///  
-    ///  TODO: Ensure that the content reader system is compatable with XNA.
+    ///
     ///  TODO: Add async / threaded loading support.
     ///  TODO: Add ability to load and unload groups of items.
-    ///  
     /// </remarks>
     public class ForgeContentManager : ContentManager, IContentManager
     {
         /// <summary>
         ///  A list of content readers that are capable of converting raw assets into usable game resources objects.
+        ///  TODO: Move this to separate class.
         /// </summary>
-        private static List<ContentReaderInfo> mContentReaders = new List<ContentReaderInfo>();
+        private static List<ContentReaderEntry> mContentReaders = new List<ContentReaderEntry>();
 
         /// <summary>
         ///  True if the instance has been disposed, false otherwise.
@@ -60,13 +59,10 @@ namespace Scott.Forge.Engine.Content
         private bool mDisposed = false;
 
         /// <summary>
-        ///  List of content containers.
-        /// </summary>  
-        private List<IContentContainer> mContentContainers = new List<IContentContainer>();
-
-        /// <summary>
         ///  This static constructor will scan the game assembly for classes with a content reader attribute, and
         ///  register them in a static table.
+        ///  
+        ///  TODO: This should be moved out of the content manager.
         /// </summary>
         static ForgeContentManager()
         {
@@ -76,20 +72,25 @@ namespace Scott.Forge.Engine.Content
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="provider">The service provider that should be used to locate services.</param>
-        /// <param name="rootDirectory">The directory path that contains content.</param>
-        public ForgeContentManager(IServiceProvider provider, string rootDirectory)
-            : base(provider, rootDirectory)
+        /// <param name="provider">XNA service provider locator.</param>
+        /// <param name="xnaContentDirectory">Path to directory containing XNA .XNB files.</param>
+        public ForgeContentManager(IServiceProvider provider, string xnaContentDirectory)
+            : base(provider, xnaContentDirectory)
         {
             Debug.Assert(mContentReaders != null);
 
-            if (rootDirectory == null)
+            if (xnaContentDirectory == null)
             {
-                throw new ArgumentNullException(nameof(rootDirectory));
+                throw new ArgumentNullException(nameof(xnaContentDirectory));
             }
 
-            mContentContainers.Add(new DirectoryContentContainer(rootDirectory));
+            ContentContainers.Add(new DirectoryContentContainer(xnaContentDirectory));
         }
+
+        /// <summary>
+        ///  Get the list of content containers used by this content manager.
+        /// </summary>  
+        public IList<IContentContainer> ContentContainers { get; private set; } = new List<IContentContainer>();
 
         /// <summary>
         ///  Manually unload content when the content manager is disposed.
@@ -153,7 +154,7 @@ namespace Scott.Forge.Engine.Content
             // Search content containers for the first container that has the asset, and return a stream to the item.
             Stream readStream = null;
             
-            foreach (var container in mContentContainers)
+            foreach (var container in ContentContainers)
             {
                 if (container.TryReadItem(assetName, ref readStream))
                 {
@@ -252,31 +253,29 @@ namespace Scott.Forge.Engine.Content
         /// </summary>
         private static void InitContentReaderList()
         {
-            mContentReaders = new List<ContentReaderInfo>();
+            mContentReaders = new List<ContentReaderEntry>();
 
             // Search for all classes with ContentReaderAttribute.
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            Type attribute = typeof( ContentReaderAttribute );
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var attribute = typeof(ContentReaderAttribute);
 
-            foreach ( Assembly assembly in assemblies )
+            foreach (var readerType in AttributeUtils.GetTypesWithAttribute<ContentReaderAttribute>(assemblies))
             {
-                foreach ( Type type in assembly.GetTypes() )
+                var allReaderAttributes = readerType.GetCustomAttributes(typeof(ContentReaderAttribute), true);
+
+                foreach (var untypedReaderAttribute in allReaderAttributes)
                 {
-                    object[] attribs = type.GetCustomAttributes( attribute, true );
+                    var typedAttribute = untypedReaderAttribute as ContentReaderAttribute;
+                    Debug.Assert(typedAttribute != null);
 
-                    if ( attribs.Length > 0 )
+                    var entry = new ContentReaderEntry()
                     {
-                        var attr = attribs[0] as ContentReaderAttribute;
-                        var entry = new ContentReaderInfo();
+                        Extension = typedAttribute.Extension,
+                        ContentType = typedAttribute.ContentType,
+                        ReaderType = readerType
+                    };
 
-                        Debug.Assert(attr.ContentType != null);
-
-                        entry.ContentType = attr.ContentType;
-                        entry.ReaderType = type;
-                        entry.Extension = attr.Extension;
-
-                        mContentReaders.Add( entry );
-                    }
+                    mContentReaders.Add(entry);
                 }
             }
         }
@@ -304,7 +303,7 @@ namespace Scott.Forge.Engine.Content
         /// <summary>
         ///  Information on a content reader.
         /// </summary>
-        private class ContentReaderInfo
+        private class ContentReaderEntry
         {
             public Type ContentType;
             public Type ReaderType;

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 
 namespace Scott.Forge
 {
@@ -63,6 +67,59 @@ namespace Scott.Forge
             else
             {
                 return text;
+            }
+        }
+    }
+
+    /// <summary>
+    ///  Attribute helper methods.
+    /// </summary>
+    public static class AttributeUtils
+    {
+        public static IEnumerable<AttributeType> GetAttributeInstances<AttributeType>(IEnumerable<Assembly> assemblies)
+            where AttributeType : Attribute
+        {
+            if (assemblies == null)
+            {
+                throw new ArgumentNullException(nameof(assemblies));
+            }
+
+            foreach (var assembly in assemblies)
+            {
+                foreach (var type in assembly.DefinedTypes)
+                {
+                    var matchingAttributes = type.GetCustomAttributes(typeof(AttributeType), true);
+
+                    foreach (var attribute in matchingAttributes)
+                    {
+                        var typedAttribute = attribute as AttributeType;
+                        Debug.Assert(typedAttribute != null);
+
+                        yield return typedAttribute;
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<TypeInfo> GetTypesWithAttribute<AttributeType>(IEnumerable<Assembly> assemblies)
+            where AttributeType : Attribute
+        {
+            if (assemblies == null)
+            {
+                throw new ArgumentNullException(nameof(assemblies));
+            }
+            
+            foreach (var assembly in assemblies)
+            {
+                foreach (var type in assembly.DefinedTypes)
+                {
+                    var matchingAttributes = type.GetCustomAttributes(typeof(AttributeType), true);
+
+                    if (matchingAttributes.Any())
+                    {
+                        yield return type;
+                    }
+                }
             }
         }
     }
