@@ -76,6 +76,7 @@
     <Compile Include="GameObjectsTests\ComponentProcessorTests.cs" />
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
+    <Compile Include="Spatial\GridTests.cs" />
     <Compile Include="Sprites\AnimationDefinitionTests.cs" />
     <Compile Include="Sprites\SpriteComponentProcessorDrawTests.cs" />
     <Compile Include="Sprites\SpriteComponentProcessorUpdateTests.cs" />

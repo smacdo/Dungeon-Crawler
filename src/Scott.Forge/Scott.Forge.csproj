@@ -87,6 +87,7 @@
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
+    <Compile Include="Spatial\Grid.cs" />
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationDefinition.cs" />
     <Compile Include="Sprites\AnimationEndingAction.cs" />
