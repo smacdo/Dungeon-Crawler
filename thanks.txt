@@ -2,5 +2,6 @@ Additional credits and contributions to Dungeon Crawler.
 
 Thanks to:
     J. W. Bjerk for the Painterly Spell Icons Pack
+    David E. Gervais for Angband tiles
 
 See also the AUTHORS and ChangeLog files.
