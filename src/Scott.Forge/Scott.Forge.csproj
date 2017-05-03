@@ -88,6 +88,8 @@
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
     <Compile Include="Spatial\Grid.cs" />
+    <Compile Include="Spatial\Tile.cs" />
+    <Compile Include="Spatial\Tilemap.cs" />
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationDefinition.cs" />
     <Compile Include="Sprites\AnimationEndingAction.cs" />

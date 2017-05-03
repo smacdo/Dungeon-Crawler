@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Graphics
 {
@@ -77,6 +78,12 @@ namespace Scott.Forge.Graphics
             Color? fillColor = null,
             Color? borderColor = null,
             float? borderSize = null);
+
+        /// <summary>
+        ///  Draw a 2d tilemap.
+        /// </summary>
+        /// <param name="tilemap">Tilemap to draw.</param>
+        void DrawTilemap(Tilemap tilemap);
 
         /// <summary>
         ///  Call when starting to draw a rendering frame.

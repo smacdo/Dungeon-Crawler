@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System;
 using Scott.Forge.Graphics;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge.Graphics
 {
@@ -216,6 +217,51 @@ namespace Scott.Forge.Graphics
                 DrawLine(new Vector2(left, top), new Vector2(left, top + height), color, size);
                 DrawLine(new Vector2(left, top + height), new Vector2(left + width, top + height), color, size);
                 DrawLine(new Vector2(left + width, top + height), new Vector2(left + width, top), color, size);
+            }
+        }
+
+        /// <summary>
+        ///  Draw a 2d tilemap.
+        /// </summary>
+        /// <param name="tilemap">Tilemap to draw.</param>
+        public void DrawTilemap(Tilemap tilemap)
+        {
+            // TODO: Camera.
+            // TODO: Texture atlas.
+            // TODO: Use tilemap tile definition table to map tile id to texture atlas rect.
+            //        (eg tilemap.tiles[tile.id].atlasRect)
+            var tileWidth = tilemap.TileWidth;
+            var tileHeight = tilemap.TileHeight;
+
+            for (int y = 0; y < tilemap.Grid.Rows; y++)
+            {
+                for (int x = 0; x < tilemap.Grid.Cols; x++)
+                {
+                    var tile = tilemap.Grid[x, y];
+                    switch (tile.Type)
+                    {
+                        case 0:
+                            DrawRectangle(
+                                new Forge.RectF(x * tileWidth, y * tileHeight, tileWidth, tileHeight),
+                                Color.DarkGray);
+                            break;
+                        case 1:
+                            DrawRectangle(
+                                new Forge.RectF(x * tileWidth, y * tileHeight, tileWidth, tileHeight),
+                                Color.Brown);
+                            break;
+                        case 2:
+                            DrawRectangle(
+                                new Forge.RectF(x * tileWidth, y * tileHeight, tileWidth, tileHeight),
+                                Color.Yellow);
+                            break;
+                        default:
+                            DrawRectangle(
+                                new Forge.RectF(y * tileWidth, x * tileHeight, tileWidth, tileHeight),
+                                Color.HotPink);
+                            break;
+                    }
+                }
             }
         }
 

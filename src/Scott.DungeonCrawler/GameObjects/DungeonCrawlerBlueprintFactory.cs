@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 using System;
 using Scott.Forge;
 using Scott.Forge.Content;
-using Scott.Forge.Actors;
 using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
-using Scott.Forge.Physics;
-using Scott.Forge.Engine;
 
 namespace Scott.DungeonCrawler.GameObjects
 {

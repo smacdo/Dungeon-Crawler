@@ -21,6 +21,7 @@ using Scott.Forge.Ai;
 using Scott.Forge.Physics;
 using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Spatial;
 
 namespace Scott.Forge
 {
@@ -38,6 +39,8 @@ namespace Scott.Forge
         public SpriteComponentProcessor Sprites { get; internal set; } = new SpriteComponentProcessor();
         public PhysicsComponentProcessor Physics { get; internal set; } = new PhysicsComponentProcessor();
 
+        public Tilemap Tilemap { get; private set; }
+
         // TODO: Change this PlayerController, and move other logic into separate gameplay components or AI/Actor brian.
         public ActorProcessor Actors { get; internal set; } = new ActorProcessor();
         public AiProcessor AI { get; internal set; } = new AiProcessor();
@@ -45,8 +48,14 @@ namespace Scott.Forge
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public GameScene()
+        public GameScene(Tilemap tilemap)
         {
+            if (tilemap == null)
+            {
+                throw new ArgumentNullException(nameof(tilemap));
+            }
+
+            Tilemap = tilemap;
         }
 
         /// <summary>
@@ -98,6 +107,10 @@ namespace Scott.Forge
         /// <param name="gameTime">Current game simulation time.</param>
         public virtual void Draw(GameTime gameTime)
         {
+            // Draw tilemap.
+            GameRoot.Renderer.DrawTilemap(Tilemap);
+
+            // Draw sprites.
             Sprites.Draw(
                 GameRoot.Renderer,
                 gameTime.TotalGameTime.TotalSeconds,

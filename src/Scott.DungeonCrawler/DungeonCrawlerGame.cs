@@ -29,6 +29,7 @@ using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Graphics;
 using Scott.Forge.Content;
+using Scott.Forge.Spatial;
 
 namespace Scott.DungeonCrawler
 {
@@ -127,7 +128,7 @@ namespace Scott.DungeonCrawler
         {
             // Instruct the content manager to search our content dir to find game assets that we
             // can load.
-            mLevelScene = new GameScene();
+            mLevelScene = new GameScene(GenerateMap(64, 64));
 
             // Create the player blue print.
             mPlayer = mGameObjectFactory.Instantiate(mLevelScene, "Player");
@@ -138,6 +139,24 @@ namespace Scott.DungeonCrawler
             // Now that we have loaded the game's contents, we should force a garbage collection
             // before proceeding to play mode.
             GC.Collect();
+        }
+
+        /// <summary>
+        ///  TEMP HACK
+        /// </summary>
+        private Tilemap GenerateMap(int cols, int rows)
+        {
+            var tilemap = new Tilemap(cols, rows, 32, 32);
+
+            tilemap.Grid.Fill((Grid<Tile> g, int x, int y) =>
+            {
+                var t = new Tile();
+                t.Type = GameRoot.Random.Next(0, 2);
+
+                return t;
+            });
+
+            return tilemap;
         }
 
         /// <summary>
@@ -178,7 +197,6 @@ namespace Scott.DungeonCrawler
         {
             GameRoot.Unload();
         }
-
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,

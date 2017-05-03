@@ -23,7 +23,7 @@ using System.Runtime.Serialization;
 // TODO: Add negative cols/rows to iterate for EnumerateRect, ForEach, Fill. Update bounds checks (0 and max), and
 //       unit tests for both sides since this is tricky.
 
-namespace Forge.Spatial
+namespace Scott.Forge.Spatial
 {
     /// <summary>
     ///  Two dimensional grid storage class.
