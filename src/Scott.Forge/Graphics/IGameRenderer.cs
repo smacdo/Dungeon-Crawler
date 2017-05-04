@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Scott.Forge.Spatial;
+using Scott.Forge.Tilemaps;
 
 namespace Scott.Forge.Graphics
 {
@@ -82,8 +83,9 @@ namespace Scott.Forge.Graphics
         /// <summary>
         ///  Draw a 2d tilemap.
         /// </summary>
+        /// <param name="camera">Camera view to draw from.</param>
         /// <param name="tilemap">Tilemap to draw.</param>
-        void DrawTilemap(Tilemap tilemap);
+        void DrawTilemap(Camera camera, TileMap tilemap);
 
         /// <summary>
         ///  Call when starting to draw a rendering frame.

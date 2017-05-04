@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Scott.Forge.Graphics;
+using Scott.Forge.Tilemaps;
 
 namespace Scott.Forge.Tests.TestMocks
 {
@@ -40,6 +41,11 @@ namespace Scott.Forge.Tests.TestMocks
         }
 
         public void DrawText(string text, Vector2 position, SpriteFont font, Color? textColor = default(Color?), Color? backgroundColor = default(Color?))
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawTilemap(TileMap tilemap)
         {
             throw new NotImplementedException();
         }

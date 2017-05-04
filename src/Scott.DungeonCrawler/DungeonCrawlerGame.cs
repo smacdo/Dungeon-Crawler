@@ -30,6 +30,7 @@ using Scott.Forge.GameObjects;
 using Scott.Forge.Graphics;
 using Scott.Forge.Content;
 using Scott.Forge.Spatial;
+using Scott.Forge.Tilemaps;
 
 namespace Scott.DungeonCrawler
 {
@@ -44,6 +45,7 @@ namespace Scott.DungeonCrawler
             ExitGame,
             PrintDebugInfo,
             Move,
+            MoveCamera,
             MeleeAttack,
             RangedAttack,
             CastSpell
@@ -111,10 +113,16 @@ namespace Scott.DungeonCrawler
             mInputManager.AddAction( InputAction.MeleeAttack, Keys.Space );
             mInputManager.AddAction( InputAction.RangedAttack, Keys.E );
             mInputManager.AddAction( InputAction.CastSpell, Keys.Q );
+
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.W, DirectionName.North );
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.D, DirectionName.East );
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.S, DirectionName.South );
             mInputManager.AddDirectionalAction( InputAction.Move, Keys.A, DirectionName.West );
+
+            mInputManager.AddDirectionalAction(InputAction.MoveCamera, Keys.I, DirectionName.North);
+            mInputManager.AddDirectionalAction(InputAction.MoveCamera, Keys.L, DirectionName.East);
+            mInputManager.AddDirectionalAction(InputAction.MoveCamera, Keys.K, DirectionName.South);
+            mInputManager.AddDirectionalAction(InputAction.MoveCamera, Keys.J, DirectionName.West);
 
             // Let XNA engine initialize last.
             base.Initialize();
@@ -136,6 +144,9 @@ namespace Scott.DungeonCrawler
 
             mLevelScene.Add(mPlayer);
 
+            // Create a follow camera to follow the player.
+            mLevelScene.MainCamera = new FollowCamera(new SizeF(Screen.Width, Screen.Height), mPlayer);
+
             // Now that we have loaded the game's contents, we should force a garbage collection
             // before proceeding to play mode.
             GC.Collect();
@@ -144,14 +155,24 @@ namespace Scott.DungeonCrawler
         /// <summary>
         ///  TEMP HACK
         /// </summary>
-        private Tilemap GenerateMap(int cols, int rows)
+        private TileMap GenerateMap(int cols, int rows)
         {
-            var tilemap = new Tilemap(cols, rows, 32, 32);
+            // Load tileset.
+            // TODO: Load this as a content item.
+            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon32.png");
+            var tileset = new TileSet(tileAtlas, 32, 32);
+
+            tileset.Add(new TileDefinition(0, "wall", 0, 96));       // or 0, 0
+            tileset.Add(new TileDefinition(1, "floor", 192, 160));  // or 192, 160
+            tileset.Add(new TileDefinition(2, "door", 128, 0));
+
+            // Create tilemap.
+            var tilemap = new TileMap(tileset, cols, rows);
 
             tilemap.Grid.Fill((Grid<Tile> g, int x, int y) =>
             {
                 var t = new Tile();
-                t.Type = GameRoot.Random.Next(0, 2);
+                t.Id = (ushort) GameRoot.Random.Next(0, 3);
 
                 return t;
             });
@@ -223,6 +244,14 @@ namespace Scott.DungeonCrawler
             if (playerMovement.LengthSquared > 0.01)
             {
                 playerActor.Move(playerMovement * 125.0f);
+            }
+
+            // Camera movement.
+            var cameraMovement = mInputManager.GetAxis(InputAction.MoveCamera);
+
+            if (cameraMovement.LengthSquared > 0.01)
+            {
+                mLevelScene.MainCamera.Translate(cameraMovement * 8.0f);
             }
 
             // Player actions.

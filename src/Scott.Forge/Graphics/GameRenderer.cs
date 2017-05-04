@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System;
 using Scott.Forge.Graphics;
 using Scott.Forge.Spatial;
+using Scott.Forge.Tilemaps;
 
 namespace Scott.Forge.Graphics
 {
@@ -223,44 +224,35 @@ namespace Scott.Forge.Graphics
         /// <summary>
         ///  Draw a 2d tilemap.
         /// </summary>
+        /// <param name="camera">Camera to draw from.</param>
         /// <param name="tilemap">Tilemap to draw.</param>
-        public void DrawTilemap(Tilemap tilemap)
+        public void DrawTilemap(Camera camera, TileMap tilemap)
         {
-            // TODO: Camera.
-            // TODO: Texture atlas.
-            // TODO: Use tilemap tile definition table to map tile id to texture atlas rect.
-            //        (eg tilemap.tiles[tile.id].atlasRect)
+            // TODO: Consider moving this class into a TileMapRenderer class.
+            // TODO: Use the camera class to select only the required tiles for rendering, and also allow for non
+            //       grid-aligned rendering.
             var tileWidth = tilemap.TileWidth;
             var tileHeight = tilemap.TileHeight;
+            var atlas = tilemap.TileSet.Atlas;
 
             for (int y = 0; y < tilemap.Grid.Rows; y++)
             {
                 for (int x = 0; x < tilemap.Grid.Cols; x++)
                 {
-                    var tile = tilemap.Grid[x, y];
-                    switch (tile.Type)
-                    {
-                        case 0:
-                            DrawRectangle(
-                                new Forge.RectF(x * tileWidth, y * tileHeight, tileWidth, tileHeight),
-                                Color.DarkGray);
-                            break;
-                        case 1:
-                            DrawRectangle(
-                                new Forge.RectF(x * tileWidth, y * tileHeight, tileWidth, tileHeight),
-                                Color.Brown);
-                            break;
-                        case 2:
-                            DrawRectangle(
-                                new Forge.RectF(x * tileWidth, y * tileHeight, tileWidth, tileHeight),
-                                Color.Yellow);
-                            break;
-                        default:
-                            DrawRectangle(
-                                new Forge.RectF(y * tileWidth, x * tileHeight, tileWidth, tileHeight),
-                                Color.HotPink);
-                            break;
-                    }
+                    // Get the tile definition for the tile at this (x, y) position.
+                    var tile = tilemap.TileSet[tilemap.Grid[x, y].Id];
+
+                    // Calculate screen space position for the tile.
+                    // TODO: Do this once at top and then increment for better perf.
+                    var tilePosition = new Vector2(x * tileWidth, y * tileHeight);
+                    var screenSpacePosition = camera.WorldToScreen(tilePosition);
+
+                    // Draw the tile using the tile set's texture atlas.
+                    // TODO: Add fancy effects for thigns like water.
+                    Draw(
+                        atlas,
+                        new RectF(tile.AtlasX, tile.AtlasY, tileWidth, tileHeight),
+                        screenSpacePosition);
                 }
             }
         }

@@ -19,26 +19,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.Forge.Spatial
+namespace Scott.Forge.Tilemaps
 {
     /// <summary>
-    ///  A spatial grid of tiles.
+    ///  Holds data for a single tile on a tile map.
     /// </summary>
-    public class Tilemap
+    public struct Tile
     {
-        public Tilemap(int cols, int rows, float tileWidth, float tileHeight)
-        {
-            // TODO: Test inputs.
-            Grid = new Grid<Tile>(cols, rows);
-
-            TileWidth = tileWidth;
-            TileHeight = tileHeight;
-        }
-
-        public Grid<Tile> Grid { get; private set; }
-
-        public float TileWidth { get; private set; }
-
-        public float TileHeight { get; private set; }
+        /// <summary>
+        ///  Get or set the tile type id.
+        /// </summary>
+        public ushort Id { get; set; }
     }
 }

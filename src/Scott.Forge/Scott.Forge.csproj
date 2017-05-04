@@ -58,7 +58,9 @@
     <Compile Include="Content\XnaProxyContentManager.cs" />
     <Compile Include="GameRoot.cs" />
     <Compile Include="GameScene.cs" />
+    <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\DebugOverlay.cs" />
+    <Compile Include="Graphics\FollowCamera.cs" />
     <Compile Include="Graphics\GameRenderer.cs" />
     <Compile Include="Graphics\IGameRenderer.cs" />
     <Compile Include="Graphics\Screen.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="Physics\CollisionResult.cs" />
     <Compile Include="Physics\PhysicsComponent.cs" />
     <Compile Include="Physics\PhysicsComponentProcessor.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="Random\DefaultRandomProvider.cs" />
     <Compile Include="Random\IRandomProvider.cs" />
     <Compile Include="Settings\ForgeSettings.cs" />
@@ -87,9 +90,10 @@
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
-    <Compile Include="Spatial\Grid.cs" />
-    <Compile Include="Spatial\Tile.cs" />
-    <Compile Include="Spatial\Tilemap.cs" />
+    <Compile Include="Tilemaps\Grid.cs" />
+    <Compile Include="Tilemaps\Tile.cs" />
+    <Compile Include="Tilemaps\TileDefinition.cs" />
+    <Compile Include="Tilemaps\TileMap.cs" />
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationDefinition.cs" />
     <Compile Include="Sprites\AnimationEndingAction.cs" />
@@ -112,6 +116,7 @@
     <Compile Include="RectF.cs" />
     <Compile Include="SizeF.cs" />
     <Compile Include="Spatial\SpatialIndex.cs" />
+    <Compile Include="Tilemaps\TileSet.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <ItemGroup>

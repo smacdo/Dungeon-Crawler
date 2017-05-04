@@ -22,6 +22,8 @@ using Scott.Forge.Physics;
 using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Spatial;
+using Scott.Forge.Tilemaps;
+using Scott.Forge.Graphics;
 
 namespace Scott.Forge
 {
@@ -39,7 +41,18 @@ namespace Scott.Forge
         public SpriteComponentProcessor Sprites { get; internal set; } = new SpriteComponentProcessor();
         public PhysicsComponentProcessor Physics { get; internal set; } = new PhysicsComponentProcessor();
 
-        public Tilemap Tilemap { get; private set; }
+        /// <summary>
+        ///  Get the scene tilemap.
+        /// </summary>
+        public TileMap Tilemap { get; private set; }
+
+        /// <summary>
+        ///  Get or set the main camera used for rendering.
+        /// </summary>
+        /// <remarks>
+        ///  The camera can be set to null which will disable rendering.
+        /// </remarks>
+        public Camera MainCamera { get; set; }
 
         // TODO: Change this PlayerController, and move other logic into separate gameplay components or AI/Actor brian.
         public ActorProcessor Actors { get; internal set; } = new ActorProcessor();
@@ -48,7 +61,8 @@ namespace Scott.Forge
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public GameScene(Tilemap tilemap)
+        /// <param name="tilemap">Tile map to use in the scene.</param>
+        public GameScene(TileMap tilemap)
         {
             if (tilemap == null)
             {
@@ -88,6 +102,12 @@ namespace Scott.Forge
         /// <param name="gameTime">Current game simulation time.</param>
         public virtual void Update(GameTime gameTime)
         {
+            // Update camera logic.
+            if (MainCamera != null)
+            {
+                MainCamera.Update(gameTime);
+            }
+
             // Resolve movement and collision first, before the player or AI gets chance to do anything. Hence the
             // current position of all objects (and collision) that is displayed is actually one frame BEFORE this
             // nupdate
@@ -107,12 +127,19 @@ namespace Scott.Forge
         /// <param name="gameTime">Current game simulation time.</param>
         public virtual void Draw(GameTime gameTime)
         {
+            // Don't bother with drawing if no camera is available.
+            if (MainCamera == null)
+            {
+                return;
+            }
+
             // Draw tilemap.
-            GameRoot.Renderer.DrawTilemap(Tilemap);
+            GameRoot.Renderer.DrawTilemap(MainCamera, Tilemap);
 
             // Draw sprites.
             Sprites.Draw(
                 GameRoot.Renderer,
+                MainCamera,
                 gameTime.TotalGameTime.TotalSeconds,
                 gameTime.ElapsedGameTime.TotalSeconds);
         }

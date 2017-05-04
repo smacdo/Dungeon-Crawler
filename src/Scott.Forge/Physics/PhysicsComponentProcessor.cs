@@ -194,7 +194,7 @@ namespace Scott.Forge.Physics
         [System.Diagnostics.Conditional("DEBUG")]
         private void DrawDebugInfo()
         {
-            if (GameRoot.Settings.DrawPhysicsDebug)
+/*            if (GameRoot.Settings.DrawPhysicsDebug)
             {
                 for (int i = 0; i < mComponents.Count; ++i)
                 {
@@ -205,7 +205,7 @@ namespace Scott.Forge.Physics
                         cc.WorldBounds,
                         color);
                 }
-            }
+            }*/
         }
 
         /// <summary>

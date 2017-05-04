@@ -165,7 +165,7 @@ namespace Scott.Forge.Sprites
         /// </summary>
         /// <param name="currentTime">Current time in seconds.</param>
         /// <param name="deltaTime">Time since last draw call in seconds.</param>
-        public void Draw(IGameRenderer renderer, double currentTime, double deltaTime)
+        public void Draw(IGameRenderer renderer, Camera camera, double currentTime, double deltaTime)
         {
             for (var index = 0; index < mComponents.Count; ++index)
             {
@@ -177,12 +177,21 @@ namespace Scott.Forge.Sprites
                 var component = mComponents[index];
                 var transform = component.Owner.Transform;
 
+                // Move sprite to camera space for rendering on the screen.
+                var positionInCameraSpace = transform.WorldPosition;
+
+                if (camera != null)
+                {
+                    positionInCameraSpace = camera.WorldToScreen(transform.WorldPosition);
+                }
+            
+                // Draw each layer of the sprite.
                 for (var layer = 0; layer < component.Sprites.Length; layer++)
                 {
                     renderer.Draw(
                         component.Sprites[layer].Atlas,
                         component.SpriteRects[layer],
-                        transform.WorldPosition,
+                        positionInCameraSpace,
                         (component.RendererIgnoreTransformRotation ? 0.0f : transform.WorldRotation));
 
 #if DEBUG
@@ -190,8 +199,8 @@ namespace Scott.Forge.Sprites
                     if (GameRoot.Settings.DrawSpriteDebug)
                     {
                         var spriteRect = new BoundingRect(
-                            centerX: transform.WorldPosition.X,
-                            centerY: transform.WorldPosition.Y,
+                            centerX: positionInCameraSpace.X,
+                            centerY: positionInCameraSpace.Y,
                             halfWidth: component.SpriteRects[layer].Size.Width / 2,
                             halfHeight: component.SpriteRects[layer].Size.Height / 2);
 
@@ -205,10 +214,10 @@ namespace Scott.Forge.Sprites
                 // Draw transform position and location.
                 if (GameRoot.Settings.DrawTransformDebug)
                 {
-                    GameRoot.Debug.DrawPoint(transform.WorldPosition, Microsoft.Xna.Framework.Color.Blue, 4.0f);
+                    GameRoot.Debug.DrawPoint(positionInCameraSpace, Microsoft.Xna.Framework.Color.Blue, 4.0f);
                     GameRoot.Debug.DrawLine(
-                        transform.WorldPosition,
-                        transform.WorldPosition + (transform.Forward * 16.0f),
+                        positionInCameraSpace,
+                        positionInCameraSpace + (transform.Forward * 16.0f),
                         color: Microsoft.Xna.Framework.Color.LightBlue);
                 }
 #endif                

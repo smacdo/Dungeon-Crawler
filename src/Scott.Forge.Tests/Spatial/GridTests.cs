@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Forge.Spatial;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scott.Forge.Tilemaps;
 
 namespace Scott.Forge.Tests.Spatial
 {
