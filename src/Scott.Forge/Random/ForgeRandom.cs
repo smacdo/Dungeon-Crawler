@@ -115,7 +115,7 @@ namespace Scott.Forge.Random
         public int NextInt(int min, int max)
         {
             var randomInt = mProvider.NextInt();
-            return min + (randomInt % (max - min + 1));
+            return min + (randomInt % (max - min));
         }
 
         /// <summary>

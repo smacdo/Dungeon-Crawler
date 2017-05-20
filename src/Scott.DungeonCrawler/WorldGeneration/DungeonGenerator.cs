@@ -15,6 +15,7 @@
  */
 using System;
 using System.Collections.Generic;
+using Scott.Forge;
 using Scott.Forge.Random;
 using Scott.Forge.Tilemaps;
 
@@ -66,6 +67,14 @@ namespace Scott.DungeonCrawler.WorldGeneration
         public ForgeRandom Random { get; set; }
 
         /// <summary>
+        ///  Get the list of room generators to use when randomly generating rooms.
+        /// </summary>
+        public List<RoomGenerator> RoomGenerators { get; private set; } = new List<RoomGenerator>();
+
+        public int MaxRoomCount { get; private set; } = 150;
+        public int MaxRoomRetryCount { get; private set; } = 5;
+
+        /// <summary>
         ///  Generate a new random dungeon.
         /// </summary>
         /// <param name="cols">Maximum number of columns in the tile map.</param>
@@ -80,72 +89,89 @@ namespace Scott.DungeonCrawler.WorldGeneration
             tilemap.Grid.Fill((Grid<Tile> g, int x, int y) => { return new Tile(EmptyTileId); });
 
             // Create 50 new rooms in random locations.
-            for (int i = 0; i < 50; i++)
+            var roomCount = MaxRoomCount;
+            var rooms = new List<RoomLayout>(roomCount);
+
+            for (int i = 0; i < roomCount; i++)
             {
-                AddRandomRoom(tilemap.Grid);    
+                // Pick a random room generator from the list.
+                // TODO: Add weights.
+                var selectedIndex = Random.NextInt(0, RoomGenerators.Count);
+                var roomGenerator = RoomGenerators[selectedIndex];
+
+                // Generate a room and add it to the set of rooms.
+                rooms.Add(roomGenerator.Generate(Random));
+            }
+            
+            // Iterate through the list of rooms and place them into the world at a random location. Try up to X
+            // number of times before moving onto the next room.
+            // TODO: Use separation algorithm rather than randomly trying spots.
+            // TODO: Add collision detection to make sure rooms don't overwrite each other.
+            // TODO: Add a retry.
+            for (int i = 0; i < rooms.Count; i++)
+            {
+                bool didCarve = false;
+                int maxAttempts = MaxRoomRetryCount;
+
+                for (int j = 0; j < maxAttempts && !didCarve; j++)
+                {
+                    // TODO: Fix possible error where generated room is larger than the tilemap.
+                    var room = rooms[i];
+
+                    didCarve = CarveRoom(
+                        tilemap.Grid,
+                        room,
+                        new Point2(
+                            Random.NextInt(0, tilemap.Grid.Cols - room.Tiles.Cols),
+                            Random.NextInt(0, tilemap.Grid.Rows - room.Tiles.Rows)));
+                }
             }
 
             return tilemap;
-        }
-
-        public void AddRandomRoom(Grid<Tile> grid)
-        {
-            var cols = Random.NextInt(4, 24);      // TODO: Make configurable + weighted.
-            var rows = Random.NextInt(4, 24);     // TODO: Make configurable + weighted.
-
-            var xEnd = grid.Cols - cols;
-            var yEnd = grid.Rows - rows;
-            
-            if (xEnd <= cols)
-            {
-                throw new InvalidOperationException();
-            }   
-
-            if (yEnd <= rows)
-            {
-                throw new InvalidOperationException();
-            }
-
-            var x = Random.NextInt(0, xEnd);
-            var y = Random.NextInt(0, yEnd);
-
-            CarveRoom(
-                grid,
-                x,
-                y,
-                cols,
-                rows,
-                FloorTileId,
-                WallTileId);
         }
         
         /// <summary>
         ///  Carve a room into the tile map.
         /// </summary>
-        /// <param name="grid"></param>
-        /// <param name="left"></param>
-        /// <param name="top"></param>
-        /// <param name="cols"></param>
-        /// <param name="rows"></param>
-        /// <param name="floor"></param>
-        /// <param name="wall"></param>
-        /// <returns></returns>
-        public void CarveRoom(
-            Grid<Tile> grid,
-            int left, 
-            int top,
-            int cols,
-            int rows,
-            ushort floor,
-            ushort wall)
+        public bool CarveRoom(Grid<Tile> map, RoomLayout room, Point2 topLeft)
         {
-            // Quickly carve something and improve this later.
-            grid.Fill(left, top, cols, rows, (Grid<Tile> g, int x, int y) =>
+            // Check if room is overlapped another feature in the map.
+            if (DoesOverlap(map, room.Tiles, topLeft))
             {
-                return new Tile(floor);
-            });
-            
-            // Carve walls but only if there is empty space.
+                return false;
+            }
+
+            // TODO: Copy this code into a Grid helper utility with tests.
+            // Copy the room.
+            for (int y = 0; y < room.Tiles.Rows; y++)
+            {
+                for (int x = 0; x < room.Tiles.Cols; x++)
+                {
+                    map[x + topLeft.X, y + topLeft.Y] = room.Tiles[x, y];
+                }
+            }
+
+            return true;
+        }
+
+        public bool DoesOverlap(Grid<Tile> map, Grid<Tile> roomTiles, Point2 topLeft)
+        {
+            for (int y = 0; y < roomTiles.Rows; y++)
+            {
+                for (int x = 0; x < roomTiles.Cols; x++)
+                {
+                    var mapTile = map[x + topLeft.X, y + topLeft.Y];
+                    
+                    // TODO: Refactor this check, its gross.
+                    if (mapTile.Type != EmptyTileId &&              // TODO: Use property .IsEmpty
+                        !(mapTile.Type == WallTileId && roomTiles[x, y].Type == WallTileId))// Moar properties
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

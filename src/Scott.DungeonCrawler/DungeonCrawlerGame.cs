@@ -175,6 +175,16 @@ namespace Scott.DungeonCrawler
             generator.WallTileId = 1;
             generator.FloorTileId = 2;
 
+            generator.RoomGenerators.Add(new RoomGenerator()
+            {
+                FloorTile = generator.FloorTileId,
+                WallTile = generator.WallTileId,
+                MinWidth = 4,
+                MaxWidth = 16,
+                MinHeight = 4,
+                MaxHeight = 16
+            });
+
             return generator.Generate(100, 100);
         }
 
