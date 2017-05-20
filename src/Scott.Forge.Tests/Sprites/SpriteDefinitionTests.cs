@@ -14,10 +14,6 @@ namespace Scott.Forge.Tests.Sprites
         [TestCategory("ForgeEngine/Sprites/SpriteDefinition")]
         public void CreateStaticSpriteDefinition()
         {
-            List<List<RectF>> frames = null;
-            //var animation = CreateAnimationDefinition(1, 1, out frames, "SingleFrameAnimation", 0.25f);
-
-
         }
     }
 }

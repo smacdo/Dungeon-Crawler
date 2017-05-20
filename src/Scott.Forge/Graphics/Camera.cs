@@ -44,6 +44,14 @@ namespace Scott.Forge.Graphics
         /// <summary>
         ///  Camera constructor.
         /// </summary>
+        public Camera()
+            : this(SizeF.Empty, Vector2.Zero)
+        {
+        }
+
+        /// <summary>
+        ///  Camera constructor.
+        /// </summary>
         /// <param name="viewport">Viewport size in pixel units.</param>
         public Camera(SizeF viewport)
             : this(viewport, Vector2.Zero)
@@ -54,17 +62,17 @@ namespace Scott.Forge.Graphics
         ///  Camera constructor.
         /// </summary>
         /// <param name="viewport">Viewport size in pixel units.</param>
-        /// <param name="centerInWorldSpace">Center of camera in pixel units in world space.</param>
-        public Camera(SizeF viewport, Vector2 centerInWorldSpace)
+        /// <param name="positionWorldSpace">Position of camera center in pixel units in world space.</param>
+        public Camera(SizeF viewport, Vector2 positionWorldSpace)
         {
-            CenterInWorldSpace = centerInWorldSpace;
+            Position = positionWorldSpace;
             Viewport = viewport;
         }
         
         /// <summary>
-        ///  Get or set the camera center position in world space.
+        ///  Get or set the camera position in world space.
         /// </summary>
-        public Vector2 CenterInWorldSpace { get; set; }
+        public Vector2 Position { get; set; }
 
         /// <summary>
         ///  Get or set the camera viewport size.
@@ -93,7 +101,12 @@ namespace Scott.Forge.Graphics
             // The camera center is (0, 0) but the screen space origin (0, 0) is the top left of the screen.
             // 1. Translate the point to camera space by adding the inverse of the camera world position.
             // 2. Translate the result to screen space by adding half the viewport size.
-            return worldSpaceVector - CenterInWorldSpace + new Vector2(mHalfViewportWidth, mHalfViewportHeight);
+            // 
+            // Also need to truncate floating point values and do math using ints to prevent screen flickering
+            // artifacts as the camera scrolls.
+            return new Vector2(
+                (int) worldSpaceVector.X - (int) Position.X + (int) mHalfViewportWidth,
+                (int) worldSpaceVector.Y - (int) Position.Y + (int) mHalfViewportHeight);
         }
 
         /// <summary>
@@ -107,8 +120,8 @@ namespace Scott.Forge.Graphics
         public RectF WorldToScreen(RectF worldSpaceRect)
         {
             return new RectF(
-                worldSpaceRect.TopLeft - CenterInWorldSpace + new Vector2(mHalfViewportWidth, mHalfViewportHeight),
-                worldSpaceRect.Size);
+                topLeft: WorldToScreen(worldSpaceRect.TopLeft),
+                size: worldSpaceRect.Size);
         }
 
         /// <summary>
@@ -118,7 +131,19 @@ namespace Scott.Forge.Graphics
         /// <returns>Same vector but in world space.</returns>
         public Vector2 ScreenToWorld(Vector2 screenSpaceVector)
         {
-            return screenSpaceVector + CenterInWorldSpace - new Vector2(mHalfViewportWidth, mHalfViewportHeight);
+            return screenSpaceVector + Position - new Vector2(mHalfViewportWidth, mHalfViewportHeight);
+        }
+
+        /// <summary>
+        ///  Transform a rectangle in screen space into world space.
+        /// </summary>
+        /// <param name="screenSpaceRect"></param>
+        /// <returns>Same rect but in screen space.</returns>
+        public RectF ScreenToWorld(RectF screenSpaceRect)
+        {
+            return new RectF(
+                ScreenToWorld(screenSpaceRect.TopLeft),
+                ScreenToWorld(screenSpaceRect.BottomRight));
         }
 
         /// <summary>
@@ -127,16 +152,15 @@ namespace Scott.Forge.Graphics
         /// <param name="translation">Amount to translate the camera.</param>
         public void Translate(Vector2 distance)
         {
-            CenterInWorldSpace += distance;
+            Position += distance;
         }
 
         /// <summary>
         ///  Update camera.
         /// </summary>
-        /// <param name="totalSeconds"></param>
-        /// <param name="deltaSeconds"></param>
         public virtual void Update(GameTime gameTime)
         {
+            // Do nothing.
         }
     }
 }

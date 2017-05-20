@@ -341,7 +341,7 @@ namespace Scott.Forge.Graphics
             
             r.Dimensions = new RectF(
                 topLeft: rect.MinPoint,
-                rectSize: new SizeF(rect.Width, rect.Height));
+                size: new SizeF(rect.Width, rect.Height));
         }
 
         /// <summary>

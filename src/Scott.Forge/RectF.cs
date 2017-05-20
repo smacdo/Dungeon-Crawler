@@ -66,13 +66,13 @@ namespace Scott.Forge
         ///  given width and height.
         /// </summary>
         /// <param name="topLeft">Top left corner of the new rectangle.</param>
-        /// <param name="rectSize">Size of the new rectangle.</param>
-        public RectF(Vector2 topLeft, SizeF rectSize)
+        /// <param name="size">Size of the new rectangle.</param>
+        public RectF(Vector2 topLeft, SizeF size)
             : this(
                   left: topLeft.X,
                   top: topLeft.Y,
-                  width: rectSize.Width,
-                  height: rectSize.Height)
+                  width: size.Width,
+                  height: size.Height)
         {
         }
 

@@ -50,6 +50,11 @@ namespace Scott.Forge.Tests.TestMocks
             throw new NotImplementedException();
         }
 
+        public void DrawTilemap(Camera camera, TileMap tilemap)
+        {
+            throw new NotImplementedException();
+        }
+
         public void FinishDrawing()
         {
             throw new NotImplementedException();

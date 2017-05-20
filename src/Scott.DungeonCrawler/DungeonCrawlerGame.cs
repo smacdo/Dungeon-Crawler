@@ -31,6 +31,7 @@ using Scott.Forge.Graphics;
 using Scott.Forge.Content;
 using Scott.Forge.Spatial;
 using Scott.Forge.Tilemaps;
+using Scott.DungeonCrawler.WorldGeneration;
 
 namespace Scott.DungeonCrawler
 {
@@ -162,22 +163,19 @@ namespace Scott.DungeonCrawler
             var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon32.png");
             var tileset = new TileSet(tileAtlas, 32, 32);
 
-            tileset.Add(new TileDefinition(0, "wall", 0, 96));       // or 0, 0
-            tileset.Add(new TileDefinition(1, "floor", 192, 160));  // or 192, 160
-            tileset.Add(new TileDefinition(2, "door", 128, 0));
+            tileset.Add(new TileDefinition(0, "void", 160, 192));
+            tileset.Add(new TileDefinition(1, "wall", 0, 96));       // or 0, 0
+            tileset.Add(new TileDefinition(2, "floor", 192, 160));  // or 192, 160
+            tileset.Add(new TileDefinition(3, "door", 96, 0));
 
-            // Create tilemap.
-            var tilemap = new TileMap(tileset, cols, rows);
+            // Random generate a map.
+            var generator = new DungeonGenerator(tileset);
 
-            tilemap.Grid.Fill((Grid<Tile> g, int x, int y) =>
-            {
-                var t = new Tile();
-                t.Id = (ushort) GameRoot.Random.Next(0, 3);
+            generator.EmptyTileId = 0;
+            generator.WallTileId = 1;
+            generator.FloorTileId = 2;
 
-                return t;
-            });
-
-            return tilemap;
+            return generator.Generate(100, 100);
         }
 
         /// <summary>
@@ -189,12 +187,12 @@ namespace Scott.DungeonCrawler
             var skeleton = mGameObjectFactory.Instantiate(mLevelScene, "Skeleton");
 
             // Pick a spot to place the skeleton enemy.
-            int width = Screen.Width - 64;
-            int height = Screen.Height - 64;
+            var mapWidth = mLevelScene.Tilemap.Width - 128;
+            var mapHeight = mLevelScene.Tilemap.Height - 128;
 
             skeleton.Transform.WorldPosition = new Scott.Forge.Vector2(
-                (int) ( GameRoot.Random.NextDouble() * width ),
-                (int) ( GameRoot.Random.NextDouble() * height ) );
+                (float) ( GameRoot.Random.NextDouble() * mapWidth + 64),
+                (float) ( GameRoot.Random.NextDouble() * mapHeight + 64));
 
             // Add the newly spawned skeleton to our list of enemies.
             // TODO: Check if location is clear before spawning!

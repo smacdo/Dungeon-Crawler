@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2017 Scott MacDonald
+ * Copyright 2012-2014 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,25 +19,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.Forge.Tilemaps
+namespace Scott.DungeonCrawler.WorldGeneration
 {
-    /// <summary>
-    ///  Holds data for a single tile on a tile map.
-    /// </summary>
-    public struct Tile
+    public class RoomGeneration
     {
-        /// <summary>
-        ///  Tile  constructor.
-        /// </summary>
-        /// <param name="type">Tile type id.</param>
-        public Tile(ushort type)
-        {
-            Type = type;
-        }
 
-        /// <summary>
-        ///  Get or set the tile type id.
-        /// </summary>
-        public ushort Type { get; set; }
     }
 }

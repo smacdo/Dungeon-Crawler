@@ -48,11 +48,6 @@ namespace Scott.Forge.Tilemaps
         public TileSet(Texture2D atlas, float tileWidth, float tileHeight, int capacity)
             : base(capacity)
         {
-            if (atlas == null)
-            {
-                throw new ArgumentNullException(nameof(atlas));
-            }
-
             if (tileWidth < 1.0f)
             {
                 throw new ArgumentOutOfRangeException(nameof(tileWidth), "Tile width must be one or larger");

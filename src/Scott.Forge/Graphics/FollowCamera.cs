@@ -60,7 +60,7 @@ namespace Scott.Forge.Graphics
             // TODO: Smooth scrolling and partial character following.
             if (Target != null)
             {
-                CenterInWorldSpace = Target.Transform.WorldPosition;
+                Position = Target.Transform.WorldPosition;
             }
         }
     }

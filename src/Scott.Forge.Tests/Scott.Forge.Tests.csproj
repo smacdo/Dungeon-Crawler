@@ -76,6 +76,7 @@
     <Compile Include="GameObjectsTests\ComponentProcessorTests.cs" />
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
+    <Compile Include="Graphics\CameraTests.cs" />
     <Compile Include="Spatial\GridTests.cs" />
     <Compile Include="Sprites\AnimationDefinitionTests.cs" />
     <Compile Include="Sprites\SpriteComponentProcessorDrawTests.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="TestMocks\TestableDebugOverlay.cs" />
     <Compile Include="TestMocks\TestableGameRenderer.cs" />
     <Compile Include="StringUtilsTests.cs" />
+    <Compile Include="Tilemaps\TileMapTests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />

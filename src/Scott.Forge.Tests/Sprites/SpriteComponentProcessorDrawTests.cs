@@ -6,6 +6,7 @@ using Scott.Forge.Sprites;
 using Scott.Forge.Tests.TestMocks;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Settings;
+using Scott.Forge.Graphics;
 
 namespace Scott.Forge.Tests.Sprites
 {
@@ -32,7 +33,7 @@ namespace Scott.Forge.Tests.Sprites
             // Issue draw call, make sure only appropritate sprites were drawn. Check which sprites are drawn by
             // comparing their atlas rects (Since unit tests do not create texture atlases which would be easier).
             var r = new TestableGameRenderer();
-            sp.Draw(r, 0.0f, 0.0f);
+            sp.Draw(r, new Camera(), 0.0f, 0.0f);
 
             Assert.AreEqual(2, r.Draws.Count);
             Assert.AreNotEqual(r.Draws[0].AtlasRect, r.Draws[1].AtlasRect);
