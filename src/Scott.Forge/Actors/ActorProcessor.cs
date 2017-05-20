@@ -16,6 +16,7 @@
 using Scott.Forge.Physics;
 using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
+using System;
 
 namespace Scott.Forge.Actors
 {
@@ -24,6 +25,18 @@ namespace Scott.Forge.Actors
     /// </summary>
     public class ActorProcessor : ComponentProcessor<ActorComponent>
     {
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public ActorProcessor(GameScene scene)
+            : base(scene)
+        {
+            if (scene == null)
+            {
+                throw new ArgumentNullException(nameof(scene));
+            }
+        }
+
         /// <summary>
         ///  Update actor component.
         /// </summary>

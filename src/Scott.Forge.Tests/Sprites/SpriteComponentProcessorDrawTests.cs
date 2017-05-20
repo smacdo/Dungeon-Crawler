@@ -25,7 +25,7 @@ namespace Scott.Forge.Tests.Sprites
             var s_disabled = CreateSprite(new RectF(left: 20, top: 21, width: 23, height: 24), Vector2.Zero);
             s_disabled.Active = false;
 
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
             sp.Add(s0);
             sp.Add(s1);
             sp.Add(s_disabled);

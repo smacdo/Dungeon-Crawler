@@ -34,6 +34,18 @@ namespace Scott.Forge.Ai
         private const double MovementSpeedPerSecond = 50;
 
         /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public AiProcessor(GameScene scene)
+            : base(scene)
+        {
+            if (scene == null)
+            {
+                throw new ArgumentNullException(nameof(scene));
+            }
+        }
+
+        /// <summary>
         ///  Update an AI component.
         /// </summary>
         protected override void UpdateComponent(AiComponent ai, double currentTime, double deltaTime)

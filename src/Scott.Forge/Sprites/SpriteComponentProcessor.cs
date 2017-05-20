@@ -27,6 +27,14 @@ namespace Scott.Forge.Sprites
     public class SpriteComponentProcessor : ComponentProcessor<SpriteComponent>
     {
         /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public SpriteComponentProcessor(GameScene scene)
+            : base(scene)
+        {
+        }
+
+        /// <summary>
         ///  Update sprite component.
         /// </summary>
         protected override void UpdateComponent(

@@ -51,7 +51,7 @@ namespace Scott.Forge.Tests.Sprites
             var s0 = CreateSprite(TestSpriteDef);
             var s1 = CreateSprite(TestSpriteDef);
 
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
             sp.Add(s0);
             sp.Add(s1);
 
@@ -69,7 +69,7 @@ namespace Scott.Forge.Tests.Sprites
         public void UpdateAdvancesAnimationFrames()
         {
             var s0 = CreateSprite(TestSpriteDef);
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation", DirectionName.South);
@@ -88,7 +88,7 @@ namespace Scott.Forge.Tests.Sprites
         public void UpdatesAtlasRectWhenAnimationFrameChanges()
         {
             var s0 = CreateSprite(TestSpriteDef);
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation", DirectionName.South);
@@ -115,7 +115,7 @@ namespace Scott.Forge.Tests.Sprites
         public void UpdateAdvancesMultipleFramesIfNeeded()
         {
             var s0 = CreateSprite(TestSpriteDef);
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation", DirectionName.South);
@@ -129,7 +129,7 @@ namespace Scott.Forge.Tests.Sprites
         public void TestStopAndResetAnimationAction()
         {
             var s0 = CreateSprite(TestSpriteDef);
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation", DirectionName.South, AnimationEndingAction.StopAndReset);
@@ -167,7 +167,7 @@ namespace Scott.Forge.Tests.Sprites
         public void TestStopAndFreezeAnimationAction()
         {
             var s0 = CreateSprite(TestSpriteDef);
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation", DirectionName.South, AnimationEndingAction.Stop);
@@ -205,7 +205,7 @@ namespace Scott.Forge.Tests.Sprites
         public void TestLoopAnimationAction()
         {
             var s0 = CreateSprite(TestSpriteDef);
-            var sp = new SpriteComponentProcessor();
+            var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation", DirectionName.South, AnimationEndingAction.Loop);

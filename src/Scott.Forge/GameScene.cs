@@ -38,8 +38,8 @@ namespace Scott.Forge
     {
         private List<GameObject> mRootGameObjects = new List<GameObject>();
 
-        public SpriteComponentProcessor Sprites { get; internal set; } = new SpriteComponentProcessor();
-        public PhysicsComponentProcessor Physics { get; internal set; } = new PhysicsComponentProcessor();
+        public SpriteComponentProcessor Sprites { get; internal set; }
+        public PhysicsComponentProcessor Physics { get; internal set; }
 
         /// <summary>
         ///  Get the scene tilemap.
@@ -55,8 +55,24 @@ namespace Scott.Forge
         public Camera MainCamera { get; set; }
 
         // TODO: Change this PlayerController, and move other logic into separate gameplay components or AI/Actor brian.
-        public ActorProcessor Actors { get; internal set; } = new ActorProcessor();
-        public AiProcessor AI { get; internal set; } = new AiProcessor();
+        public ActorProcessor Actors { get; internal set; }
+        public AiProcessor AI { get; internal set; }
+
+        /// <summary>
+        ///  Get the width of the scene.
+        /// </summary>
+        /// <remarks>
+        ///  Make it so this value can be set independently of tile map.
+        /// </remarks>
+        public float Width { get { return Tilemap.Width; } }
+
+        /// <summary>
+        ///  Get the height of the scene.
+        /// </summary>
+        /// <remarks>
+        ///  Make it so this value can be set indendently of the tile map.
+        /// </remarks>
+        public float Height { get { return Tilemap.Height; } }
 
         /// <summary>
         ///  Constructor.
@@ -64,6 +80,11 @@ namespace Scott.Forge
         /// <param name="tilemap">Tile map to use in the scene.</param>
         public GameScene(TileMap tilemap)
         {
+            Sprites = new SpriteComponentProcessor(this);
+            Physics = new PhysicsComponentProcessor(this);
+            Actors = new ActorProcessor(this);
+            AI = new AiProcessor(this);
+
             if (tilemap == null)
             {
                 throw new ArgumentNullException(nameof(tilemap));

@@ -34,6 +34,18 @@ namespace Scott.Forge.Physics
             = new SpatialIndex<PhysicsComponent>();
 
         /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public PhysicsComponentProcessor(GameScene scene)
+            : base(scene)
+        {
+            if (scene == null)
+            {
+                throw new ArgumentNullException(nameof(scene));
+            }
+        }
+
+        /// <summary>
         ///  Update all attached physics components.
         /// </summary>
         /// <param name="currentTime">Current elapsed simulation time in seconds.</param>
@@ -212,19 +224,16 @@ namespace Scott.Forge.Physics
         ///  Check if the given bounding rectangle is inside of the level boundaries. If not then calculate a
         ///  displacement vector to nudge the rectangle back.
         /// </summary>
-        /// <remarks>
-        ///  TODO: Use the scene dimensions rather than screen dimensions!
-        /// </remarks>
         /// <param name="bounds">Bounding rect to check.</param>
         /// <param name="displacement">Receives a displacement if bounding rect is not in level.</param>
         /// <returns>True if bounding rect is in level, false otherwise.</returns>
-        public static bool IsInLevelBounds(BoundingRect bounds, ref Vector2 displacement)
+        public bool IsInLevelBounds(BoundingRect bounds, ref Vector2 displacement)
         {
             bool isInBounds =
                 bounds.MinPoint.X >= 0 &&
-                bounds.MaxPoint.X < Screen.Width &&
+                bounds.MaxPoint.X < Scene.Width &&
                 bounds.MinPoint.Y >= 0 &&
-                bounds.MaxPoint.Y < Screen.Height;
+                bounds.MaxPoint.Y < Scene.Height;
 
             if (!isInBounds)
             {
@@ -237,18 +246,18 @@ namespace Scott.Forge.Physics
                 {
                     displacement.X = -left;
                 }
-                else if (right > Screen.Width)
+                else if (right > Scene.Width)
                 {
-                    displacement.X = -(right - Screen.Width);
+                    displacement.X = -(right - Scene.Width);
                 }
 
                 if (top < 0)
                 {
                     displacement.Y = -top;
                 }
-                else if (bottom > Screen.Height)
+                else if (bottom > Scene.Height)
                 {
-                    displacement.Y = -(bottom - Screen.Height);
+                    displacement.Y = -(bottom - Scene.Height);
                 }
             }
 

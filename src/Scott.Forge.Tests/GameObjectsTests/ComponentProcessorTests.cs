@@ -166,6 +166,7 @@ namespace Scott.Forge.Tests.GameObjectsTests
         private class TestComponentProcessor : ComponentProcessor<TestComponent>
         {
             public TestComponentProcessor()
+                : base(null)
             {
                 UpdatedComponents = new Dictionary<TestComponent, TimeInfo>();
             }

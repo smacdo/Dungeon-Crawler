@@ -60,11 +60,13 @@ namespace Scott.Forge.GameObjects
         protected readonly List<TComponent> mComponents; 
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
-        protected ComponentProcessor()
+        /// <param name="scene">Game scene that created this processor, optional.</param>
+        protected ComponentProcessor(GameScene scene)
         {
             mComponents = new List<TComponent>(DefaultCapacity);
+            Scene = scene;
         }
 
         /// <summary>
@@ -74,6 +76,11 @@ namespace Scott.Forge.GameObjects
         {
             get { return mComponents.Count; }
         }
+
+        /// <summary>
+        ///  Get the scene that created this component processor.
+        /// </summary>
+        protected GameScene Scene { get; private set; }
 
         /// <summary>
         ///  Adds the game object to this object processor for future updates.
