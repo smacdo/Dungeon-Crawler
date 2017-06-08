@@ -28,41 +28,30 @@ namespace Scott.Forge.Engine.Content
     ///  TODO: Make this more robust with errors when unexpected values are encountered.
     ///  TODO: Convert file format to JSON.
     /// </summary>
-    [ContentReaderAttribute( typeof( AnimatedSpriteDefinition ), ".sprite" )]
+    [ContentReader(typeof(AnimatedSpriteDefinition), ".sprite")]
     internal class AnimatedSpriteDefinitionContentReader : ContentReader<AnimatedSpriteDefinition>
     {
         /// <summary>
-        ///  Constructor.
+        ///  Read a serialized asset from an input stream and return it as a loaded object.
         /// </summary>
-        public AnimatedSpriteDefinitionContentReader()
-            : base()
-        {
-            // Empty
-        }
-
-        /// <summary>
-        ///  Construct a new SpriteData instance from disk.
-        /// </summary>
-        /// <returns>SpriteData instance.</returns>
-        public override AnimatedSpriteDefinition Read( Stream input,
-                                         string assetName,
-                                         string contentDir,
-                                         ForgeContentManager content )
+        /// <param name="inputStream">Stream to read serialized asset data from.</param>
+        /// <param name="assetPath">Relative path to the serialized asset.</param>
+        /// <param name="content">Content manager.</param>
+        /// <returns>Deserialized content object.</returns>
+        public override AnimatedSpriteDefinition Read(
+            Stream inputStream,
+            string assetPath,
+            ForgeContentManager content)
         {
             XmlDocument xml  = new XmlDocument();
-            xml.Load( input );
+            xml.Load(inputStream);
 
-            return  ImportSpriteData( xml.SelectSingleNode( "/sprite" ), contentDir, content );
+            return ImportSpriteData(xml.SelectSingleNode("/sprite"), content);
         }
-
-        /// <summary>
-        ///  Load SpriteData from an XML document.
-        /// </summary>
-        /// <param name="spriteNode"></param>
-        /// <param name="contentDir"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        private AnimatedSpriteDefinition ImportSpriteData(XmlNode spriteNode, string contentDir, ForgeContentManager content)
+        
+        private AnimatedSpriteDefinition ImportSpriteData(
+            XmlNode spriteNode,
+            ForgeContentManager content)
         {
             return new AnimatedSpriteDefinition(
                 ImportSpriteDefinition(spriteNode, content),
@@ -161,7 +150,7 @@ namespace Scott.Forge.Engine.Content
 
             for (int dirIndex = 0; dirIndex < Constants.DirectionCount; ++dirIndex)
             {
-                XmlNodeList frameNodes = frameGroupsTable[(DirectionName) dirIndex];    // TODO: Remove cast?
+                XmlNodeList frameNodes = frameGroupsTable[(DirectionName) dirIndex];
                 var frames = new List<Vector2>();
 
                 // Iterate though all the frames in the animation

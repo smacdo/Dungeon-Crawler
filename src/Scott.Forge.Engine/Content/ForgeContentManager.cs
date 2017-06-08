@@ -190,8 +190,7 @@ namespace Scott.Forge.Engine.Content
 
             using (var stream = OpenStream(assetName))
             {
-                var contentDir = Path.GetDirectoryName(assetName);
-                asset = contentReader.Read(stream, assetName, contentDir, this);
+                asset = contentReader.Read(stream, assetName, this);
             }
 
             return asset;

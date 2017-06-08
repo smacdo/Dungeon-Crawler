@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,17 @@ namespace Scott.Forge.Engine.Content
     /// </summary>
     internal abstract class ContentReader<T>
     {
-        public ContentReader()
-        {
-            // empty
-        }
-
-        public abstract T Read( Stream input,
-                                string assetName,
-                                string contentDir,
-                                ForgeContentManager content );
+        /// <summary>
+        ///  Read a serialized asset from an input stream and return it as a loaded object.
+        /// </summary>
+        /// <param name="inputStream">Stream to read serialized asset data from.</param>
+        /// <param name="assetPath">Relative path to the serialized asset.</param>
+        /// <param name="content">Content manager.</param>
+        /// <returns>Deserialized content object.</returns>
+        public abstract T Read(
+            Stream inputStream,
+            string assetPath,
+            ForgeContentManager content);
     }
 
     /// <summary>

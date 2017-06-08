@@ -36,22 +36,26 @@ namespace Scott.Forge.Engine.Content
         }
 
         /// <summary>
-        ///  Construct a new SpriteData instance from disk.
+        ///  Read a serialized asset from an input stream and return it as a loaded object.
         /// </summary>
-        /// <returns>SpriteData instance.</returns>
-        public override Texture2D Read( Stream input,
-                                        string assetName,
-                                        string contentDir,
-                                        ForgeContentManager content )
+        /// <param name="inputStream">Stream to read serialized asset data from.</param>
+        /// <param name="assetPath">Relative path to the serialized asset.</param>
+        /// <param name="content">Content manager.</param>
+        /// <returns>Deserialized content object.</returns>
+        public override Texture2D Read(
+            Stream inputStream,
+            string assetPath,
+            ForgeContentManager content)
         {
-            IServiceProvider provider = content.ServiceProvider;
-            IGraphicsDeviceService iGraphics =
-                (IGraphicsDeviceService) provider.GetService( typeof( IGraphicsDeviceService ) );
-            GraphicsDevice graphics = iGraphics.GraphicsDevice;
+            var graphicsDeviceService =
+                (IGraphicsDeviceService)content.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
 
-            Debug.Assert( graphics != null, "Failed to retrieve active GraphicsDevice");
+            if (graphicsDeviceService.GraphicsDevice == null)
+            {
+                throw new InvalidOperationException("Graphics device service not registered");
+            }
 
-            return Texture2D.FromStream( graphics, input );
+            return Texture2D.FromStream(graphicsDeviceService.GraphicsDevice, inputStream);
         }
     }
 }
