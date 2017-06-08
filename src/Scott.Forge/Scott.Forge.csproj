@@ -90,7 +90,9 @@
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
+    <Compile Include="Support\PriorityQueue.cs" />
     <Compile Include="Tilemaps\Grid.cs" />
+    <Compile Include="Tilemaps\GridPathfinder.cs" />
     <Compile Include="Tilemaps\Tile.cs" />
     <Compile Include="Tilemaps\TileDefinition.cs" />
     <Compile Include="Tilemaps\TileMap.cs" />

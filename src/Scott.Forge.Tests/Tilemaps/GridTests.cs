@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scott.Forge.Tilemaps;
 
-namespace Scott.Forge.Tests.Spatial
+namespace Scott.Forge.Tests.Tilemaps
 {
     [TestClass]
     public class GridTests
@@ -89,7 +89,7 @@ namespace Scott.Forge.Tests.Spatial
 
         [TestMethod]
         [ExpectedException(typeof(IndexOutOfRangeException))]
-        public void Get_Out_Of_Bounds_Col__With_Indexer_Throws_Exception()
+        public void Get_Out_Of_Bounds_Col_With_Indexer_Throws_Exception()
         {
             var grid = new Grid<int>(2, 3);
             var x = grid[2, 0];
@@ -121,6 +121,57 @@ namespace Scott.Forge.Tests.Spatial
         {
             var grid = new Grid<int>(2, 3);
             grid[0, -1] = 42;
+        }
+
+        [TestMethod]
+        public void Can_Get_And_Set_Cells_In_Grid_Using_Point_Index_Operator()
+        {
+            var grid = new Grid<int>(2, 3);
+            Assert.AreEqual(0, grid[new Point2(0, 0)]);
+            Assert.AreEqual(0, grid[new Point2(1, 2)]);
+
+            grid[new Point2(0, 0)] = 42;
+            Assert.AreEqual(42, grid[new Point2(0, 0)]);
+
+            grid[new Point2(1, 2)] = 5;
+            Assert.AreEqual(42, grid[new Point2(0, 0)]);
+            Assert.AreEqual(5, grid[new Point2(1, 2)]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void Get_Out_Of_Bounds_Col_With_Point_Indexer_Throws_Exception()
+        {
+            var grid = new Grid<int>(2, 3);
+            var x = grid[new Point2(2, 0)];
+
+            Assert.IsFalse(x == 0);     // This should not be tested but is needed to prevent warning.
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void Get_Out_Of_Bounds_Row_With_Point_Indexer_Throws_Exception()
+        {
+            var grid = new Grid<int>(2, 3);
+            var x = grid[new Point2(0, 3)];
+
+            Assert.IsFalse(x == 0);     // This should not be tested but is needed to prevent warning.
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void Set_Out_Of_Bounds_Col_With_Point_Indexer_Throws_Exception()
+        {
+            var grid = new Grid<int>(2, 3);
+            grid[new Point2(-1, 0)] = 42;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void Set_Out_Of_Bounds_Row_With_Point_Indexer_Throws_Exception()
+        {
+            var grid = new Grid<int>(2, 3);
+            grid[new Point2(0, -1)] = 42;
         }
 
         [TestMethod]

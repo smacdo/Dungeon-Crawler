@@ -22,6 +22,10 @@ namespace Scott.Forge
     /// <summary>
     ///  A two dimensional Point with integer coordinates.
     /// </summary>
+    /// <remarks>
+    ///  Do not use this mutable struct when code (Especially collections like IDictionary) expects the hash code to
+    ///  remain immutable but the properties of the struct are modified.
+    /// </remarks>
     [DataContract]
     [System.Diagnostics.DebuggerDisplay("X={X}, Y={Y}")]
     public struct Point2 : IEquatable<Point2>, IComparable<Point2>, IComparable
@@ -209,8 +213,8 @@ namespace Scott.Forge
             {
                 int hash = 17;
 
-                hash *= 23 + X.GetHashCode();
-                hash *= 23 + Y.GetHashCode();
+                hash = (hash * 23) + X.GetHashCode();
+                hash = (hash * 23) + Y.GetHashCode();
 
                 return hash;
             }

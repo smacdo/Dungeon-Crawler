@@ -77,7 +77,7 @@
     <Compile Include="GameStates\GameStateManagerTests.cs" />
     <Compile Include="GameStates\GameStateTests.cs" />
     <Compile Include="Graphics\CameraTests.cs" />
-    <Compile Include="Spatial\GridTests.cs" />
+    <Compile Include="Tilemaps\GridTests.cs" />
     <Compile Include="Sprites\AnimationDefinitionTests.cs" />
     <Compile Include="Sprites\SpriteComponentProcessorDrawTests.cs" />
     <Compile Include="Sprites\SpriteComponentProcessorUpdateTests.cs" />
@@ -92,10 +92,13 @@
     <Compile Include="PairTests.cs" />
     <Compile Include="RectFTests.cs" />
     <Compile Include="Spatial\BoundingAreaTests.cs" />
+    <Compile Include="Support\PriorityQueueTests.cs" />
     <Compile Include="TestMocks\TestableDebugOverlay.cs" />
     <Compile Include="TestMocks\TestableGameRenderer.cs" />
     <Compile Include="StringUtilsTests.cs" />
     <Compile Include="Tilemaps\TileMapTests.cs" />
+    <Compile Include="Tilemaps\GridPathfinderTests.cs" />
+    <Compile Include="Point2Tests.cs" />
     <Compile Include="Vector2Tests.cs" />
     <Compile Include="Vector3Tests.cs" />
     <Compile Include="Vector4Tests.cs" />

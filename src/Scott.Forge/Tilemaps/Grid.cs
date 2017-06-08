@@ -111,6 +111,18 @@ namespace Scott.Forge.Tilemaps
         }
 
         /// <summary>
+        ///  Get or set a cell in the grid.
+        /// </summary>
+        /// <param name="p">Index of the cell.</param>
+        public TValue this[Point2 p]
+        {
+            [DebuggerStepThrough]
+            get { return Cells[p.Y, p.X]; }
+            [DebuggerStepThrough]
+            set { Cells[p.Y, p.X] = value; }
+        }
+
+        /// <summary>
         ///  Get or set a version value.
         /// </summary>
         /// <remarks>
