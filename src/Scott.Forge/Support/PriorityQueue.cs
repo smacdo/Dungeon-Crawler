@@ -34,101 +34,36 @@ namespace Scott.Forge.Support
     [DebuggerDisplay("Count = {Count}")]
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-    public class PriorityQueue<TValue> : ICollection<TValue>
+    public class PriorityQueue<TValue, TScore> : IEnumerable<TValue> where TScore : IComparable<TScore>
     {
         private const int DefaultCapacity = 15; // Full binary tree of height 4.
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         [DataMember(Name = "Heap", IsRequired = true, Order = 0)]
-        private TValue[] mHeap;
+        private HeapNode[] mHeap;
 
         /// <summary>
         ///  Initialize a new instance of the priority queue class.
         /// </summary>
         public PriorityQueue()
-            : this(DefaultCapacity, Comparer<TValue>.Default)
+            : this(DefaultCapacity)
         {
         }
-
-        /// <summary>
-        ///  Initialize a new instance of the priority queue class.
-        /// </summary>
-        /// <param name="comparer">Comparer to use when comparing item priority values.</param>
-        public PriorityQueue(IComparer<TValue> comparer)
-            : this(DefaultCapacity, comparer)
-        {
-        }
-
+        
         /// <summary>
         ///  Initialize a new instance of the priority queue class.
         /// </summary>
         /// <param name="capacity">Initial capacity.</param>
         public PriorityQueue(int capacity)
-            : this(capacity, Comparer<TValue>.Default)
         {
-        }
-
-        /// <summary>
-        ///  Initialize a new instance of the priority queue class.
-        /// </summary>
-        /// <param name="comparer">Comparer to use when comparing item priority values.</param>
-        /// <param name="capacity">Initial capacity.</param>
-        public PriorityQueue(int capacity, IComparer<TValue> comparer)
-        {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-
             if (capacity < 0)
             {
                 throw new ArgumentException("Capacity cannot be less than zero", nameof(capacity));
             }
 
-            Comparer = comparer;
-            mHeap = new TValue[capacity];
+            mHeap = new HeapNode[capacity];
         }
-
-        /// <summary>
-        ///  Initialize a new instance of the priority queue class with values from the provided collection.
-        /// </summary>
-        /// <param name="values">A collection to use when initializing the priority queue.</param>
-        public PriorityQueue(IEnumerable<TValue> values)
-            : this(values, Comparer<TValue>.Default)
-        {
-        }
-
-        /// <summary>
-        ///  Initialize a new instance of the priority queue class with values from the provided collection.
-        /// </summary>
-        /// <param name="values">A collection to use when initializing the priority queue.</param>
-        /// <param name="comparer">Comparer to use when comparing item priority values.</param>
-        public PriorityQueue(IEnumerable<TValue> values, IComparer<TValue> comparer)
-            : this(DefaultCapacity, comparer)
-        {
-            Add(values);
-        }
-
-        /// <summary>
-        ///  Initialize a new instance of the priority queue class with values from the provided collection.
-        /// </summary>
-        /// <param name="values">A collection to use when initializing the priority queue.</param>
-        public PriorityQueue(ICollection<TValue> values)
-            : this(values, Comparer<TValue>.Default)
-        {
-        }
-
-        /// <summary>
-        ///  Initialize a new instance of the priority queue class with values from the provided collection.
-        /// </summary>
-        /// <param name="values">A collection to use when initializing the priority queue.</param>
-        /// <param name="comparer">Comparer to use when comparing item priority values.</param>
-        public PriorityQueue(ICollection<TValue> values, IComparer<TValue> comparer)
-            : this(DefaultCapacity, comparer)
-        {
-            Add(values);
-        }
-
+        
         /// <summary>
         ///  Initialize a new instance of the priority queue class by copying another priority queue.
         /// </summary>
@@ -136,17 +71,16 @@ namespace Scott.Forge.Support
         ///  The priority queue head is cloned by the items are only shallow copied.
         /// </remarks>
         /// <param name="other">Priority queue to copy from.</param>
-        public PriorityQueue(PriorityQueue<TValue> other)
+        public PriorityQueue(PriorityQueue<TValue, TScore> other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            mHeap = new TValue[other.Capacity];
+            mHeap = new HeapNode[other.Capacity];
             Array.Copy(other.mHeap, mHeap, other.Count);
 
-            Comparer = other.Comparer;
             Count = other.Count;
         }
 
@@ -154,12 +88,7 @@ namespace Scott.Forge.Support
         ///  Get the queue's current capacity.
         /// </summary>
         public int Capacity { [DebuggerStepThrough] get { return mHeap.Length; } }
-
-        /// <summary>
-        ///  Get the comparer used for comparing item priorities.
-        /// </summary>
-        public IComparer<TValue> Comparer { get; private set; }
-
+        
         /// <summary>
         ///  Get a count of the number of items in the priority queue.
         /// </summary>
@@ -198,8 +127,9 @@ namespace Scott.Forge.Support
         /// <remarks>
         ///  Inserts the item into the correct position in the heap with a runtime of O(log n).
         /// </remarks>
-        /// <param name="item">The item to insert.</param>
-        public void Add(TValue item)
+        /// <param name="value">The value to insert.</param>
+        /// <param name="score">The score of the value to insert.</param>
+        public void Add(TValue value, TScore score)
         {
             // If there is no more space to store new items then automatically grow the heap.
             if (Count == Capacity)
@@ -209,59 +139,12 @@ namespace Scott.Forge.Support
 
             // Add the item and resort the heap to maintain consistency. 
             Count++;
-            HeapifyUp(Count - 1, item);
+            HeapifyUp(Count - 1, value, score);
 
             // Update the version to invalidate any active iterators.
             Version++;
         }
-
-        /// <summary>
-        ///  Adds a collection of items to the priority queue.
-        /// </summary>
-        /// <remarks>
-        ///  Inserts each item into the correct position in the heap with a runtime of O(n * log n).
-        /// </remarks>
-        /// <param name="item">A collection of items to insert.</param>
-        public void Add(IEnumerable<TValue> values)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            foreach (var v in values)
-            {
-                Add(v);
-            }
-        }
-
-        /// <summary>
-        ///  Adds a collection of items to the priority queue.
-        /// </summary>
-        /// <remarks>
-        ///  Inserts each item into the correct position in the heap with a runtime of O(n * log n).
-        /// </remarks>
-        /// <param name="item">A collection of items to insert.</param>
-        public void Add(ICollection<TValue> values)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            int newCount = Count + values.Count;
-
-            if (newCount > Capacity)
-            {
-                GrowHeap(GetNextCapacity(newCount));
-            }
-
-            foreach (var v in values)
-            {
-                Add(v);
-            }
-        }
-
+        
         /// <summary>
         ///  Clear the priority queue of values.
         /// </summary>
@@ -298,18 +181,8 @@ namespace Scott.Forge.Support
         /// <returns>True if the item is in the priority queue, false otherwise.</returns>
         public bool Contains(TValue item)
         {
-            bool didFind = false;
-
-            // Search each entry in the priority queue to see if any match.
-            for (int currentIndex = 0; currentIndex < Count && !didFind; ++currentIndex)
-            {
-                if (Comparer.Compare(item, mHeap[currentIndex]) == 0)
-                {
-                    didFind = true;
-                }
-            }
-
-            return didFind;
+            var score = default(TScore);
+            return TryFindScore(item, ref score);
         }
 
         /// <summary>
@@ -319,7 +192,43 @@ namespace Scott.Forge.Support
         /// <param name="arrayIndex">Index in destination array to start writing at.</param>
         public void CopyTo(TValue[] array, int arrayIndex)
         {
-            Array.Copy(mHeap, 0, array, arrayIndex, Count);
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Length < arrayIndex + Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Array start index out of bounds");
+            }
+
+            for (int i = 0; i < Count; i++)
+            {
+                array[arrayIndex + i] = mHeap[i].Value;
+            }
+        }
+
+        /// <summary>
+        ///  Copy the priority queue heap to an array.
+        /// </summary>
+        /// <param name="array">The destination array.</param>
+        /// <param name="arrayIndex">Index in destination array to start writing at.</param>
+        public void CopyTo(Pair<TValue, TScore>[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Length < arrayIndex + Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Array start index out of bounds");
+            }
+
+            for (int i = 0; i < Count; i++)
+            {
+                array[arrayIndex + i] = new Pair<TValue, TScore>(mHeap[i].Value, mHeap[i].Score);
+            }
         }
 
         /// <summary>
@@ -355,7 +264,7 @@ namespace Scott.Forge.Support
             Version++;
 
             // Return to the caller the extracted minimum value from the priority queue.
-            return result;
+            return result.Value;
         }
 
         /// <summary>
@@ -374,7 +283,7 @@ namespace Scott.Forge.Support
                     throw new InvalidOperationException("Priority queue iterator was invalidated");
                 }
 
-                yield return mHeap[i];
+                yield return mHeap[i].Value;
             }
         }
 
@@ -420,7 +329,7 @@ namespace Scott.Forge.Support
             }
 
             // Create a new heap and copy the old heap's items in.
-            var newHeap = new TValue[newCapacity];
+            var newHeap = new HeapNode[newCapacity];
             Array.Copy(mHeap, 0, newHeap, 0, Count);
 
             // Switch to the larger heap and discard the smaller one.
@@ -453,8 +362,9 @@ namespace Scott.Forge.Support
         ///  Run time is O(log n).
         /// </remarks>
         /// <param name="startIndex">Index to insert the item at.</param>
-        /// <param name="item">Value of the item to insert.</param>
-        private void HeapifyUp(int startIndex, TValue item)
+        /// <param name="itemValue">Value of the item to insert.</param>
+        /// <param name="itemScore">Score of the item to insert.</param>
+        private void HeapifyUp(int startIndex, TValue itemValue, TScore itemScore)
         {
             if (startIndex < 0 || startIndex >= Count)
             {
@@ -467,7 +377,7 @@ namespace Scott.Forge.Support
             // Locate the slot where this value should be placed. Start at a blank slot in the heap, and then
             // iteratively check and swap the parent node into the slot if it is smaller than the value to insert.
             // Once this property is no longer true, add the value to insert.
-            while (currentIndex > 0 && Comparer.Compare(mHeap[parentIndex], item) > 0)
+            while (currentIndex > 0 && itemScore.CompareTo(mHeap[parentIndex].Score) < 0)
             {
                 // Swap the parent value into the current slot.
                 mHeap[currentIndex] = mHeap[parentIndex];
@@ -478,7 +388,7 @@ namespace Scott.Forge.Support
             }
 
             // Insert the value at the correct location in the heap.
-            mHeap[currentIndex] = item;
+            mHeap[currentIndex] = new HeapNode(itemValue, itemScore);
 
             // Update the version to invalidate any active iterators.
             Version++;
@@ -509,12 +419,12 @@ namespace Scott.Forge.Support
                 int leftIndex = 2 * index + 1;
                 int rightIndex = 2 * index + 2;
 
-                if (leftIndex < Count && Comparer.Compare(mHeap[leftIndex], mHeap[smallestIndex]) < 0)
+                if (leftIndex < Count && mHeap[leftIndex].Score.CompareTo(mHeap[smallestIndex].Score) < 0)
                 {
                     smallestIndex = leftIndex;
                 }
 
-                if (rightIndex < Count && Comparer.Compare(mHeap[rightIndex], mHeap[smallestIndex]) < 0)
+                if (rightIndex < Count && mHeap[rightIndex].Score.CompareTo(mHeap[smallestIndex].Score) < 0)
                 {
                     smallestIndex = rightIndex;
                 }
@@ -552,9 +462,11 @@ namespace Scott.Forge.Support
             int writeIndex = 0;
             int itemsRemoved = 0;
 
+            var comparer = EqualityComparer<TValue>.Default;
+
             for (int readIndex = 0; readIndex < Count; ++readIndex)
             {
-                if (Comparer.Compare(item, mHeap[readIndex]) == 0)
+                if (comparer.Equals(item, mHeap[readIndex].Value))
                 {
                     itemsRemoved++;
                 }
@@ -584,7 +496,32 @@ namespace Scott.Forge.Support
                 throw new InvalidOperationException("No items in priority queue");
             }
 
-            return mHeap[0];
+            return mHeap[0].Value;
+        }
+
+        /// <summary>
+        ///  Find the given item in the priority queue and retrieve the score associated with it.
+        /// </summary>
+        /// <param name="item">The item to look for.</param>
+        /// <param name="score">Reeceives the item score if the item is located.</param>
+        /// <returns>True if the item is in the priority queue, false otherwise.</returns>
+        public bool TryFindScore(TValue item, ref TScore score)
+        {
+            bool didFind = false;
+
+            // Search each entry in the priority queue to see if any match.
+            var comparer = EqualityComparer<TValue>.Default;
+
+            for (int currentIndex = 0; currentIndex < Count && !didFind; ++currentIndex)
+            {
+                if (comparer.Equals(item, mHeap[currentIndex].Value))
+                {
+                    score = mHeap[currentIndex].Score;
+                    didFind = true;
+                }
+            }
+
+            return didFind;
         }
 
         /// <summary>
@@ -592,7 +529,7 @@ namespace Scott.Forge.Support
         /// </summary>
         /// <param name="result">Receives the value of the lowest priority item.</param>
         /// <returns>True if an item was removed, false otherwise.</returns>
-        public bool TryRemove(out TValue result)
+        public bool TryRemove(TValue result)
         {
             if (Count == 0)
             {
@@ -619,6 +556,18 @@ namespace Scott.Forge.Support
 
             result = Peek();
             return true;
+        }
+
+        private struct HeapNode
+        {
+            public HeapNode(TValue value, TScore score)
+            {
+                Value = value;
+                Score = score;
+            }
+
+            public readonly TValue Value;
+            public readonly TScore Score;
         }
     }
 }
