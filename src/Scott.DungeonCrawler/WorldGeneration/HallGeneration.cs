@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Scott.DungeonCrawler.WorldGeneration
 {
-    class HallGeneration
+    public class HallGeneration
     {
     }
 }

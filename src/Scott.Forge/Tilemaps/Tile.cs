@@ -33,11 +33,17 @@ namespace Scott.Forge.Tilemaps
         public Tile(ushort type)
         {
             Type = type;
+            Data = 0;
         }
 
         /// <summary>
         ///  Get or set the tile type id.
         /// </summary>
         public ushort Type { get; set; }
+
+        /// <summary>
+        ///  Get or set data associated with this tile.
+        /// </summary>
+        public ushort Data { get; set; }
     }
 }

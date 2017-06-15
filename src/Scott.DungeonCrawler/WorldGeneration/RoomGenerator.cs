@@ -20,23 +20,26 @@ using System.Text;
 using System.Threading.Tasks;
 using Scott.Forge.Random;
 using Scott.Forge.Tilemaps;
+using Scott.Forge;
 
 namespace Scott.DungeonCrawler.WorldGeneration
 {
     public class RoomLayout
     {
-        public RoomLayout(Grid<Tile> tiles)
+        public RoomLayout(Grid<Tile> tiles, Point2 safeCenter)
         {
             Tiles = tiles;
+            SafeCenter = safeCenter;
         }
 
         public Grid<Tile> Tiles;
+        public Point2 SafeCenter;
     }
 
     public class RoomGenerator
     {
-        public ushort FloorTile { get; set; }
-        public ushort WallTile { get; set; }
+        public TileDefinition FloorTile { get; set; }
+        public TileDefinition WallTile { get; set; }
         public int MinWidth { get; set; }
         public int MaxWidth { get; set; }
         public int MinHeight { get; set; }
@@ -50,12 +53,20 @@ namespace Scott.DungeonCrawler.WorldGeneration
                 throw new ArgumentNullException(nameof(random));
             }
 
-            if (MinWidth < 0 || MinWidth > MaxWidth)
+            if (MinWidth < 3)
+            {
+                throw new InvalidOperationException("Min width must be at least three in size");
+            }
+            else if (MinWidth > MaxWidth)
             {
                 throw new InvalidOperationException("Min width must be less than or equal to max width");
             }
 
-            if (MinHeight < 0 || MinHeight > MaxHeight)
+            if (MinHeight < 3)
+            {
+                throw new InvalidOperationException("Min height must be at least three in size");
+            }
+            else if (MinHeight > MaxHeight)
             {
                 throw new InvalidOperationException("Min height must be less than or equal to max height");
             }
@@ -75,17 +86,21 @@ namespace Scott.DungeonCrawler.WorldGeneration
             tiles.Fill(x: roomWidth - 1, y: 0, cols: 1, rows: roomHeight, action: SetWall);
             tiles.Fill(x: 0, y: roomHeight - 1, cols: roomWidth, rows: 1, action: SetWall);
 
-            return new RoomLayout(tiles);
+            // Pick a safe center location that can be walked on and pathed to.
+            // TODO: Add logic that if the picked spot is invalid another spot can be picked.
+            var safeCenter = new Point2(tiles.Cols / 2, tiles.Rows / 2);
+
+            return new RoomLayout(tiles, safeCenter);
         }
 
         private Tile SetFloor(Grid<Tile> grid, int x, int y)
         {
-            return new Tile(FloorTile);
+            return new Tile(FloorTile.Id);
         }
 
         private Tile SetWall(Grid<Tile> grid, int x, int y)
         {
-            return new Tile(WallTile);
+            return new Tile(WallTile.Id);
         }
     }
 }

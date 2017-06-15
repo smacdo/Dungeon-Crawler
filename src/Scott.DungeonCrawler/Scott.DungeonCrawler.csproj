@@ -63,6 +63,8 @@
     <Compile Include="DungeonCrawlerGame.cs" />
     <Compile Include="GameObjects\DungeonCrawlerBlueprintFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TileHelpers.cs" />
+    <Compile Include="WorldGeneration\DungeonBuilder.cs" />
     <Compile Include="WorldGeneration\DungeonGenerator.cs" />
     <Compile Include="WorldGeneration\HallGeneration.cs" />
     <Compile Include="WorldGeneration\RoomGenerator.cs" />

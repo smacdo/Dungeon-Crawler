@@ -78,5 +78,15 @@ namespace Scott.Forge.Tilemaps
         ///  Get or set the texture atlas y position.
         /// </summary>
         public int AtlasY { get; set; }
+
+        /// <summary>
+        ///  Get or set extra flags that can be used by the game.
+        /// </summary>
+        public ulong ExtraFlags { get; set; } = 0;
+
+        /// <summary>
+        ///  Get a dictionary of additional properties for a tile.
+        /// </summary>
+        public Dictionary<string, object> Parameters { get; private set; } = new Dictionary<string, object>();
     }
 }

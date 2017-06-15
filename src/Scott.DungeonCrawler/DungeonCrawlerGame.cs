@@ -168,17 +168,21 @@ namespace Scott.DungeonCrawler
             tileset.Add(new TileDefinition(2, "floor", 192, 160));  // or 192, 160
             tileset.Add(new TileDefinition(3, "door", 96, 0));
 
+            tileset[0].SetIsVoid(true);
+            tileset[1].SetIsWall(true);
+            tileset[2].SetIsFloor(true);
+
             // Random generate a map.
             var generator = new DungeonGenerator(tileset);
 
-            generator.EmptyTileId = 0;
-            generator.WallTileId = 1;
-            generator.FloorTileId = 2;
+            generator.Void = tileset[0];
+            generator.Wall = tileset[1];
+            generator.Floor = tileset[2];
 
             generator.RoomGenerators.Add(new RoomGenerator()
             {
-                FloorTile = generator.FloorTileId,
-                WallTile = generator.WallTileId,
+                FloorTile = generator.Floor,
+                WallTile = generator.Wall,
                 MinWidth = 4,
                 MaxWidth = 16,
                 MinHeight = 4,

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,19 +47,19 @@ namespace Scott.DungeonCrawler.WorldGeneration
         public TileSet TileSet { get; private set; }
         
         /// <summary>
-        ///  Get or set the tile id for empty tiles.
+        ///  Get or set the tile definition for empty tiles.
         /// </summary>
-        public ushort EmptyTileId { get; set; } = 0;
+        public TileDefinition Void { get; set; }
 
         /// <summary>
-        ///  Get or set the tile id for walls.
+        ///  Get or set the tile definition for walls.
         /// </summary>
-        public ushort WallTileId { get; set; } = 0;
+        public TileDefinition Wall { get; set; }
 
         /// <summary>
-        ///  Get or set the tile id for floors.
+        ///  Get or set the tile definition for floors.
         /// </summary>
-        public ushort FloorTileId { get; set; } = 0;
+        public TileDefinition Floor { get; set; }
 
         /// <summary>
         ///  Get or set the random number generator.
@@ -77,18 +77,14 @@ namespace Scott.DungeonCrawler.WorldGeneration
         /// <summary>
         ///  Generate a new random dungeon.
         /// </summary>
-        /// <param name="cols">Maximum number of columns in the tile map.</param>
-        /// <param name="rows">Maximum number of rows in the tile map.</param>
+        /// <param name="dungeonCols">Maximum number of columns in the tile map.</param>
+        /// <param name="dungeonRows">Maximum number of rows in the tile map.</param>
         /// <returns>A new tile map.</returns>
-        public TileMap Generate(int cols, int rows)
+        public TileMap Generate(int dungeonCols, int dungeonRows)
         {
-            var grid = new Grid<Tile>(cols, rows);
+            var builder = new DungeonBuilder(dungeonCols, dungeonRows, TileSet, Void);
 
-            // Create tilemap and ppopulate it with stuff.
-            var tilemap = new TileMap(TileSet, cols, rows);
-            tilemap.Grid.Fill((Grid<Tile> g, int x, int y) => { return new Tile(EmptyTileId); });
-
-            // Create 50 new rooms in random locations.
+            // Create new rooms in random locations.
             var roomCount = MaxRoomCount;
             var rooms = new List<RoomLayout>(roomCount);
 
@@ -102,12 +98,12 @@ namespace Scott.DungeonCrawler.WorldGeneration
                 // Generate a room and add it to the set of rooms.
                 rooms.Add(roomGenerator.Generate(Random));
             }
-            
+
             // Iterate through the list of rooms and place them into the world at a random location. Try up to X
             // number of times before moving onto the next room.
             // TODO: Use separation algorithm rather than randomly trying spots.
-            // TODO: Add collision detection to make sure rooms don't overwrite each other.
-            // TODO: Add a retry.
+            var roomCenters = new List<Point2>(rooms.Count);
+
             for (int i = 0; i < rooms.Count; i++)
             {
                 bool didCarve = false;
@@ -117,61 +113,25 @@ namespace Scott.DungeonCrawler.WorldGeneration
                 {
                     // TODO: Fix possible error where generated room is larger than the tilemap.
                     var room = rooms[i];
+                    var topLeft = new Point2(
+                        Random.NextInt(0, dungeonCols - room.Tiles.Cols),
+                        Random.NextInt(0, dungeonRows - room.Tiles.Rows));
 
-                    didCarve = CarveRoom(
-                        tilemap.Grid,
-                        room,
-                        new Point2(
-                            Random.NextInt(0, tilemap.Grid.Cols - room.Tiles.Cols),
-                            Random.NextInt(0, tilemap.Grid.Rows - room.Tiles.Rows)));
-                }
-            }
+                    didCarve = builder.TryCarveRoom(room, topLeft);
 
-            return tilemap;
-        }
-        
-        /// <summary>
-        ///  Carve a room into the tile map.
-        /// </summary>
-        public bool CarveRoom(Grid<Tile> map, RoomLayout room, Point2 topLeft)
-        {
-            // Check if room is overlapped another feature in the map.
-            if (DoesOverlap(map, room.Tiles, topLeft))
-            {
-                return false;
-            }
-
-            // TODO: Copy this code into a Grid helper utility with tests.
-            // Copy the room.
-            for (int y = 0; y < room.Tiles.Rows; y++)
-            {
-                for (int x = 0; x < room.Tiles.Cols; x++)
-                {
-                    map[x + topLeft.X, y + topLeft.Y] = room.Tiles[x, y];
-                }
-            }
-
-            return true;
-        }
-
-        public bool DoesOverlap(Grid<Tile> map, Grid<Tile> roomTiles, Point2 topLeft)
-        {
-            for (int y = 0; y < roomTiles.Rows; y++)
-            {
-                for (int x = 0; x < roomTiles.Cols; x++)
-                {
-                    var mapTile = map[x + topLeft.X, y + topLeft.Y];
-                    
-                    // TODO: Refactor this check, its gross.
-                    if (mapTile.Type != EmptyTileId &&              // TODO: Use property .IsEmpty
-                        !(mapTile.Type == WallTileId && roomTiles[x, y].Type == WallTileId))// Moar properties
+                    if (didCarve)
                     {
-                        return true;
+                        roomCenters.Add(room.SafeCenter + topLeft);
                     }
                 }
             }
 
-            return false;
+            // Connect each room to a room that was generated after it. This will ensure all rooms are connected.
+
+
+            return builder.Build();
         }
+        
+        
     }
 }
