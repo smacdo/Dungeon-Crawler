@@ -160,13 +160,13 @@ namespace Scott.DungeonCrawler
         {
             // Load tileset.
             // TODO: Load this as a content item.
-            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon32.png");
-            var tileset = new TileSet(tileAtlas, 32, 32);
+            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon64.png");
+            var tileset = new TileSet(tileAtlas, 64, 64);
 
-            tileset.Add(new TileDefinition(0, "void", 160, 192));
-            tileset.Add(new TileDefinition(1, "wall", 0, 96));       // or 0, 0
-            tileset.Add(new TileDefinition(2, "floor", 192, 160));  // or 192, 160
-            tileset.Add(new TileDefinition(3, "door", 96, 0));
+            tileset.Add(new TileDefinition(0, "void", 320, 384));
+            tileset.Add(new TileDefinition(1, "wall", 0, 192));       // or 0, 0
+            tileset.Add(new TileDefinition(2, "floor", 384, 320));  // or 192, 160
+            tileset.Add(new TileDefinition(3, "door", 192, 0));
 
             tileset[0].SetIsVoid(true);
             tileset[1].SetIsWall(true);
@@ -178,6 +178,7 @@ namespace Scott.DungeonCrawler
             generator.Void = tileset[0];
             generator.Wall = tileset[1];
             generator.Floor = tileset[2];
+            generator.Doorway = tileset[3];
 
             generator.RoomGenerators.Add(new RoomGenerator()
             {

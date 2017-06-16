@@ -45,5 +45,22 @@ namespace Scott.Forge.Tilemaps
         ///  Get or set data associated with this tile.
         /// </summary>
         public ushort Data { get; set; }
+
+        public bool HasFlag(ushort flag)
+        {
+            return (Data & flag) != 0;
+        }
+
+        public void SetFlag(ushort flag, bool value)
+        {
+            if (value)
+            {
+                Data |= flag;
+            }
+            else
+            {
+                Data &= flag;
+            }
+        }
     }
 }

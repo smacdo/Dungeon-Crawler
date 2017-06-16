@@ -25,47 +25,46 @@ namespace Scott.DungeonCrawler
     [Flags]
     public enum TileDataFlags : ushort
     {
-        Void = 0x1,             // Tile has not been set to anything useful.
+        Placed = 0x1,           // Tile is considered meaningful (not void space).
         Room = 0x2,             // Tile is considered part of a room.
         // Note: You can do AB = A | B !!
     }
 
-    public static class TileHelpers
+    public static class TileHelper
     {
-        public static bool IsVoid(this Tile tile)
+        /*public static bool IsPlaced(Tile tile)
         {
-            return (tile.Data & (ushort)TileDataFlags.Void) != 0;
+            return (tile.Data & (ushort)TileDataFlags.Placed) != 0;
         }
 
-        public static bool IsInRoom(this Tile tile)
+        public static bool IsInRoom(Tile tile)
         {
             return (tile.Data & (ushort)TileDataFlags.Room) != 0;
         }
 
-        public static void SetIsVoid(this Tile tile, bool isVoid)
+        public static void SetIsPlaced(Tile tile, bool isPlaced)
         {
-            if (isVoid)
+            if (isPlaced)
             {
-                tile.Data |= (ushort)TileDataFlags.Void;
+                tile.Data |= (ushort)TileDataFlags.Placed;
             }
             else
             {
-                tile.Data &= (ushort)~TileDataFlags.Void;
+                tile.Data &= (ushort)~TileDataFlags.Placed;
             }
         }
 
-        public static void SetIsInRoom(this Tile tile, bool isRoom)
+        public static void SetIsInRoom(Tile tile, bool isRoom)
         {
             if (isRoom)
             {
-                SetIsVoid(tile, false);
                 tile.Data |= (ushort)TileDataFlags.Room;
             }
             else
             {
                 tile.Data &= (ushort)~TileDataFlags.Room;
             }
-        }
+        }*/
     }
 
     [Flags]

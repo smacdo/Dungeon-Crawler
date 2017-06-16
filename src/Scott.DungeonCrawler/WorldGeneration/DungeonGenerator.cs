@@ -60,6 +60,12 @@ namespace Scott.DungeonCrawler.WorldGeneration
         ///  Get or set the tile definition for floors.
         /// </summary>
         public TileDefinition Floor { get; set; }
+        
+        /// <summary>
+        ///  Get or set the tile definition for floors.
+        /// </summary>
+        public TileDefinition Doorway { get; set; }
+
 
         /// <summary>
         ///  Get or set the random number generator.
@@ -127,11 +133,20 @@ namespace Scott.DungeonCrawler.WorldGeneration
             }
 
             // Connect each room to a room that was generated after it. This will ensure all rooms are connected.
+            var hallwayGenerator = new HallGenerator(builder.Grid, Floor, Wall);
 
+            for (int i = 1; i < roomCenters.Count; i++)
+            {
+                builder.CarveHallway(
+                    hallwayGenerator.CreatePath(roomCenters[i], roomCenters[i - 1]),
+                    Floor,
+                    Wall,
+                    Doorway);
+            }
 
-            return builder.Build();
+            // TODO: Create player spawn zone (stairs up), finish (stairs down) and enemy spawn locations.
+
+            return builder.Finalize();
         }
-        
-        
     }
 }

@@ -132,7 +132,7 @@ namespace Scott.Forge.Support
         public void Add(TValue value, TScore score)
         {
             // If there is no more space to store new items then automatically grow the heap.
-            if (Count == Capacity)
+            if (Count >= Capacity)
             {
                 GrowHeap();
             }
@@ -348,7 +348,15 @@ namespace Scott.Forge.Support
             // See http://stackoverflow.com/a/364993 for implementation details.
             if (newCapacity > DefaultCapacity)
             {
-                return (int)Math.Ceiling(Math.Log(newCapacity)) - 1;
+                var v = newCapacity;
+
+                v |= v >> 1;
+                v |= v >> 2;
+                v |= v >> 4;
+                v |= v >> 8;
+                v |= v >> 16;
+
+                return v + 1;
             }
 
             return DefaultCapacity;
