@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ using Scott.Forge.Content;
 using Scott.Forge.Spatial;
 using Scott.Forge.Tilemaps;
 using Scott.DungeonCrawler.WorldGeneration;
+using Scott.DungeonCrawler.Levels;
 
 namespace Scott.DungeonCrawler
 {
@@ -58,7 +59,8 @@ namespace Scott.DungeonCrawler
         private bool mEnemySpawningEnabled = true;
 
         private DungeonCrawlerGameObjectFactory mGameObjectFactory;
-        private GameScene mLevelScene;
+        private GameScene mCurrentScene;
+        private DungeonLevel mCurrentLevel;
 
         private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
         private IContentManager mContent;
@@ -105,9 +107,6 @@ namespace Scott.DungeonCrawler
                 new Forge.Settings.ForgeSettings());
             Screen.Initialize( mGraphicsDevice.GraphicsDevice );
 
-            // Initialize default game level.
-            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent);
-
             // Initialize input system with default settings.
             mInputManager.AddAction( InputAction.ExitGame, Keys.Escape );
             mInputManager.AddAction( InputAction.PrintDebugInfo, Keys.F2 );
@@ -135,18 +134,24 @@ namespace Scott.DungeonCrawler
         /// </summary>
         protected override void LoadContent()
         {
-            // Instruct the content manager to search our content dir to find game assets that we
-            // can load.
-            mLevelScene = new GameScene(GenerateMap(64, 64));
+            // Create a new level.
+            mCurrentLevel = GenerateMap(100, 100);
+            mCurrentScene = new GameScene(mCurrentLevel.TileMap);
 
-            // Create the player blue print.
-            mPlayer = mGameObjectFactory.Instantiate(mLevelScene, "Player");
-            mPlayer.Transform.WorldPosition = new Forge.Vector2(200, 200);
+            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent, mCurrentScene);
 
-            mLevelScene.Add(mPlayer);
+            // Spawn player into level.
+            var position = mCurrentLevel.TileMap.GetWorldPositionForTile(mCurrentLevel.StairsUpPoint);
+            mPlayer = mGameObjectFactory.Instantiate("Player", position);
+                
+            // Spawn a bunch of skeletons to get started.
+            for (int i = 0; i < 100; i++)
+            {
+                //SpawnSkeleton();
+            }
 
             // Create a follow camera to follow the player.
-            mLevelScene.MainCamera = new FollowCamera(new SizeF(Screen.Width, Screen.Height), mPlayer);
+            mCurrentScene.MainCamera = new FollowCamera(new SizeF(Screen.Width, Screen.Height), mPlayer);
 
             // Now that we have loaded the game's contents, we should force a garbage collection
             // before proceeding to play mode.
@@ -156,7 +161,7 @@ namespace Scott.DungeonCrawler
         /// <summary>
         ///  TEMP HACK
         /// </summary>
-        private TileMap GenerateMap(int cols, int rows)
+        private DungeonLevel GenerateMap(int cols, int rows)
         {
             // Load tileset.
             // TODO: Load this as a content item.
@@ -190,37 +195,25 @@ namespace Scott.DungeonCrawler
                 MaxHeight = 16
             });
 
-            return generator.Generate(100, 100);
+            return generator.Generate(cols, rows);
         }
 
-        /// <summary>
-        /// TEMP HACK
-        /// </summary>
         private void SpawnSkeleton()
         {
-            // Spawn the skeleton enemy.
-            var skeleton = mGameObjectFactory.Instantiate(mLevelScene, "Skeleton");
-
             // Pick a spot to place the skeleton enemy.
-            var mapWidth = mLevelScene.Tilemap.Width - 128;
-            var mapHeight = mLevelScene.Tilemap.Height - 128;
+            // TODO: Check if location is clear before spawning!
+            var mapWidth = mCurrentScene.Tilemap.Width - 128;
+            var mapHeight = mCurrentScene.Tilemap.Height - 128;
 
-            skeleton.Transform.WorldPosition = new Scott.Forge.Vector2(
-                (float) ( GameRoot.Random.NextDouble() * mapWidth + 64),
-                (float) ( GameRoot.Random.NextDouble() * mapHeight + 64));
+            var spawnIndex = mEnemyCount % mCurrentLevel.SpawnPoints.Count;
+            var position = mCurrentLevel.TileMap.GetWorldPositionForTile(mCurrentLevel.SpawnPoints[spawnIndex]);
+
+            // Spawn the skeleton enemy.
+            var skeleton = mGameObjectFactory.Instantiate("Skeleton", position);
 
             // Add the newly spawned skeleton to our list of enemies.
-            // TODO: Check if location is clear before spawning!
-            mLevelScene.Add( skeleton );
+            //  TODO: Temp hack, should not be tracked this way.
             mEnemyCount += 1;
-
-            // temp hack
-            var initialDirection = (DirectionName) GameRoot.Random.Next(0, 3);
-
-            var actor = skeleton.Get<ActorComponent>();
-            actor.Direction = initialDirection;
-
-            skeleton.Get<SpriteComponent>().PlayAnimation("Walk", initialDirection, AnimationEndingAction.Loop);
         }
 
         /// <summary>
@@ -264,7 +257,7 @@ namespace Scott.DungeonCrawler
 
             if (cameraMovement.LengthSquared > 0.01)
             {
-                mLevelScene.MainCamera.Translate(cameraMovement * 8.0f);
+                mCurrentScene.MainCamera.Translate(cameraMovement * 8.0f);
             }
 
             // Player actions.
@@ -286,14 +279,14 @@ namespace Scott.DungeonCrawler
             {
                 if ((GameRoot.Random.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
                 {
-                    SpawnSkeleton();
+                    //SpawnSkeleton();
                     firstSpawn = false;
                 }
 
                 mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
             }
 
-            mLevelScene.Update(gameTime);
+            mCurrentScene.Update(gameTime);
            
             base.Update( gameTime );
 
@@ -308,7 +301,7 @@ namespace Scott.DungeonCrawler
         protected override void Draw( GameTime gameTime )
         {
             GameRoot.Renderer.StartDrawing(clearScreen: true);
-            mLevelScene.Draw(gameTime);
+            mCurrentScene.Draw(gameTime);
             GameRoot.Renderer.FinishDrawing();
 
             GameRoot.Debug.Draw( gameTime );

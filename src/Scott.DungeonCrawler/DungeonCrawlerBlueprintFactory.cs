@@ -18,23 +18,41 @@ using Scott.Forge;
 using Scott.Forge.Content;
 using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
+using Scott.Forge.Actors;
 
 namespace Scott.DungeonCrawler.GameObjects
 {
     /// <summary>
+    ///  Instantiates named game objects aka prefabs.
+    /// </summary>
+    /// <remarks>
     ///  Temporary blueprint provider. This is in place until we create a real one that actually
     ///  reads blueprints from a file.
     /// 
     ///  TODO: Generize this (engine/forge) since it has no dependency on game code... it just reads nested key/value
     ///        information and creates blueprints.
-    /// </summary>
+    ///        
+    ///  TODO: May not be possible since a lot of blueprints have custom logic for event wiring and whatnot.
+    /// </remarks>
     public class DungeonCrawlerGameObjectFactory
     {
         public IContentManager Content { get; set; }
+        public GameScene Scene { get; set; }
 
-        public DungeonCrawlerGameObjectFactory(IContentManager content)
+        public DungeonCrawlerGameObjectFactory(IContentManager content, GameScene scene)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
+            if (scene == null)
+            {
+                throw new ArgumentNullException(nameof(scene));
+            }
+
             Content = content;
+            Scene = scene;
         }
 
         /// <summary>
@@ -42,30 +60,35 @@ namespace Scott.DungeonCrawler.GameObjects
         /// </summary>
         /// <param name="blueprintName"></param>
         /// <returns></returns>
-        public GameObject Instantiate(GameScene scene, string blueprintName )
+        public GameObject Instantiate(string blueprintName, Vector2? position)
         {
-            if ( blueprintName == "Player" )
+            GameObject newObject = null;
+
+            if (blueprintName == "Player")
             {
-                return InstantiatePlayer(scene);
+                newObject = InstantiatePlayer(position);
             }
-            else if ( blueprintName == "Skeleton" )
+            else if (blueprintName == "Skeleton")
             {
-                return InstantiateSkeleton(scene);
+                newObject = InstantiateSkeleton(position);
             }
             else
             {
                 throw new ArgumentException(
-                    "Could not locate blueprint {0}".With( blueprintName ) );
+                    "Could not locate blueprint {0}".With(blueprintName));
             }
+
+            Scene.Add(newObject);
+            return newObject;
         }
 
-        private GameObject InstantiatePlayer(GameScene scene)
+        private GameObject InstantiatePlayer(Vector2? position)
         {
             // Create the player blue print.
             var player = new GameObject("player");
 
             // Create the sprite and set it up.
-            var sprite = scene.Sprites.Create(player);
+            var sprite = Scene.Sprites.Create(player);
 
             sprite.RendererIgnoreTransformRotation = true;
 
@@ -95,17 +118,23 @@ namespace Scott.DungeonCrawler.GameObjects
                 Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather.sprite").Sprite);
 
             // Add actor component.
-            var actor = scene.Actors.Create(player);
+            var actor = Scene.Actors.Create(player);
 
             // Add physics.
-            var physics = scene.Physics.Create(player);
+            var physics = Scene.Physics.Create(player);
 
             physics.Size = new SizeF(16, 25);
             physics.CenterOffset = new Vector2(0, 6);
 
+            // Apply position.
+            if (position.HasValue)
+            {
+                player.Transform.WorldPosition = position.Value;
+            }
+
             // Create sword and center the object on the character.
             //  TODO: Don't hard code the values.
-            var weaponGameObject = InstantiateSword(scene);
+            var weaponGameObject = InstantiateSword(position);
             weaponGameObject.Parent = player;
 
             weaponGameObject.Transform.LocalPosition = new Vector2(-192 / 2 + 32, -192 / 2 + 32);
@@ -114,35 +143,54 @@ namespace Scott.DungeonCrawler.GameObjects
             return player;
         }
 
-        private GameObject InstantiateSword(GameScene scene)
+        private GameObject InstantiateSword(Vector2? position)
         {
             // Create the player blue print.
             var weapon = new GameObject("MeleeWeapon");
 
             // Create the sprite and set it up.
-            var sprite = scene.Sprites.Create(weapon);
+            var sprite = Scene.Sprites.Create(weapon);
             sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword.sprite"));
 
             //sprite.RendererIgnoreTransformRotation = true;
 
+            // Apply position.
+            if (position.HasValue)
+            {
+                weapon.Transform.WorldPosition = position.Value;
+            }
+
             return weapon;
         }
 
-        private GameObject InstantiateSkeleton(GameScene scene)
+        private GameObject InstantiateSkeleton(Vector2? position)
         {
             var enemy = new GameObject("skeleton");
-            var sprite = scene.Sprites.Create(enemy);
+            var sprite = Scene.Sprites.Create(enemy);
 
             sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Skeleton.sprite") );
             sprite.RendererIgnoreTransformRotation = true;
 
-            scene.Actors.Create(enemy);
-            scene.AI.Create(enemy);
+            Scene.Actors.Create(enemy);
+            Scene.AI.Create(enemy);
             
-            var collision = scene.Physics.Create(enemy);
+            var collision = Scene.Physics.Create(enemy);
 
             collision.Size = new SizeF(16, 25);
             collision.CenterOffset = new Vector2(0, 6);
+
+            if (position.HasValue)
+            {
+                enemy.Transform.WorldPosition = position.Value;
+            }
+
+            // temp hack
+            var initialDirection = (DirectionName)GameRoot.Random.Next(0, 3);
+
+            var actor = enemy.Get<ActorComponent>();
+            actor.Direction = initialDirection;
+
+            enemy.Get<SpriteComponent>().PlayAnimation("Walk", initialDirection, AnimationEndingAction.Loop);
 
             return enemy;
         }

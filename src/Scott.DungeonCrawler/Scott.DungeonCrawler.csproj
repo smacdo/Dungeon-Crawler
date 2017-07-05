@@ -61,7 +61,8 @@
     <Compile Include="Actions\ActionSlashAttack.cs" />
     <Compile Include="ActorEquipmentSlot.cs" />
     <Compile Include="DungeonCrawlerGame.cs" />
-    <Compile Include="GameObjects\DungeonCrawlerBlueprintFactory.cs" />
+    <Compile Include="DungeonCrawlerBlueprintFactory.cs" />
+    <Compile Include="Levels\DungeonLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TileHelpers.cs" />
     <Compile Include="WorldGeneration\DungeonBuilder.cs" />
