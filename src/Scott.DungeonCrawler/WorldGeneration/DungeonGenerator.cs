@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using Scott.Forge;
 using Scott.Forge.Random;
 using Scott.Forge.Tilemaps;
+using Scott.DungeonCrawler.Levels;
+using System.Linq;
 
 namespace Scott.DungeonCrawler.WorldGeneration
 {
@@ -86,7 +88,7 @@ namespace Scott.DungeonCrawler.WorldGeneration
         /// <param name="dungeonCols">Maximum number of columns in the tile map.</param>
         /// <param name="dungeonRows">Maximum number of rows in the tile map.</param>
         /// <returns>A new tile map.</returns>
-        public TileMap Generate(int dungeonCols, int dungeonRows)
+        public DungeonLevel Generate(int dungeonCols, int dungeonRows)
         {
             var builder = new DungeonBuilder(dungeonCols, dungeonRows, TileSet, Void);
 
@@ -144,9 +146,14 @@ namespace Scott.DungeonCrawler.WorldGeneration
                     Doorway);
             }
 
+            // Create a new dungeon level holding the generated dungeon information.
             // TODO: Create player spawn zone (stairs up), finish (stairs down) and enemy spawn locations.
-
-            return builder.Finalize();
+            return new DungeonLevel()
+            {
+                TileMap = builder.Finalize(),
+                StairsUpPoint = roomCenters.First(),
+                SpawnPoints = roomCenters.Skip(1).ToList()
+            };
         }
     }
 }

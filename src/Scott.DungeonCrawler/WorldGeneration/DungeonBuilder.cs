@@ -119,7 +119,9 @@ namespace Scott.DungeonCrawler.WorldGeneration
             if (!Grid[at].HasFlag((ushort)TileDataFlags.Placed))
             {
                 var t = new Tile(wall.Id);
+
                 t.SetFlag((ushort)TileDataFlags.Placed, true);
+                t.SetImpassable();
 
                 Grid[at] = t;
             }

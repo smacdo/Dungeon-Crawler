@@ -100,7 +100,10 @@ namespace Scott.DungeonCrawler.WorldGeneration
 
         private Tile SetWall(Grid<Tile> grid, int x, int y)
         {
-            return new Tile(WallTile.Id);
+            var t = new Tile(WallTile.Id);
+            t.SetImpassable();
+
+            return t;
         }
     }
 }
