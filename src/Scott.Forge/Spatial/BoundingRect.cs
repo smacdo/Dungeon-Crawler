@@ -65,9 +65,9 @@ namespace Scott.Forge.Spatial
         ///  and the provided extent size.
         /// </summary>
         /// <param name="center">Rectangle center position.</param>
-        /// <param name="rectSize">Size of the width and height extents.</param>
-        public BoundingRect(Vector2 center, SizeF rectSize)
-            : this(center.X, center.Y, rectSize.Width, rectSize.Height)
+        /// <param name="extentSize">Size of the width and height extents.</param>
+        public BoundingRect(Vector2 center, SizeF extentSize)
+            : this(center.X, center.Y, extentSize.Width, extentSize.Height)
         {
         }
 
@@ -325,46 +325,51 @@ namespace Scott.Forge.Spatial
                 (mX + mHalfWidth > other.mX - other.mHalfWidth) &&
                 (mY + mHalfHeight > other.mY + other.mHalfHeight);
         }
-
-        public Vector2 GetMinimumDisplacementAngle(BoundingRect other)
+        
+        /// <summary>
+        ///  Get a vector containing the minimumal displacement required to separate two bounding rectangles so that
+        ///  they are no longer intersecting.
+        /// </summary>
+        /// <param name="other">Another rectangle that is (potentially) intersecting.</param>
+        /// <returns>Minimal displacement vector.</returns>
+        public Vector2 GetIntersectionDepth(BoundingRect other)
         {
-            var minimumDisplacement = Vector2.Zero;
+            var distanceX = X - other.X;
+            var distanceY = Y - other.Y;
+            var minDistanceX = HalfWidth + other.HalfWidth;
+            var minDistanceY = HalfHeight + other.HalfHeight;
 
-            // Calculate each separating axis. (+X, -X, +Y, -Y).
-            var left = (other.mX - other.mHalfWidth) - (mX + mHalfWidth);
-            var right = (other.mX + other.mHalfWidth) - (mX - mHalfWidth);
-            var bottom = (other.mY - other.mHalfHeight) - (mY + mHalfHeight);
-            var top = (other.mY + other.mHalfHeight) - (mY - mHalfHeight);
-
-            // Find smallest displacement axis.
-            if (Math.Abs(left) > right)
+            // If the other bounding rect does not intersect then return zero.
+            if (Math.Abs(distanceX) >= minDistanceX || Math.Abs(distanceY) >= minDistanceY)
             {
-                minimumDisplacement.X = right;
+                return Vector2.Zero;
+            }
+
+            // Calculate and return the intersection depth.
+            var depthX = distanceX > 0 ? minDistanceX - distanceX : -minDistanceX - distanceX;
+            var depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
+
+            return new Vector2(depthX, depthY);
+        }
+
+        /// <summary>
+        ///  Get a vector containing the minimumal displacement on a single axis required to separate two bounding
+        ///  rectangles so that they are no longer intersecting.
+        /// </summary>
+        /// <param name="other">Another rectangle that is (potentially) intersecting.</param>
+        /// <returns>Minimal displacement vector.</returns>
+        public Vector2 GetAxisAlignedDisplacementVector(BoundingRect other)
+        {
+            var displacement = GetIntersectionDepth(other);
+
+            if (Math.Abs(displacement.X) <= Math.Abs(displacement.Y))
+            {
+                return new Vector2(displacement.X, 0.0f);
             }
             else
             {
-                minimumDisplacement.X = left;
+                return new Vector2(0.0f, displacement.Y);
             }
-
-            if (Math.Abs(bottom) > top)
-            {
-                minimumDisplacement.Y = top;
-            }
-            else
-            {
-                minimumDisplacement.Y = bottom;
-            }
-
-            if (Math.Abs(minimumDisplacement.X) < Math.Abs(minimumDisplacement.Y))
-            {
-                minimumDisplacement.Y = 0;
-            }
-            else
-            {
-                minimumDisplacement.X = 0;
-            }
-
-            return minimumDisplacement;
         }
 
         /// <summary>

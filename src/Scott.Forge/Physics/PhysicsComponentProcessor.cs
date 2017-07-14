@@ -54,8 +54,6 @@ namespace Scott.Forge.Physics
         {
             CalculateDesiredMovements(currentTime, deltaTime);
             FindAndResolveCollisions();
-
-            DrawDebugInfo();
         }
 
         /// <summary>
@@ -149,6 +147,14 @@ namespace Scott.Forge.Physics
                 physics.RaiseOnLevelBoundsCollision();
             }
 
+            // Perform tile map collisions beofre object to object collision.
+            var tilemapDisplacement = CalculateDisplacementForTileMapCollision(physics);
+
+            if (tilemapDisplacement != Vector2.Zero)
+            {
+                physics.DesiredPosition += tilemapDisplacement;
+            }
+
             // Check for collisions at the object's desired location.
             var collidee = SpatialIndex.QueryOne(physics.DesiredWorldBounds, physics);
 
@@ -166,33 +172,11 @@ namespace Scott.Forge.Physics
                 physics.RaiseOnCollisionEvent(collidee.Owner);
                 collidee.RaiseOnCollisionEvent(physics.Owner);
 
-                // TODO: Do not recalculate collision to get displacement angle.
-                var minimumDisplacement =
-                    physics.DesiredWorldBounds.GetMinimumDisplacementAngle(collidee.WorldBounds);                
-
-                // Displace the object along the smaller of the two axis from the displacement vector.
-                var displacement = Vector2.Zero;
-                float minDX = minimumDisplacement.X;
-                float minDY = minimumDisplacement.Y;
-
-                if (minDX == 0.0f)
-                {
-                    displacement.Y = minDY;
-                }
-                else if (minDY == 0.0f)
-                {
-                    displacement.X = minDX;
-                }
-                else if (Math.Abs(minDX) <= Math.Abs(minDY))
-                {
-                    displacement.X = minDX;
-                }
-                else
-                {
-                    displacement.Y = minDY;
-                }
-
                 // TODO: If the owner has a movement component attached then consider apply separation force.
+                // TODO: Do not recalculate collision to get displacement angle.
+                var displacement =
+                    physics.DesiredWorldBounds.GetAxisAlignedDisplacementVector(collidee.WorldBounds);
+                
                 physics.Owner.Transform.WorldPosition += displacement;
             }
 
@@ -201,23 +185,71 @@ namespace Scott.Forge.Physics
         }
 
         /// <summary>
-        ///  Draw debug collision information.
+        ///  Calculate the displacement vector to move a game object into a non-colliding area of the tile map.
         /// </summary>
-        [System.Diagnostics.Conditional("DEBUG")]
-        private void DrawDebugInfo()
+        /// <param name="physics">Physics component to test.</param>
+        /// <returns>Displacement vector.</returns>
+        public Vector2 CalculateDisplacementForTileMapCollision(PhysicsComponent physics)
         {
-/*            if (GameRoot.Settings.DrawPhysicsDebug)
-            {
-                for (int i = 0; i < mComponents.Count; ++i)
-                {
-                    var cc = mComponents[i];
-                    var color = Microsoft.Xna.Framework.Color.Yellow;
+            var finalDisplacement = Vector2.Zero;
 
-                    GameRoot.Debug.DrawBoundingRect(
-                        cc.WorldBounds,
-                        color);
+            // Check tile collisions.
+            // TODO: Profile and improve performance.
+            // TODO: Handle cass where there is no tilemap.
+            // TODO: Add special case 4 corner for better performance. (no for loops).
+            var tilemap = Scene.Tilemap;
+            var bounds = physics.DesiredWorldBounds;
+
+            int leftTile = (int)Math.Floor(bounds.MinPoint.X / tilemap.TileWidth);
+            int rightTile = (int)Math.Ceiling(bounds.MaxPoint.X / tilemap.TileWidth);
+            int topTile = (int)Math.Floor(bounds.MinPoint.Y / tilemap.TileHeight);
+            int bottomTile = (int)Math.Ceiling(bounds.MaxPoint.Y / tilemap.TileHeight);
+
+            // TODO: Don't blindly clamp, find out why certain values are out of bounds (especially collision corner
+            // cases that used to crash with out of bounds errors).
+            leftTile = MathHelper.Clamp(leftTile, 0, tilemap.Cols - 1);
+            rightTile = MathHelper.Clamp(rightTile, 0, tilemap.Cols - 1);
+
+            topTile = MathHelper.Clamp(topTile, 0, tilemap.Rows - 1);
+            bottomTile = MathHelper.Clamp(bottomTile, 0, tilemap.Rows - 1);
+
+            var tileExtents = new SizeF(tilemap.TileWidth / 2, tilemap.TileHeight / 2);
+
+            for (int y = topTile; y <= bottomTile; y++)
+            {
+                for (int x = leftTile; x <= rightTile; x++)
+                {
+                    var tile = tilemap.Grid[x, y];
+
+                    if (tile.Collision != 0)            // TODO: Use more fine grained points
+                    {
+                        var tileCenter = tilemap.GetWorldPositionForTile(new Point2(x, y));
+                        var tileBounds = new BoundingRect(
+                            center: tileCenter,
+                            extentSize: tileExtents);
+
+                        var depth = physics.DesiredWorldBounds.GetIntersectionDepth(tileBounds);
+
+                        if (depth != Vector2.Zero)
+                        {
+                            float absDepthX = Math.Abs(depth.X);
+                            float absDepthY = Math.Abs(depth.Y);
+
+                            // Resolve shallow
+                            if (absDepthX < absDepthY)
+                            {
+                                finalDisplacement += new Vector2(depth.X, 0);
+                            }
+                            else
+                            {
+                                finalDisplacement += new Vector2(0, depth.Y);
+                            }
+                        }
+                    }
                 }
-            }*/
+            }
+
+            return finalDisplacement;
         }
 
         /// <summary>

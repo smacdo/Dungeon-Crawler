@@ -19,6 +19,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Scott.Forge.Spatial;
+using Scott.Forge.Tilemaps;
 
 namespace Scott.Forge.Graphics
 {
@@ -125,6 +127,21 @@ namespace Scott.Forge.Graphics
         }
 
         /// <summary>
+        ///  Transform a bounding rectangle in world space into screen space.
+        /// </summary>
+        /// <remarks>
+        ///  Screen space is the XNA coordinate system with the origin at the top left of the window and a width
+        ///  and height matching the window.
+        /// </remarks>
+        /// <returns>Same bounding rectangle but in screen space.</returns>
+        public BoundingRect WorldToScreen(BoundingRect worldSpaceRect)
+        {
+            return new BoundingRect(
+                center: WorldToScreen(worldSpaceRect.Center),
+                extentSize: worldSpaceRect.ExtentSize);
+        }
+
+        /// <summary>
         ///  Transform a vector in camera space into world space.
         /// </summary>
         /// <param name="screenSpaceVector">Screen space vector.</param>
@@ -161,6 +178,69 @@ namespace Scott.Forge.Graphics
         public virtual void Update(GameTime gameTime)
         {
             // Do nothing.
+        }
+
+        /// <summary>
+        ///  Get the index of the top left most tile that is visible to the camera.
+        /// </summary>
+        /// <param name="tilemap">Active tilemap.</param>
+        /// <returns>The top left most visible tile.</returns>
+        public Point2 LeftmostVisbileTile(TileMap tilemap)
+        {
+            var halfWidth = tilemap.TileWidth / 2.0f;
+            var halfHeight = tilemap.TileHeight / 2.0f;
+
+            var worldPosition = new Vector2(-halfWidth, -halfHeight);
+            worldPosition = ScreenToWorld(worldPosition);
+
+            return GetTileAtScreenCoordinate(worldPosition, tilemap);
+        }
+
+        /// <summary>
+        ///  Get the index of the bottom right most tile that is visible to the camera.
+        /// </summary>
+        /// <param name="tilemap">Active tilemap.</param>
+        /// <returns>Bottom right most visible tile.</returns>
+        public Point2 GetBottomRightmostVisibleTile(TileMap tilemap)
+        {
+            var halfWidth = tilemap.TileWidth / 2.0f;
+            var halfHeight = tilemap.TileHeight / 2.0f;
+
+            var worldPosition = new Vector2(Viewport.Width + halfWidth, Viewport.Height + halfHeight);
+            worldPosition = ScreenToWorld(worldPosition);
+
+            return GetTileAtScreenCoordinate(worldPosition, tilemap);
+        }
+
+        /// <summary>
+        ///  Get the index of a tile at the given screen space point.
+        /// </summary>
+        /// <param name="screenSpacePoint">Point in screen space.</param>
+        /// <param name="tilemap">Active tilemap.</param>
+        /// <returns>Tile index at given screen space point.</returns>
+        public Point2 GetTileAtScreenCoordinate(Vector2 screenSpacePoint, TileMap tilemap)
+        {
+            return new Point2(
+                MathHelper.Clamp((int)(screenSpacePoint.X / tilemap.TileWidth), 0, tilemap.Cols - 1),
+                MathHelper.Clamp((int)(screenSpacePoint.Y / tilemap.TileHeight), 0, tilemap.Rows - 1));
+        }
+
+        /// <summary>
+        ///  Get the world position for a tile point.
+        /// </summary>
+        /// <remarks>
+        ///  The tile origin is in the center instead of the top left corner.
+        /// </remarks>
+        /// <param name="tilePoint">X/Y (column row) of the tile.</param>
+        /// <returns>Tile center in world coordinate space.</returns>
+        public Vector2 GetWorldPositionForTile(Point2 tilePoint, Tilemaps.TileSet tileset)
+        {
+            var tileWidth = tileset.TileWidth;
+            var tileHeight = tileset.TileHeight;
+
+            return new Vector2(
+                tileWidth / 2 + tilePoint.X * tileWidth,
+                tileHeight / 2 + tilePoint.Y * tileHeight);
         }
     }
 }

@@ -147,7 +147,7 @@ namespace Scott.DungeonCrawler
             // Spawn a bunch of skeletons to get started.
             for (int i = 0; i < 100; i++)
             {
-                //SpawnSkeleton();
+                SpawnSkeleton();
             }
 
             // Create a follow camera to follow the player.
@@ -163,15 +163,17 @@ namespace Scott.DungeonCrawler
         /// </summary>
         private DungeonLevel GenerateMap(int cols, int rows)
         {
+            const int TileSize = 32;
+
             // Load tileset.
             // TODO: Load this as a content item.
-            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon64.png");
-            var tileset = new TileSet(tileAtlas, 64, 64);
+            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon32.png");
+            var tileset = new TileSet(tileAtlas, TileSize, TileSize);
 
-            tileset.Add(new TileDefinition(0, "void", 320, 384));
-            tileset.Add(new TileDefinition(1, "wall", 0, 192));       // or 0, 0
-            tileset.Add(new TileDefinition(2, "floor", 384, 320));  // or 192, 160
-            tileset.Add(new TileDefinition(3, "door", 192, 0));
+            tileset.Add(new TileDefinition(0, "void",  5 * TileSize, 6 * TileSize));
+            tileset.Add(new TileDefinition(1, "wall",  0 * TileSize, 3 * TileSize));
+            tileset.Add(new TileDefinition(2, "floor", 6 * TileSize, 5 * TileSize));
+            tileset.Add(new TileDefinition(3, "door",  3 * TileSize, 0 * TileSize));
 
             tileset[0].SetIsVoid(true);
             tileset[1].SetIsWall(true);

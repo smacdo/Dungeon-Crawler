@@ -175,6 +175,7 @@ namespace Scott.Forge.Sprites
         /// <param name="deltaTime">Time since last draw call in seconds.</param>
         public void Draw(IGameRenderer renderer, Camera camera, double currentTime, double deltaTime)
         {
+            // TODO: Move debug drawing into a DebugComponent.
             for (var index = 0; index < mComponents.Count; ++index)
             {
                 if (!mComponents[index].Active)
@@ -215,7 +216,6 @@ namespace Scott.Forge.Sprites
                         GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
                     }
 #endif
-
                 }
                 
 #if DEBUG
@@ -228,8 +228,29 @@ namespace Scott.Forge.Sprites
                         positionInCameraSpace + (transform.Forward * 16.0f),
                         color: Microsoft.Xna.Framework.Color.LightBlue);
                 }
-#endif                
+#endif
+
+#if DEBUG
+                // Draw collison information.
+                if (GameRoot.Settings.DrawPhysicsDebug)
+                {
+                    var physics = component.Owner.Get<Physics.PhysicsComponent>();
+
+                    if (physics != null && camera != null)
+                    {
+                        var pics = camera.WorldToScreen(physics.WorldBounds);
+
+                        var spriteRect = new BoundingRect(
+                            centerX: pics.X,
+                            centerY: pics.Y,
+                            halfWidth: physics.WorldBounds.HalfWidth,
+                            halfHeight: physics.WorldBounds.HalfHeight);
+
+                        GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.Yellow);
+                    }
+                }
             }
+#endif
         }
     }
 }

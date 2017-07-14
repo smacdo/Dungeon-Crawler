@@ -123,8 +123,8 @@ namespace Scott.DungeonCrawler.GameObjects
             // Add physics.
             var physics = Scene.Physics.Create(player);
 
-            physics.Size = new SizeF(16, 25);
-            physics.CenterOffset = new Vector2(0, 6);
+            physics.Size = new SizeF(10, 10);
+            physics.CenterOffset = new Vector2(0, 18);
 
             // Apply position.
             if (position.HasValue)
@@ -176,8 +176,8 @@ namespace Scott.DungeonCrawler.GameObjects
             
             var collision = Scene.Physics.Create(enemy);
 
-            collision.Size = new SizeF(16, 25);
-            collision.CenterOffset = new Vector2(0, 6);
+            collision.Size = new SizeF(10, 10);
+            collision.CenterOffset = new Vector2(0, 18);
 
             if (position.HasValue)
             {

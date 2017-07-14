@@ -34,12 +34,18 @@ namespace Scott.Forge.Tilemaps
         {
             Type = type;
             Data = 0;
+            Collision = 0;
         }
 
         /// <summary>
         ///  Get or set the tile type id.
         /// </summary>
         public ushort Type { get; set; }
+
+        /// <summary>
+        ///  Get or set collision data.
+        /// </summary>
+        public byte Collision { get; set; }
 
         /// <summary>
         ///  Get or set data associated with this tile.
@@ -61,6 +67,11 @@ namespace Scott.Forge.Tilemaps
             {
                 Data &= flag;
             }
+        }
+
+        public void SetImpassable()
+        {
+            Collision = 255;
         }
     }
 }

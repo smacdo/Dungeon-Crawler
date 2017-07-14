@@ -157,6 +157,11 @@ namespace Scott.Forge
             // Draw tilemap.
             GameRoot.Renderer.DrawTilemap(MainCamera, Tilemap);
 
+            if (GameRoot.Settings.DrawCollisionDebug)
+            {
+                GameRoot.Renderer.DrawCollisionMap(MainCamera, Tilemap);
+            }
+            
             // Draw sprites.
             Sprites.Draw(
                 GameRoot.Renderer,

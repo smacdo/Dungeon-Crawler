@@ -81,11 +81,18 @@ namespace Scott.Forge.Graphics
             float? borderSize = null);
 
         /// <summary>
-        ///  Draw a 2d tilemap.
+        ///  Draw portion of tilemap that is visible.
         /// </summary>
-        /// <param name="camera">Camera view to draw from.</param>
+        /// <param name="camera">Rendering camera.</param>
         /// <param name="tilemap">Tilemap to draw.</param>
         void DrawTilemap(Camera camera, TileMap tilemap);
+
+        /// <summary>
+        ///  Draw collision map for portion of tilemap that is visible.
+        /// </summary>
+        /// <param name="camera">Rendering camera.</param>
+        /// <param name="tilemap">Tilemap to draw.</param>
+        void DrawCollisionMap(Camera camera, TileMap tilemap);
 
         /// <summary>
         ///  Call when starting to draw a rendering frame.

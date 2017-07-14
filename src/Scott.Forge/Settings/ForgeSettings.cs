@@ -23,12 +23,14 @@ namespace Scott.Forge.Settings
 {
     /// <summary>
     ///  Runtime game settings.
+    ///  TODO: This doens't need to exist in custom namespace.
     /// </summary>
     public class ForgeSettings
     {
-        public bool DrawPhysicsDebug { get; set; } = true;
-        public bool DrawSpriteDebug { get; set; } = true;
-        public bool DrawTransformDebug { get; set; } = true;
+        public bool DrawCollisionDebug { get; set; } = false;
+        public bool DrawPhysicsDebug { get; set; } = false;
+        public bool DrawSpriteDebug { get; set; } = false;
+        public bool DrawTransformDebug { get; set; } = false;
         public bool DrawWeaponHitDebug { get; set; } = true;
     }
 }

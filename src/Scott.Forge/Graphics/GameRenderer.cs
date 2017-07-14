@@ -222,19 +222,14 @@ namespace Scott.Forge.Graphics
         }
 
         /// <summary>
-        ///  Draw a 2d tilemap.
+        ///  Draw portion of tilemap that is visible.
         /// </summary>
-        /// <param name="camera">Camera to draw from.</param>
+        /// <param name="camera">Rendering camera.</param>
         /// <param name="tilemap">Tilemap to draw.</param>
         public void DrawTilemap(Camera camera, TileMap tilemap)
         {
-            var topLeftTile = tilemap.GetTopLeftmostVisibleTile(camera);
-            var bottomRightTile = tilemap.GetBottomRightmostVisibleTile(camera);
-
-            var tileWidth = tilemap.TileWidth;
-            var tileHeight = tilemap.TileHeight;
-
-            var atlas = tilemap.TileSet.Atlas;
+            var topLeftTile = camera.LeftmostVisbileTile(tilemap);
+            var bottomRightTile = camera.GetBottomRightmostVisibleTile(tilemap);
 
             for (int y = topLeftTile.Y; y <= bottomRightTile.Y; y++)
             {
@@ -244,63 +239,65 @@ namespace Scott.Forge.Graphics
                     var tile = tilemap.TileSet[tilemap.Grid[x, y].Type];
 
                     // Calculate screen space position for the tile.
-                    var tilePosition = new Vector2(x * tileWidth, y * tileHeight);
+                    var tilePosition = tilemap.GetWorldPositionForTile(new Point2(x, y));
                     var screenSpacePosition = camera.WorldToScreen(tilePosition);
 
                     // Draw the tile using the tile set's texture atlas.
                     // TODO: Add fancy effects for thigns like water.
                     Draw(
-                        atlas,
-                        new RectF(tile.AtlasX, tile.AtlasY, tileWidth, tileHeight),
+                        tilemap.TileSet.Atlas,
+                        new RectF(tile.AtlasX, tile.AtlasY, tilemap.TileWidth, tilemap.TileHeight),
                         screenSpacePosition);
                 }
             }
         }
 
         /// <summary>
-        ///  Draw a 2d tilemap.
+        ///  Draw collision map for portion of tilemap that is visible.
         /// </summary>
-        /// <param name="camera">Camera to draw from.</param>
+        /// <param name="camera">Rendering camera.</param>
         /// <param name="tilemap">Tilemap to draw.</param>
-        public void DrawTilemap_OLD(Camera camera, TileMap tilemap)
+        public void DrawCollisionMap(Camera camera, TileMap tilemap)
         {
-            // TODO: Consider moving this class into a TileMapRenderer class.
-            // TODO: Use the camera class to select only the required tiles for rendering, and also allow for non
-            //       grid-aligned rendering.
-            var tileWidth = tilemap.TileWidth;
-            var tileHeight = tilemap.TileHeight;
-            var atlas = tilemap.TileSet.Atlas;
+            var topLeftTile = camera.LeftmostVisbileTile(tilemap);
+            var bottomRightTile = camera.GetBottomRightmostVisibleTile(tilemap);
 
-            var tileX = 0;
-            var tileY = 0;
+            var tileExtent = new Vector2(tilemap.TileWidth / 2.0f, tilemap.TileHeight / 2.0f);
 
-            for (int y = 0; y < tilemap.Grid.Rows; y++)
+            for (int y = topLeftTile.Y; y <= bottomRightTile.Y; y++)
             {
-                for (int x = 0; x < tilemap.Grid.Cols; x++)
+                for (int x = topLeftTile.X; x <= bottomRightTile.X; x++)
                 {
                     // Get the tile definition for the tile at this (x, y) position.
                     var tile = tilemap.TileSet[tilemap.Grid[x, y].Type];
 
                     // Calculate screen space position for the tile.
-                    // TODO: Do this once at top and then increment for better perf.
-                    var tilePosition = new Vector2(tileX, tileY);
+                    var tilePosition = tilemap.GetWorldPositionForTile(new Point2(x, y));
                     var screenSpacePosition = camera.WorldToScreen(tilePosition);
 
-                    // Draw the tile using the tile set's texture atlas.
-                    // TODO: Add fancy effects for thigns like water.
-                    Draw(
-                        atlas,
-                        new RectF(tile.AtlasX, tile.AtlasY, tileWidth, tileHeight),
-                        screenSpacePosition);
+                    // Draw collision information for tile.
+                    var boundRect = new RectF(
+                        screenSpacePosition - tileExtent,
+                        screenSpacePosition + tileExtent);
 
-                    tileX += (int) tileWidth;
+                    if (tilemap.Grid[x, y].Collision > 0)
+                    {
+                        DrawRectangle(
+                            boundRect,
+                            Color.Red);
+                    }
+                    else
+                    {
+                        DrawRectangle(
+                            boundRect,
+                            null,
+                            Color.White,
+                            1);
+                    }
                 }
-
-                tileX = 0;
-                tileY += (int)tileHeight;
             }
         }
-
+        
         /// <summary>
         ///  Convert a position centered in a rectangle to the top left corner.
         /// </summary>
