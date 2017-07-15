@@ -32,6 +32,7 @@ namespace Scott.Forge.Graphics
     /// </remarks>
     public class GameRenderer : IGameRenderer
     {
+        private GraphicsDeviceManager mGraphicsDeviceManager;
         private GraphicsDevice mGraphicsDevice;
         private SpriteBatch mSpriteBatch;
 
@@ -43,15 +44,16 @@ namespace Scott.Forge.Graphics
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="graphics">Reference to active graphics device.</param>
-        public GameRenderer(GraphicsDevice graphics)
+        /// <param name="graphics">Reference to the XNA graphics device manager.</param>
+        public GameRenderer(GraphicsDeviceManager graphicsDeviceManager)
         {
-            if (graphics == null)
+            if (graphicsDeviceManager == null)
             {
-                throw new ArgumentNullException(nameof(graphics));
+                throw new ArgumentNullException(nameof(graphicsDeviceManager));
             }
 
-            mGraphicsDevice = graphics;
+            mGraphicsDeviceManager = graphicsDeviceManager;
+            mGraphicsDevice = graphicsDeviceManager.GraphicsDevice;
 
             mSpriteBatch = new SpriteBatch(mGraphicsDevice);
 
@@ -332,6 +334,28 @@ namespace Scott.Forge.Graphics
         public void FinishDrawing()
         {
             mSpriteBatch.End();
+        }
+
+        /// <summary>
+        ///  Resize the game renderer display size.
+        /// </summary>
+        /// <param name="width">Width of the display in pixels.</param>
+        /// <param name="height">Height of the display in pixels.</param>
+        public void Resize(int width, int height)
+        {
+            if (width < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(width), "Width must be larger than zero");
+            }
+
+            if (height < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height), "Height must be larger than zero");
+            }
+
+            mGraphicsDeviceManager.PreferredBackBufferWidth = width;
+            mGraphicsDeviceManager.PreferredBackBufferHeight = height;
+            mGraphicsDeviceManager.ApplyChanges();
         }
     }
 }

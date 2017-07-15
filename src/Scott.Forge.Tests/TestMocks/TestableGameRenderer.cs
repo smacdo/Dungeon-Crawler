@@ -65,6 +65,11 @@ namespace Scott.Forge.Tests.TestMocks
             throw new NotImplementedException();
         }
 
+        public void Resize(int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
         public void StartDrawing(bool clearScreen = false)
         {
             throw new NotImplementedException();

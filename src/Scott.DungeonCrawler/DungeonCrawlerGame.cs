@@ -90,24 +90,22 @@ namespace Scott.DungeonCrawler
         /// </summary>
         protected override void Initialize()
         {
-            // Configure desired settings.
-            // TODO: Move this to the renderer!!
-            mGraphicsDevice.PreferredBackBufferWidth = 800;
-            mGraphicsDevice.PreferredBackBufferHeight = 600;
-            mGraphicsDevice.ApplyChanges();
-
+            // Set display size.
+            mRenderer = new GameRenderer(mGraphicsDevice);
+            mRenderer.Resize(800, 600);
+            
             // Create our custom content manager.
             mContent = new CachedContentManager(new ForgeContentManager(Services, "Content"));
             this.Content = new XnaProxyContentManager(Services, "Content", mContent);
 
             // Initialize systems.
-            mRenderer = new GameRenderer(mGraphicsDevice.GraphicsDevice);    // TODO: do not construct here
             var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10.xnb"));
             var debugOverlay = new StandardDebugOverlay(debugFont);
 
             Globals.Initialize(
                 debugOverlay,
                 new Forge.Settings.ForgeSettings());
+
             Screen.Initialize( mGraphicsDevice.GraphicsDevice );
 
             // Initialize input system with default settings.

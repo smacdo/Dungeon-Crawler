@@ -103,5 +103,12 @@ namespace Scott.Forge.Graphics
         ///  Call when finished drawing a rendering frame.
         /// </summary>
         void FinishDrawing();
+
+        /// <summary>
+        ///  Resize the game renderer display size.
+        /// </summary>
+        /// <param name="width">Width of the display in pixels.</param>
+        /// <param name="height">Height of the display in pixels.</param>
+        void Resize(int width, int height);
     }
 }
