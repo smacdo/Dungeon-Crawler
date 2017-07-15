@@ -30,6 +30,12 @@ namespace Scott.Forge.Graphics
     public interface IDebugOverlay
     {
         /// <summary>
+        ///  Draws all queued debug draws.
+        /// </summary>
+        /// <param name="gameTime">The current game time.</param>
+        void Draw(GameTime renderTime, IGameRenderer renderer);
+
+        /// <summary>
         /// Unload the debug renderer
         /// </summary>
         void Unload();
@@ -148,12 +154,6 @@ namespace Scott.Forge.Graphics
         /// </summary>
         /// <param name="gameTime">The current game time.</param>
         void PreUpdate(GameTime gameTime);
-
-        /// <summary>
-        ///  Draws all queued debug draws.
-        /// </summary>
-        /// <param name="gameTime">The current game time.</param>
-        void Draw(GameTime renderTime);
     }
 
     /// <summary>
@@ -434,9 +434,9 @@ namespace Scott.Forge.Graphics
         ///  Draws all queued debug draws.
         /// </summary>
         /// <param name="gameTime">The current game time.</param>
-        public void Draw( GameTime renderTime )
+        public void Draw(GameTime renderTime, IGameRenderer renderer)
         {
-            GameRoot.Renderer.StartDrawing();
+            renderer.StartDrawing();
 
             // Draw all queued debug primitives.
             for (int i = 0; i < mRectsToDraw.Count; i++)
@@ -445,7 +445,7 @@ namespace Scott.Forge.Graphics
 
                 // TODO: Remove when Enabled is removed (and use Count+move to end).
                 if (!o.Enabled) { break; }
-                GameRoot.Renderer.DrawRectangle(
+                renderer.DrawRectangle(
                     o.Dimensions,
                     fillColor: o.FillColor,
                     borderColor: o.BorderColor,
@@ -457,7 +457,7 @@ namespace Scott.Forge.Graphics
                 var o = mLinesToDraw[i];
                 // TODO: Remove when Enabled is removed (and use Count+move to end).
                 if (!o.Enabled) { break; }
-                GameRoot.Renderer.DrawLine(o.Start, o.Stop, o.Color, o.Width);
+                renderer.DrawLine(o.Start, o.Stop, o.Color, o.Width);
             }
             
             for (int i = 0; i < mTextToDraw.Count; i++)
@@ -465,20 +465,20 @@ namespace Scott.Forge.Graphics
                 var o = mTextToDraw[i];
                 // TODO: Remove when Enabled is removed (and use Count+move to end).
                 if (!o.Enabled) { break; }
-                GameRoot.Renderer.DrawText(o.Text, o.Position, mDebugFont, o.Color, o.BackgroundColor);
+                renderer.DrawText(o.Text, o.Position, mDebugFont, o.Color, o.BackgroundColor);
             }
 
             // TODO: Draw name in bottom right corner.
             // Draw game name.
-            GameRoot.Renderer.DrawText(
+            renderer.DrawText(
                 "Dungeon Crawler",
                 Vector2.Zero,
                 mDebugFont,
                 Color.White);
 
             // Detect if the game is running slowly, and if so draw an indicator
-            DrawSimulationTimeIndicator( renderTime );
-            GameRoot.Renderer.FinishDrawing();
+            DrawSimulationTimeIndicator(renderTime, renderer);
+            renderer.FinishDrawing();
         }
 
         /// <summary>
@@ -486,11 +486,11 @@ namespace Scott.Forge.Graphics
         /// indicator if exceeded the ideal maximum threshold.
         /// </summary>
         /// <param name="renderTime"></param>
-        private void DrawSimulationTimeIndicator( GameTime renderTime )
+        private void DrawSimulationTimeIndicator(GameTime renderTime, IGameRenderer renderer)
         {
             if ( renderTime.IsRunningSlowly )
             {
-                GameRoot.Renderer.DrawRectangle(
+                renderer.DrawRectangle(
                     new RectF(top: 0, left: 0, width: 20, height: 20),
                     fillColor: Color.Red);
             }
@@ -502,7 +502,7 @@ namespace Scott.Forge.Graphics
                 {
                     // TODO: Actually calculate how close it is to 16ms and draw an appropriately
                     // shaded color
-                    GameRoot.Renderer.DrawRectangle(
+                    renderer.DrawRectangle(
                         new RectF(top: 0, left: 22, width: 20, height: 20),
                         fillColor: Color.Yellow);
                 }

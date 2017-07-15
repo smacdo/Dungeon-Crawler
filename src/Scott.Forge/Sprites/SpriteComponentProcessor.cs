@@ -205,7 +205,7 @@ namespace Scott.Forge.Sprites
 
 #if DEBUG
                     // Draw sprite rectangles.
-                    if (GameRoot.Settings.DrawSpriteDebug)
+                    if (Globals.Settings.DrawSpriteDebug)
                     {
                         var spriteRect = new BoundingRect(
                             centerX: positionInCameraSpace.X,
@@ -213,17 +213,17 @@ namespace Scott.Forge.Sprites
                             halfWidth: component.SpriteRects[layer].Size.Width / 2,
                             halfHeight: component.SpriteRects[layer].Size.Height / 2);
 
-                        GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
+                        Globals.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
                     }
 #endif
                 }
                 
 #if DEBUG
                 // Draw transform position and location.
-                if (GameRoot.Settings.DrawTransformDebug)
+                if (Globals.Settings.DrawTransformDebug)
                 {
-                    GameRoot.Debug.DrawPoint(positionInCameraSpace, Microsoft.Xna.Framework.Color.Blue, 4.0f);
-                    GameRoot.Debug.DrawLine(
+                    Globals.Debug.DrawPoint(positionInCameraSpace, Microsoft.Xna.Framework.Color.Blue, 4.0f);
+                    Globals.Debug.DrawLine(
                         positionInCameraSpace,
                         positionInCameraSpace + (transform.Forward * 16.0f),
                         color: Microsoft.Xna.Framework.Color.LightBlue);
@@ -232,7 +232,7 @@ namespace Scott.Forge.Sprites
 
 #if DEBUG
                 // Draw collison information.
-                if (GameRoot.Settings.DrawPhysicsDebug)
+                if (Globals.Settings.DrawPhysicsDebug)
                 {
                     var physics = component.Owner.Get<Physics.PhysicsComponent>();
 
@@ -246,7 +246,7 @@ namespace Scott.Forge.Sprites
                             halfWidth: physics.WorldBounds.HalfWidth,
                             halfHeight: physics.WorldBounds.HalfHeight);
 
-                        GameRoot.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.Yellow);
+                        Globals.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.Yellow);
                     }
                 }
             }

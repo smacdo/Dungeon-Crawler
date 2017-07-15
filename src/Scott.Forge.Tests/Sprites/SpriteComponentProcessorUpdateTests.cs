@@ -281,8 +281,8 @@ namespace Scott.Forge.Tests.Sprites
         [ClassInitialize]
         public static void SetUpEvironment(TestContext context)
         {
-            GameRoot.Initialize(
-                new TestableGameRenderer(),
+            Globals.Initialize(
+                // TODO: Move TestableGameRenderer to constructor.
                 new TestableDebugOverlay(),
                 new ForgeSettings());
         }

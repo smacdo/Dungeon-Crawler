@@ -33,6 +33,10 @@ namespace Scott.Forge.Ai
         private const double StopWalkingChance = 0.05;
         private const double MovementSpeedPerSecond = 50;
 
+        // TODO: Remove and use World.Random when passed. Do this during refactor to move custom AI logic in the
+        //       gameply project and not engine.
+        private System.Random mRandom = new System.Random();
+
         /// <summary>
         ///  Constructor.
         /// </summary>
@@ -84,15 +88,15 @@ namespace Scott.Forge.Ai
             if (ai.SecondsSinceLastStateChange >= DecisionWindowInSeconds)
             {
                 // Shift to walking?
-                if (GameRoot.Random.NextDouble() <= StartWalkingChance)
+                if (mRandom.NextDouble() <= StartWalkingChance)
                 {
                     ai.CurrentState = AiState.Walking;
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
                 // Change direction?
-                else if (GameRoot.Random.NextDouble() <= ChangeWalkDirectionChance)
+                else if (mRandom.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    actor.Direction = (DirectionName) GameRoot.Random.Next(0, Constants.DirectionCount);
+                    actor.Direction = (DirectionName) mRandom.Next(0, Constants.DirectionCount);
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
             }
@@ -115,15 +119,15 @@ namespace Scott.Forge.Ai
             if (ai.SecondsSinceLastStateChange >= DecisionWindowInSeconds)
             {
                 // Start walking?
-                if (GameRoot.Random.NextDouble() <= StopWalkingChance)
+                if (mRandom.NextDouble() <= StopWalkingChance)
                 {
                     ai.CurrentState = AiState.Walking;
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
                 // Change direction?
-                else if (GameRoot.Random.NextDouble() <= ChangeWalkDirectionChance)
+                else if (mRandom.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    actor.Direction = (DirectionName) GameRoot.Random.Next(0, Constants.DirectionCount);
+                    actor.Direction = (DirectionName) mRandom.Next(0, Constants.DirectionCount);
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
             }

@@ -57,7 +57,9 @@ namespace Scott.DungeonCrawler
         private GameObject mPlayer;
 
         private bool mEnemySpawningEnabled = true;
+        private Random mWorldRandom = new Random();
 
+        private IGameRenderer mRenderer;
         private DungeonCrawlerGameObjectFactory mGameObjectFactory;
         private GameScene mCurrentScene;
         private DungeonLevel mCurrentLevel;
@@ -75,6 +77,7 @@ namespace Scott.DungeonCrawler
         /// </summary>
         public DungeonCrawlerClient(string contentDirectory)
         {
+            // TODO: Provide game renderer as input to constructor.
             mGraphicsDevice = new GraphicsDeviceManager( this );
             Content.RootDirectory = contentDirectory ?? "Content";      // Settings.Default.ContentDir
         }
@@ -88,6 +91,7 @@ namespace Scott.DungeonCrawler
         protected override void Initialize()
         {
             // Configure desired settings.
+            // TODO: Move this to the renderer!!
             mGraphicsDevice.PreferredBackBufferWidth = 800;
             mGraphicsDevice.PreferredBackBufferHeight = 600;
             mGraphicsDevice.ApplyChanges();
@@ -97,12 +101,11 @@ namespace Scott.DungeonCrawler
             this.Content = new XnaProxyContentManager(Services, "Content", mContent);
 
             // Initialize systems.
-            var renderer = new GameRenderer(mGraphicsDevice.GraphicsDevice);
+            mRenderer = new GameRenderer(mGraphicsDevice.GraphicsDevice);    // TODO: do not construct here
             var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10.xnb"));
             var debugOverlay = new StandardDebugOverlay(debugFont);
 
-            GameRoot.Initialize(
-                renderer,
+            Globals.Initialize(
                 debugOverlay,
                 new Forge.Settings.ForgeSettings());
             Screen.Initialize( mGraphicsDevice.GraphicsDevice );
@@ -224,7 +227,6 @@ namespace Scott.DungeonCrawler
         /// </summary>
         protected override void UnloadContent()
         {
-            GameRoot.Unload();
         }
 
         /// <summary>
@@ -235,7 +237,7 @@ namespace Scott.DungeonCrawler
         protected override void Update( GameTime gameTime )
         {
             // Allow game play systems to perform any pre-update logic that might be needed
-            GameRoot.Debug.PreUpdate(gameTime);
+            Globals.Debug.PreUpdate(gameTime);
 
             // Perform any requested actions based on user input.
             mInputManager.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
@@ -279,7 +281,7 @@ namespace Scott.DungeonCrawler
             // Spawn some stuff
             if ( mNextSpawnTime <= gameTime.TotalGameTime && mEnemyCount < 32 )
             {
-                if ((GameRoot.Random.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
+                if ((mWorldRandom.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
                 {
                     //SpawnSkeleton();
                     firstSpawn = false;
@@ -300,15 +302,15 @@ namespace Scott.DungeonCrawler
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw( GameTime gameTime )
+        protected override void Draw(GameTime gameTime)
         {
-            GameRoot.Renderer.StartDrawing(clearScreen: true);
-            mCurrentScene.Draw(gameTime);
-            GameRoot.Renderer.FinishDrawing();
+            mRenderer.StartDrawing(clearScreen: true);
+            mCurrentScene.Draw(gameTime, mRenderer);
+            mRenderer.FinishDrawing();
 
-            GameRoot.Debug.Draw( gameTime );
+            Globals.Debug.Draw(gameTime, mRenderer);
 
-            base.Draw( gameTime );
+            base.Draw(gameTime);
         }
     }
 }

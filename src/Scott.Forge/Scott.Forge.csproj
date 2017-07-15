@@ -56,7 +56,7 @@
     <Compile Include="Content\ContentManagerExceptions.cs" />
     <Compile Include="Content\IContentContainer.cs" />
     <Compile Include="Content\XnaProxyContentManager.cs" />
-    <Compile Include="GameRoot.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="GameScene.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\DebugOverlay.cs" />

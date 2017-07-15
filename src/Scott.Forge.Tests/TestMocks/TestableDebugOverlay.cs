@@ -7,7 +7,7 @@ namespace Scott.Forge.Tests.TestMocks
 {
     public class TestableDebugOverlay : IDebugOverlay
     {
-        public void Draw(GameTime renderTime)
+        public void Draw(GameTime renderTime, IGameRenderer renderer)
         {
             // Empty.
         }

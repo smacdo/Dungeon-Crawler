@@ -177,7 +177,7 @@ namespace Scott.DungeonCrawler.Actions
                 new Vector2(WeaponPivotX, WeaponPivotY));                                           // Rotation pivot.
 
             // Draw the bounding area for visualization testing.
-            GameRoot.Debug.DrawBoundingArea(
+            Globals.Debug.DrawBoundingArea(
                 bounds,
                 Microsoft.Xna.Framework.Color.HotPink);
 
@@ -194,9 +194,9 @@ namespace Scott.DungeonCrawler.Actions
             foreach (var result in scene.Physics.SpatialIndex.Query(bbrect, physics))
             {
 #if DEBUG
-                if (GameRoot.Settings.DrawWeaponHitDebug)
+                if (Globals.Settings.DrawWeaponHitDebug)
                 {
-                    GameRoot.Debug.DrawFilledRect(
+                    Globals.Debug.DrawFilledRect(
                         new RectF(result.WorldBounds.MinPoint, result.WorldBounds.MaxPoint),
                         Microsoft.Xna.Framework.Color.Red);
                 }

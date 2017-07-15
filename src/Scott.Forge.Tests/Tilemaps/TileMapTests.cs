@@ -24,10 +24,10 @@ namespace Scott.Forge.Tests.Tilemaps
             Assert.AreEqual(worldViewRect.BottomRight, new Vector2(130, 96));
 
             // Check that the top left and bottom right grid cells are correct.
-            var topLeftTileIndex = tilemap.GetTopLeftmostVisibleTile(camera);
-            Assert.AreEqual(new Point2(7, 8), topLeftTileIndex);
+            var topLeftTileIndex = camera.LeftmostVisbileTile(tilemap);
+            Assert.AreEqual(new Point2(6, 7), topLeftTileIndex);
 
-            var bottomRightTileIndex = tilemap.GetBottomRightmostVisibleTile(camera);
+            var bottomRightTileIndex = camera.GetBottomRightmostVisibleTile(tilemap);
             Assert.AreEqual(new Point2(13, 12), bottomRightTileIndex);
         }
         
@@ -38,10 +38,10 @@ namespace Scott.Forge.Tests.Tilemaps
             var camera = new Camera(new SizeF(40, 40), new Vector2(-10, -4));
 
             // Check that the top left and bottom right grid cells are correct.
-            var topLeftTileIndex = tilemap.GetTopLeftmostVisibleTile(camera);
+            var topLeftTileIndex = camera.LeftmostVisbileTile(tilemap);
             Assert.AreEqual(new Point2(0, 0), topLeftTileIndex);
 
-            var bottomRightTileIndex = tilemap.GetBottomRightmostVisibleTile(camera);
+            var bottomRightTileIndex = camera.GetBottomRightmostVisibleTile(tilemap);
             Assert.AreEqual(new Point2(1, 2), bottomRightTileIndex);
         }
 

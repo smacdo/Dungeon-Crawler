@@ -146,7 +146,7 @@ namespace Scott.Forge
         ///  Draw the scene.
         /// </summary>
         /// <param name="gameTime">Current game simulation time.</param>
-        public virtual void Draw(GameTime gameTime)
+        public virtual void Draw(GameTime gameTime, IGameRenderer renderer)
         {
             // Don't bother with drawing if no camera is available.
             if (MainCamera == null)
@@ -155,16 +155,16 @@ namespace Scott.Forge
             }
 
             // Draw tilemap.
-            GameRoot.Renderer.DrawTilemap(MainCamera, Tilemap);
+            renderer.DrawTilemap(MainCamera, Tilemap);
 
-            if (GameRoot.Settings.DrawCollisionDebug)
+            if (Globals.Settings.DrawCollisionDebug)
             {
-                GameRoot.Renderer.DrawCollisionMap(MainCamera, Tilemap);
+                renderer.DrawCollisionMap(MainCamera, Tilemap);
             }
             
             // Draw sprites.
             Sprites.Draw(
-                GameRoot.Renderer,
+                renderer,
                 MainCamera,
                 gameTime.TotalGameTime.TotalSeconds,
                 gameTime.ElapsedGameTime.TotalSeconds);

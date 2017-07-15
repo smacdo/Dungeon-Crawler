@@ -30,6 +30,11 @@ namespace Scott.Forge.Tests.TestMocks
             });
         }
 
+        public void DrawCollisionMap(Camera camera, TileMap tilemap)
+        {
+            throw new NotImplementedException();
+        }
+
         public void DrawLine(Vector2 startPosition, Vector2 endPosition, Color? color, float? width)
         {
             throw new NotImplementedException();

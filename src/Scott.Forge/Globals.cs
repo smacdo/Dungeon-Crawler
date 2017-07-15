@@ -24,40 +24,39 @@ using Scott.Forge.Random;
 namespace Scott.Forge
 {
     /// <summary>
-    /// Global singleton that stores global systems, processors and the game object
-    /// collection
+    /// Global singleton holding other singleton objects.
     /// </summary>
-    public static class GameRoot
+    public static class Globals
     {
-        public static IDebugOverlay Debug { get; internal set; }
-        public static IGameRenderer Renderer { get; private set; }
-        public static System.Random Random { get; private set; }
-        public static ForgeSettings Settings { get; private set; }
-        public static bool UnitTests { get; private set; } = false;
+        /// <summary>
+        ///  Get the global debug overlay.
+        /// </summary>
+        public static IDebugOverlay Debug { get; private set; }
 
         /// <summary>
-        /// Initialize the game root
+        ///  Get the global settings.
+        /// </summary>
+        public static ForgeSettings Settings { get; private set; }
+
+        /// <summary>
+        ///  Initialize global values.
         /// </summary>
         public static void Initialize(
-            IGameRenderer renderer,
             IDebugOverlay debugOverlay,
             ForgeSettings settings)
         {
-            Settings = settings;
-            Renderer = renderer;
-            Debug = debugOverlay;
-            Random = new System.Random();
-        }
+            if (debugOverlay == null)
+            {
+                throw new ArgumentNullException(nameof(debugOverlay));
+            }
 
-        /// <summary>
-        /// Unloads loaded systems... call when the game is about to be unloaded
-        /// </summary>
-        public static void Unload()
-        {
-            Debug.Unload();
-            Renderer = null;
-            Debug = null;
-            Settings = null;
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            Settings = settings;
+            Debug = debugOverlay;
         }
     }
 }

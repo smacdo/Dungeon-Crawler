@@ -39,6 +39,9 @@ namespace Scott.DungeonCrawler.GameObjects
         public IContentManager Content { get; set; }
         public GameScene Scene { get; set; }
 
+        // TODO: Remove and use World.Randomor something else. This is a hack for the moment. 
+        private System.Random mRandom = new System.Random();
+
         public DungeonCrawlerGameObjectFactory(IContentManager content, GameScene scene)
         {
             if (content == null)
@@ -185,7 +188,7 @@ namespace Scott.DungeonCrawler.GameObjects
             }
 
             // temp hack
-            var initialDirection = (DirectionName)GameRoot.Random.Next(0, 3);
+            var initialDirection = (DirectionName)mRandom.Next(0, 3);
 
             var actor = enemy.Get<ActorComponent>();
             actor.Direction = initialDirection;
