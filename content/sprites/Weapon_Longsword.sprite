@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Weapon_Longsword">
-  <atlas ref="sprites/atlases/Weapon_Longsword.png" spriteWidth="192" spriteHeight="192" />
-  <default animation="Slash" direction="South" />
+  <atlas ref="sprites/atlases/Weapon_Longsword.png" x="128" y="0" />
+  <size width="64" height="64" />
   <originOffset x="0" y="0" />
   
   <animation name="Slash" frameTime="0.1">

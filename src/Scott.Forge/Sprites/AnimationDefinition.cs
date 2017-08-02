@@ -15,7 +15,6 @@
  */
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace Scott.Forge.Sprites
 {
@@ -29,7 +28,7 @@ namespace Scott.Forge.Sprites
     /// </remarks>
     public class AnimationDefinition
     {
-        private const float DefaultFrameTime = 0.10f;
+        public const float DefaultFrameTimeInSeconds = 0.10f;
 
         /// <summary>
         /// Constructor.
@@ -37,58 +36,59 @@ namespace Scott.Forge.Sprites
         /// <param name="name">Name of the animation</param>
         /// <param name="frameSeconds">Amount of time in seconds display each frame</param>
         /// <param name="atlasPositions">Upper left corner position of sprite in texture atlas.</param>
-        public AnimationDefinition(string name, float frameSeconds, List<List<Vector2>> atlasPositions)
+        public AnimationDefinition(string name, float frameSeconds, Vector2[,] atlasPositions)
         {
-            // Check arguments for errors.
+            // Assign properties if arguments are valid.
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
+
+            Name = name;
 
             if (frameSeconds <= 0.0f)
             {
                 throw new ArgumentException("Frame time must be larger than zero", nameof(frameSeconds));
             }
 
+            FrameSeconds = frameSeconds;
+
             if (atlasPositions == null)
             {
                 throw new ArgumentNullException(nameof(atlasPositions));
             }
 
-            // TODO: Can we remove restriction on either 1 or zero? Would be nice to have just > 0.
-            if (atlasPositions.Count != 1 && atlasPositions.Count != Constants.DirectionCount)
-            {
-                throw new ArgumentException("Must have either 1 or 4 directions defined", nameof(atlasPositions));
-            }
-            
-            // Copy properties.
-            Name = name;
-            FrameSeconds = frameSeconds;
-            FrameCount = atlasPositions[0].Count;
-            Frames = new Vector2[Constants.DirectionCount, FrameCount];
+            FrameCount = atlasPositions.GetLength(1);
 
-            // Check frameCount > 0.
             if (FrameCount < 1)
             {
-                throw new ArgumentException("Sprite animation must have at least one frame", nameof(atlasPositions));
+                throw new InvalidOperationException("Animation must have at least one frame");
             }
 
-            // Copy all of the animations for each direction. Duplicate animation data if only one direction was
-            // provided.
-            for (int i = 0; i < Constants.DirectionCount; ++i)
-            { 
-                // Copy frames if there are four directions defined, otherwise duplicate the first direction.
-                int directionIndex = (atlasPositions.Count == 1 ? 0 : i);
+            // Copy the frames atlas offset array. If only one direction is provided, duplicate the frames for the
+            // missing directions.
+            Frames = new Vector2[Constants.DirectionCount, FrameCount];
 
-                if (atlasPositions[directionIndex].Count != FrameCount)
+            int sourceDirectionCount = atlasPositions.GetLength(0);
+            
+            if (sourceDirectionCount == Constants.DirectionCount)
+            {
+                Array.Copy(atlasPositions, Frames, atlasPositions.Length);
+            }
+            else if (sourceDirectionCount == 1)
+            {
+                // Populate missing directions with frames from first direction.                
+                for (int i = 0; i < Constants.DirectionCount; i++)
                 {
-                    throw new ArgumentException("Sprite animation frame count is not consistent", nameof(atlasPositions));
+                    for (int j = 0; j < FrameCount; j++)
+                    {
+                        Frames[i, j] = atlasPositions[0,j];
+                    }
                 }
-
-                for (int j = 0; j < atlasPositions[directionIndex].Count; ++j)
-                {
-                    Frames[i, j] = atlasPositions[directionIndex][j];
-                }
+            }
+            else
+            {
+                throw new ArgumentException("Must have either 1 or 4 directions defined", nameof(atlasPositions));
             }
         }
 
@@ -109,7 +109,7 @@ namespace Scott.Forge.Sprites
         /// <summary>
         ///  Get the amount of time to play each frame in the animation.
         /// </summary>
-        public float FrameSeconds { get; private set; }
+        public float FrameSeconds { get; private set; }     // TODO: Use TimeSpan.
 
         /// <summary>
         /// Get the name of the animation.

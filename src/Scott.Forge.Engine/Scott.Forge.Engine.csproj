@@ -61,7 +61,7 @@
     <Compile Include="Content\DirectoryContentContainer.cs" />
     <Compile Include="Content\ForgeContentManager.cs" />
     <Compile Include="Content\ContentReader.cs" />
-    <Compile Include="Content\ContentManagerExceptions.cs" />
+    <Compile Include="Content\ContentReaderException.cs" />
     <Compile Include="Content\TiledMapReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Content\AnimatedSpriteDefinitionContentReader.cs" />

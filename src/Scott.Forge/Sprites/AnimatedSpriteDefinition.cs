@@ -39,12 +39,12 @@ namespace Scott.Forge.Sprites
         {
             if (spriteDefinition == null)
             {
-                throw new ArgumentNullException("spriteDefinition");
+                throw new ArgumentNullException(nameof(spriteDefinition));
             }
 
             if (animationDefinitions == null)
             {
-                throw new ArgumentNullException("animationDefinitions");
+                throw new ArgumentNullException(nameof(animationDefinitions));
             }
 
             Sprite = spriteDefinition;

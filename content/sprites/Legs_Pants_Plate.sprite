@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sprite name="Legs_Pants_Plate">
-  <atlas ref="sprites/atlases/Legs_Pants_Plate.png" spriteWidth="64" spriteHeight="64" />
-  <default animation="Idle" direction="South" />
+  <atlas ref="sprites/atlases/Legs_Pants_Plate.png" x="128" y="0" />
+  <size width="64" height="64" />
   <originOffset x="0" y="0" />
   
   <animation name="Idle" frameTime="0.1">

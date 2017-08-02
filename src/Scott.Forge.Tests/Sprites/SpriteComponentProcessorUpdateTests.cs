@@ -26,9 +26,8 @@ namespace Scott.Forge.Tests.Sprites
                     new AnimationDefinition(
                         "TestAnimation",
                         AnimationFrameSeconds,
-                        new List<List<Vector2>>
+                        new Vector2[,]
                         {
-                            new List<Vector2>
                             {
                                 new Vector2(10, 15),
                                 new Vector2(20, 25),
