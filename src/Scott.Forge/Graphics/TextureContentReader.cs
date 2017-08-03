@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2017 Scott MacDonald
+ * Copyright 2012-2014 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using Microsoft.Xna.Framework.Graphics;
+using Scott.Forge.Content;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 
-namespace Scott.Forge.Engine.Content
+namespace Scott.Forge.Graphics
 {
     /// <summary>
-    ///  Abstract base class for content readers.
+    ///  Responsible for loading Texture2D instances from image input streams.
     /// </summary>
-    internal abstract class ContentReader<T>
+    [ContentReader( typeof( Texture2D ), ".png" )]
+    internal class TextureContentReader : ContentReader<Texture2D>
     {
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public TextureContentReader()
+            : base()
+        {
+            // Empty
+        }
+
         /// <summary>
         ///  Read a serialized asset from an input stream and return it as a loaded object.
         /// </summary>
@@ -33,25 +43,20 @@ namespace Scott.Forge.Engine.Content
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public abstract T Read(
+        public override Texture2D Read(
             Stream inputStream,
             string assetPath,
-            ForgeContentManager content);
-    }
-
-    /// <summary>
-    ///  Attribute that describes what type of content a given content reader class reads.
-    /// </summary>
-    [AttributeUsage( AttributeTargets.Class, Inherited = true )]
-    public class ContentReaderAttribute : Attribute
-    {
-        public Type ContentType { get; private set; }
-        public string Extension { get; private set; }
-
-        public ContentReaderAttribute( Type contentType, string fileExtension )
+            IContentManager content)
         {
-            ContentType = contentType;
-            Extension = fileExtension;
+            var graphicsDeviceService =
+                (IGraphicsDeviceService)content.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+
+            if (graphicsDeviceService.GraphicsDevice == null)
+            {
+                throw new InvalidOperationException("Graphics device service not registered");
+            }
+
+            return Texture2D.FromStream(graphicsDeviceService.GraphicsDevice, inputStream);
         }
     }
 }

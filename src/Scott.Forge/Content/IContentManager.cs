@@ -23,6 +23,15 @@ namespace Scott.Forge.Content
     public interface IContentManager : IDisposable
     {
         /// <summary>
+        ///  Get the service provider associated with this content manager.
+        /// </summary>
+        /// <remarks>
+        ///  This property is provided for compatibility with XNA content loaders. It should not be used by custom
+        ///  Forge content loaders because it will eventually be removed.
+        /// </remarks>
+        IServiceProvider ServiceProvider { get; }
+
+        /// <summary>
         ///  Load an asset.
         /// </summary>
         /// <typeparam name="T">Runtime content type to load.</typeparam>

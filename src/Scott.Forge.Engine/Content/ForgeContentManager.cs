@@ -17,11 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using Microsoft.Xna.Framework.Content;
-using Scott.Forge.Content;
 
-namespace Scott.Forge.Engine.Content
+namespace Scott.Forge.Content
 {
     /// <summary>
     ///  The content manager is responsible for the loading and unloading of game resources.

@@ -51,6 +51,8 @@
     <Compile Include="Actors\ActorProcessor.cs" />
     <Compile Include="Ai\AiComponent.cs" />
     <Compile Include="Ai\AiProcessor.cs" />
+    <Compile Include="Content\ContentReader.cs" />
+    <Compile Include="Content\ContentReaderException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Content\CachedContentManager.cs" />
     <Compile Include="Content\ContentManagerExceptions.cs" />
@@ -64,6 +66,7 @@
     <Compile Include="Graphics\GameRenderer.cs" />
     <Compile Include="Graphics\IGameRenderer.cs" />
     <Compile Include="Graphics\Screen.cs" />
+    <Compile Include="Graphics\TextureContentReader.cs" />
     <Compile Include="Input\InputException.cs" />
     <Compile Include="Input\InputManager.cs" />
     <Compile Include="Physics\CollisionResult.cs" />
@@ -90,13 +93,13 @@
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
+    <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Support\PriorityQueue.cs" />
     <Compile Include="Tilemaps\Grid.cs" />
     <Compile Include="Tilemaps\GridPathfinder.cs" />
     <Compile Include="Tilemaps\Tile.cs" />
     <Compile Include="Tilemaps\TileDefinition.cs" />
     <Compile Include="Tilemaps\TileMap.cs" />
-    <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimationDefinition.cs" />
     <Compile Include="Sprites\AnimationEndingAction.cs" />
     <Compile Include="Sprites\AnimationExceptions.cs" />

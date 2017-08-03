@@ -55,6 +55,18 @@ namespace Scott.Forge.Content
         public IContentManager ActualContentManager { get; set; }
 
         /// <summary>
+        ///  Get the service provider associated with this content manager.
+        /// </summary>
+        /// <remarks>
+        ///  This property is provided for compatibility with XNA content loaders. It should not be used by custom
+        ///  Forge content loaders because it will eventually be removed.
+        /// </remarks>
+        public IServiceProvider ServiceProvider
+        {
+            get { return ActualContentManager.ServiceProvider; }
+        }
+
+        /// <summary>
         ///  Table of loaded assets indexed by asset name.
         /// </summary>
         private Dictionary<string, object> mCache = new Dictionary<string, object>();

@@ -19,15 +19,15 @@ using System.IO;
 using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Scott.Forge.Sprites;
+using Scott.Forge.Content;
 
-namespace Scott.Forge.Engine.Content
+namespace Scott.Forge.Sprites
 {
     /// <summary>
     ///  Loads an animated sprite from an XML input stream and returns an AnimatedSpriteDefinition object.
     /// </summary>
     [ContentReader(typeof(AnimatedSpriteDefinition), ".sprite")]
-    internal class AnimatedSpriteDefinitionContentReader : ContentReader<AnimatedSpriteDefinition>
+    public class AnimatedSpriteDefinitionContentReader : ContentReader<AnimatedSpriteDefinition>
     {
         private string mAssetPath;
 
@@ -41,7 +41,7 @@ namespace Scott.Forge.Engine.Content
         public override AnimatedSpriteDefinition Read(
             Stream inputStream,
             string assetPath,
-            ForgeContentManager content)
+            IContentManager content)
         {
             // Check arguments for validty.
             if (inputStream == null)
@@ -93,7 +93,7 @@ namespace Scott.Forge.Engine.Content
         /// <returns>Parsed AnimatedSpriteDefinition object.</returns>
         private AnimatedSpriteDefinition ImportSpriteData(
             XmlNode spriteNode,
-            ForgeContentManager content)
+            IContentManager content)
         {
             return new AnimatedSpriteDefinition(
                 ImportSpriteDefinition(spriteNode, content),
@@ -110,7 +110,7 @@ namespace Scott.Forge.Engine.Content
         /// <param name="spriteNode">Sprite xml element.</param>
         /// <param name="content">Forge content manager for loading referenced assets.</param>
         /// <returns>Parsed SpriteDefinition object.</returns>
-        private SpriteDefinition ImportSpriteDefinition(XmlNode spriteNode, ForgeContentManager content)
+        private SpriteDefinition ImportSpriteDefinition(XmlNode spriteNode, IContentManager content)
         {
             // What is the name of this sprite?
             var spriteName = spriteNode.Attributes["name"]?.Value;

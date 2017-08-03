@@ -15,7 +15,7 @@
  */
 using System;
 
-namespace Scott.Forge.Engine.Content
+namespace Scott.Forge.Content
 {
     /// <summary>
     ///  Exception while loading game content.

@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
+using Scott.Forge.Content;
 
 namespace Scott.Forge.Engine.Content
 {
@@ -40,7 +41,7 @@ namespace Scott.Forge.Engine.Content
         public override TileMap Read(
             Stream inputStream,
             string assetPath,
-            ForgeContentManager content)
+            IContentManager content)
         {
             var xml = new XmlDocument();
             xml.Load(inputStream);
@@ -48,7 +49,7 @@ namespace Scott.Forge.Engine.Content
             return ReadMap(xml.SelectSingleNode("/map"), content);
         }
 
-        private TileMap ReadMap(XmlNode mapNode, ForgeContentManager content)
+        private TileMap ReadMap(XmlNode mapNode, IContentManager content)
         {
             if (mapNode == null)
             {
@@ -78,7 +79,7 @@ namespace Scott.Forge.Engine.Content
 
         // TODO: Support internal and external TileSet.
         // TODO: Move this to a TileSet content reader.
-        public TileSet ReadExternalTileSet(XmlNode root, ForgeContentManager content)
+        public TileSet ReadExternalTileSet(XmlNode root, IContentManager content)
         {
             if (root == null)
             {
