@@ -31,6 +31,11 @@ namespace Scott.Forge.Content
     public class CachedContentManager : IContentManager
     {
         /// <summary>
+        ///  Table of loaded assets indexed by asset name.
+        /// </summary>
+        private Dictionary<string, object> mCache = new Dictionary<string, object>();
+
+        /// <summary>
         ///  True if the instance has been disposed, false otherwise.
         /// </summary>
         private bool mDisposed = false;
@@ -55,21 +60,13 @@ namespace Scott.Forge.Content
         public IContentManager ActualContentManager { get; set; }
 
         /// <summary>
-        ///  Get the service provider associated with this content manager.
+        ///  Get legacy XNA content manager. Avoid using as it will be removed in the future.
         /// </summary>
-        /// <remarks>
-        ///  This property is provided for compatibility with XNA content loaders. It should not be used by custom
-        ///  Forge content loaders because it will eventually be removed.
-        /// </remarks>
-        public IServiceProvider ServiceProvider
+        public Microsoft.Xna.Framework.Content.ContentManager XnaContentManager
         {
-            get { return ActualContentManager.ServiceProvider; }
+            get { return ActualContentManager.XnaContentManager; }
+            set { ActualContentManager.XnaContentManager = value; }
         }
-
-        /// <summary>
-        ///  Table of loaded assets indexed by asset name.
-        /// </summary>
-        private Dictionary<string, object> mCache = new Dictionary<string, object>();
 
         /// <summary>
         ///  Load an asset.
@@ -115,7 +112,6 @@ namespace Scott.Forge.Content
             }
 
             mCache.Clear();
-            ActualContentManager.Unload();
         }
 
         /// <summary>
@@ -139,6 +135,7 @@ namespace Scott.Forge.Content
                 if (ActualContentManager != null)
                 {
                     ActualContentManager.Dispose();
+                    ActualContentManager = null;
                 }
 
                 mDisposed = true;

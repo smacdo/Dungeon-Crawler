@@ -64,8 +64,8 @@ namespace Scott.Forge.Content
     /// </summary>
     public class ContentReaderMissingException : ContentReaderException
     {
-        public ContentReaderMissingException(string fileName)
-            : base("Could not find a content reader for this file", fileName)
+        public ContentReaderMissingException(string fileExtension)
+            : base("Could not find a content reader for the given type and file extension", fileExtension)
         {
         }
     }

@@ -69,6 +69,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AssertHelper.cs" />
+    <Compile Include="Content\ContentHandlerDirectoryTests.cs" />
+    <Compile Include="Content\ForgeContentManagerTests.cs" />
     <Compile Include="GameObjectsTests\ComponentTests.cs" />
     <Compile Include="GameObjectsTests\GameObjectTestFakes.cs" />
     <Compile Include="GameObjectsTests\GameObjectTests.cs" />
@@ -104,6 +106,10 @@
     <Compile Include="Vector4Tests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
+      <Project>{07AAA29B-1006-4074-9C1F-AC12F09C35A6}</Project>
+      <Name>Scott.Forge.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scott.Forge\Scott.Forge.csproj">
       <Project>{fa4be4b8-5043-46e9-a43a-0575e8c56dc9}</Project>
       <Name>Scott.Forge</Name>

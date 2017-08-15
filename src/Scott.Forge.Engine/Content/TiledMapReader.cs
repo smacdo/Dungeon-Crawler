@@ -29,7 +29,7 @@ namespace Scott.Forge.Engine.Content
     ///  Loads Tiled .TMX map files.
     /// </summary>
     [ContentReader(typeof(TileMap), ".tmx")]
-    internal class TiledMapReader : ContentReader<TileMap>
+    internal class TiledMapReader : IContentReader<TileMap>
     {
         /// <summary>
         ///  Read a serialized asset from an input stream and return it as a loaded object.
@@ -38,7 +38,7 @@ namespace Scott.Forge.Engine.Content
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public override TileMap Read(
+        public TileMap Read(
             Stream inputStream,
             string assetPath,
             IContentManager content)

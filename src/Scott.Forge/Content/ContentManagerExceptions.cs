@@ -61,23 +61,17 @@ namespace Scott.Forge.Content
         public string AssetName { get; private set; }
     }
 
-    public class ContentReaderWrongOutputTypeException : ForgeException
+    public class ContentReaderConfigurationException : ForgeException
     {
-        public ContentReaderWrongOutputTypeException(
+        public ContentReaderConfigurationException(
             string assetName,
-            Type contentReaderType,
-            Type expectedOutputType,
-            Type actualOutputType)
+            Type contentReaderType)
             : base(string.Format(
-                "Could not load asset '{0}' because selected reader '{1}' has output '{2}' instead of '{3}'",
+                "Could not load asset '{0}' because selected reader '{1}' is misconfigured",
                 assetName,
-                contentReaderType?.ToString() ?? "null",
-                actualOutputType?.ToString() ?? "null",
-                expectedOutputType?.ToString() ?? "null"))
+                contentReaderType?.ToString() ?? "null"))
         {
             AssetName = assetName;
-            ExpectedOutputType = expectedOutputType;
-            ActualOutputType = actualOutputType;
             ContentReaderType = contentReaderType;
         }
 

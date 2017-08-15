@@ -24,8 +24,8 @@ namespace Scott.Forge.Graphics
     /// <summary>
     ///  Responsible for loading Texture2D instances from image input streams.
     /// </summary>
-    [ContentReader( typeof( Texture2D ), ".png" )]
-    internal class TextureContentReader : ContentReader<Texture2D>
+    [ContentReader(typeof(Texture2D), ".png")]
+    internal class TextureContentReader : IContentReader<Texture2D>
     {
         /// <summary>
         ///  Constructor.
@@ -43,13 +43,13 @@ namespace Scott.Forge.Graphics
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public override Texture2D Read(
+        public Texture2D Read(
             Stream inputStream,
             string assetPath,
             IContentManager content)
         {
             var graphicsDeviceService =
-                (IGraphicsDeviceService)content.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+                (IGraphicsDeviceService)content.XnaContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
 
             if (graphicsDeviceService.GraphicsDevice == null)
             {

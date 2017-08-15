@@ -23,8 +23,14 @@ using System.Threading.Tasks;
 namespace Scott.Forge.Content
 {
     /// <summary>
-    ///  Represents an abstract container of content. Could be a directory, zip file or something more exotic.
+    ///  An abstract definition of a container containing zero or more content items.
     /// </summary>
+    /// <remarks>
+    ///  A content container is an abstract container of content. A container of content could be as simple as a
+    ///  directory on the local file system, a zip file or a more exotic concept.
+    ///  
+    ///  See the ForgeContentManager for more information on how multiple content containers are used by Forge.
+    /// </remarks>
     public interface IContentContainer
     {
         /// <summary>

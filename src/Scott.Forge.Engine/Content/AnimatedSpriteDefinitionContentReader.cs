@@ -27,7 +27,7 @@ namespace Scott.Forge.Sprites
     ///  Loads an animated sprite from an XML input stream and returns an AnimatedSpriteDefinition object.
     /// </summary>
     [ContentReader(typeof(AnimatedSpriteDefinition), ".sprite")]
-    public class AnimatedSpriteDefinitionContentReader : ContentReader<AnimatedSpriteDefinition>
+    public class AnimatedSpriteDefinitionContentReader : IContentReader<AnimatedSpriteDefinition>
     {
         private string mAssetPath;
 
@@ -38,7 +38,7 @@ namespace Scott.Forge.Sprites
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public override AnimatedSpriteDefinition Read(
+        public AnimatedSpriteDefinition Read(
             Stream inputStream,
             string assetPath,
             IContentManager content)

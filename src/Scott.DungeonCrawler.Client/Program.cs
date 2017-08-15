@@ -18,6 +18,9 @@ using System;
 using System.Threading;
 using Scott.Dungeon;
 using Scott.DungeonCrawler;
+using Scott.Forge.Content;
+using System.Collections.Generic;
+using Scott.DungeonCrawler.Client.Content;
 
 namespace Scott.DungeonCrawler.Client
 {
@@ -73,7 +76,17 @@ namespace Scott.DungeonCrawler.Client
         /// </summary>
         private static void RunGame()
         {
-            using (var game = new DungeonCrawlerClient(Settings.Default.ContentDir))
+            // Configure content manager.
+            var rootContentContainer = new DirectoryContentContainer(Settings.Default.ContentDir);
+            var contentHandlerDirectory = new ReflectionContentHandlerDirectory();
+            
+            var contentManager = new CachedContentManager(
+                new ForgeContentManager(
+                    new List<IContentContainer>() { rootContentContainer },
+                    new List<IContentHandlerDirectory> { contentHandlerDirectory }));
+
+            // Create and run game.
+            using (var game = new DungeonCrawlerClient(contentManager))
             {
                 game.Run();
             }

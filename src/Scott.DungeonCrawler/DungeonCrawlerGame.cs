@@ -65,21 +65,27 @@ namespace Scott.DungeonCrawler
         private DungeonLevel mCurrentLevel;
 
         private readonly InputManager<InputAction> mInputManager = new InputManager<InputAction>();
-        private IContentManager mContent;
         int mEnemyCount = 0;
 
-
-        bool firstSpawn = true;
+        bool mFirstSpawn = true;
         TimeSpan mNextSpawnTime = TimeSpan.Zero;
+
+        public new IContentManager Content { get; private set; }
 
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public DungeonCrawlerClient(string contentDirectory)
+        public DungeonCrawlerClient(IContentManager contentManager)
         {
+            if (contentManager == null)
+            {
+                throw new ArgumentNullException(nameof(contentManager));
+            }
+
+            Content = contentManager;
+
             // TODO: Provide game renderer as input to constructor.
             mGraphicsDevice = new GraphicsDeviceManager( this );
-            Content.RootDirectory = contentDirectory ?? "Content";      // Settings.Default.ContentDir
         }
 
         /// <summary>
@@ -93,11 +99,13 @@ namespace Scott.DungeonCrawler
             // Set display size.
             mRenderer = new GameRenderer(mGraphicsDevice);
             mRenderer.Resize(800, 600);
-            
-            // Create our custom content manager.
-            mContent = new CachedContentManager(new ForgeContentManager(Services, "Content"));
-            this.Content = new XnaProxyContentManager(Services, "Content", mContent);
 
+            // Configure legacy XNA content loader.
+            base.Content = new Microsoft.Xna.Framework.Content.ContentManager(Services);
+            base.Content.RootDirectory = "Content";     // TODO: Make configurable via content container.
+
+            Content.XnaContentManager = base.Content;
+            
             // Initialize systems.
             var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10.xnb"));
             var debugOverlay = new StandardDebugOverlay(debugFont);
@@ -139,7 +147,7 @@ namespace Scott.DungeonCrawler
             mCurrentLevel = GenerateMap(100, 100);
             mCurrentScene = new GameScene(mCurrentLevel.TileMap);
 
-            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(mContent, mCurrentScene);
+            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(Content, mCurrentScene);
 
             // Spawn player into level.
             var position = mCurrentLevel.TileMap.GetWorldPositionForTile(mCurrentLevel.StairsUpPoint);
@@ -279,10 +287,10 @@ namespace Scott.DungeonCrawler
             // Spawn some stuff
             if ( mNextSpawnTime <= gameTime.TotalGameTime && mEnemyCount < 32 )
             {
-                if ((mWorldRandom.NextDouble() < 0.75 || firstSpawn) && mEnemySpawningEnabled)
+                if ((mWorldRandom.NextDouble() < 0.75 || mFirstSpawn) && mEnemySpawningEnabled)
                 {
                     //SpawnSkeleton();
-                    firstSpawn = false;
+                    mFirstSpawn = false;
                 }
 
                 mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
