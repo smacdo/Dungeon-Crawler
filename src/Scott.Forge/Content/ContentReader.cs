@@ -20,36 +20,61 @@ using System.IO;
 namespace Scott.Forge.Content
 {
     /// <summary>
-    ///  Abstract base class for content readers.
+    ///  Interface for a ContentReader capapble of loading objects of a declared type from an input stream.
     /// </summary>
-    public abstract class ContentReader<T>
+    public interface IContentReader<T>
     {
         /// <summary>
-        ///  Read a serialized asset from an input stream and return it as a loaded object.
+        ///  Read a serialized asset from an input stream and return it as an object.
         /// </summary>
         /// <param name="inputStream">Stream to read serialized asset data from.</param>
-        /// <param name="assetPath">Relative path to the serialized asset.</param>
-        /// <param name="content">Content manager.</param>
-        /// <returns>Deserialized content object.</returns>
-        public abstract T Read(
+        /// <param name="assetPath">Relative path used to create the inputStream.</param>
+        /// <param name="content">Content manager for loading dependent data.</param>
+        /// <returns>New object created from the input stream.</returns>
+        T Read(
             Stream inputStream,
             string assetPath,
             IContentManager content);
     }
 
     /// <summary>
-    ///  Attribute that describes what type of content a given content reader class reads.
+    ///  Content reader attribute describes a class that is capable of reading one or more file formats and returning
+    ///  objects of a declared type. Forge uses this attribute to automatically discover content readers and their
+    ///  configuration without hard coding configuration rules.
     /// </summary>
     [AttributeUsage( AttributeTargets.Class, Inherited = true )]
     public class ContentReaderAttribute : Attribute
     {
+        /// <summary>
+        ///  Get the type of object that this content reader produces.
+        /// </summary>
         public Type ContentType { get; private set; }
-        public string Extension { get; private set; }
 
-        public ContentReaderAttribute( Type contentType, string fileExtension )
+        /// <summary>
+        ///  Get the list of file extensions that this content reader supports reading from.
+        /// </summary>
+        public string[] FileExtensions { get; private set; }
+
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="contentType">Type of object that this content reader produces.</param>
+        /// <param name="fileExtension">File extension that this content reader supports.</param>
+        public ContentReaderAttribute(Type contentType, string fileExtension)
         {
             ContentType = contentType;
-            Extension = fileExtension;
+            FileExtensions = new string[] { fileExtension };
+        }
+
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="contentType">Type of object that this content reader produces.</param>
+        /// <param name="fileExtensions">A list of file extensions that this content reader supports.</param>
+        public ContentReaderAttribute(Type contentType, string[] fileExtensions)
+        {
+            ContentType = contentType;
+            FileExtensions = fileExtensions;
         }
     }
 }

@@ -18,18 +18,17 @@ using System;
 namespace Scott.Forge.Content
 {
     /// <summary>
-    ///  Abstract interface for Forge content managers.
+    ///  Content managers are an interface for loading and unloading game content objects.
     /// </summary>
     public interface IContentManager : IDisposable
     {
         /// <summary>
-        ///  Get the service provider associated with this content manager.
+        ///  Get or set legacy XNA content manager. DEPRECATED!
         /// </summary>
         /// <remarks>
-        ///  This property is provided for compatibility with XNA content loaders. It should not be used by custom
-        ///  Forge content loaders because it will eventually be removed.
+        ///  Avoid using this property if possible because XNA support will eventually be removed from the system.
         /// </remarks>
-        IServiceProvider ServiceProvider { get; }
+        Microsoft.Xna.Framework.Content.ContentManager XnaContentManager { get; set; }
 
         /// <summary>
         ///  Load an asset.
@@ -38,10 +37,5 @@ namespace Scott.Forge.Content
         /// <param name="assetName">Name of the asset.</param>
         /// <returns>An instance of the loaded asset.</returns>
         TContent Load<TContent>(string assetName);
-
-        /// <summary>
-        ///  Disposes all assets loaded by this content manager.
-        /// </summary>
-        void Unload();
     }
 }
