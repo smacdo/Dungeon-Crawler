@@ -54,8 +54,8 @@
     <Compile Include="Content\ContentReader.cs" />
     <Compile Include="Content\ContentReaderException.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Content\CachedContentManager.cs" />
-    <Compile Include="Content\ContentManagerExceptions.cs" />
+    <Compile Include="Content\ContentExceptions.cs" />
+    <Compile Include="Content\ForgeContentManager.cs" />
     <Compile Include="Content\IContentContainer.cs" />
     <Compile Include="Content\ContentHandlerDirectory.cs" />
     <Compile Include="Globals.cs" />

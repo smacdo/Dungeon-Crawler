@@ -20,6 +20,7 @@ using Scott.Forge.Tilemaps;
 using Scott.Forge.Content;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Scott.Forge.Tests.Content
 {
@@ -171,7 +172,7 @@ namespace Scott.Forge.Tests.Content
 
         private class FooAssetContentReader : IContentReader<FooAsset>
         {
-            public FooAsset Read(Stream inputStream, string assetPath, IContentManager content)
+            public Task<FooAsset> Read(Stream inputStream, string assetPath, IContentManager content)
             {
                 throw new NotImplementedException();
             }
@@ -183,7 +184,7 @@ namespace Scott.Forge.Tests.Content
 
         private class BarAssetContentReader : IContentReader<BarAsset>
         {
-            public BarAsset Read(Stream inputStream, string assetPath, IContentManager content)
+            public Task<BarAsset> Read(Stream inputStream, string assetPath, IContentManager content)
             {
                 throw new NotImplementedException();
             }

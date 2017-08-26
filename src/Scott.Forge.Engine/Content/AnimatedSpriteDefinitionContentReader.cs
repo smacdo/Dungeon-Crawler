@@ -20,6 +20,7 @@ using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Scott.Forge.Content;
+using System.Threading.Tasks;
 
 namespace Scott.Forge.Sprites
 {
@@ -38,7 +39,7 @@ namespace Scott.Forge.Sprites
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public AnimatedSpriteDefinition Read(
+        public async Task<AnimatedSpriteDefinition> Read(
             Stream inputStream,
             string assetPath,
             IContentManager content)
@@ -77,7 +78,7 @@ namespace Scott.Forge.Sprites
             }
 
             // Read and convert the XML document into an animation definition.
-            return ImportSpriteData(xml.SelectSingleNode("/sprite"), content);
+            return await ImportSpriteData(xml.SelectSingleNode("/sprite"), content);
         }
 
         /// <summary>
@@ -91,12 +92,12 @@ namespace Scott.Forge.Sprites
         /// <param name="spriteNode">Sprite xml element.</param>
         /// <param name="content">Forge content manager for loading referenced assets.</param>
         /// <returns>Parsed AnimatedSpriteDefinition object.</returns>
-        private AnimatedSpriteDefinition ImportSpriteData(
+        private async Task<AnimatedSpriteDefinition> ImportSpriteData(
             XmlNode spriteNode,
             IContentManager content)
         {
             return new AnimatedSpriteDefinition(
-                ImportSpriteDefinition(spriteNode, content),
+                await ImportSpriteDefinition(spriteNode, content),
                 ImportAnimationSetDefintion(spriteNode));
         }
         
@@ -110,7 +111,7 @@ namespace Scott.Forge.Sprites
         /// <param name="spriteNode">Sprite xml element.</param>
         /// <param name="content">Forge content manager for loading referenced assets.</param>
         /// <returns>Parsed SpriteDefinition object.</returns>
-        private SpriteDefinition ImportSpriteDefinition(XmlNode spriteNode, IContentManager content)
+        private async Task<SpriteDefinition> ImportSpriteDefinition(XmlNode spriteNode, IContentManager content)
         {
             // What is the name of this sprite?
             var spriteName = spriteNode.Attributes["name"]?.Value;
@@ -174,7 +175,7 @@ namespace Scott.Forge.Sprites
             
             // Grab the texture atlas.
             //  TODO: Do this async.
-            var atlas = content.Load<Texture2D>(atlasPath);
+            var atlas = await content.Load<Texture2D>(atlasPath);
 
             // All done.
             return new SpriteDefinition(

@@ -18,6 +18,7 @@ using Scott.Forge.Content;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Scott.Forge.Graphics
 {
@@ -43,7 +44,7 @@ namespace Scott.Forge.Graphics
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public Texture2D Read(
+        public Task<Texture2D> Read(
             Stream inputStream,
             string assetPath,
             IContentManager content)
@@ -55,8 +56,11 @@ namespace Scott.Forge.Graphics
             {
                 throw new InvalidOperationException("Graphics device service not registered");
             }
-
-            return Texture2D.FromStream(graphicsDeviceService.GraphicsDevice, inputStream);
+            
+            // TODO: FromStream is (probably) not async ready. Read the texture into a memory buffer that is
+            // async awaitable, and then pass that stream to FromStream. Also use using to try to immediately
+            // release the buffer from memory since it takes up a lot of space.
+            return Task.FromResult(Texture2D.FromStream(graphicsDeviceService.GraphicsDevice, inputStream));
         }
     }
 }

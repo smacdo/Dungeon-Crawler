@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using System;
+using System.Threading.Tasks;
 
 namespace Scott.Forge.Content
 {
@@ -31,11 +32,38 @@ namespace Scott.Forge.Content
         Microsoft.Xna.Framework.Content.ContentManager XnaContentManager { get; set; }
 
         /// <summary>
-        ///  Load an asset.
+        ///  Check if an asset is cached by the content manager.
         /// </summary>
-        /// <typeparam name="T">Runtime content type to load.</typeparam>
-        /// <param name="assetName">Name of the asset.</param>
+        /// <param name="assetPath">Path to the asset relative to the content folder.</param>
+        /// <returns></returns>
+        bool IsLoaded(string assetPath);
+
+        /// <summary>
+        ///  Load an asset by path name.
+        /// </summary>
+        /// <remarks>
+        ///  All content items should be addressed by their relative path from the content directory. For example,
+        ///  if content items are located at "C:\Game\Content\Images\Cat.png" then the path is "Images\Cat.png".
+        /// </remarks>
+        /// <typeparam name="TContent">Runtime asset class type.</typeparam>
+        /// <param name="assetPath">Path to the asset relative to the content folder.</param>
         /// <returns>An instance of the loaded asset.</returns>
-        TContent Load<TContent>(string assetName);
+        Task<TContent> Load<TContent>(string assetPath);
+
+        /// <summary>
+        ///  Unload all assets loaded by this content manager.
+        /// </summary>
+        void Unload();
+
+        /// <summary>
+        ///  Unload an asset by path name.
+        /// </summary>
+        /// <remarks>
+        ///  Unload will remove an asset from the asset cache, and if the object implements IDisposable it will
+        ///  dispose of this object. Any live reference to the object will remain but be will become usuable.
+        /// </remarks>
+        /// <param name="assetPath">Path to the asset relative to the content folder.</param>
+        /// <returns>True if the object was unloaded, false if it was never loaded.</returns>
+        bool Unload(string assetPath);
     }
 }

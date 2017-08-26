@@ -80,10 +80,9 @@ namespace Scott.DungeonCrawler.Client
             var rootContentContainer = new DirectoryContentContainer(Settings.Default.ContentDir);
             var contentHandlerDirectory = new ReflectionContentHandlerDirectory();
             
-            var contentManager = new CachedContentManager(
-                new ForgeContentManager(
-                    new List<IContentContainer>() { rootContentContainer },
-                    new List<IContentHandlerDirectory> { contentHandlerDirectory }));
+            var contentManager = new ForgeContentManager(
+                new List<IContentContainer>() { rootContentContainer },
+                new List<IContentHandlerDirectory> { contentHandlerDirectory });
 
             // Create and run game.
             using (var game = new DungeonCrawlerClient(contentManager))

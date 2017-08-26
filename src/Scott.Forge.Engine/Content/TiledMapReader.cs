@@ -38,7 +38,7 @@ namespace Scott.Forge.Engine.Content
         /// <param name="assetPath">Relative path to the serialized asset.</param>
         /// <param name="content">Content manager.</param>
         /// <returns>Deserialized content object.</returns>
-        public TileMap Read(
+        public Task<TileMap> Read(
             Stream inputStream,
             string assetPath,
             IContentManager content)
@@ -46,7 +46,7 @@ namespace Scott.Forge.Engine.Content
             var xml = new XmlDocument();
             xml.Load(inputStream);
 
-            return ReadMap(xml.SelectSingleNode("/map"), content);
+            return Task.FromResult(ReadMap(xml.SelectSingleNode("/map"), content));
         }
 
         private TileMap ReadMap(XmlNode mapNode, IContentManager content)

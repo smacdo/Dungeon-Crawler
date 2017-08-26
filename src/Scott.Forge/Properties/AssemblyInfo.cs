@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Scott.Forge")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Forge engine")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Scott.Forge")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("Squirrel Glitter")]
+[assembly: AssemblyProduct("Forge")]
+[assembly: AssemblyCopyright("Copyright © 2017 Scott MacDonald")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]

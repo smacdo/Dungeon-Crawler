@@ -107,7 +107,7 @@ namespace Scott.DungeonCrawler
             Content.XnaContentManager = base.Content;
             
             // Initialize systems.
-            var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10.xnb"));
+            var debugFont = Content.Load<SpriteFont>(Path.Combine("fonts", "System10.xnb")).Result;
             var debugOverlay = new StandardDebugOverlay(debugFont);
 
             Globals.Initialize(
@@ -176,7 +176,7 @@ namespace Scott.DungeonCrawler
 
             // Load tileset.
             // TODO: Load this as a content item.
-            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon32.png");
+            var tileAtlas = Content.Load<Texture2D>("tiles/dg_dungeon32.png").Result;
             var tileset = new TileSet(tileAtlas, TileSize, TileSize);
 
             tileset.Add(new TileDefinition(0, "void",  5 * TileSize, 6 * TileSize));

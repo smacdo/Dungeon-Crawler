@@ -16,13 +16,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Scott.Forge.Content
 {
     /// <summary>
     ///  Interface for a ContentReader capapble of loading objects of a declared type from an input stream.
     /// </summary>
-    public interface IContentReader<T>
+    public interface IContentReader<TContent>
     {
         /// <summary>
         ///  Read a serialized asset from an input stream and return it as an object.
@@ -31,7 +32,7 @@ namespace Scott.Forge.Content
         /// <param name="assetPath">Relative path used to create the inputStream.</param>
         /// <param name="content">Content manager for loading dependent data.</param>
         /// <returns>New object created from the input stream.</returns>
-        T Read(
+        Task<TContent> Read(
             Stream inputStream,
             string assetPath,
             IContentManager content);

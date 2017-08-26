@@ -59,7 +59,7 @@ namespace Scott.Forge.Content
         /// <param name="assetName">Name of the item.</param>
         /// <param name="readStream">A stream that will be set if the container holds the item.</param>
         /// <returns>True if the item is in this container, false otherwise.</returns>
-        public bool TryReadItem(string assetName, ref Stream readStream)
+        public Task<bool> TryReadItem(string assetName, ref Stream readStream)
         {
             if (assetName == null)
             {
@@ -70,12 +70,20 @@ namespace Scott.Forge.Content
 
             if (File.Exists(assetPath))
             {
-                readStream = File.OpenRead(assetPath);
-                return true;
+                // Open file stream in async mode.
+                readStream = new FileStream(
+                    assetPath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    4096,
+                    true);
+
+                return Task.FromResult(true);
             }
             else
             {
-                return false;
+                return Task.FromResult(true);
             }
         }
     }

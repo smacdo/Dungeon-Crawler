@@ -96,29 +96,29 @@ namespace Scott.DungeonCrawler.GameObjects
             sprite.RendererIgnoreTransformRotation = true;
 
             sprite.SetMultipleSpriteCount((int) ActorEquipmentSlot.Count);
-            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male.sprite"));
+            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Male.sprite").Result);
 
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Torso,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Torso_Armor_Leather.sprite").Sprite);  // TODO: Add content processor for SpriteDefinition.
+                Content.Load<AnimatedSpriteDefinition>("sprites/Torso_Armor_Leather.sprite").Result.Sprite);  // TODO: Add content processor for SpriteDefinition.
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Legs,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Legs_Pants_Green.sprite").Sprite);
+                Content.Load<AnimatedSpriteDefinition>("sprites/Legs_Pants_Green.sprite").Result.Sprite);
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Feet,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Feet_Shoes_Brown.sprite").Sprite);
+                Content.Load<AnimatedSpriteDefinition>("sprites/Feet_Shoes_Brown.sprite").Result.Sprite);
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Head,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Head_Helmet_Chain.sprite").Sprite);
+                Content.Load<AnimatedSpriteDefinition>("sprites/Head_Helmet_Chain.sprite").Result.Sprite);
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Bracer,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Bracer_Leather.sprite").Sprite);
+                Content.Load<AnimatedSpriteDefinition>("sprites/Bracer_Leather.sprite").Result.Sprite);
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Shoulder,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Shoulder_Leather.sprite").Sprite);
+                Content.Load<AnimatedSpriteDefinition>("sprites/Shoulder_Leather.sprite").Result.Sprite);
             sprite.SetLayer(
                 (int) ActorEquipmentSlot.Belt,
-                Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather.sprite").Sprite);
+                Content.Load<AnimatedSpriteDefinition>("sprites/Belt_Leather.sprite").Result.Sprite);
 
             // Add actor component.
             var actor = Scene.Actors.Create(player);
@@ -153,7 +153,7 @@ namespace Scott.DungeonCrawler.GameObjects
 
             // Create the sprite and set it up.
             var sprite = Scene.Sprites.Create(weapon);
-            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword.sprite"));
+            sprite.SetSprite(Content.Load<AnimatedSpriteDefinition>("sprites/Weapon_Longsword.sprite").Result);
 
             //sprite.RendererIgnoreTransformRotation = true;
 
@@ -171,7 +171,7 @@ namespace Scott.DungeonCrawler.GameObjects
             var enemy = new GameObject("skeleton");
             var sprite = Scene.Sprites.Create(enemy);
 
-            sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Skeleton.sprite") );
+            sprite.SetSprite( Content.Load<AnimatedSpriteDefinition>("sprites/Humanoid_Skeleton.sprite").Result);
             sprite.RendererIgnoreTransformRotation = true;
 
             Scene.Actors.Create(enemy);
