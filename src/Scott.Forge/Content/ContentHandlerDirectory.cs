@@ -46,17 +46,35 @@ namespace Scott.Forge.Content
 
     /// <summary>
     ///  Simple database of content readers that are manually configured via the constructor or by calling Add. For
-    ///  more complex discoery of content readers please derive this class.
+    ///  more complex discovery of content readers please derive this class.
     /// </summary>
     public class ContentHandlerDirectory : IContentHandlerDirectory
     {
         private List<ReaderEntry> ContentReaders = new List<ReaderEntry>();
 
+        /// <summary>
+        ///  Register a content reader capable of reading the given file extensions.
+        /// </summary>
+        /// <remarks>
+        ///  Include the dot prior to the extension name. (eg ".txt" instead of "txt").
+        /// </remarks>
+        /// <typeparam name="T">Asset class type.</typeparam>
+        /// <param name="readerType">Content reader class type.</param>
+        /// <param name="fileExtensions">Supported file extensions.</param>
         public void Add<T>(Type readerType, IEnumerable<string> fileExtensions)
         {
             Add(typeof(T), readerType, fileExtensions);
         }
 
+        /// <summary>
+        ///  Register a content reader capable of reading the given file extension.
+        /// </summary>
+        /// <remarks>
+        ///  Include the dot prior to the extension name. (eg ".txt" instead of "txt").
+        /// </remarks>
+        /// <param name="contentType">Asset class type.</param>
+        /// <param name="readerType">Content reader class type.</param>
+        /// <param name="fileExtensions">Supported file extensions.</param>
         public void Add(Type contentType, Type readerType, IEnumerable<string> fileExtensions)
         {
             if (contentType == null)
@@ -105,7 +123,7 @@ namespace Scott.Forge.Content
 
             if (!TryGetContentReaderFor(fileExtension, ref reader))
             {
-                throw new ContentReaderMissingException(fileExtension);
+                throw new ContentReaderNotFoundException(fileExtension);
             }
 
             return reader;

@@ -57,7 +57,7 @@ namespace Scott.Forge.Tests.Content
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ContentReaderMissingException))]
+        [ExpectedException(typeof(ContentReaderNotFoundException))]
         public void Cannot_Find_Content_Reader_Of_Wrong_Type_With_Same_Extension()
         {
             var dir = new ContentHandlerDirectory();
@@ -67,7 +67,7 @@ namespace Scott.Forge.Tests.Content
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ContentReaderMissingException))]
+        [ExpectedException(typeof(ContentReaderNotFoundException))]
         public void Find_Content_Reader_Throws_Exception_If_Nothing_Found()
         {
             var dir = new ContentHandlerDirectory();

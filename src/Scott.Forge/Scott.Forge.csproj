@@ -52,7 +52,6 @@
     <Compile Include="Ai\AiComponent.cs" />
     <Compile Include="Ai\AiProcessor.cs" />
     <Compile Include="Content\ContentReader.cs" />
-    <Compile Include="Content\ContentReaderException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Content\ContentExceptions.cs" />
     <Compile Include="Content\ForgeContentManager.cs" />

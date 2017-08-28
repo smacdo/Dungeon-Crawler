@@ -71,6 +71,7 @@
     <Compile Include="AssertHelper.cs" />
     <Compile Include="Content\ContentHandlerDirectoryTests.cs" />
     <Compile Include="Content\ForgeContentManagerTests.cs" />
+    <Compile Include="Content\TestableContentSupportClasses.cs" />
     <Compile Include="GameObjectsTests\ComponentTests.cs" />
     <Compile Include="GameObjectsTests\GameObjectTestFakes.cs" />
     <Compile Include="GameObjectsTests\GameObjectTests.cs" />

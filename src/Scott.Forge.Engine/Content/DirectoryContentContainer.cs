@@ -59,7 +59,7 @@ namespace Scott.Forge.Content
         /// <param name="assetName">Name of the item.</param>
         /// <param name="readStream">A stream that will be set if the container holds the item.</param>
         /// <returns>True if the item is in this container, false otherwise.</returns>
-        public Task<bool> TryReadItem(string assetName, ref Stream readStream)
+        public Task<bool> TryReadItem(string assetName, out Stream readStream)
         {
             if (assetName == null)
             {
@@ -83,6 +83,7 @@ namespace Scott.Forge.Content
             }
             else
             {
+                readStream = null;
                 return Task.FromResult(true);
             }
         }

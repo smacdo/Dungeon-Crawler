@@ -71,7 +71,7 @@ namespace Scott.Forge.Sprites
             }
             catch (Exception e)
             {
-                throw new ContentReaderException(
+                throw new ContentLoadException(
                     "Error when reading sprite animation definition. Is this a valid XML document?",
                     mAssetPath,
                     e);
@@ -118,7 +118,7 @@ namespace Scott.Forge.Sprites
 
             if (string.IsNullOrWhiteSpace(spriteName))
             {
-                throw new ContentReaderException("Sprite name missing or invalid", mAssetPath);
+                throw new ContentLoadException("Sprite name missing or invalid", mAssetPath);
             }
 
             // Get information on the texture atlas used for this sprite.
@@ -126,14 +126,14 @@ namespace Scott.Forge.Sprites
 
             if (atlasNode == null)
             {
-                throw new ContentReaderException("Texture atlas element missing", mAssetPath);
+                throw new ContentLoadException("Texture atlas element missing", mAssetPath);
             }
 
             var atlasPath = atlasNode.Attributes["ref"]?.Value;
 
             if (string.IsNullOrWhiteSpace(atlasPath))
             {
-                throw new ContentReaderException("Texture atlas path missing or invalid", mAssetPath);
+                throw new ContentLoadException("Texture atlas path missing or invalid", mAssetPath);
             }
             
             // Find the sprite atlas x/y offset.
@@ -149,7 +149,7 @@ namespace Scott.Forge.Sprites
             }
             catch (FormatException e)
             {
-                throw new ContentReaderException("Sprite width or height missing or invalid", mAssetPath, e);
+                throw new ContentLoadException("Sprite width or height missing or invalid", mAssetPath, e);
             }
 
             // Get the sprite width and height.
@@ -157,7 +157,7 @@ namespace Scott.Forge.Sprites
 
             if (sizeNode == null)
             {
-                throw new ContentReaderException("Sprite size element missing", mAssetPath);
+                throw new ContentLoadException("Sprite size element missing", mAssetPath);
             }
 
             int spriteWidth = 0;
@@ -170,7 +170,7 @@ namespace Scott.Forge.Sprites
             }
             catch (FormatException e)
             {
-                throw new ContentReaderException("Sprite width or height missing or invalid", mAssetPath, e);
+                throw new ContentLoadException("Sprite width or height missing or invalid", mAssetPath, e);
             }
             
             // Grab the texture atlas.
@@ -221,7 +221,7 @@ namespace Scott.Forge.Sprites
 
             if (string.IsNullOrWhiteSpace(animationName))
             {
-                throw new ContentReaderException("Animation name missing or invalid", mAssetPath);
+                throw new ContentLoadException("Animation name missing or invalid", mAssetPath);
             }
 
             // Get amount of time each frame should be displayed for.
@@ -233,7 +233,7 @@ namespace Scott.Forge.Sprites
             }
             catch (FormatException e)
             {
-                throw new ContentReaderException("Invalid frame animation time", mAssetPath, e);
+                throw new ContentLoadException("Invalid frame animation time", mAssetPath, e);
             }
             
             // There needs to be at least one frameset specified.
@@ -242,7 +242,7 @@ namespace Scott.Forge.Sprites
 
             if (frameGroupCount < 1)
             {
-                throw new ContentReaderException("Animation must have at least one frame group", mAssetPath);
+                throw new ContentLoadException("Animation must have at least one frame group", mAssetPath);
             }
 
             // Count the number of frames in the animation. Each direction must have the same number of frames so
@@ -251,7 +251,7 @@ namespace Scott.Forge.Sprites
 
             if (frameCount < 1)
             {
-                throw new ContentReaderException("Animation must have at least one frame", mAssetPath);
+                throw new ContentLoadException("Animation must have at least one frame", mAssetPath);
             }
 
             // Read the animation frame groups and write them into an multi-dimensional array that holds frames for
@@ -276,7 +276,7 @@ namespace Scott.Forge.Sprites
                         }
                         catch (FormatException e)
                         {
-                            throw new ContentReaderException(
+                            throw new ContentLoadException(
                                 "Invalid x or y value for animation frame",
                                 mAssetPath,
                                 e);
@@ -296,9 +296,9 @@ namespace Scott.Forge.Sprites
 
                             animationFrames[(int)direction, frameIndex++] = new Vector2(x, y);
                         }
-                        catch (ContentReaderException e)
+                        catch (ContentLoadException e)
                         {
-                            throw new ContentReaderException(
+                            throw new ContentLoadException(
                                 "Invalid x or y value for animation frame",
                                 mAssetPath,
                                 e);

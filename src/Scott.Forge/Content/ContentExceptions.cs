@@ -20,21 +20,21 @@ namespace Scott.Forge.Content
     /// <summary>
     ///  Content manager base exception.
     /// </summary>
-    public class ContentManagerException : ForgeException
+    public class ContentLoadException : ForgeException
     {
-        public ContentManagerException(string assetPath)
+        public ContentLoadException(string assetPath)
             : base($"Exception when loading asset '{assetPath}'")
         {
             AssetPath = assetPath;
         }
 
-        public ContentManagerException(string assetPath, string message)
+        public ContentLoadException(string assetPath, string message)
             : base(message)
         {
             AssetPath = assetPath;
         }
 
-        public ContentManagerException(string assetPath, string message, Exception innerException)
+        public ContentLoadException(string assetPath, string message, Exception innerException)
             : base(message, innerException)
         {
             AssetPath = assetPath;
@@ -46,7 +46,7 @@ namespace Scott.Forge.Content
     /// <summary>
     ///  Asset name is malformed.
     /// </summary>
-    public class InvalidAssetNameException : ContentManagerException
+    public class InvalidAssetNameException : ContentLoadException
     {
         public InvalidAssetNameException(string assetPath)
             : base(assetPath, $"Asset '{assetPath ?? string.Empty}' has a missing or invalid name")
@@ -57,7 +57,7 @@ namespace Scott.Forge.Content
     /// <summary>
     ///  Asset could not be found.
     /// </summary>
-    public class AssetNotFoundException : ContentManagerException
+    public class AssetNotFoundException : ContentLoadException
     {
         public AssetNotFoundException(string assetPath)
             : base(assetPath, $"Could not find asset '{assetPath ?? string.Empty}' when loading content")
@@ -68,7 +68,7 @@ namespace Scott.Forge.Content
     /// <summary>
     ///  Actual asset type does not match expected asset type.
     /// </summary>
-    public class AssetWrongTypeException : ContentManagerException
+    public class AssetWrongTypeException : ContentLoadException
     {
         public AssetWrongTypeException(string assetPath, Type expectedType, Type actualType)
             : base(assetPath, FormatMessage(assetPath, expectedType, actualType))
@@ -92,7 +92,7 @@ namespace Scott.Forge.Content
     /// <summary>
     ///  Content reader entry has incorrect values.
     /// </summary>
-    public class ContentReaderConfigurationException : ContentManagerException
+    public class ContentReaderConfigurationException : ContentLoadException
     {
         public ContentReaderConfigurationException(string assetPath, Type contentReaderType)
             : base(assetPath, FormatMessage(assetPath, contentReaderType))
@@ -114,7 +114,7 @@ namespace Scott.Forge.Content
     /// <summary>
     ///  Cannot load XNB files because the content manager could not find any XNA content managers to use.
     /// </summary>
-    public class XnbLoadingSupportMissingException : ContentManagerException
+    public class XnbLoadingSupportMissingException : ContentLoadException
     {
         public XnbLoadingSupportMissingException(string assetPath)
             : base(assetPath, FormatMessage(assetPath))
@@ -126,6 +126,17 @@ namespace Scott.Forge.Content
             return string.Format(
                 "Could not load '{0}' because content manager does not have a XNA content manager",
                 assetPath ?? string.Empty);
+        }
+    }
+
+    /// <summary>
+    ///  Exception when content manager tries to load an asset but cannot find a content reader.
+    /// </summary>
+    public class ContentReaderNotFoundException : ContentLoadException
+    {
+        public ContentReaderNotFoundException(string fileExtension)
+            : base("Could not find a content reader for the given type and file extension", fileExtension)
+        {
         }
     }
 }

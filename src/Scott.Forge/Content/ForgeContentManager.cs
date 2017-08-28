@@ -82,12 +82,12 @@ namespace Scott.Forge.Content
         /// <summary>
         ///  Get the list of content containers used by this content manager.
         /// </summary>  
-        public IList<IContentContainer> ContentContainers { get; }
+        public IList<IContentContainer> ContentContainers { get; private set; }
 
         /// <summary>
         ///  Get the list of content handler directories used by this content manager.
         /// </summary>
-        public IList<IContentHandlerDirectory> ContentHandlerDirectories { get; }
+        public IList<IContentHandlerDirectory> ContentHandlerDirectories { get; private set; }
 
         /// <summary>
         ///  Get or set legacy XNA content manager. DEPRECATED!
@@ -192,6 +192,12 @@ namespace Scott.Forge.Content
                 }
             }
 
+            // Ensure a content reader was located.
+            if (contentReader == null)
+            {
+                throw new ContentReaderNotFoundException(fileExtension);
+            }
+
             // Instantiate a content reader, get a stream for the asset on disk and then return the converted
             // object.
             var asset = default(TContent);
@@ -212,11 +218,11 @@ namespace Scott.Forge.Content
         private async Task<Stream> OpenStream(string assetPath)
         {
             // Search content containers for the first container that has the asset, and return a stream to the item.
-            Stream readStream = null;
-
             foreach (var container in ContentContainers)
             {
-                if (await container.TryReadItem(assetPath, ref readStream))
+                Stream readStream;
+
+                if (await container.TryReadItem(assetPath, out readStream))
                 {
                     return readStream;
                 }
@@ -233,6 +239,12 @@ namespace Scott.Forge.Content
         /// <returns>True if the asset is loaded and false otherwise.</returns>
         public bool IsLoaded(string assetPath)
         {
+            // Do not unload after the content manager is disposed.
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("this");
+            }
+
             return _cache.ContainsKey(assetPath);
         }
 
@@ -248,9 +260,11 @@ namespace Scott.Forge.Content
             }
 
             // Unload each object from the cache.
-            foreach (var entry in _cache)
+            var allKeys = new List<string>(_cache.Keys);
+
+            foreach (var k in allKeys)
             {
-                Unload(entry.Key);
+                Unload(k);
             }
         }
 
@@ -320,8 +334,8 @@ namespace Scott.Forge.Content
                 // NOTE: Dispose unmanaged resources here.
                 // This content manager returns loaded assets to the caller without caching so there are no assets
                 // to dispose of here.
-                ContentContainers.Clear();
-                ContentHandlerDirectories.Clear();
+                ContentContainers = null;
+                ContentHandlerDirectories = null;
 
                 // Only dispose once.
                 _disposed = true;
@@ -372,7 +386,7 @@ namespace Scott.Forge.Content
         internal static string NormalizeFilePath(string assetPath)
         {
             // TODO: Use platform specific directory separator.
-            return assetPath?.Replace('\\', '/');
+            return assetPath?.Replace('/', '\\');
         }
     }
 }
