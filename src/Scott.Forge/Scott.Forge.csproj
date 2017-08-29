@@ -57,6 +57,8 @@
     <Compile Include="Content\ForgeContentManager.cs" />
     <Compile Include="Content\IContentContainer.cs" />
     <Compile Include="Content\ContentHandlerDirectory.cs" />
+    <Compile Include="GameObjects\Blueprint.cs" />
+    <Compile Include="GameObjects\BlueprintFactory.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="GameScene.cs" />
     <Compile Include="Graphics\Camera.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Content\IContentManager.cs" />
     <Compile Include="IGameScene.cs" />
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
+    <Compile Include="Sprites\AnimatedSpriteXmlReader.cs" />
     <Compile Include="Support\PriorityQueue.cs" />
     <Compile Include="Tilemaps\Grid.cs" />
     <Compile Include="Tilemaps\GridPathfinder.cs" />

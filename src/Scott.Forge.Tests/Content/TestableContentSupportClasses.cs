@@ -51,6 +51,11 @@ namespace Scott.Forge.Tests.Content
             return Name.Equals(other.Name) && Value.Equals(other.Value);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         /// <summary>
         ///  Simple serialziation for test purposes.
         /// </summary>
@@ -114,6 +119,11 @@ namespace Scott.Forge.Tests.Content
         public bool Equals(BarAsset other)
         {
             return Name.Equals(other.Name) && Value.Equals(other.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         /// <summary>

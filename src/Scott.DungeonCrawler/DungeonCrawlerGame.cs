@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Scott.DungeonCrawler.Actions;
-using Scott.DungeonCrawler.GameObjects;
 using Scott.Forge;
 using Scott.Forge.Actors;
-using Scott.Forge.Engine.Content;
 using Scott.Forge.Input;
-using Scott.Forge.Sprites;
 using Scott.Forge.GameObjects;
 using Scott.Forge.Graphics;
 using Scott.Forge.Content;
-using Scott.Forge.Spatial;
 using Scott.Forge.Tilemaps;
 using Scott.DungeonCrawler.WorldGeneration;
 using Scott.DungeonCrawler.Levels;
+using Scott.DungeonCrawler.Blueprints;
 
 namespace Scott.DungeonCrawler
 {
@@ -60,7 +56,7 @@ namespace Scott.DungeonCrawler
         private Random mWorldRandom = new Random();
 
         private IGameRenderer mRenderer;
-        private DungeonCrawlerGameObjectFactory mGameObjectFactory;
+        private DungeonCrawlerBlueprintFactory mGameObjectFactory;
         private GameScene mCurrentScene;
         private DungeonLevel mCurrentLevel;
 
@@ -147,11 +143,11 @@ namespace Scott.DungeonCrawler
             mCurrentLevel = GenerateMap(100, 100);
             mCurrentScene = new GameScene(mCurrentLevel.TileMap);
 
-            mGameObjectFactory = new DungeonCrawlerGameObjectFactory(Content, mCurrentScene);
+            mGameObjectFactory = new DungeonCrawlerBlueprintFactory(Content, mCurrentScene);
 
             // Spawn player into level.
             var position = mCurrentLevel.TileMap.GetWorldPositionForTile(mCurrentLevel.StairsUpPoint);
-            mPlayer = mGameObjectFactory.Instantiate("Player", position);
+            mPlayer = mGameObjectFactory.Spawn(BlueprintNames.Player, "Player", position).Result;    // TODO: async support.
                 
             // Spawn a bunch of skeletons to get started.
             for (int i = 0; i < 100; i++)
@@ -220,7 +216,7 @@ namespace Scott.DungeonCrawler
             var position = mCurrentLevel.TileMap.GetWorldPositionForTile(mCurrentLevel.SpawnPoints[spawnIndex]);
 
             // Spawn the skeleton enemy.
-            var skeleton = mGameObjectFactory.Instantiate("Skeleton", position);
+            var skeleton = mGameObjectFactory.Spawn(BlueprintNames.Skeleton, "Skeleton", position);
 
             // Add the newly spawned skeleton to our list of enemies.
             //  TODO: Temp hack, should not be tracked this way.
