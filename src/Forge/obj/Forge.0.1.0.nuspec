@@ -18,6 +18,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Users\scott.SMACDO\Documents\GitHub\Dungeon-Crawler\src\Forge\bin\Debug\netstandard2.0\Forge.dll" target="lib\netstandard2.0\Forge.dll" />
+    <file src="C:\Users\scott.SMACDO\Documents\GitHub\Dungeon-Crawler\build\Forge\AnyCPU\Debug\netstandard2.0\Forge.dll" target="lib\netstandard2.0\Forge.dll" />
   </files>
 </package>

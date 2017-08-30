@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath></OutputPath>
+    <OutputPath>..\..\build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\..\build\temp\$(MSBuildProjectName)\$(Platform)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
 
