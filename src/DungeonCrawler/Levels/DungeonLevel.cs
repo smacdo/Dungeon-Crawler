@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.DungeonCrawler.Levels
+namespace DungeonCrawler.Levels
 {
     public class DungeonLevel
     {

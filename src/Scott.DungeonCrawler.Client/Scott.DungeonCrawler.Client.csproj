@@ -8,8 +8,8 @@
     <ProjectGuid>{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Scott.DungeonCrawler.Client</RootNamespace>
-    <AssemblyName>DungeonCrawlerClient</AssemblyName>
+    <RootNamespace>DungeonCrawler.WinDesktopClient</RootNamespace>
+    <AssemblyName>DungeonCrawler.WinDesktopClient</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
@@ -48,6 +48,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -207,7 +208,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Forge\Forge.csproj">
+    <ProjectReference Include="..\Forge\Forge.csproj">
       <Project>{2fc8f433-77c9-4b67-a3dd-d7355decca41}</Project>
       <Name>Forge</Name>
     </ProjectReference>

@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.Forge.Tests", "src\Sc
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WiXInstaller", "src\WixInstaller\WiXInstaller.wixproj", "{AB4E82C8-7FAC-4A84-B0BF-1BEFF4468D4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forge", "Forge\Forge.csproj", "{2FC8F433-77C9-4B67-A3DD-D7355DECCA41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forge", "src\Forge\Forge.csproj", "{2FC8F433-77C9-4B67-A3DD-D7355DECCA41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonCrawler", "src\DungeonCrawler\DungeonCrawler.csproj", "{F6EBA4EF-D086-437F-80FF-D7D6518A3D8C}"
 EndProject

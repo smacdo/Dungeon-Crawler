@@ -212,16 +212,16 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "0.1.0",
     "restoreSettings": {
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\Forge\\Forge.csproj",
+      "projectUniqueName": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\Forge.csproj",
       "projectName": "Forge",
-      "projectPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\Forge\\Forge.csproj",
+      "projectPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\Forge.csproj",
       "packagesPath": "C:\\Users\\scott.SMACDO\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\Forge\\obj\\",
+      "outputPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

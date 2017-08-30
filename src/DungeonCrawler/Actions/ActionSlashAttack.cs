@@ -23,7 +23,7 @@ using Forge.Sprites;
 using Forge.GameObjects;
 using Forge.Spatial;
 
-namespace Scott.DungeonCrawler.Actions
+namespace DungeonCrawler.Actions
 {
     public enum ActionAttackStatus
     {

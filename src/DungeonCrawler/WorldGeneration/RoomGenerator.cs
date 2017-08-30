@@ -22,7 +22,7 @@ using Forge.Random;
 using Forge.Tilemaps;
 using Forge;
 
-namespace Scott.DungeonCrawler.WorldGeneration
+namespace DungeonCrawler.WorldGeneration
 {
     public class RoomLayout
     {

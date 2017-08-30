@@ -52,11 +52,21 @@ namespace Forge.Tilemaps
         /// </summary>
         public ushort Data { get; set; }
 
+        /// <summary>
+        ///  Check if tile has flag.
+        /// </summary>
+        /// <param name="flag">Flag bit to check.</param>
+        /// <returns>True if set false otherwise.</returns>
         public bool HasFlag(ushort flag)
         {
             return (Data & flag) != 0;
         }
 
+        /// <summary>
+        ///  Set flag on tile.
+        /// </summary>
+        /// <param name="flag">Flag bit to set.</param>
+        /// <param name="value">Value to set.</param>
         public void SetFlag(ushort flag, bool value)
         {
             if (value)
@@ -69,6 +79,9 @@ namespace Forge.Tilemaps
             }
         }
 
+        /// <summary>
+        ///  Set tile as impassable.
+        /// </summary>
         public void SetImpassable()
         {
             Collision = 255;

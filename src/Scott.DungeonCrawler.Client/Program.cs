@@ -17,12 +17,12 @@
 using System;
 using System.Threading;
 using Scott.Dungeon;
-using Scott.DungeonCrawler;
+using DungeonCrawler;
 using Forge.Content;
 using System.Collections.Generic;
-using Scott.DungeonCrawler.Client.Content;
+using DungeonCrawler.WinDesktopClient.Content;
 
-namespace Scott.DungeonCrawler.Client
+namespace DungeonCrawler.WinDesktopClient
 {
 #if WINDOWS || XBOX
     static class Program

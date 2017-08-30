@@ -35,7 +35,7 @@
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
       },
-      "Forge/1.0.0": {
+      "Forge/0.1.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
@@ -213,15 +213,15 @@
         "netstandard.library.nuspec"
       ]
     },
-    "Forge/1.0.0": {
+    "Forge/0.1.0": {
       "type": "project",
-      "path": "../../Forge/Forge.csproj",
-      "msbuildProject": "../../Forge/Forge.csproj"
+      "path": "../Forge/Forge.csproj",
+      "msbuildProject": "../Forge/Forge.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETStandard,Version=v2.0": [
-      "Forge >= 1.0.0",
+      "Forge >= 0.1.0",
       "MonoGame.Framework.WindowsDX >= 3.6.0.1625",
       "NETStandard.Library >= 2.0.0"
     ]
@@ -231,7 +231,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "0.1.0",
     "restoreSettings": {
       "hideWarningsAndErrors": true
     },
@@ -259,8 +259,8 @@
       "frameworks": {
         "netstandard2.0": {
           "projectReferences": {
-            "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\Forge\\Forge.csproj": {
-              "projectPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\Forge\\Forge.csproj"
+            "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\Forge.csproj": {
+              "projectPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\Forge.csproj"
             }
           }
         }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Scott.DungeonCrawler.Client {
+namespace DungeonCrawler.WinDesktopClient {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

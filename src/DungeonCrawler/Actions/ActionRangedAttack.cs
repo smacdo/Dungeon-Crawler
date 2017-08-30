@@ -18,7 +18,7 @@ using Forge.Actors;
 using Forge.Sprites;
 using Forge.GameObjects;
 
-namespace Scott.DungeonCrawler.Actions
+namespace DungeonCrawler.Actions
 {
     public enum RangedAttackState
     {

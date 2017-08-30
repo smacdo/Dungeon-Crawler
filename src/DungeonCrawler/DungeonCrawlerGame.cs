@@ -18,7 +18,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Scott.DungeonCrawler.Actions;
+using DungeonCrawler.Actions;
 using Forge;
 using Forge.Actors;
 using Forge.Input;
@@ -26,11 +26,11 @@ using Forge.GameObjects;
 using Forge.Graphics;
 using Forge.Content;
 using Forge.Tilemaps;
-using Scott.DungeonCrawler.WorldGeneration;
-using Scott.DungeonCrawler.Levels;
-using Scott.DungeonCrawler.Blueprints;
+using DungeonCrawler.WorldGeneration;
+using DungeonCrawler.Levels;
+using DungeonCrawler.Blueprints;
 
-namespace Scott.DungeonCrawler
+namespace DungeonCrawler
 {
     /// <summary>
     ///  This is the main class for Dungeon Crawler. It is responsible for running the game loop,

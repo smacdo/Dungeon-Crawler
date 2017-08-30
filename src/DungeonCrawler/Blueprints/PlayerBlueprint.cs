@@ -21,7 +21,7 @@ using Forge.Sprites;
 using System.Threading.Tasks;
 using Forge.Physics;
 
-namespace Scott.DungeonCrawler.Blueprints
+namespace DungeonCrawler.Blueprints
 {
     /// <summary>
     ///  Create a skeletal enemy.

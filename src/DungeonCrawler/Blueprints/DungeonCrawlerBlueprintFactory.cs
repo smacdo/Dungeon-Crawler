@@ -17,9 +17,9 @@ using System;
 using Forge;
 using Forge.Content;
 using Forge.GameObjects;
-using Scott.DungeonCrawler.Blueprints;
+using DungeonCrawler.Blueprints;
 
-namespace Scott.DungeonCrawler.Blueprints
+namespace DungeonCrawler.Blueprints
 {
     /// <summary>
     ///  Constructs game objects from blueprints.

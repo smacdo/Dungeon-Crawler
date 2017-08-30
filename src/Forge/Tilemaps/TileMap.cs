@@ -33,8 +33,6 @@ namespace Forge.Tilemaps
         /// <param name="tileset">Tile set to use in the tile map.</param>
         /// <param name="cols">Number of columns in the tile map.</param>
         /// <param name="rows">Number of rows in the tile map.</param>
-        /// <param name="tileWidth">Width of each tile.</param>
-        /// <param name="tileHeight">Height of each tile.</param>
         public TileMap(TileSet tileset, int cols, int rows)
         {
             if (tileset == null)

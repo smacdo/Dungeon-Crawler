@@ -5,13 +5,13 @@
     <Version>0.1.0</Version>
     <Authors>Scott MacDonald</Authors>
     <Company>Squirrel Glitter</Company>
-    <Product>Dungeon Crawler</Product>
-    <Description>Gameplay code for Dungeon Crawler game</Description>
+    <Product>Forge Engine</Product>
+    <Description>2d top down game engine</Description>
     <Copyright>2017 Scott MacDonald</Copyright>
-    <PackageLicenseUrl />
-    <PackageProjectUrl>http://smacdo.com/projects/dungeoncrawler</PackageProjectUrl>
+    <PackageProjectUrl>http://smacdo.com/projects/forge</PackageProjectUrl>
     <RepositoryUrl>https://github.com/smacdo/Dungeon-Crawler</RepositoryUrl>
-    <PackageReleaseNotes>Preview only, in heavy development</PackageReleaseNotes>
+    <PackageReleaseNotes>In heavy development, not ready for third party use</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -27,9 +27,4 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.6.0.1625" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Forge\Forge.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.DungeonCrawler.WorldGeneration
+namespace DungeonCrawler.WorldGeneration
 {
     /// <summary>
     ///  Assists in the building of dungeons.

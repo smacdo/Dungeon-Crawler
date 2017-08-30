@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.DungeonCrawler.WorldGeneration
+namespace DungeonCrawler.WorldGeneration
 {
     /// <summary>
     ///  Generates halls between two points in a dungeon according to given parametres.

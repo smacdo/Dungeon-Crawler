@@ -107,7 +107,7 @@
     <Compile Include="Vector4Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Forge\Forge.csproj">
+    <ProjectReference Include="..\Forge\Forge.csproj">
       <Project>{2fc8f433-77c9-4b67-a3dd-d7355decca41}</Project>
       <Name>Forge</Name>
     </ProjectReference>

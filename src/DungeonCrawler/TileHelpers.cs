@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.DungeonCrawler
+namespace DungeonCrawler
 {
     [Flags]
     public enum TileDataFlags : ushort

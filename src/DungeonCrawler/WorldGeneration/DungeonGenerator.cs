@@ -18,10 +18,10 @@ using System.Collections.Generic;
 using Forge;
 using Forge.Random;
 using Forge.Tilemaps;
-using Scott.DungeonCrawler.Levels;
+using DungeonCrawler.Levels;
 using System.Linq;
 
-namespace Scott.DungeonCrawler.WorldGeneration
+namespace DungeonCrawler.WorldGeneration
 {
     /// <summary>
     ///  Generates a dungeon for the player to explore.
