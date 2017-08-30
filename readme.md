@@ -12,7 +12,7 @@ THIS IS A PRE-RELEASE COPY OF DUNGEON CRAWLER. It is not even at alpha quality
 yet, so set your expectations accordingly. Please report any bugs via the
 project website's bug tracker.
 
-![Dungeon Crawler Screenshot](http://i.imgur.com/0rIBY.png)
+![Dungeon Crawler Screenshot](http://imgur.com/a/xF9RF)
 ![Dungeon Crawler Screenshot](http://i.imgur.com/8ODmQ.png)
 
 Overview
@@ -27,25 +27,16 @@ exploits! Just try not to die :)
 Game Requirements
 =================
 
- * Windows 7+ (It should work on Vista, has not been tested)
- * Microsoft .NET 4.0 (Installer provided)
- * Microsoft XNA 4 (Installer provided)
+ * Windows 7 or newer
+ * Microsoft .NET 4.6 (Installer provided)
 
 Building Requirements
 =====================
- * Microsoft Visual Studio 2010 or 2012
- * Microsoft .NET 4.0
- * Microsoft XNA Game Studio 4.0
- * Microsoft DirectX SDK (June 2010)
+ * Microsoft Visual Studio 2017 (15.3 or later)
 
 Development Notes
 =================
-Development work has ceased on the main C++ development branch. I am currently
-attempting to rebuild the game using C# and the XNA framework. This work can be
-viewed on the XNAPROTO branch. All work is going into character interaction
-(movement, attacking, items, user interface) at the moment, since I have already
-built a dungeon generation system in C++. That will be the last feature that gets
-added.
+Development on the XNAPROTO branch has been succesfull and has been merged back into master. The game now has character movement, and dungeon generation. Next steps are basic combat, world generation, level loading and level transferring.
 
 Contributions
 =============
@@ -65,7 +56,7 @@ Not a programmer? Fear not! I would love for any of the following contributions:
 	
 Comments and feedback!! Even if it was just "meh", I would like to know someone tried it out :)
 
-Forward all contributions, inquiries, comments and flames to: scott@whitespaceconsideredharmful.com
+Forward all contributions, inquiries, comments and flames to: scott@smacdo.com
 
 Attributions and Credits
 =========================
