@@ -249,8 +249,8 @@ namespace Forge.Sprites
                         Globals.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.Yellow);
                     }
                 }
-            }
 #endif
+            }
         }
     }
 }

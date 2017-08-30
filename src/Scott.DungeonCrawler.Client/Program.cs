@@ -63,8 +63,6 @@ namespace DungeonCrawler.WinDesktopClient
                 new List<IContentContainer>() { rootContentContainer },
                 new List<IContentHandlerDirectory> { contentHandlerDirectory });
 
-            throw new Exception("hai there");
-
             // Create and run game.
             using (var game = new DungeonCrawlerClient(contentManager))
             {
