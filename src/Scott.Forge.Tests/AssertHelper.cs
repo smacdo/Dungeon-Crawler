@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Xna.Framework;
-using Scott.Forge;
+using Forge;
 
-namespace Scott.Forge.Tests
+namespace Forge.Tests
 {
     /// <summary>
     ///  Additional unit test assertions.

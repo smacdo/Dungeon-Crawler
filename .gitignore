@@ -42,3 +42,4 @@ TestResult.xml
 /src/Scott.Forge.Tests/obj
 /src/WixInstaller/bin/Release
 /src/WixInstaller/obj/Release
+/.vs/DungeonCrawler/v15/sqlite3

@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Graphics;
-using Scott.Forge.Tilemaps;
+using Forge.Graphics;
+using Forge.Tilemaps;
 
-namespace Scott.Forge.Tests.Tilemaps
+namespace Forge.Tests.Tilemaps
 {
     [TestClass]
     public class TileMapTests

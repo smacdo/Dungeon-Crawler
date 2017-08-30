@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.GameObjects;
+using Forge.GameObjects;
 
-namespace Scott.Forge.Tests.GameObjectsTests
+namespace Forge.Tests.GameObjectsTests
 {
     [TestClass]
     public class TransformComponentTests

@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.GameStates;
+using Forge.GameStates;
 
-namespace Scott.Forge.Tests.GameStates
+namespace Forge.Tests.GameStates
 {
     [TestClass]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]

@@ -16,10 +16,10 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Content;
+using Forge.Content;
 using System.Threading.Tasks;
 
-namespace Scott.Forge.Tests.Content
+namespace Forge.Tests.Content
 {
     [TestClass]
     public class ForgeContentManagerTests

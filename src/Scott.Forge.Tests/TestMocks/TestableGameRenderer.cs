@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Forge.Graphics;
+using Forge.Tilemaps;
+using Forge;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Scott.Forge.Graphics;
-using Scott.Forge.Tilemaps;
 
-namespace Scott.Forge.Tests.TestMocks
+namespace Forge.Tests.TestMocks
 {
     /// <summary>
     ///  Special testable implementation of game renderer.
@@ -19,7 +20,7 @@ namespace Scott.Forge.Tests.TestMocks
             Draws.Clear();
         }
 
-        public void Draw(Texture2D atlas, RectF atlasRect, Vector2 screenPosition, float rotation = 0)
+        public void Draw(Texture2D atlas, RectF atlasRect, Forge.Vector2 screenPosition, float rotation = 0)
         {
             Draws.Add(new DrawCallDetails
             {
@@ -35,7 +36,7 @@ namespace Scott.Forge.Tests.TestMocks
             throw new NotImplementedException();
         }
 
-        public void DrawLine(Vector2 startPosition, Vector2 endPosition, Color? color, float? width)
+        public void DrawLine(Forge.Vector2 startPosition, Forge.Vector2 endPosition, Color? color, float? width)
         {
             throw new NotImplementedException();
         }
@@ -45,7 +46,7 @@ namespace Scott.Forge.Tests.TestMocks
             throw new NotImplementedException();
         }
 
-        public void DrawText(string text, Vector2 position, SpriteFont font, Color? textColor = default(Color?), Color? backgroundColor = default(Color?))
+        public void DrawText(string text, Forge.Vector2 position, SpriteFont font, Color? textColor = default(Color?), Color? backgroundColor = default(Color?))
         {
             throw new NotImplementedException();
         }
@@ -79,7 +80,7 @@ namespace Scott.Forge.Tests.TestMocks
         {
             public Microsoft.Xna.Framework.Graphics.Texture2D Atlas;
             public RectF AtlasRect;
-            public Vector2 ScreenPosition;
+            public Forge.Vector2 ScreenPosition;
             public float Rotation;
         }
     }

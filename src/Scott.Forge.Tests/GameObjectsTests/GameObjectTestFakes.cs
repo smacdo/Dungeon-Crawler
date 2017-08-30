@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Scott.Forge.GameObjects;
+using Forge.GameObjects;
 
-namespace Scott.Forge.Tests.GameObjectsTests
+namespace Forge.Tests.GameObjectsTests
 {
     /// <summary>
     ///  Stubbed out test component for testing.

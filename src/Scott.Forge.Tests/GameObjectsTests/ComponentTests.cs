@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.GameObjects;
+using Forge.GameObjects;
 
-namespace Scott.Forge.Tests.GameObjectsTests
+namespace Forge.Tests.GameObjectsTests
 {
     /// <summary>
     ///  Tests for the basic component.

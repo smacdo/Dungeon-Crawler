@@ -18,7 +18,7 @@ using System;
 using System.Threading;
 using Scott.Dungeon;
 using Scott.DungeonCrawler;
-using Scott.Forge.Content;
+using Forge.Content;
 using System.Collections.Generic;
 using Scott.DungeonCrawler.Client.Content;
 

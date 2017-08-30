@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Scott.Forge.Content;
+using Forge.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.Forge.Tests.Content
+namespace Forge.Tests.Content
 {
     /// <summary>
     ///  Testable asset foo.

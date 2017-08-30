@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Tilemaps;
+using Forge.Tilemaps;
 using System.Collections.Generic;
+using Forge;
 
-namespace Scott.Forge.Tests.Tilemaps
+namespace Forge.Tests.Tilemaps
 {
     [TestClass]
     public class GridPathfinderTests

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework.Graphics;
-using Scott.Forge.Sprites;
+using Forge.Sprites;
 
-namespace Scott.Forge.Tests.Sprites
+namespace Forge.Tests.Sprites
 {
     [TestClass]
     public class SpriteDefinitionTests

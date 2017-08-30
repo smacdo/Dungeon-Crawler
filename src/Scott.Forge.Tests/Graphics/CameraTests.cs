@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Graphics;
+using Forge.Graphics;
 
-namespace Scott.Forge.Tests.Graphics
+namespace Forge.Tests.Graphics
 {
     [TestClass]
     public class CameraTests

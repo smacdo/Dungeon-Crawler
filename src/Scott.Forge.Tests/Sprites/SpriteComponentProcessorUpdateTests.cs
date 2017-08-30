@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Sprites;
-using Scott.Forge.Tests.TestMocks;
-using Scott.Forge.GameObjects;
-using Scott.Forge.Settings;
+using Forge.Sprites;
+using Forge.GameObjects;
+using Forge.Settings;
+using Forge;
+using Forge.Tests.TestMocks;
 
-namespace Scott.Forge.Tests.Sprites
+namespace Forge.Tests.Sprites
 {
     [TestClass]
     public class SpriteComponentProcessorUpdateTests

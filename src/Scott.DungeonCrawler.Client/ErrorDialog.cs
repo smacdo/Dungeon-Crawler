@@ -23,7 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using Scott.Forge;
+using Forge;
 
 namespace Scott.Dungeon
 {

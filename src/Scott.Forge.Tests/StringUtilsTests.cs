@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Scott.Forge.Tests
+namespace Forge.Tests
 {
     [TestClass]
     public class StringUtilsTests

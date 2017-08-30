@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Scott.Forge.Graphics;
-using Scott.Forge.Spatial;
+using Forge.Graphics;
+using Forge.Spatial;
+using Forge;
 
-namespace Scott.Forge.Tests.TestMocks
+namespace Forge.Tests.TestMocks
 {
     public class TestableDebugOverlay : IDebugOverlay
     {
@@ -27,12 +28,12 @@ namespace Scott.Forge.Tests.TestMocks
             // Empty.
         }
 
-        public void DrawLine(Vector2 start, Vector2 end, Color? color = default(Color?), float? width = default(float?), TimeSpan? timeToLive = default(TimeSpan?))
+        public void DrawLine(Forge.Vector2 start, Forge.Vector2 end, Color? color = default(Color?), float? width = default(float?), TimeSpan? timeToLive = default(TimeSpan?))
         {
             // Empty.
         }
 
-        public void DrawPoint(Vector2 point, Color? color = default(Color?), float? sizeIn = default(float?), TimeSpan? timeToLive = default(TimeSpan?))
+        public void DrawPoint(Forge.Vector2 point, Color? color = default(Color?), float? sizeIn = default(float?), TimeSpan? timeToLive = default(TimeSpan?))
         {
             // Empty.
         }
@@ -47,7 +48,7 @@ namespace Scott.Forge.Tests.TestMocks
             // Empty.
         }
 
-        public void DrawTextBox(string text, Vector2 pos, Color? textColor, Color? backgroundColor, TimeSpan? timeToLive = default(TimeSpan?))
+        public void DrawTextBox(string text, Forge.Vector2 pos, Color? textColor, Color? backgroundColor, TimeSpan? timeToLive = default(TimeSpan?))
         {
             // Empty.
         }

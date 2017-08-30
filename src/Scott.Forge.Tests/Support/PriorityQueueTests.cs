@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Support;
+using Forge.Support;
 using System.Collections.Generic;
+using Forge;
 
-namespace Scott.Forge.Tests.Support
+namespace Forge.Tests.Support
 {
     [TestClass]
     public class PriorityQueueTests

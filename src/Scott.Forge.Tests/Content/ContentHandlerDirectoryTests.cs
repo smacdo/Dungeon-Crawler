@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Graphics;
-using Scott.Forge.Tilemaps;
-using Scott.Forge.Content;
+using Forge.Graphics;
+using Forge.Tilemaps;
+using Forge.Content;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Scott.Forge.Tests.Content
+namespace Forge.Tests.Content
 {
     [TestClass]
     public class ContentHandlerDirectoryTests
