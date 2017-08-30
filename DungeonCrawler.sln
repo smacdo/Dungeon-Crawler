@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scott.DungeonCrawler.Client", "src\Scott.DungeonCrawler.Client\Scott.DungeonCrawler.Client.csproj", "{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonCrawler.Client", "src\Scott.DungeonCrawler.Client\DungeonCrawler.Client.csproj", "{EFBBAB7A-D346-42B9-BD6F-AC1D79EB97E5}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WiXInstaller", "src\WixInstaller\WiXInstaller.wixproj", "{AB4E82C8-7FAC-4A84-B0BF-1BEFF4468D4A}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Forge", "src\Forge\Forge.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DungeonCrawler", "src\DungeonCrawler\DungeonCrawler.csproj", "{F6EBA4EF-D086-437F-80FF-D7D6518A3D8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forge.Tests", "src\Forge.Tests\Forge.Tests.csproj", "{62FC1D25-54B4-4513-9E78-F68AD5F28302}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Forge.Tests", "src\Forge.Tests\Forge.Tests.csproj", "{62FC1D25-54B4-4513-9E78-F68AD5F28302}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
