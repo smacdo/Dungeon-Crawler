@@ -23,7 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using Scott.Forge;
+using Forge;
 
 namespace Scott.Dungeon
 {
@@ -39,7 +39,7 @@ namespace Scott.Dungeon
             mException = exception;
 
             // Set the platform font correctly before initializing components.
-//            this.Font = SystemFonts.DialogFont;
+            Font = SystemFonts.DialogFont;
 
             // Now initialize our components.
             InitializeComponent();

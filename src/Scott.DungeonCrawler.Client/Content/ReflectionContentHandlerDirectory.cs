@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Scott.Forge;
-using Scott.Forge.Content;
+using Forge;
+using Forge.Content;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scott.DungeonCrawler.Client.Content
+namespace DungeonCrawler.WinDesktopClient.Content
 {
     /// <summary>
     ///  Desktop .NET content handler directory that discovers handlers using attribute based reflection.

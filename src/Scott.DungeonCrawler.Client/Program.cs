@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 using System;
 using System.Threading;
 using Scott.Dungeon;
-using Scott.DungeonCrawler;
-using Scott.Forge.Content;
+using Forge.Content;
 using System.Collections.Generic;
-using Scott.DungeonCrawler.Client.Content;
+using DungeonCrawler.WinDesktopClient.Content;
+using System.Windows.Forms;
 
-namespace Scott.DungeonCrawler.Client
+namespace DungeonCrawler.WinDesktopClient
 {
 #if WINDOWS || XBOX
     static class Program
@@ -33,41 +33,20 @@ namespace Scott.DungeonCrawler.Client
         [STAThread]
         static void Main(string[] args)
         {
-            // Run the game.
-            if ( System.Diagnostics.Debugger.IsAttached )
+            // Install a global exception handler to catch pesky exceptions (but only if a debugger was not attached).
+            if (!System.Diagnostics.Debugger.IsAttached)
             {
-                RunGame();
+                Application.ThreadException += ApplicationThreadException;
             }
-            else
-            {
-                RunWithExceptionGuard();
-            }
-        }
 
-        /// <summary>
-        ///  Runs the game with a exception guard that catches uncaught exceptions and reports
-        ///  them to the user.
-        /// </summary>
-        private static void RunWithExceptionGuard()
-        {
-            // Install a global exception handler to catch any pesky exceptions.
-            //MediaTypeNames.Application.ThreadException += ApplicationThreadException;
-
-            // Run the game in an exception guard.
+            // Run the game and report any uncaught exceptions.
             try
             {
                 RunGame();
             }
-            catch ( System.Exception ex )
+            catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
             {
-                if ( System.Diagnostics.Debugger.IsAttached )
-                {
-                    throw;
-                }
-                else
-                {
-                    ReportUncaughtException( ex );
-                }
+                ReportUncaughtException(ex);
             }
         }
 
@@ -94,20 +73,18 @@ namespace Scott.DungeonCrawler.Client
         /// <summary>
         ///  Traps an uncaught exception, and presents it to the player.
         /// </summary>
-        /// <param name="ex"></param>
-        private static void ReportUncaughtException( System.Exception ex )
+        private static void ReportUncaughtException(Exception ex)
         {
-            var dialog = new ErrorDialog( ex );
+            var dialog = new ErrorDialog(ex);
             dialog.ShowDialog();
         }
 
         /// <summary>
-        ///  Handles exceptions we forgot to catch (If for some reason it falls through our general
-        ///  exception catcher).
+        ///  Handles exceptions we forgot to catch.
         /// </summary>
-        internal static void ApplicationThreadException( object sender, ThreadExceptionEventArgs e )
+        private static void ApplicationThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            ReportUncaughtException( e.Exception );
+            ReportUncaughtException(e.Exception);
         }
     }
 #endif

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "Dungeon Crawler Client" )]
+[assembly: AssemblyTitle("Dungeon Crawler (Windows Desktop Client)")]
 [assembly: AssemblyProduct( "Dungeon Crawler" )]
 [assembly: AssemblyDescription( "A dungeon crawler roguelike with lots of random loot and action" )]
 [assembly: AssemblyCompany( "Scott MacDonald" )]
-[assembly: AssemblyCopyright( "Copyright ©  2012 Scott MacDonald" )]
+[assembly: AssemblyCopyright("Copyright ©  2017 Scott MacDonald")]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -31,4 +31,4 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion( "1.0.0.0" )]
+[assembly: AssemblyVersion("0.1.0.0")]

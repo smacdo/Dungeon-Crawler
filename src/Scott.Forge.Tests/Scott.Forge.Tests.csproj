@@ -7,8 +7,8 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Scott.Forge.Tests</RootNamespace>
-    <AssemblyName>Scott.Forge.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Forge.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,8 +49,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.6.0.1625\lib\portable-net45+win8+wpa81\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -107,13 +107,9 @@
     <Compile Include="Vector4Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scott.Forge.Engine\Scott.Forge.Engine.csproj">
-      <Project>{07AAA29B-1006-4074-9C1F-AC12F09C35A6}</Project>
-      <Name>Scott.Forge.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Scott.Forge\Scott.Forge.csproj">
-      <Project>{fa4be4b8-5043-46e9-a43a-0575e8c56dc9}</Project>
-      <Name>Scott.Forge</Name>
+    <ProjectReference Include="..\Forge\Forge.csproj">
+      <Project>{2fc8f433-77c9-4b67-a3dd-d7355decca41}</Project>
+      <Name>Forge</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
