@@ -57,7 +57,7 @@ namespace DungeonCrawler.Blueprints
             var sprite = scene.Sprites.Create(self);
 
             sprite.SetSprite(await blueprints.Content.Load<AnimatedSpriteDefinition>(SpriteFilePath));
-            sprite.RendererIgnoreTransformRotation = true;      // TODO: Switch to renderer pickinng.
+            sprite.RotationRenderMethod = SpriteRotationRenderMethod.FourWay;
 
             // Spawn new actor and AI brain.
             scene.Actors.Create(self);
@@ -75,7 +75,7 @@ namespace DungeonCrawler.Blueprints
             }
 
             // TODO: Randomize direction.
-            self.Get<SpriteComponent>().PlayAnimation("Walk", 0, AnimationEndingAction.Loop);
+            self.Get<SpriteComponent>().PlayAnimation("Walk", AnimationEndingAction.Loop);
 
             return self;
         }

@@ -94,12 +94,8 @@ namespace Forge.Sprites
                     }
                 }
 
-                // Update sprite texture atlas positions for the next animation frame. 
-                var atlasPosition = sprite.CurrentAnimation.GetAtlasPosition(
-                    sprite.Direction,
-                    sprite.AnimationFrameIndex);
-
-                UpdateSpriteTextureAtlasPosition(sprite, atlasPosition);
+                // Update sprite texture atlas positions for the next animation frame.
+                UpdateSpriteTextureAtlasPosition(sprite, sprite.CurrentAnimation, sprite.AnimationFrameIndex);
 
                 // Update the time when this animation frame was first displayed
                 sprite.AnimationFrameSecondsActive -= sprite.CurrentAnimation.FrameSeconds;
@@ -126,20 +122,11 @@ namespace Forge.Sprites
             {
                 sprite.CurrentAnimation = null;
             }
-
-            // Get the animation definition for the requested animation. Verify it has the requested direction before
-            // playing.
-            var animation = sprite.Animations.Get(request.Name);
-            var directionInt = (int)request.Direction;
-
-            if (animation.Frames.GetLength(0) <= directionInt)
-            {
-                throw new AnimationDirectionNotFoundException(request.Name, request.Direction);
-            }
-
+            
             // Update state of the sprite component to start playing animation.
+            var animation = sprite.Animations.Get(request.Name);
+
             sprite.CurrentAnimation = animation;
-            sprite.Direction = request.Direction;
             sprite.EndingAction = request.EndingAction;
 
             sprite.AnimationSecondsActive = 0.0;            // TODO: Should this be zero or time when request was made?
@@ -148,11 +135,7 @@ namespace Forge.Sprites
             sprite.AnimationFrameIndex = 0;
 
             // Initialize sprite frames to start of animation.
-            var atlasPosition = sprite.CurrentAnimation.GetAtlasPosition(
-                    sprite.Direction,
-                    sprite.AnimationFrameIndex);
-
-            UpdateSpriteTextureAtlasPosition(sprite, atlasPosition);
+            UpdateSpriteTextureAtlasPosition(sprite, sprite.CurrentAnimation, sprite.AnimationFrameIndex);
         }
 
         /// <summary>
@@ -160,11 +143,20 @@ namespace Forge.Sprites
         /// </summary>
         /// <param name="sprite">Sprite component to update.</param>
         /// <param name="atlasPosition">New texture atlas size.</param>
-        private void UpdateSpriteTextureAtlasPosition(SpriteComponent sprite, Vector2 atlasPosition)
+        private void UpdateSpriteTextureAtlasPosition(
+            SpriteComponent sprite,
+            AnimationDefinition animation,
+            int animationFrameIndex)
         {
             for (var layer = 0; layer < sprite.Sprites.Length; layer++)
             {
-                sprite.SpriteRects[layer] = new RectF(atlasPosition, sprite.Sprites[layer].Size);
+                var size = sprite.Sprites[layer].Size;
+
+                for (int i = 0; i < Constants.DirectionCount; i++)
+                {
+                    var position = animation.GetAtlasPosition((DirectionName)i, animationFrameIndex);
+                    sprite.SpriteRects[layer, i] = new RectF(position, size);
+                }
             }
         }
 
@@ -197,23 +189,47 @@ namespace Forge.Sprites
                 // Draw each layer of the sprite.
                 for (var layer = 0; layer < component.Sprites.Length; layer++)
                 {
+                    // Check if sprite should be rotated directly, or a directional image should be choosen to
+                    // represent the sprite's current rotation.
+                    var rotation = 0.0f;
+                    var spriteRect = RectF.Empty;
+
+                    switch (component.RotationRenderMethod)
+                    {
+                        case SpriteRotationRenderMethod.Default:
+                        case SpriteRotationRenderMethod.Rotated:
+                            rotation = transform.WorldRotation;
+                            spriteRect = component.SpriteRects[layer, 0];
+                            break;
+
+                        case SpriteRotationRenderMethod.FourWay:
+                            var dir = DirectionNameHelper.FromRotationRadians(transform.WorldRotation);
+                            rotation = 0.0f;
+                            spriteRect = component.SpriteRects[layer, (int)dir];
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Unsupported rotation render method");
+                    }
+
+                    // Draw the sprite with the selected image and rotation.
                     renderer.Draw(
                         component.Sprites[layer].Atlas,
-                        component.SpriteRects[layer],
+                        spriteRect,
                         positionInCameraSpace,
-                        (component.RendererIgnoreTransformRotation ? 0.0f : transform.WorldRotation));
+                        rotation);
 
 #if DEBUG
                     // Draw sprite rectangles.
                     if (Globals.Settings.DrawSpriteDebug)
                     {
-                        var spriteRect = new BoundingRect(
+                        var spriteBoundRect = new BoundingRect(
                             centerX: positionInCameraSpace.X,
                             centerY: positionInCameraSpace.Y,
-                            halfWidth: component.SpriteRects[layer].Size.Width / 2,
-                            halfHeight: component.SpriteRects[layer].Size.Height / 2);
+                            halfWidth: component.SpriteRects[layer, 0].Size.Width / 2,
+                            halfHeight: component.SpriteRects[layer, 0].Size.Height / 2);
 
-                        Globals.Debug.DrawBoundingRect(spriteRect, Microsoft.Xna.Framework.Color.White);
+                        Globals.Debug.DrawBoundingRect(spriteBoundRect, Microsoft.Xna.Framework.Color.White);
                     }
 #endif
                 }

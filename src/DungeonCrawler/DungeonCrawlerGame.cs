@@ -255,7 +255,7 @@ namespace DungeonCrawler
 
             if (playerMovement.LengthSquared > 0.01)
             {
-                playerActor.Move(playerMovement * 125.0f);
+                playerActor.Move(playerMovement, 125.0f);
             }
 
             // Camera movement.

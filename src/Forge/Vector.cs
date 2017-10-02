@@ -129,6 +129,26 @@ namespace Forge
         }
 
         /// <summary>
+        ///  Get the angle of this vector in radians.
+        /// </summary>
+        public float AngleRadians
+        {
+            get { return Normalized().AngleRadians_Normalized; }
+        }
+
+        /// <summary>
+        ///  Get the angle of the unit vector in radians.
+        /// </summary>
+        /// <remarks>
+        ///  This property assumes the vector is normalized and does not perform the normalization work again making
+        ///  it substantially faster than AngleRadians.
+        /// </remarks>
+        public float AngleRadians_Normalized
+        {
+            get { return (float) Math.Atan2(mY, mX); }
+        }
+
+        /// <summary>
         ///  Get the length (magnitude) of this vector.
         /// </summary>
         public float Length

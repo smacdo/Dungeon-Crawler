@@ -58,7 +58,7 @@ namespace Forge
         {
             if (rotation < 0.0 || rotation > 360.0)
             {
-                throw new ArgumentException("Rotation must be [0, 360]", "rotation");
+                throw new ArgumentException("Rotation must be [0, 360]", nameof(rotation));
             }
 
             if (rotation < 45.0f)
@@ -74,6 +74,45 @@ namespace Forge
                 return DirectionName.West;
             }
             else if (rotation < 315.0)
+            {
+                return DirectionName.North;
+            }
+            else
+            {
+                return DirectionName.East;
+            }
+        }
+
+        /// <summary>
+        ///  Convert an angular rotation (in radians) into a Directional enum.
+        /// </summary>
+        /// <remarks>
+        ///  This method matches the angle to its closest DirectionName counterpart.
+        /// </remarks>
+        /// <param name="rotation">The angular rotation in degrees.</param>
+        /// <returns>DirectionName value that is closest to the provided angle.</returns>
+        public static DirectionName FromRotationRadians(float rotation)
+        {
+            const float FirstQuarterWedge = (float)Math.PI / 4;
+            const float SecondQuarterWedge = (float)Math.PI * 3 / 4;
+            const float ThirdQuarterWedge = (float)Math.PI * 5 / 4;
+            const float FourthQuarterWedge = (float)Math.PI * 7 / 4;
+
+            rotation = MathHelper.NormalizeAngleTwoPi(rotation);
+
+            if (rotation < FirstQuarterWedge)
+            {
+                return DirectionName.East;
+            }
+            else if (rotation < SecondQuarterWedge)
+            {
+                return DirectionName.South;
+            }
+            else if (rotation < ThirdQuarterWedge)
+            {
+                return DirectionName.West;
+            }
+            else if (rotation < FourthQuarterWedge)
             {
                 return DirectionName.North;
             }

@@ -29,7 +29,7 @@ namespace Forge.Sprites
         public delegate void AnimationCompletedDelegate();
 
         private SpriteDefinition[] mSprites;
-        private RectF[] mSpriteRects;
+        private RectF[,] mSpriteRects;
 
         /// <summary>
         /// Default constructor
@@ -37,7 +37,7 @@ namespace Forge.Sprites
         public SpriteComponent()
         {
             mSprites = new SpriteDefinition[1];
-            mSpriteRects = new RectF[1];
+            mSpriteRects = new RectF[1, Constants.DirectionCount];
         }
 
         /// <summary>
@@ -47,17 +47,16 @@ namespace Forge.Sprites
         public SpriteComponent(SpriteDefinition sprite)
             : this()
         {
-            if (sprite == null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            mSprites[0] = sprite ?? throw new ArgumentNullException(nameof(sprite));
 
-            mSprites[0] = sprite;
-            mSpriteRects[0] = new RectF(
-                left: sprite.AtlasPosition.X,
-                top: sprite.AtlasPosition.Y,
-                width: sprite.Size.Width,
-                height: sprite.Size.Height);
+            for (int i = 0; i < Constants.DirectionCount; i++)
+            {
+                mSpriteRects[0, i] = new RectF(
+                    left: sprite.AtlasPosition.X,
+                    top: sprite.AtlasPosition.Y,
+                    width: sprite.Size.Width,
+                    height: sprite.Size.Height);
+            }
         }
 
         /// <summary>
@@ -119,19 +118,14 @@ namespace Forge.Sprites
         public AnimationDefinition CurrentAnimation { get; internal set; }
 
         /// <summary>
-        ///  Get the current sprite direction.
+        ///  Get or set sprite rotational render method.
         /// </summary>
-        public DirectionName Direction { get; internal set; }
+        public SpriteRotationRenderMethod RotationRenderMethod { get; set; }
 
         /// <summary>
         ///  Get the action to take when an animation reaches the last frame.
         /// </summary>
         public AnimationEndingAction EndingAction { get; internal set; }
-
-        /// <summary>
-        ///  Get or set if the sprite renderer should ignore the transform rotation.
-        /// </summary>
-        public bool RendererIgnoreTransformRotation { get; set; }
 
         /// <summary>
         ///  Get or set the next requestion animation.
@@ -154,7 +148,10 @@ namespace Forge.Sprites
         /// <summary>
         ///  Get list of composite sprites.
         /// </summary>
-        internal RectF[] SpriteRects { get { return mSpriteRects; } }
+        /// <remarks>
+        ///  [LayerIndex, Direction].
+        /// </remarks>
+        internal RectF[,] SpriteRects { get { return mSpriteRects; } }
 
         /// <summary>
         ///  Set a single sprite to be displayed.
@@ -164,7 +161,7 @@ namespace Forge.Sprites
         {
             if (spriteDefinition == null)
             {
-                throw new ArgumentNullException("spriteDefinition");
+                throw new ArgumentNullException(nameof(spriteDefinition));
             }
 
             Animations = spriteDefinition.Animations;
@@ -183,11 +180,11 @@ namespace Forge.Sprites
         {
             if (newCount < 1)
             {
-                throw new ArgumentException("Must have at least one sprite", "newCount");
+                throw new ArgumentException("Must have at least one sprite", nameof(newCount));
             }
 
             Array.Resize(ref mSprites, newCount);
-            Array.Resize(ref mSpriteRects, newCount);
+            mSpriteRects = new RectF[newCount, Constants.DirectionCount];
         }
 
         /// <summary>
@@ -206,32 +203,29 @@ namespace Forge.Sprites
                 throw new ArgumentOutOfRangeException(nameof(layerIndex));
             }
 
-            if (spriteDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(spriteDefinition));
-            }
+            Sprites[layerIndex] = spriteDefinition ?? throw new ArgumentNullException(nameof(spriteDefinition));
 
-            Sprites[layerIndex] = spriteDefinition;
-            mSpriteRects[layerIndex] = new RectF(
-                Sprites[layerIndex].AtlasPosition,
-                Sprites[layerIndex].Size);
+            // TODO: Evaluate for removal. I think this is just setting defaults?
+            for (int i = 0; i < Constants.DirectionCount; i++)
+            {
+                mSpriteRects[layerIndex, i] = new RectF(
+                    Sprites[layerIndex].AtlasPosition,
+                    Sprites[layerIndex].Size);
+            }   
         }
 
         /// <summary>
         ///  Plays the requested animation.
         /// </summary>
         /// <param name="animationName">Name of the animation.</param>
-        /// <param name="direction">Sprite direction.</param>
         /// <param name="endingAction">Action to take when animation ends.</param>
         public void PlayAnimation(
             string animationName,
-            DirectionName direction,
             AnimationEndingAction endingAction = AnimationEndingAction.StopAndReset)
         {
             RequestedAnimation = new AnimationRequest
             {
                 Name = animationName,
-                Direction = direction,
                 EndingAction = endingAction
             };
         }
@@ -240,9 +234,9 @@ namespace Forge.Sprites
         /// Play a requested animation and have it loop until interrupted
         /// </summary>
         /// <param name="baseAnimationName">Name of the animation to play</param>
-        public void PlayAnimationLooping(string baseAnimationName, DirectionName direction)
+        public void PlayAnimationLooping(string baseAnimationName)
         {
-            PlayAnimation(baseAnimationName, direction, AnimationEndingAction.Loop);
+            PlayAnimation(baseAnimationName, AnimationEndingAction.Loop);
         }
         
         /// <summary>
@@ -250,17 +244,23 @@ namespace Forge.Sprites
         /// </summary>
         internal void NotifyAnimationComplete()
         {
-            if (AnimationCompleted != null)
-            {
-                AnimationCompleted();
-            }
+            AnimationCompleted?.Invoke();
         }
 
         internal struct AnimationRequest
         {
             public string Name;
-            public DirectionName Direction;
             public AnimationEndingAction EndingAction;
         }
+    }
+
+    /// <summary>
+    ///  Defines how a sprite should be drawn when it is rotated.
+    /// </summary>
+    public enum SpriteRotationRenderMethod
+    {
+        Default,        /// Default (rotation)
+        Rotated,        /// Draw sprite image rotated.
+        FourWay,        /// Select image from four cardinal directions, do not rotate.
     }
 }

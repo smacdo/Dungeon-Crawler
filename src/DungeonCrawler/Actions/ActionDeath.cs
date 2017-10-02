@@ -78,7 +78,7 @@ namespace DungeonCrawler.Actions
         public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
             var actor = actorGameObject.Get<ActorComponent>();
-            var direction = actor.Direction;        // TODO: Use Transform.Direction.
+            var direction = actorGameObject.Transform.Forward;
 
             var sprite = actorGameObject.Get<SpriteComponent>();
             var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
@@ -88,7 +88,7 @@ namespace DungeonCrawler.Actions
                 case DeathAnimationState.NotStarted:
                     mAnimationSecondsPlayed = 0.0f;
                     mState = DeathAnimationState.Performing;
-                    sprite.PlayAnimation("Hurt", direction);
+                    sprite.PlayAnimation("Hurt");
                     break;
 
                 case DeathAnimationState.Performing:

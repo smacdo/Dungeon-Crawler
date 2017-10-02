@@ -94,7 +94,7 @@ namespace Forge.GameObjects
             {
                 if (mLocalRotation != value)
                 {
-                    mLocalRotation = value;
+                    mLocalRotation = MathHelper.NormalizeAngleTwoPi(value);
                     RegenerateWorldTransform();
                 }
             }
@@ -106,15 +106,27 @@ namespace Forge.GameObjects
         public Vector2 Right { get { return new Vector2(-mWorldForward.Y, mWorldForward.X); } }
 
         /// <summary>
-        ///  Get or set the world rotation.
+        ///  Get or set the world rotation in radians.
+        ///  (Relative rotation not supported yet!!).
         /// </summary>
-        /// <remarks>
-        ///  TODO: Implement me.
-        /// </remarks>
         public float WorldRotation
         {
             get { return mWorldRotation; }
-            set { throw new NotImplementedException(); }
+            set
+            {
+                if (!mWorldRotation.Equals(value))
+                {
+                    if (Owner != null && Owner.Parent != null)
+                    {
+                        // TODO: Implement relative rotation.
+                        LocalRotation = value;
+                    }
+                    else
+                    {
+                        LocalRotation = value;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -129,14 +141,12 @@ namespace Forge.GameObjects
                 {
                     if (Owner != null && Owner.Parent != null)
                     {
-                        mLocalPosition = value - Owner.Parent.Transform.WorldPosition;
+                        LocalPosition = value - Owner.Parent.Transform.WorldPosition;
                     }
                     else
                     {
-                        mLocalPosition = value;
+                        LocalPosition = value;
                     }
-                    
-                    RegenerateWorldTransform();
                 }
             }
         }

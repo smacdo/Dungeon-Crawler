@@ -28,22 +28,8 @@ namespace Forge.Actors
     /// </summary>
     public class ActorComponent : Component
     {
-        private DirectionName mDirection;
-
         public IActorAction CurrentAction { get; set; }
         public IActorAction RequestedAction { get; set; }
-
-        /// <summary>
-        ///  Direction the actor is facing.
-        /// </summary>
-        public DirectionName Direction
-        {
-            get { return mDirection; }
-            set
-            {
-                mDirection = value;
-            }
-        }
         public Vector2 RequestedMovement { get; set; }
 
         public float MaxSpeed { get; set;}
@@ -58,7 +44,6 @@ namespace Forge.Actors
         /// </summary>
         public ActorComponent()
         {
-            Direction = Constants.DefaultDirection;
             MaxSpeed = 100;
             WalkAccelerationSeconds = 0;
         }
@@ -69,9 +54,9 @@ namespace Forge.Actors
         /// <remarks>This movement will be performed the next time Actor processor runs.</remarks>
         /// <param name="direction"></param>
         /// <param name="speed"></param>
-        public void Move(Vector2 direction)
+        public void Move(Vector2 direction, float speed)
         {
-            RequestedMovement = direction;
+            RequestedMovement = direction * speed;
         }
 
         /// <summary>
@@ -91,7 +76,7 @@ namespace Forge.Actors
         /// <param name="speed">Speed to move the actor.</param>
         public void MoveForward(float speed)
         {
-            Move(Direction, speed);
+            Move(Owner.Transform.Forward, speed);
         }
 
         /// <summary>

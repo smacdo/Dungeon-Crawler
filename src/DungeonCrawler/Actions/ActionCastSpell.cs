@@ -76,7 +76,7 @@ namespace DungeonCrawler.Actions
         public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
             var actor = actorGameObject.Get<ActorComponent>();
-            var direction = actor.Direction;        // TODO: Use Transform.Direction.
+            var direction = actorGameObject.Transform.Forward;
 
             var sprite = actorGameObject.Get<SpriteComponent>();
             var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
@@ -86,7 +86,7 @@ namespace DungeonCrawler.Actions
                 case CastSpellState.NotStarted:
                     mAnimationSecondsPlayed = 0.0f;
                     mState = CastSpellState.Performing;
-                    sprite.PlayAnimation("Spell", direction);
+                    sprite.PlayAnimation("Spell");
                     break;
 
                 case CastSpellState.Performing:

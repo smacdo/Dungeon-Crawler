@@ -93,10 +93,9 @@ namespace Forge.Ai
                     ai.CurrentState = AiState.Walking;
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
-                // Change direction?
+                //TODO: Change direction?
                 else if (mRandom.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    actor.Direction = (DirectionName) mRandom.Next(0, Constants.DirectionCount);
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
             }
@@ -124,10 +123,9 @@ namespace Forge.Ai
                     ai.CurrentState = AiState.Walking;
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
-                // Change direction?
+                // TODO: Change direction?
                 else if (mRandom.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    actor.Direction = (DirectionName) mRandom.Next(0, Constants.DirectionCount);
                     ai.SecondsSinceLastStateChange = 0.0f;
                 }
             }

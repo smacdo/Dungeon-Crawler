@@ -72,7 +72,7 @@ namespace DungeonCrawler.Blueprints
             // Create the sprite and set it up.
             var sprite = scene.Sprites.Create(self);
 
-            sprite.RendererIgnoreTransformRotation = true;
+            sprite.RotationRenderMethod = SpriteRotationRenderMethod.FourWay;
 
             sprite.SetMultipleSpriteCount((int)ActorEquipmentSlot.Count);
             sprite.SetSprite(await content.Load<AnimatedSpriteDefinition>(BodySpritePath));

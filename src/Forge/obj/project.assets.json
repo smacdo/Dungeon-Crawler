@@ -208,7 +208,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\scott.SMACDO\\.nuget\\packages\\": {},
+    "C:\\Users\\smacd\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
@@ -217,17 +217,17 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\Forge.csproj",
+      "projectUniqueName": "C:\\Users\\smacd\\Source\\Repos\\Dungeon-Crawler2\\src\\Forge\\Forge.csproj",
       "projectName": "Forge",
-      "projectPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\Forge.csproj",
-      "packagesPath": "C:\\Users\\scott.SMACDO\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\scott.SMACDO\\Documents\\GitHub\\Dungeon-Crawler\\src\\Forge\\obj\\",
+      "projectPath": "C:\\Users\\smacd\\Source\\Repos\\Dungeon-Crawler2\\src\\Forge\\Forge.csproj",
+      "packagesPath": "C:\\Users\\smacd\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\smacd\\Source\\Repos\\Dungeon-Crawler2\\src\\Forge\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\scott.SMACDO\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\smacd\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

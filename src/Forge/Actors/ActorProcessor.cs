@@ -96,6 +96,7 @@ namespace Forge.Actors
 
             // Calculate the a movement vector from the request.
             var physics = actor.Owner.Get<PhysicsComponent>();
+            var transform = actor.Owner.Transform;
 
             var requestedMovement = actor.RequestedMovement;
             actor.RequestedMovement = Vector2.Zero;
@@ -111,23 +112,22 @@ namespace Forge.Actors
                 physics.Velocity = requestedDirection * (float)actualSpeed;
 
                 // Update actor state.
-                actor.Direction = DirectionNameHelper.FromVector(requestedDirection);
-                actor.WalkAccelerationSeconds += deltaTime;
+                transform.WorldRotation = requestedDirection.AngleRadians_Normalized;
+                actor.WalkAccelerationSeconds += deltaTime;     // TODO: Move to locomotion.
 
                 // Walk animation.
                 var sprite = actor.Owner.Get<SpriteComponent>();
 
                 if (sprite.IsAnimating)
                 {
-                    if (sprite.CurrentAnimation.Name != Constants.WalkAnimationName ||
-                        sprite.Direction != actor.Direction)
+                    if (sprite.CurrentAnimation.Name != Constants.WalkAnimationName)
                     {
-                        sprite.PlayAnimationLooping(Constants.WalkAnimationName, actor.Direction);
+                        sprite.PlayAnimationLooping(Constants.WalkAnimationName);
                     }
                 }
                 else
                 {
-                    sprite.PlayAnimationLooping(Constants.WalkAnimationName, actor.Direction);
+                    sprite.PlayAnimationLooping(Constants.WalkAnimationName);
                 }
             }
             else
@@ -143,7 +143,7 @@ namespace Forge.Actors
 
                 if (sprite.IsAnimating && sprite.CurrentAnimation.Name == "Walk")
                 {
-                    sprite.PlayAnimationLooping("Idle", actor.Direction);
+                    sprite.PlayAnimationLooping("Idle");
                 }
             }
         }

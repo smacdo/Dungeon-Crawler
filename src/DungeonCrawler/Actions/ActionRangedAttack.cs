@@ -70,7 +70,7 @@ namespace DungeonCrawler.Actions
         public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
             var actor = actorGameObject.Get<ActorComponent>();
-            var direction = actor.Direction;        // TODO: Use Transform.Direction.
+            var direction = actorGameObject.Transform.Forward;
 
             var sprite = actorGameObject.Get<SpriteComponent>();
             var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
@@ -80,7 +80,7 @@ namespace DungeonCrawler.Actions
                 case RangedAttackState.NotStarted:
                     mAnimationSecondsPlayed = 0.0f;
                     mState = RangedAttackState.Performing;
-                    sprite.PlayAnimation("Bow", direction);
+                    sprite.PlayAnimation("Bow");
                     break;
 
                 case RangedAttackState.Performing:

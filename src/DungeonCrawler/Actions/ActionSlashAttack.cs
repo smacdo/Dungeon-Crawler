@@ -85,7 +85,7 @@ namespace DungeonCrawler.Actions
             var actorSprite = actorGameObject.Get<SpriteComponent>();
 
             var actor = actorGameObject.Get<ActorComponent>();
-            var direction = actor.Direction;
+            var direction = actorGameObject.Transform.Forward;
 
             // Get the weapon game object for animation (Which is attached to the character).
             var weaponGameObject = actorGameObject.FindChildByName(MeleeWeaponName);
@@ -95,12 +95,12 @@ namespace DungeonCrawler.Actions
             {
                 case ActionAttackStatus.NotStarted:
                     // Enable the weapon sprite, and animate the attack
-                    actorSprite.PlayAnimation(SlashAnimationName, direction );
+                    actorSprite.PlayAnimation(SlashAnimationName);
                     
                     if (weaponSprite != null)
                     {
                         weaponGameObject.Active = true;
-                        weaponSprite.PlayAnimation(SlashAnimationName, direction);
+                        weaponSprite.PlayAnimation(SlashAnimationName);
                     }
 
                     // Start animation.
@@ -164,7 +164,7 @@ namespace DungeonCrawler.Actions
             var startAngle = MathHelper.DegreeToRadian(AttackAngleDegreesStart);
             var endAngle = MathHelper.DegreeToRadian(AttackAngleDegreesEnd);
 
-            var actorRotationRad = actor.Direction.ToRotationRadians();
+            var actorRotationRad = actor.Owner.Transform.WorldRotation;
             var interpolatedRad = Interpolation.Lerp(startAngle, endAngle, animationPosition);
             var finalRad = MathHelper.NormalizeAngleTwoPi(interpolatedRad + actorRotationRad);
             var radians = finalRad;
