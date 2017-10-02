@@ -55,8 +55,8 @@ namespace Forge.Tests.Sprites
             sp.Add(s0);
             sp.Add(s1);
 
-            s0.PlayAnimation("TestAnimation", DirectionName.South);
-            s1.PlayAnimation("TestAnimation", DirectionName.South);
+            s0.PlayAnimation("TestAnimation");
+            s1.PlayAnimation("TestAnimation");
 
             sp.Update(0.1f, AnimationFrameSeconds);
 
@@ -72,7 +72,7 @@ namespace Forge.Tests.Sprites
             var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
-            s0.PlayAnimation("TestAnimation", DirectionName.South);
+            s0.PlayAnimation("TestAnimation");
 
             // Advance time but not enough to move to the next frame.
             sp.Update(0.0, AnimationFrameSeconds / 2.0);
@@ -91,7 +91,7 @@ namespace Forge.Tests.Sprites
             var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
-            s0.PlayAnimation("TestAnimation", DirectionName.South);
+            s0.PlayAnimation("TestAnimation");
 
             // Advance time but not enough to move to the next frame.
             sp.Update(0.0, AnimationFrameSeconds / 2.0);
@@ -99,7 +99,7 @@ namespace Forge.Tests.Sprites
             Assert.AreEqual(0, s0.AnimationFrameIndex);
             Assert.AreEqual(
                 TestSpriteDef.Animations["TestAnimation"].GetAtlasPosition(DirectionName.South, 0),
-                s0.SpriteRects[0].TopLeft);
+                s0.SpriteRects[0, 3].TopLeft);
 
             // Advance time enough to move to the next frame.
             sp.Update(0.0, AnimationFrameSeconds);
@@ -107,7 +107,7 @@ namespace Forge.Tests.Sprites
             Assert.AreEqual(1, s0.AnimationFrameIndex);
             Assert.AreEqual(
                 TestSpriteDef.Animations["TestAnimation"].GetAtlasPosition(DirectionName.South, 1),
-                s0.SpriteRects[0].TopLeft);
+                s0.SpriteRects[0, 3].TopLeft);
         }
 
         [TestMethod]
@@ -118,7 +118,7 @@ namespace Forge.Tests.Sprites
             var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
-            s0.PlayAnimation("TestAnimation", DirectionName.South);
+            s0.PlayAnimation("TestAnimation");
 
             sp.Update(0.0, AnimationFrameSeconds * 2.0);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
@@ -132,7 +132,7 @@ namespace Forge.Tests.Sprites
             var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
-            s0.PlayAnimation("TestAnimation", DirectionName.South, AnimationEndingAction.StopAndReset);
+            s0.PlayAnimation("TestAnimation", AnimationEndingAction.StopAndReset);
 
             // Install delegate to get notification that animation completion.
             bool animationComplete = false;
@@ -170,7 +170,7 @@ namespace Forge.Tests.Sprites
             var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
-            s0.PlayAnimation("TestAnimation", DirectionName.South, AnimationEndingAction.Stop);
+            s0.PlayAnimation("TestAnimation", AnimationEndingAction.Stop);
 
             // Install delegate to get notification that animation completion.
             bool animationComplete = false;
@@ -208,7 +208,7 @@ namespace Forge.Tests.Sprites
             var sp = new SpriteComponentProcessor(null);
 
             sp.Add(s0);
-            s0.PlayAnimation("TestAnimation", DirectionName.South, AnimationEndingAction.Loop);
+            s0.PlayAnimation("TestAnimation", AnimationEndingAction.Loop);
 
             // Install delegate to get notification that animation completion.
             bool animationComplete = false;

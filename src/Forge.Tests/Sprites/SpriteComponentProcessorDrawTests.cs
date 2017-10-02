@@ -40,9 +40,9 @@ namespace Scott.Tests.Sprites
             Assert.AreNotEqual(r.Draws[0].AtlasRect, r.Draws[1].AtlasRect);
 
             Assert.IsTrue(
-                r.Draws[0].AtlasRect == s0.SpriteRects[0] || r.Draws[0].AtlasRect == s1.SpriteRects[0]);
+                r.Draws[0].AtlasRect == s0.SpriteRects[0, 0] || r.Draws[0].AtlasRect == s1.SpriteRects[0, 0]);
             Assert.IsTrue(
-                r.Draws[1].AtlasRect == s0.SpriteRects[0] || r.Draws[1].AtlasRect == s1.SpriteRects[0]);
+                r.Draws[1].AtlasRect == s0.SpriteRects[0, 0] || r.Draws[1].AtlasRect == s1.SpriteRects[0, 0]);
         }
 
         private static SpriteComponent CreateSprite(RectF atlasRect, Vector2 gameObjectPosition)

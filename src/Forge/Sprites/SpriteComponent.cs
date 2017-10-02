@@ -204,8 +204,8 @@ namespace Forge.Sprites
             }
 
             Sprites[layerIndex] = spriteDefinition ?? throw new ArgumentNullException(nameof(spriteDefinition));
-
-            // TODO: Evaluate for removal. I think this is just setting defaults?
+            
+            // Initialize sprite rects to default (first frame) atlas position. No animation is assumed at this point.
             for (int i = 0; i < Constants.DirectionCount; i++)
             {
                 mSpriteRects[layerIndex, i] = new RectF(
