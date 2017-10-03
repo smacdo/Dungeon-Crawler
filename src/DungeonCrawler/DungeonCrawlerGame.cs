@@ -29,6 +29,7 @@ using Forge.Tilemaps;
 using DungeonCrawler.WorldGeneration;
 using DungeonCrawler.Levels;
 using DungeonCrawler.Blueprints;
+using Forge.Physics;
 
 namespace DungeonCrawler
 {
@@ -250,12 +251,12 @@ namespace DungeonCrawler
             }
 
             // Player movement.
-            var playerActor = mPlayer.Get<ActorComponent>();
+            var locomotor = mPlayer.Get<LocomotionComponent>();
             var playerMovement = mInputManager.GetAxis(InputAction.Move);
 
             if (playerMovement.LengthSquared > 0.01)
             {
-                playerActor.Move(playerMovement, 125.0f);
+                locomotor.Move(playerMovement, 125.0f);
             }
 
             // Camera movement.
@@ -269,15 +270,15 @@ namespace DungeonCrawler
             // Player actions.
             if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
             {
-                playerActor.Perform( new ActionSlashAttack() );
+                //playerActor.Perform( new ActionSlashAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
             {
-                playerActor.Perform( new ActionRangedAttack() );
+                //playerActor.Perform( new ActionRangedAttack() );
             }
             else if ( mInputManager.WasTriggered( InputAction.CastSpell ) )
             {
-                playerActor.Perform(new ActionCastSpell());
+                //playerActor.Perform(new ActionCastSpell());
             }
 
             // Spawn some stuff

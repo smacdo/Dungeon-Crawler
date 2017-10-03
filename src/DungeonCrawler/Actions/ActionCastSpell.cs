@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 using System;
-using Forge.Actors;
 using Forge.Sprites;
 using Forge.GameObjects;
+using Forge.Physics;
+using Forge.Actors;
 
 namespace DungeonCrawler.Actions
 {
@@ -75,7 +76,7 @@ namespace DungeonCrawler.Actions
         /// <param name="gameTime">Current simulation time</param>
         public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
         {
-            var actor = actorGameObject.Get<ActorComponent>();
+            var actor = actorGameObject.Get<LocomotionComponent>();
             var direction = actorGameObject.Transform.Forward;
 
             var sprite = actorGameObject.Get<SpriteComponent>();

@@ -89,20 +89,20 @@ namespace Forge.Sprites
         public int AnimationFrameIndex { get; internal set; }
 
         /// <summary>
-        ///  Get or set the number of seconds that the current animation has been playing.
+        ///  Get or set the amount of time that the current animation has been playing.
         /// </summary>
         /// <remarks>
         ///  This field should only be set by the Sprite componenet processor.
         /// </remarks>
-        public double AnimationSecondsActive { get; internal set; }
+        public TimeSpan AnimationTimeActive { get; internal set; }
 
         /// <summary>
-        ///  Get or set the number of seconds that the current animation frame has been shown.
+        ///  Get or set the amount of time that the current animation frame has been shown.
         /// </summary>
         /// <remarks>
         ///  This field should only be set by the Sprite componenet processor.
         /// </remarks>
-        public double AnimationFrameSecondsActive { get; internal set; }
+        public TimeSpan CurrentFrameTime { get; internal set; }
 
         /// <summary>
         ///  Get or set sprite animation set definition.

@@ -21,15 +21,13 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Forge.GameObjects;
 
-namespace Forge.Actors
+namespace Forge.Physics
 {
     /// <summary>
-    ///  Actor.
+    ///  Responsible for performing basic locomotion such as moving an object toward a target.
     /// </summary>
-    public class ActorComponent : Component
+    public class LocomotionComponent : Component
     {
-        public IActorAction CurrentAction { get; set; }
-        public IActorAction RequestedAction { get; set; }
         public Vector2 RequestedMovement { get; set; }
 
         public float MaxSpeed { get; set;}
@@ -37,15 +35,15 @@ namespace Forge.Actors
         /// <summary>
         ///  Get or set the seconds that have elapsed since the actor started the current walk cycle.
         /// </summary>
-        public double WalkAccelerationSeconds { get; set; }
+        public TimeSpan WalkAccelerationTime { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public ActorComponent()
+        public LocomotionComponent()
         {
             MaxSpeed = 100;
-            WalkAccelerationSeconds = 0;
+            WalkAccelerationTime = TimeSpan.Zero;
         }
 
         /// <summary>
@@ -65,16 +63,6 @@ namespace Forge.Actors
         public void MoveForward(float speed)
         {
             Move(Owner.Transform.Forward, speed);
-        }
-
-        /// <summary>
-        ///  Requests the actor to perform the given action.
-        /// </summary>
-        /// <remarks>This action will be activated the next time Actor processor runs.</remarks>
-        /// <param name="action">Action to perform.</param>
-        public void Perform(IActorAction action)
-        {
-            RequestedAction = action;
         }
     }
 }

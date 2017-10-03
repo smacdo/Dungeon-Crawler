@@ -13,7 +13,7 @@ namespace Forge.Tests.Sprites
     [TestClass]
     public class SpriteComponentProcessorUpdateTests
     {
-        private const float AnimationFrameSeconds = 0.1f;
+        private static readonly TimeSpan AnimationFrameTime = TimeSpan.FromSeconds(0.1);
 
         private static AnimatedSpriteDefinition TestSpriteDef = new AnimatedSpriteDefinition(
             new SpriteDefinition(
@@ -26,7 +26,7 @@ namespace Forge.Tests.Sprites
                 {
                     new AnimationDefinition(
                         "TestAnimation",
-                        AnimationFrameSeconds,
+                        AnimationFrameTime,
                         new Vector2[,]
                         {
                             {
@@ -58,10 +58,10 @@ namespace Forge.Tests.Sprites
             s0.PlayAnimation("TestAnimation");
             s1.PlayAnimation("TestAnimation");
 
-            sp.Update(0.1f, AnimationFrameSeconds);
+            sp.Update(TimeSpan.FromSeconds(0.1), AnimationFrameTime);
 
-            Assert.AreEqual(0.1, s0.AnimationSecondsActive, 0.001);
-            Assert.AreEqual(0.1, s1.AnimationSecondsActive, 0.001);
+            Assert.AreEqual(0.1, s0.AnimationTimeActive.TotalSeconds, 0.001);
+            Assert.AreEqual(0.1, s1.AnimationTimeActive.TotalSeconds, 0.001);
         }
 
         [TestMethod]
@@ -75,11 +75,11 @@ namespace Forge.Tests.Sprites
             s0.PlayAnimation("TestAnimation");
 
             // Advance time but not enough to move to the next frame.
-            sp.Update(0.0, AnimationFrameSeconds / 2.0);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime / 2.0);
             Assert.AreEqual(0, s0.AnimationFrameIndex);
 
             // Advance time enough to move to the next frame.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(1, s0.AnimationFrameIndex);
         }
 
@@ -94,7 +94,7 @@ namespace Forge.Tests.Sprites
             s0.PlayAnimation("TestAnimation");
 
             // Advance time but not enough to move to the next frame.
-            sp.Update(0.0, AnimationFrameSeconds / 2.0);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime / 2.0);
 
             Assert.AreEqual(0, s0.AnimationFrameIndex);
             Assert.AreEqual(
@@ -102,7 +102,7 @@ namespace Forge.Tests.Sprites
                 s0.SpriteRects[0, 3].TopLeft);
 
             // Advance time enough to move to the next frame.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
 
             Assert.AreEqual(1, s0.AnimationFrameIndex);
             Assert.AreEqual(
@@ -120,7 +120,7 @@ namespace Forge.Tests.Sprites
             sp.Add(s0);
             s0.PlayAnimation("TestAnimation");
 
-            sp.Update(0.0, AnimationFrameSeconds * 2.0);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime * 2.0);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
         }
 
@@ -143,22 +143,22 @@ namespace Forge.Tests.Sprites
             };
 
             // Advance animation step by step until ending is hit.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(1, s0.AnimationFrameIndex);
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
 
             // This call should finish the animation.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(0, s0.AnimationFrameIndex);
 
             Assert.IsTrue(animationComplete);
 
             // Continue updating to make sure animation does not advance.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(0, s0.AnimationFrameIndex);           
         }
 
@@ -181,22 +181,22 @@ namespace Forge.Tests.Sprites
             };
 
             // Advance animation step by step until ending is hit.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(1, s0.AnimationFrameIndex);
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
 
             // This call should finish the animation.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
 
             Assert.IsTrue(animationComplete);
 
             // Continue updating to make sure animation does not advance.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
         }
 
@@ -219,16 +219,16 @@ namespace Forge.Tests.Sprites
             };
 
             // Advance animation step by step until ending is hit.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(1, s0.AnimationFrameIndex);
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
 
             // This call should finish the animation.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(0, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
@@ -236,30 +236,30 @@ namespace Forge.Tests.Sprites
             // Reset is animation is true and update enough times again to hit the end.
             animationComplete = false;
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(1, s0.AnimationFrameIndex);
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
 
             // Second time end is hit and should reset.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(0, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(1, s0.AnimationFrameIndex);
 
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(2, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);
 
             // Continue updating to make sure animation does not advance.
-            sp.Update(0.0, AnimationFrameSeconds);
+            sp.Update(TimeSpan.Zero, AnimationFrameTime);
             Assert.AreEqual(0, s0.AnimationFrameIndex);
 
             Assert.IsFalse(animationComplete);

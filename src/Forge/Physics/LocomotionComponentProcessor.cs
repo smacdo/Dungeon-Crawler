@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,57 +18,37 @@ using Forge.Sprites;
 using Forge.GameObjects;
 using System;
 
-namespace Forge.Actors
+namespace Forge.Physics
 {
     /// <summary>
-    ///  Processes character agents in the world.
+    ///  Process locomotion components in the world.
     /// </summary>
-    public class ActorProcessor : ComponentProcessor<ActorComponent>
+    public class LocomotionComponentProcessor : ComponentProcessor<LocomotionComponent>
     {
         /// <summary>
         ///  Constructor.
         /// </summary>
-        public ActorProcessor(GameScene scene)
+        public LocomotionComponentProcessor(GameScene scene)
             : base(scene)
         {
-            if (scene == null)
-            {
-                throw new ArgumentNullException(nameof(scene));
-            }
         }
 
         /// <summary>
-        ///  Update actor component.
+        ///  Update single locomotion component.
         /// </summary>
-        protected override void UpdateComponent(ActorComponent actor, double currentTime, double deltaTime)
+        protected override void UpdateComponent(LocomotionComponent actor, TimeSpan currentTime, TimeSpan deltaTime)
         {
             ProcessMovementRequest(actor, currentTime, deltaTime);
 
             UpdateCurrentAction(actor, currentTime, deltaTime);
-            ProcessActionRequest(actor, currentTime, deltaTime);
-        }
-
-        /// <summary>
-        ///  Perform any requested actions for this actor.
-        /// </summary>
-        private void ProcessActionRequest(ActorComponent actor, double currentTime, double deltaTime)
-        {
-            // Activate the next requested action if so long as the actor is idle.
-            if (actor.CurrentAction == null && actor.RequestedAction != null)
-            {
-                System.Diagnostics.Debug.WriteLine("Create action!!! {0}", currentTime);
-
-                actor.CurrentAction = actor.RequestedAction;
-                actor.RequestedAction = null;
-            }
         }
 
         /// <summary>
         ///  Update the state of the actor component's current action.
         /// </summary>
-        private void UpdateCurrentAction(ActorComponent actor, double currentTime, double deltaTime)
+        private void UpdateCurrentAction(LocomotionComponent actor, TimeSpan currentTime, TimeSpan deltaTime)
         {
-            if (actor.CurrentAction != null)
+            /*if (actor.CurrentAction != null)
             {
                 if (actor.CurrentAction.IsFinished)
                 {
@@ -78,21 +58,21 @@ namespace Forge.Actors
                 {
                     actor.CurrentAction.Update(actor.Owner, currentTime, deltaTime);
                 }
-            }
+            }*/
         }
 
         /// <summary>
         ///  Process an actor component's movement request.
         /// </summary>
-        private void ProcessMovementRequest(ActorComponent actor, double currentTime, double deltaTime)
+        private void ProcessMovementRequest(LocomotionComponent actor, TimeSpan currentTime, TimeSpan deltaTime)
         {
             // Skip movement if the actor is performing an action that prevents movement.
             bool movementAllowed = true;
 
-            if (actor.CurrentAction != null && !actor.CurrentAction.CanMove)
+            /*if (actor.CurrentAction != null && !actor.CurrentAction.CanMove)
             {
                 movementAllowed = false;
-            }
+            }*/
 
             // Calculate the a movement vector from the request.
             var physics = actor.Owner.Get<PhysicsComponent>();
@@ -104,7 +84,7 @@ namespace Forge.Actors
             if (movementAllowed && requestedMovement != Vector2.Zero)
             {
                 // Linearly interpolate speed from zero up to requested speed to simulate acceleration.
-                var interpFactor = MathHelper.Clamp(actor.WalkAccelerationSeconds, 0.0f, 0.1f) * 10.0f;
+                var interpFactor = MathHelper.Clamp(actor.WalkAccelerationTime.TotalSeconds, 0.0f, 0.1f) * 10.0f;
                 var requestedSpeed = requestedMovement.Length;
                 var requestedDirection = requestedMovement.Normalized();
                 var actualSpeed = Interpolation.Lerp(0.0f, requestedSpeed, interpFactor);
@@ -113,7 +93,7 @@ namespace Forge.Actors
 
                 // Update actor state.
                 transform.WorldRotation = requestedDirection.AngleRadians_Normalized;
-                actor.WalkAccelerationSeconds += deltaTime;     // TODO: Move to locomotion.
+                actor.WalkAccelerationTime += deltaTime;     // TODO: Move to locomotion.
 
                 // Walk animation.
                 var sprite = actor.Owner.Get<SpriteComponent>();
@@ -136,7 +116,7 @@ namespace Forge.Actors
                 // current speed down to zero with a quick deceleration window.s
                 // TODO: Actually do deceleration.
                 physics.Velocity = Vector2.Zero;
-                actor.WalkAccelerationSeconds = 0.0f;
+                actor.WalkAccelerationTime = TimeSpan.Zero;
 
                 // Actor is not walking - return them to the idle animation.
                 var sprite = actor.Owner.Get<SpriteComponent>();

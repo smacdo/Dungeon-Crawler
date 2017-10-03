@@ -22,11 +22,11 @@ namespace Forge.Tests.Sprites
 
             var a = new AnimationDefinition(
                 "RandomName",
-                42.5f,
+                TimeSpan.FromSeconds(42.5f),
                 frames);
 
             Assert.AreEqual("RandomName", a.Name);
-            Assert.AreEqual(42.5f, a.FrameSeconds);
+            Assert.AreEqual(42.5f, a.FrameTime.TotalSeconds);
             Assert.AreEqual(3, a.FrameCount);
             Assert.AreEqual(frames[0, 0], a.Frames[0, 0]);
             Assert.AreEqual(frames[0, 1], a.Frames[0, 1]);
@@ -58,11 +58,11 @@ namespace Forge.Tests.Sprites
 
             var a = new AnimationDefinition(
                 "QuadAnimation",
-                42.0f,
+                TimeSpan.FromSeconds(42.0f),
                 frames);
 
             Assert.AreEqual("QuadAnimation", a.Name);
-            Assert.AreEqual(42.0f, a.FrameSeconds);
+            Assert.AreEqual(42.0f, a.FrameTime.TotalSeconds);
             Assert.AreEqual(2, a.FrameCount);
             Assert.AreEqual(frames[0, 0], a.Frames[0, 0]);
             Assert.AreEqual(frames[0, 1], a.Frames[0, 1]);
@@ -100,7 +100,7 @@ namespace Forge.Tests.Sprites
 
             var a = new AnimationDefinition(
                 "QuadAnimation",
-                42.0f,
+                TimeSpan.FromSeconds(42.0f),
                 frames);
 
             Assert.AreEqual(frames[0, 0], a.GetAtlasPosition(DirectionName.East, 0));

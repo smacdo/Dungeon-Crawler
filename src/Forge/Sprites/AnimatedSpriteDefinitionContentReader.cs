@@ -225,11 +225,11 @@ namespace Forge.Sprites
             }
 
             // Get amount of time each frame should be displayed for.
-            var frameTime = AnimationDefinition.DefaultFrameTimeInSeconds;
+            var frameTime = AnimationDefinition.DefaultFrameTime;
 
             try
             {
-                frameTime = Convert.ToSingle(animationNode.Attributes["frameTime"].Value);
+                frameTime = TimeSpan.FromSeconds(Convert.ToSingle(animationNode.Attributes["frameTime"].Value));
             }
             catch (FormatException e)
             {

@@ -28,15 +28,15 @@ namespace Forge.Sprites
     /// </remarks>
     public class AnimationDefinition
     {
-        public const float DefaultFrameTimeInSeconds = 0.10f;
+        public static readonly TimeSpan DefaultFrameTime = TimeSpan.FromSeconds(0.10);
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="name">Name of the animation</param>
-        /// <param name="frameSeconds">Amount of time in seconds display each frame</param>
+        /// <param name="frameTime">Amount of time to display each frame</param>
         /// <param name="atlasPositions">Upper left corner position of sprite in texture atlas.</param>
-        public AnimationDefinition(string name, float frameSeconds, Vector2[,] atlasPositions)
+        public AnimationDefinition(string name, TimeSpan frameTime, Vector2[,] atlasPositions)
         {
             // Assign properties if arguments are valid.
             if (string.IsNullOrWhiteSpace(name))
@@ -46,12 +46,12 @@ namespace Forge.Sprites
 
             Name = name;
 
-            if (frameSeconds <= 0.0f)
+            if (frameTime.TotalSeconds <= 0.0f)
             {
-                throw new ArgumentException("Frame time must be larger than zero", nameof(frameSeconds));
+                throw new ArgumentException("Frame time must be larger than zero", nameof(frameTime));
             }
 
-            FrameSeconds = frameSeconds;
+            FrameTime = frameTime;
 
             if (atlasPositions == null)
             {
@@ -109,7 +109,7 @@ namespace Forge.Sprites
         /// <summary>
         ///  Get the amount of time to play each frame in the animation.
         /// </summary>
-        public float FrameSeconds { get; private set; }     // TODO: Use TimeSpan.
+        public TimeSpan FrameTime { get; private set; }
 
         /// <summary>
         /// Get the name of the animation.

@@ -26,7 +26,7 @@ namespace Forge.Ai
     /// </summary>
     public class AiProcessor : ComponentProcessor<AiComponent>
     {
-        private const double DecisionWindowInSeconds = 1.0f;
+        private readonly TimeSpan DecisionWindowInSeconds = TimeSpan.FromSeconds(1.0);
         private const double ChangeWalkDirectionChance = 0.05;
         private const double ChangeIdleDirectionChange = 0.20;
         private const double StartWalkingChance = 0.15;
@@ -52,14 +52,12 @@ namespace Forge.Ai
         /// <summary>
         ///  Update an AI component.
         /// </summary>
-        protected override void UpdateComponent(AiComponent ai, double currentTime, double deltaTime)
+        protected override void UpdateComponent(AiComponent ai, TimeSpan currentTime, TimeSpan deltaTime)
         {
             var decisionTimeDelta = TimeSpan.FromSeconds(0.25);
-            var gameTime = TimeSpan.FromSeconds(currentTime);
-
             var gameObject = ai.Owner;
 
-            var actor = gameObject.Get<ActorComponent>();
+            var actor = gameObject.Get<LocomotionComponent>();
 
             switch (ai.CurrentState)
             {
@@ -79,28 +77,28 @@ namespace Forge.Ai
         private void PerformIdleUpdate(
             AiComponent ai,
             IGameObject gameObject,
-            double currentTime,
-            double deltaTime)
+            TimeSpan currentTime,
+            TimeSpan deltaTime)
         {
             // Consider switching to movement.
-            var actor = gameObject.Get<ActorComponent>();
+            var actor = gameObject.Get<LocomotionComponent>();
 
-            if (ai.SecondsSinceLastStateChange >= DecisionWindowInSeconds)
+            if (ai.TimeSinceLastStateChange >= DecisionWindowInSeconds)
             {
                 // Shift to walking?
                 if (mRandom.NextDouble() <= StartWalkingChance)
                 {
                     ai.CurrentState = AiState.Walking;
-                    ai.SecondsSinceLastStateChange = 0.0f;
+                    ai.TimeSinceLastStateChange = TimeSpan.Zero;
                 }
                 //TODO: Change direction?
                 else if (mRandom.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    ai.SecondsSinceLastStateChange = 0.0f;
+                    ai.TimeSinceLastStateChange = TimeSpan.Zero;
                 }
             }
 
-            ai.SecondsSinceLastStateChange += deltaTime;
+            ai.TimeSinceLastStateChange += deltaTime;
         }
 
         /// <summary>
@@ -109,24 +107,24 @@ namespace Forge.Ai
         private void PerformMovingUpdate(
             AiComponent ai,
             IGameObject gameObject,
-            double currentTime,
-            double deltaTime)
+            TimeSpan currentTime,
+            TimeSpan deltaTime)
         {
-            var actor = gameObject.Get<ActorComponent>();
+            var actor = gameObject.Get<LocomotionComponent>();
 
             // Consider changing movement direction or state every second.
-            if (ai.SecondsSinceLastStateChange >= DecisionWindowInSeconds)
+            if (ai.TimeSinceLastStateChange >= DecisionWindowInSeconds)
             {
                 // Start walking?
                 if (mRandom.NextDouble() <= StopWalkingChance)
                 {
                     ai.CurrentState = AiState.Walking;
-                    ai.SecondsSinceLastStateChange = 0.0f;
+                    ai.TimeSinceLastStateChange = TimeSpan.Zero;
                 }
                 // TODO: Change direction?
                 else if (mRandom.NextDouble() <= ChangeWalkDirectionChance)
                 {
-                    ai.SecondsSinceLastStateChange = 0.0f;
+                    ai.TimeSinceLastStateChange = TimeSpan.Zero;
                 }
             }
 
@@ -136,7 +134,7 @@ namespace Forge.Ai
                 actor.MoveForward((float)(MovementSpeedPerSecond));
             }
 
-            ai.SecondsSinceLastStateChange += deltaTime;
+            ai.TimeSinceLastStateChange += deltaTime;
         }
     }
 }

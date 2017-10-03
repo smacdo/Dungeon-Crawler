@@ -118,46 +118,46 @@ namespace Forge.Tests.GameObjectsTests
             var gameObject2 = new GameObject();
 
             // Add with no game objects.
-            mProcessor.Update(1.0f, 1.0f);
+            mProcessor.Update(TimeSpan.FromSeconds(1.0f), TimeSpan.FromSeconds(1.0f));
             Assert.AreEqual(0, mProcessor.UpdatedComponents.Count);
 
             // Update with one game object.
             var component1 = mProcessor.Create(gameObject1);
-            mProcessor.Update(2.5f, 1.5f);
+            mProcessor.Update(TimeSpan.FromSeconds(2.5f), TimeSpan.FromSeconds(1.5f));
 
             Assert.AreEqual(1, mProcessor.UpdatedComponents.Count);
-            Assert.AreEqual(2.5f, mProcessor.UpdatedComponents[component1].CurrentTime);
-            Assert.AreEqual(1.5f, mProcessor.UpdatedComponents[component1].DeltaTime);
+            Assert.AreEqual(2.5f, mProcessor.UpdatedComponents[component1].CurrentTime.TotalSeconds);
+            Assert.AreEqual(1.5f, mProcessor.UpdatedComponents[component1].DeltaTime.TotalSeconds);
 
             // Update with two game objects.
             var component2 = mProcessor.Create(gameObject2);
-            mProcessor.Update(4.5f, 2.0f);
+            mProcessor.Update(TimeSpan.FromSeconds(4.5f), TimeSpan.FromSeconds(2.0f));
 
             Assert.AreEqual(2, mProcessor.UpdatedComponents.Count);
-            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component1].CurrentTime);
-            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component1].DeltaTime);
-            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component2].CurrentTime);
-            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component2].DeltaTime);
+            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component1].CurrentTime.TotalSeconds);
+            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component1].DeltaTime.TotalSeconds);
+            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component2].CurrentTime.TotalSeconds);
+            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component2].DeltaTime.TotalSeconds);
 
             // Update with one game object removed.
             mProcessor.Remove(component1);
-            mProcessor.Update(7.5f, 3.0f);
+            mProcessor.Update(TimeSpan.FromSeconds(7.5f), TimeSpan.FromSeconds(3.0f));
 
             Assert.AreEqual(2, mProcessor.UpdatedComponents.Count);
-            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component1].CurrentTime);
-            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component1].DeltaTime);
-            Assert.AreEqual(7.5f, mProcessor.UpdatedComponents[component2].CurrentTime);
-            Assert.AreEqual(3.0f, mProcessor.UpdatedComponents[component2].DeltaTime);
+            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component1].CurrentTime.TotalSeconds);
+            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component1].DeltaTime.TotalSeconds);
+            Assert.AreEqual(7.5f, mProcessor.UpdatedComponents[component2].CurrentTime.TotalSeconds);
+            Assert.AreEqual(3.0f, mProcessor.UpdatedComponents[component2].DeltaTime.TotalSeconds);
 
             // Update with all game objects removed.
             mProcessor.Remove(component2);
-            mProcessor.Update(17.5f, 10.0f);
+            mProcessor.Update(TimeSpan.FromSeconds(17.5f), TimeSpan.FromSeconds(10.0f));
 
             Assert.AreEqual(2, mProcessor.UpdatedComponents.Count);
-            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component1].CurrentTime);
-            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component1].DeltaTime);
-            Assert.AreEqual(7.5f, mProcessor.UpdatedComponents[component2].CurrentTime);
-            Assert.AreEqual(3.0f, mProcessor.UpdatedComponents[component2].DeltaTime);
+            Assert.AreEqual(4.5f, mProcessor.UpdatedComponents[component1].CurrentTime.TotalSeconds);
+            Assert.AreEqual(2.0f, mProcessor.UpdatedComponents[component1].DeltaTime.TotalSeconds);
+            Assert.AreEqual(7.5f, mProcessor.UpdatedComponents[component2].CurrentTime.TotalSeconds);
+            Assert.AreEqual(3.0f, mProcessor.UpdatedComponents[component2].DeltaTime.TotalSeconds);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Forge.Tests.GameObjectsTests
             /// <summary>
             ///  Mark each component with the time provided as being updated.
             /// </summary>
-            protected override void UpdateComponent(TestComponent component, double currentTime, double deltaTime)
+            protected override void UpdateComponent(TestComponent component, TimeSpan currentTime, TimeSpan deltaTime)
             {
                 UpdatedComponents[component] = new TimeInfo { CurrentTime = currentTime, DeltaTime = deltaTime }; ;
             }
@@ -190,8 +190,8 @@ namespace Forge.Tests.GameObjectsTests
             /// </summary>
             public struct TimeInfo
             {
-                public double CurrentTime;
-                public double DeltaTime;
+                public TimeSpan CurrentTime;
+                public TimeSpan DeltaTime;
             }
         }
     }

@@ -37,7 +37,7 @@ namespace Forge.Ai
         /// <summary>
         ///  The number of seconds
         /// </summary>
-        public double SecondsSinceLastStateChange { get; set; }
+        public TimeSpan TimeSinceLastStateChange { get; set; }
 
         /// <summary>
         ///  Get or set the current AI state.
@@ -50,7 +50,7 @@ namespace Forge.Ai
         /// <param name="owner">Game object who owns this AI controller</param>
         public AiComponent()
         {
-            SecondsSinceLastStateChange = 0.0f;
+            TimeSinceLastStateChange = TimeSpan.Zero;
         }
     }
 }

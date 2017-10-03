@@ -55,7 +55,7 @@ namespace Forge
         public Camera MainCamera { get; set; }
 
         // TODO: Change this PlayerController, and move other logic into separate gameplay components or AI/Actor brian.
-        public ActorProcessor Actors { get; internal set; }
+        public LocomotionComponentProcessor Actors { get; internal set; }
         public AiProcessor AI { get; internal set; }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Forge
         {
             Sprites = new SpriteComponentProcessor(this);
             Physics = new PhysicsComponentProcessor(this);
-            Actors = new ActorProcessor(this);
+            Actors = new LocomotionComponentProcessor(this);
             AI = new AiProcessor(this);
 
             if (tilemap == null)
@@ -132,14 +132,14 @@ namespace Forge
             // Resolve movement and collision first, before the player or AI gets chance to do anything. Hence the
             // current position of all objects (and collision) that is displayed is actually one frame BEFORE this
             // nupdate
-            Physics.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            Physics.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
 
             // Make sure animations are primed and updated.
-            Sprites.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            Sprites.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
 
             // Update game ai and character actions
-            AI.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
-            Actors.Update(gameTime.TotalGameTime.TotalSeconds, gameTime.ElapsedGameTime.TotalSeconds);
+            AI.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+            Actors.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
         }
 
         /// <summary>

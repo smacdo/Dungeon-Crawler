@@ -32,19 +32,16 @@ namespace Forge.GameObjects
 
         int ComponentCount { get; }
 
-        void Update(double currentTime, double deltaTime);
+        void Update(TimeSpan currentTime, TimeSpan deltaTime);
     }
 
     /// <summary>
-    ///  Simple component processor that processes a batch of components. This component processor injects a typed
-    ///  component into each game object and assumes that it is the exclusive owner of said component. Each time the
-    ///  component processor gets an update call it will loop through all the components that it added and process them
-    ///  in a batch.
+    ///  Simple component processor that processes a batch of components.
     /// </summary>
     /// <remarks>
-    ///  TODO: Switch mComponents to a fixed size array set at processor creation time, and use a list/linked list to
-    ///  manage overflow components.
-    ///  TODO: 
+    ///  This component processor injects a typed component into each game object and assumes that it is the exclusive
+    ///  owner of said component. Each time the component processor gets an update call it will loop through all the
+    ///  components that it added and process them in a batch.
     /// </remarks>
     public abstract class ComponentProcessor<TComponent> : IComponentProcessor<TComponent>
         where TComponent : class, IComponent, new()
@@ -155,7 +152,7 @@ namespace Forge.GameObjects
         ///  The update method uses a traditional for looop to reduce garbage generation.
         /// </remarks>
         /// <param name="gameTime">The current game time</param>
-        public virtual void Update(double currentTime, double deltaTime)
+        public virtual void Update(TimeSpan currentTime, TimeSpan deltaTime)
         {
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var index = 0; index < mComponents.Count; ++index)
@@ -167,7 +164,6 @@ namespace Forge.GameObjects
             }
         }
 
-        protected abstract void UpdateComponent(TComponent component, double currentTime, double deltaTime);
-
+        protected abstract void UpdateComponent(TComponent component, TimeSpan currentTime, TimeSpan deltaTime);
     }
 }

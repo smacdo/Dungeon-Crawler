@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using Forge;
-using Forge.Engine;
 using Forge.Actors;
 using Forge.Physics;
 using Forge.Sprites;
@@ -84,7 +83,7 @@ namespace DungeonCrawler.Actions
         {
             var actorSprite = actorGameObject.Get<SpriteComponent>();
 
-            var actor = actorGameObject.Get<ActorComponent>();
+            var actor = actorGameObject.Get<LocomotionComponent>();
             var direction = actorGameObject.Transform.Forward;
 
             // Get the weapon game object for animation (Which is attached to the character).
@@ -148,7 +147,7 @@ namespace DungeonCrawler.Actions
         /// <summary>
         /// Draws a hit box for the game
         /// </summary>
-        private void DrawHitBox(ActorComponent actor, float elapsedSeconds)
+        private void DrawHitBox(LocomotionComponent actor, float elapsedSeconds)
         {
             // Calculate progress of weapon attack animation as a value in the range [0, 1).
             const float AnimationStartTime = StartupSeconds;

@@ -37,13 +37,8 @@ namespace Forge.Sprites
         /// <summary>
         ///  Update sprite component.
         /// </summary>
-        protected override void UpdateComponent(
-            SpriteComponent sprite,
-            double currentTimeSeconds,
-            double deltaTimeSeconds)
+        protected override void UpdateComponent(SpriteComponent sprite, TimeSpan currentTime, TimeSpan deltaTime)
         {
-            var totalGameTime = TimeSpan.FromSeconds(currentTimeSeconds);
-
             // Was there a request to start playing an animation?
             if (sprite.RequestedAnimation.HasValue)
             {
@@ -58,14 +53,14 @@ namespace Forge.Sprites
             }
 
             // Update animation timing.
-            sprite.AnimationFrameSecondsActive += deltaTimeSeconds;
-            sprite.AnimationSecondsActive += deltaTimeSeconds;
+            sprite.CurrentFrameTime += deltaTime;
+            sprite.AnimationTimeActive += deltaTime;
 
             // Update the animation by advancing as many animation frames as possible in the amount of time that has
             // elapsed since the last animation update.
             bool animationCompleted = false;
 
-            while (sprite.AnimationFrameSecondsActive >= sprite.CurrentAnimation.FrameSeconds)
+            while (sprite.CurrentFrameTime >= sprite.CurrentAnimation.FrameTime)
             {
                 // Move to the next frame.
                 sprite.AnimationFrameIndex += 1;
@@ -98,7 +93,7 @@ namespace Forge.Sprites
                 UpdateSpriteTextureAtlasPosition(sprite, sprite.CurrentAnimation, sprite.AnimationFrameIndex);
 
                 // Update the time when this animation frame was first displayed
-                sprite.AnimationFrameSecondsActive -= sprite.CurrentAnimation.FrameSeconds;
+                sprite.CurrentFrameTime -= sprite.CurrentAnimation.FrameTime;
             }
 
             // Reset animation state if the current animation has completed.
@@ -129,8 +124,8 @@ namespace Forge.Sprites
             sprite.CurrentAnimation = animation;
             sprite.EndingAction = request.EndingAction;
 
-            sprite.AnimationSecondsActive = 0.0;            // TODO: Should this be zero or time when request was made?
-            sprite.AnimationFrameSecondsActive = 0.0;       //  ... request time is time at last update.
+            sprite.AnimationTimeActive = TimeSpan.Zero; // TODO: Should this be zero or time when request was made?
+            sprite.CurrentFrameTime = TimeSpan.Zero;
 
             sprite.AnimationFrameIndex = 0;
 

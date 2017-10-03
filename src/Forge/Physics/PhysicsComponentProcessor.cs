@@ -48,9 +48,9 @@ namespace Forge.Physics
         /// <summary>
         ///  Update all attached physics components.
         /// </summary>
-        /// <param name="currentTime">Current elapsed simulation time in seconds.</param>
-        /// <param name="deltaTime">Seconds since last call to update.</param>
-        public override void Update(double currentTime, double deltaTime)
+        /// <param name="currentTime">Current elapsed simulation time.</param>
+        /// <param name="deltaTime">Time since last call to update.</param>
+        public override void Update(TimeSpan currentTime, TimeSpan deltaTime)
         {
             CalculateDesiredMovements(currentTime, deltaTime);
             FindAndResolveCollisions();
@@ -60,9 +60,9 @@ namespace Forge.Physics
         ///  Apply movement physics and calculate where each physics object would like to move to. Updates the spatial
         ///  index with the current position of each physics object.
         /// </summary>
-        /// <param name="currentTime">Current elapsed simulation time in seconds.</param>
-        /// <param name="deltaTime">Seconds since last call to update.</param>
-        private void CalculateDesiredMovements(double currentTime, double deltaTime)
+        /// <param name="currentTime">Current elapsed simulation time.</param>
+        /// <param name="deltaTime">Time since last call to update.</param>
+        private void CalculateDesiredMovements(TimeSpan currentTime, TimeSpan deltaTime)
         {
             // Reset the spatial index to clear all physics components and their positions.
             // TODO: Is there a way to speed this up by not resetting everyone every update cycle?
@@ -85,9 +85,9 @@ namespace Forge.Physics
         ///  Apply movement physics and calculate where the physics object would like to move to.
         /// </summary>
         /// <param name="c">Physics component to update.</param>
-        /// <param name="currentTime">Current elapsed simulation time in seconds.</param>
-        /// <param name="deltaTime">Seconds since last call to update.</param>
-        private void CalculateDesiredMovement(PhysicsComponent c, double currentTime, double deltaTime)
+        /// <param name="currentTime">Current elapsed simulation time.</param>
+        /// <param name="deltaTime">Time since last call to update.</param>
+        private void CalculateDesiredMovement(PhysicsComponent c, TimeSpan currentTime, TimeSpan deltaTime)
         {
             // TODO: Rewrite the physics code below because the current implementation sucks. Its a big hack with
             //       nothing simulated accurately. Actually I bet the code doesn't even follow the comments I wrote...
@@ -96,7 +96,7 @@ namespace Forge.Physics
             // Apply acceleration and friction.
             if (c.Acceleration.LengthSquared != 0.0f)
             {
-                c.Velocity += (c.Acceleration * (float) deltaTime);
+                c.Velocity += (c.Acceleration * (float) deltaTime.TotalSeconds);
                 c.Velocity += (c.Velocity.Normalized().Negated() * 0.95f);       // bad way to do friction.
             }
             
@@ -109,7 +109,7 @@ namespace Forge.Physics
 
             // Calculate new desired position.
             var desiredPosition = (c.Owner != null ? c.Owner.Transform.WorldPosition : Vector2.Zero);
-            desiredPosition += (c.Velocity * (float) deltaTime);
+            desiredPosition += (c.Velocity * (float) deltaTime.TotalSeconds);
 
             c.DesiredPosition = desiredPosition;
 
@@ -296,7 +296,7 @@ namespace Forge.Physics
             return isInBounds;
         }
 
-        protected override void UpdateComponent(PhysicsComponent component, double currentTime, double deltaTime)
+        protected override void UpdateComponent(PhysicsComponent component, TimeSpan currentTime, TimeSpan deltaTime)
         {
             // Empty.
         }
