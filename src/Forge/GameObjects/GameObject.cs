@@ -23,16 +23,18 @@ namespace Forge.GameObjects
     /// <summary>
     ///  GameObject represents a basic, physical game object that can exist in the game world.
     /// </summary>
-    public class GameObject : IGameObject
+    public class GameObject
     {
         private const int InitialComponentCapacity = 7;
 
         private bool mDisposed = false;
         private GameObject mParent = null;
-        private IGameScene mScene = null;
+        private GameScene mScene = null;
 
         private Dictionary<System.Type, IComponent> mComponents =
             new Dictionary<Type, IComponent>(InitialComponentCapacity);
+
+        private ISelfUpdatingComponent _firstComponentToUpdate;
 
         /// <summary>
         ///  Creates a new empty game object that is not associated with any collection.
@@ -101,11 +103,6 @@ namespace Forge.GameObjects
         public GameObject FirstChild { get; private set; }
 
         /// <summary>
-        ///  Get the first child of this game object.
-        /// </summary>
-        IGameObject IGameObject.FirstChild { get { return FirstChild; } }
-
-        /// <summary>
         ///  Get a unique identifier for this game object.
         /// </summary>
         /// <remarks>
@@ -126,11 +123,6 @@ namespace Forge.GameObjects
         ///  Get the next sibling of this game object.
         /// </summary>
         public GameObject NextSibling { get; private set; }
-
-        /// <summary>
-        ///  Get the next sibling of this game object.
-        /// </summary>
-        IGameObject IGameObject.NextSibling { get { return NextSibling; } }
 
         /// <summary>
         ///  Get or set the parent of a game object.
@@ -175,25 +167,12 @@ namespace Forge.GameObjects
         }
 
         /// <summary>
-        ///  Get or set the parent of a game object.
-        /// </summary>
-        /// <remarks>
-        ///  Changing the parent can trigger a cascade of updates which is a moderately slow operation.
-        /// </remarks>
-        IGameObject IGameObject.Parent
-        {
-            get { return Parent; }
-            set { Parent = (GameObject) value; }
-        }
-
-        /// <summary>
         ///  Get or set the scene that this game object exists in.
         /// </summary>
         /// <remarks>
-        ///  TODO: Mark this as "internal set" once the Core/Engine merge happens.
         ///  TODO: Don't recursively search.
         /// </remarks>
-        public IGameScene Scene
+        public GameScene Scene
         {
             get
             {
@@ -213,7 +192,7 @@ namespace Forge.GameObjects
                     }
                 }
             }
-            set { mScene = value; }
+            internal set { mScene = value; }
         }
 
         /// <summary>
@@ -229,13 +208,24 @@ namespace Forge.GameObjects
         /// </remarks>
         /// <typeparam name="TComponent">Component type to add.</typeparam>
         /// <param name="component">Component component to add.</param>
-        public void Add<TComponent>(TComponent component) where TComponent : IComponent
+        /// <returns>Reference to the component that was added.</returns>
+        public TComponent Add<TComponent>(TComponent component) where TComponent : IComponent
         {
+            // Ensure new component not null.
             if (ReferenceEquals(component, null))
             {
-                throw new ArgumentNullException("component");
+                throw new ArgumentNullException(nameof(component));
             }
 
+            // Assign ownership.
+            if (component.Owner != null)
+            {
+                throw new CannotChangeComponentOwnerException(component, component.Owner, this);
+            }
+
+            component.Owner = this;
+
+            // Add component to component bag.
             var key = component.GetType();
 
             if (!mComponents.ContainsKey(key))
@@ -246,6 +236,32 @@ namespace Forge.GameObjects
             {
                 throw new ComponentAlreadyAddedException(this, component);
             }
+
+            // Check if component require manual updates (eg it wants to update but does not have an associated
+            // processor). If so then add it to a list of components that need to be updated each tiem this game
+            // object is updated.
+            // TODO: Add support for priority.
+            if (component is ISelfUpdatingComponent updatingComponent)
+            {
+                if (_firstComponentToUpdate == null)
+                {
+                    _firstComponentToUpdate = updatingComponent;
+                }
+                else
+                {
+                    // Get last node in linked list.
+                    var node = _firstComponentToUpdate;
+
+                    while (node.NextComponentToUpdate != null)
+                    {
+                        node = node.NextComponentToUpdate;
+                    }
+
+                    node.NextComponentToUpdate = updatingComponent;
+                }
+            }
+
+            return component;
         }
 
         /// <summary>
@@ -263,7 +279,7 @@ namespace Forge.GameObjects
         /// </summary>
         /// <param name="name">Name of the child game object.</param>
         /// <returns>The child game object if located otherwise null.</returns>
-        public IGameObject FindChildByName(string name)
+        public GameObject FindChildByName(string name)
         {
             var next = FirstChild;
 
@@ -341,20 +357,61 @@ namespace Forge.GameObjects
         {
             IComponent component;
 
-            if (mComponents.TryGetValue(componentType, out component))
+            // Try to get the component from the component bag.
+            if (!mComponents.TryGetValue(componentType, out component))
             {
-                if (componentType == typeof(TransformComponent))
-                {
-                    Transform = null;
-                }
+                return false;
+            }
+            
+            // Remove the component from the componet bag.
+            mComponents.Remove(componentType);
 
-                mComponents.Remove(componentType);
-                ((IDisposable) component).Dispose();
-
-                return true;
+            // Null out special fields that point to component bag.
+            if (componentType == typeof(TransformComponent))
+            {
+                Transform = null;
             }
 
-            return false;
+            // Check if component requires manual updates (eg it wants to update but does not have an associated
+            // processor). If so it must be removed from the update list when the component is removed from this
+            // game object.
+            if (component is ISelfUpdatingComponent updatingComponent)
+            {
+                if (ReferenceEquals(_firstComponentToUpdate, updatingComponent))
+                {
+                    _firstComponentToUpdate = _firstComponentToUpdate.NextComponentToUpdate;
+                }
+                else if (_firstComponentToUpdate != null)
+                {
+                    // Find component in linked list.
+                    ISelfUpdatingComponent previous = null;
+                    var node = _firstComponentToUpdate;
+
+                    while (!ReferenceEquals(node, updatingComponent))
+                    {
+                        previous = node;
+                        node = node.NextComponentToUpdate;
+                    }
+
+                    // Was component located?
+                    if (ReferenceEquals(node, updatingComponent))
+                    {
+                        previous.NextComponentToUpdate = node.NextComponentToUpdate;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Could not find component to remove in updating list");
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("Tried to remove updating component but linked list was null");
+                }
+            }
+            
+            // If the component implements IDisposable then dispose of it.
+            ((IDisposable)component).Dispose();
+            return true;
         }
 
         /// <summary>
@@ -380,11 +437,7 @@ namespace Forge.GameObjects
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format(
-                "GameObject id = {0}, Name = {1}, ComponentCount = {2}",
-                Id,
-                Name,
-                mComponents.Count);
+            return $"{Name} ({Transform})";
         }
 
         /// <summary>
@@ -551,6 +604,46 @@ namespace Forge.GameObjects
                 }
 
                 next = next.NextSibling;
+            }
+        }
+
+        /// <summary>
+        ///  Update this game object and all children + siblings attached to this game object.
+        /// </summary>
+        /// <param name="currentTime">Current simulation time.</param>
+        /// <param name="deltaTime">Time elapsed since last simulation update.</param>
+        public void UpdateRecursively(TimeSpan currentTime, TimeSpan deltaTime)
+        {
+            // Update self and all siblings.
+            var gameObject = this;
+
+            while (gameObject != null)
+            {
+                gameObject.UpdateSelf(currentTime, deltaTime);
+                gameObject = gameObject.NextSibling;
+            }
+
+            // Update children.
+            if (FirstChild != null)
+            {
+                FirstChild.UpdateRecursively(currentTime, deltaTime);
+            }
+        }
+
+        /// <summary>
+        ///  Perform simulation updates for game object.
+        /// </summary>
+        /// <param name="currentTime">Current simulation time.</param>
+        /// <param name="deltaTime">Time elapsed since last simulation update.</param>
+        public void UpdateSelf(TimeSpan currentTime, TimeSpan deltaTime)
+        {
+            // Call update on all self updating components.
+            var component = _firstComponentToUpdate;
+
+            while (component != null)
+            {
+                component.Update(currentTime, deltaTime);
+                component = component.NextComponentToUpdate;
             }
         }
     }

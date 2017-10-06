@@ -20,7 +20,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using DungeonCrawler.Actions;
 using Forge;
-using Forge.Actors;
 using Forge.Input;
 using Forge.GameObjects;
 using Forge.Graphics;
@@ -30,6 +29,8 @@ using DungeonCrawler.WorldGeneration;
 using DungeonCrawler.Levels;
 using DungeonCrawler.Blueprints;
 using Forge.Physics;
+using Forge.Gameplay;
+using DungeonCrawler.Components;
 
 namespace DungeonCrawler
 {
@@ -39,21 +40,11 @@ namespace DungeonCrawler
     /// </summary>
     public class DungeonCrawlerClient : Microsoft.Xna.Framework.Game
     {
-        enum InputAction
-        {
-            ExitGame,
-            PrintDebugInfo,
-            Move,
-            MoveCamera,
-            MeleeAttack,
-            RangedAttack,
-            CastSpell
-        }
-
         private readonly GraphicsDeviceManager mGraphicsDevice;
         private GameObject mPlayer;
 
         private bool mEnemySpawningEnabled = true;
+        private bool mKeepSpawningEnemies = false;
         private Random mWorldRandom = new Random();
 
         private IGameRenderer mRenderer;
@@ -146,10 +137,12 @@ namespace DungeonCrawler
 
             mGameObjectFactory = new DungeonCrawlerBlueprintFactory(Content, mCurrentScene);
 
-            // Spawn player into level.
+            // Spawn player into level. 
             var position = mCurrentLevel.TileMap.GetWorldPositionForTile(mCurrentLevel.StairsUpPoint);
             mPlayer = mGameObjectFactory.Spawn(BlueprintNames.Player, "Player", position).Result;    // TODO: async support.
-                
+
+            mPlayer.Add(new PlayerController(mInputManager));
+
             // Spawn a bunch of skeletons to get started.
             for (int i = 0; i < 100; i++)
             {
@@ -208,6 +201,11 @@ namespace DungeonCrawler
 
         private void SpawnSkeleton()
         {
+            if (!mEnemySpawningEnabled)
+            {
+                return;
+            }
+
             // Pick a spot to place the skeleton enemy.
             // TODO: Check if location is clear before spawning!
             var mapWidth = mCurrentScene.Tilemap.Width - 128;
@@ -249,16 +247,7 @@ namespace DungeonCrawler
             {
                 Exit();
             }
-
-            // Player movement.
-            var locomotor = mPlayer.Get<LocomotionComponent>();
-            var playerMovement = mInputManager.GetAxis(InputAction.Move);
-
-            if (playerMovement.LengthSquared > 0.01)
-            {
-                locomotor.Move(playerMovement, 125.0f);
-            }
-
+            
             // Camera movement.
             var cameraMovement = mInputManager.GetAxis(InputAction.MoveCamera);
 
@@ -267,32 +256,20 @@ namespace DungeonCrawler
                 mCurrentScene.MainCamera.Translate(cameraMovement * 8.0f);
             }
 
-            // Player actions.
-            if ( mInputManager.WasTriggered( InputAction.MeleeAttack ) )
-            {
-                //playerActor.Perform( new ActionSlashAttack() );
-            }
-            else if ( mInputManager.WasTriggered( InputAction.RangedAttack ) )
-            {
-                //playerActor.Perform( new ActionRangedAttack() );
-            }
-            else if ( mInputManager.WasTriggered( InputAction.CastSpell ) )
-            {
-                //playerActor.Perform(new ActionCastSpell());
-            }
-
             // Spawn some stuff
-            if ( mNextSpawnTime <= gameTime.TotalGameTime && mEnemyCount < 32 )
+            if (mEnemySpawningEnabled && mNextSpawnTime <= gameTime.TotalGameTime && mEnemyCount < 32 )
             {
                 if ((mWorldRandom.NextDouble() < 0.75 || mFirstSpawn) && mEnemySpawningEnabled)
                 {
-                    //SpawnSkeleton();
+                    SpawnSkeleton();
                     mFirstSpawn = false;
                 }
 
                 mNextSpawnTime = gameTime.TotalGameTime.Add( TimeSpan.FromSeconds( 1.0 ) );
             }
 
+            // TODO: I think this should actually be before input is taken as the world should be updated,
+            // shown to the user and then input taken to be executed on the next frame.
             mCurrentScene.Update(gameTime);
            
             base.Update( gameTime );

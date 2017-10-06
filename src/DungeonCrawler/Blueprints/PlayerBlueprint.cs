@@ -20,6 +20,7 @@ using Forge.Content;
 using Forge.Sprites;
 using System.Threading.Tasks;
 using Forge.Physics;
+using DungeonCrawler.Components;
 
 namespace DungeonCrawler.Blueprints
 {
@@ -100,7 +101,8 @@ namespace DungeonCrawler.Blueprints
                 await LoadSprite(content, BeltSpritePath));
 
             // Add actor component.
-            var actor = scene.Actors.Create(self);
+            var locomotor = scene.Locomotors.Create(self);
+            var actions = scene.Actions.Create(self);
 
             // Add physics.
             var physics = scene.Physics.Create(self);
@@ -116,11 +118,23 @@ namespace DungeonCrawler.Blueprints
 
             // Create sword and center the object on the character.
             //  TODO: Don't hard code the values.
-            var weaponGameObject = await blueprints.Spawn(BlueprintNames.Sword, "Sword", null);
-            weaponGameObject.Parent = self;
+            var meleeWeapon = await blueprints.Spawn(BlueprintNames.Sword, "Sword", null);
 
-            weaponGameObject.Transform.LocalPosition = new Vector2(-192 / 2 + 32, -192 / 2 + 32);
-            weaponGameObject.Active = true;
+            meleeWeapon.Parent = self;
+            meleeWeapon.Active = false;
+
+            // Create bow blueprint.
+            var rangedWeapon = await blueprints.Spawn(BlueprintNames.Bow, "Bow", null);
+
+            rangedWeapon.Parent = self;
+            rangedWeapon.Active = false;
+
+            // Initialize player equipment.
+            var equipment = self.Add(new EquipmentComponent());
+
+            // Configure health and damages.
+            self.Add(new HealthComponent(100, 0, 100));
+            self.Add(new DamageComponent());
 
             return self;
         }

@@ -25,7 +25,8 @@ namespace Forge.Ai
     public enum AiState
     {
         Idle,
-        Walking
+        Walking,
+        Dead
     }
 
     /// <summary>

@@ -16,14 +16,13 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Forge.Actors;
 using Forge.Ai;
 using Forge.Physics;
 using Forge.Sprites;
 using Forge.GameObjects;
-using Forge.Spatial;
 using Forge.Tilemaps;
 using Forge.Graphics;
+using Forge.Gameplay;
 
 namespace Forge
 {
@@ -34,12 +33,13 @@ namespace Forge
     /// TODO: When spawning a game object, the scene should set itself as the owner on GameObject.Scene.
     ///       Adding components should check they are from the same scene, etc. Very useful for debugging.
     /// </summary>
-    public class GameScene : IGameScene
+    public class GameScene
     {
         private List<GameObject> mRootGameObjects = new List<GameObject>();
 
         public SpriteComponentProcessor Sprites { get; internal set; }
         public PhysicsComponentProcessor Physics { get; internal set; }
+        public ActionComponentProcessor Actions { get; internal set; }
 
         /// <summary>
         ///  Get the scene tilemap.
@@ -54,8 +54,7 @@ namespace Forge
         /// </remarks>
         public Camera MainCamera { get; set; }
 
-        // TODO: Change this PlayerController, and move other logic into separate gameplay components or AI/Actor brian.
-        public LocomotionComponentProcessor Actors { get; internal set; }
+        public LocomotionComponentProcessor Locomotors { get; internal set; }
         public AiProcessor AI { get; internal set; }
 
         /// <summary>
@@ -80,9 +79,10 @@ namespace Forge
         /// <param name="tilemap">Tile map to use in the scene.</param>
         public GameScene(TileMap tilemap)
         {
+            Actions = new ActionComponentProcessor(this);
             Sprites = new SpriteComponentProcessor(this);
             Physics = new PhysicsComponentProcessor(this);
-            Actors = new LocomotionComponentProcessor(this);
+            Locomotors = new LocomotionComponentProcessor(this);
             AI = new AiProcessor(this);
 
             if (tilemap == null)
@@ -128,6 +128,9 @@ namespace Forge
             {
                 MainCamera.Update(gameTime);
             }
+            
+            // Resolve pending actions.
+            Actions.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
 
             // Resolve movement and collision first, before the player or AI gets chance to do anything. Hence the
             // current position of all objects (and collision) that is displayed is actually one frame BEFORE this
@@ -139,7 +142,13 @@ namespace Forge
 
             // Update game ai and character actions
             AI.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
-            Actors.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+            Locomotors.Update(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+
+            // Let game objects run their update logic. This is where self updating commponents get updated.
+            for (int i = 0; i < mRootGameObjects.Count; i++)
+            {
+                mRootGameObjects[i].UpdateRecursively(gameTime.TotalGameTime, gameTime.ElapsedGameTime);
+            }
         }
 
         /// <summary>

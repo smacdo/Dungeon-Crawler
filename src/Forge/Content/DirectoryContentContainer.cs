@@ -68,23 +68,25 @@ namespace Forge.Content
 
             var assetPath = string.Format("{0}\\{1}", ContentDirectory, assetName);
 
-            if (File.Exists(assetPath))
+            try
             {
                 // Open file stream in async mode.
-                readStream = new FileStream(
+                readStream = new FileStream( 
                     assetPath,
                     FileMode.Open,
                     FileAccess.Read,
-                    FileShare.Read,
-                    4096,
+                    FileShare.Read, 
+                    4096, 
                     true);
 
                 return Task.FromResult(true);
             }
-            else
+            catch (FileNotFoundException)
             {
+                // TODO: Catch IOException.
+                // TODO: We should return an error or log something...
                 readStream = null;
-                return Task.FromResult(true);
+                return Task.FromResult(false);
             }
         }
     }

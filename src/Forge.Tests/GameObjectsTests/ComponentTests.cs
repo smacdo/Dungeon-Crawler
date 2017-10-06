@@ -55,17 +55,5 @@ namespace Forge.Tests.GameObjectsTests
 
             Assert.AreSame(c, f.ComponentsDestroyed.Single());
         }
-
-        [TestMethod]
-        [TestCategory("Forge/GameObjects/Component")]
-        public void ToStringOutput()
-        {
-            var c = new TestComponent();
-            Assert.AreEqual("<Component name: TestComponent, owner: null>", c.ToString());
-
-            c.Owner = new TestGameObject();
-            var s = string.Format("<Component name: TestComponent, owner: {0}>", c.Owner.Id);
-            Assert.AreEqual(s, c.ToString());
-        }
     }
 }

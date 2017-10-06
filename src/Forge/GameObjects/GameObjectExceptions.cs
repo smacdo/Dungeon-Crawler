@@ -43,8 +43,8 @@ namespace Forge.GameObjects
     {
         public CannotChangeComponentOwnerException(
             IComponent component,
-            IGameObject currentOwner,
-            IGameObject newOwner)
+            GameObject currentOwner,
+            GameObject newOwner)
             : base("Cannot change ownership of game object component once set.")
         {
             Component = component;
@@ -53,8 +53,8 @@ namespace Forge.GameObjects
         }
 
         public IComponent Component { get; private set; }
-        public IGameObject CurrentOwner { get; private set; }
-        public IGameObject NewOwner { get; private set; }
+        public GameObject CurrentOwner { get; private set; }
+        public GameObject NewOwner { get; private set; }
     }
 
     /// <summary>
@@ -82,10 +82,10 @@ namespace Forge.GameObjects
     /// </summary>
     public class ComponentAlreadyAddedException : GameObjectException
     {
-        public IGameObject GameObject { get; private set; }
+        public GameObject GameObject { get; private set; }
         public System.Type ComponentType { get; private set; }
 
-        public ComponentAlreadyAddedException(IGameObject gameObject, IComponent componentToAdd)
+        public ComponentAlreadyAddedException(GameObject gameObject, IComponent componentToAdd)
             : base("A component of the same type was already added to this game object")
         {
             GameObject = gameObject;
@@ -102,10 +102,10 @@ namespace Forge.GameObjects
     /// </summary>
     public class ComponentDoesNotExistException : GameObjectException
     {
-        public IGameObject GameObject { get; private set; }
+        public GameObject GameObject { get; private set; }
         public System.Type ComponentType { get; private set; }
 
-        public ComponentDoesNotExistException(IGameObject gameObject, System.Type componentType)
+        public ComponentDoesNotExistException(GameObject gameObject, System.Type componentType)
             : base("A component of the requested type does not exist in this game object")
         {
             GameObject = gameObject;

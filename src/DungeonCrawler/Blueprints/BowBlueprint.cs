@@ -19,16 +19,15 @@ using Forge;
 using Forge.Content;
 using Forge.Sprites;
 using System.Threading.Tasks;
-using Forge.Physics;
 
 namespace DungeonCrawler.Blueprints
 {
     /// <summary>
     ///  Create an equippable sword.
     /// </summary>
-    public class SwordBlueprint : IBlueprint
+    public class BowBlueprint : IBlueprint
     {
-        private const string SpriteFilePath = "sprites/Weapon_Longsword.sprite";
+        private const string SpriteFilePath = "sprites/Weapon_Bow.sprite";
 
         /// <inheritdoc />
         public string[] AssetDependencies
@@ -45,9 +44,9 @@ namespace DungeonCrawler.Blueprints
             string gameObjectName,
             Vector2? position)
         {
-            // Create the player blue print.
+            // Create the bow blueprint.
             var weapon = new GameObject(gameObjectName);
-             
+
             // Create the sprite and set it up.
             var sprite = blueprints.Scene.Sprites.Create(weapon);
             sprite.SetSprite(await blueprints.Content.Load<AnimatedSpriteDefinition>(SpriteFilePath));

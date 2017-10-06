@@ -16,11 +16,12 @@
 using System;
 using System.Collections.Generic;
 using Forge;
-using Forge.Actors;
+using Forge.Gameplay;
 using Forge.Physics;
 using Forge.Sprites;
 using Forge.GameObjects;
 using Forge.Spatial;
+using DungeonCrawler.Components;
 
 namespace DungeonCrawler.Actions
 {
@@ -33,40 +34,33 @@ namespace DungeonCrawler.Actions
     }
 
     /// <summary>
-    ///  Actor attack logic and animation.
+    ///  Actor melee attack option.
     /// </summary>
     /// <remarks>
     ///  TODO: Right now some of the animations do not match the hitbox. The attack sweep north and west animations
     ///  are opposite. Best solution is to store start/finish angles in an array for each direction possibility.
     /// </remarks>
-    public class ActionSlashAttack : IActorAction
+    public class ActionSlashAttack : IGameplayAction
     {
-        private const float StartupSeconds = 0.2f;
-        private const float AttackSeconds = 0.3f;     // how long the attack lasts, sync to animation.
+        // how long before attack starts (the windup).
+        private static readonly TimeSpan StartupSeconds = TimeSpan.FromSeconds(0.2);
+        // how long the attack lasts, sync to animation.
+        private static readonly TimeSpan AttackSeconds = TimeSpan.FromSeconds(0.3);
         private const float AttackAngleDegreesStart = 80.0f;
         private const float AttackAngleDegreesEnd = -80.0f;
-        private const string MeleeWeaponName = "MeleeWeapon";
         private const string SlashAnimationName = "Slash";
 
-        private const float WeaponOffsetX = 32;
-        private const float WeaponOffsetY = 32;
+        private const float WeaponOffsetX = 0;
+        private const float WeaponOffsetY = 0;
         private const float WeaponWidth = 50;
         private const float WeaponHeight = 10;
         private const float WeaponPivotX = 0;
         private const float WeaponPivotY = 5;
 
-        private double mSecondsSinceStart = 0.0f;
-        private ActionAttackStatus mAttackStatus = ActionAttackStatus.NotStarted;
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
+        private ActionAttackStatus _state = ActionAttackStatus.NotStarted;
 
-        /// <summary>
-        ///  Get if action has finished.
-        /// </summary>
-        public bool IsFinished { get { return mAttackStatus == ActionAttackStatus.Finished; } }
-
-        /// <summary>
-        ///  Get if actor can move while performing this action.
-        /// </summary>
-        public bool CanMove { get { return false; } }
+        private GameObject _weapon = null;
 
         /// <summary>
         ///  Constructor
@@ -75,67 +69,73 @@ namespace DungeonCrawler.Actions
         {
         }
 
-        /// <summary>
-        /// Update simulation with the state of slashing attack
-        /// </summary>
-        /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actorGameObject, double currentTimeSeconds, double deltaTime)
+        /// <inheritdoc />
+        public bool IsFinished { get => _state == ActionAttackStatus.Finished; }
+
+        /// <inheritdoc />
+        public bool CanMove { get => false; }
+
+        /// <inheritdoc />
+        public void Start(GameObject self)
         {
-            var actorSprite = actorGameObject.Get<SpriteComponent>();
+            // Get the melee weapon from the game actor's primary weapon slot.
+            //  TODO: Handle offhand weapons.
+            //  TODO: Handle failures.
+            //  TODO: Get weapon info from a weapon component.
+            var equipment = self.Get<EquipmentComponent>();
+            _weapon = equipment.PrimaryHand ?? throw new InvalidOperationException("Weapon not found");
+        }
 
-            var actor = actorGameObject.Get<LocomotionComponent>();
-            var direction = actorGameObject.Transform.Forward;
+        /// <inheritdoc />
+        public void Update(GameObject self, TimeSpan currentTimeSeconds, TimeSpan deltaTime)
+        {
+            var actorSprite = self.Get<SpriteComponent>();
 
-            // Get the weapon game object for animation (Which is attached to the character).
-            var weaponGameObject = actorGameObject.FindChildByName(MeleeWeaponName);
-            var weaponSprite = (weaponGameObject != null ? weaponGameObject.Get<SpriteComponent>() : null);
-                        
-            switch ( mAttackStatus )
+            var actor = self.Get<LocomotionComponent>();
+            var direction = self.Transform.Forward;
+
+            var weaponSprite = _weapon.Get<SpriteComponent>();
+
+            switch (_state)
             {
                 case ActionAttackStatus.NotStarted:
                     // Enable the weapon sprite, and animate the attack
                     actorSprite.PlayAnimation(SlashAnimationName);
-                    
-                    if (weaponSprite != null)
-                    {
-                        weaponGameObject.Active = true;
-                        weaponSprite.PlayAnimation(SlashAnimationName);
-                    }
+
+                    _weapon.Active = true;
+                    weaponSprite.PlayAnimation(SlashAnimationName);
 
                     // Start animation.
-                    mAttackStatus = ActionAttackStatus.StartingUp;
+                    _state = ActionAttackStatus.StartingUp;
 
                     break;
 
                 case ActionAttackStatus.StartingUp:
                     // Wait for slash animation to begin sweep animation.
-                    if (mSecondsSinceStart < StartupSeconds)
+                    if (_elapsedTime < StartupSeconds)
                     {
-                        mSecondsSinceStart += deltaTime;
+                        _elapsedTime += deltaTime;
                     }
                     else
                     {
-                        mAttackStatus = ActionAttackStatus.Performing;
+                        _state = ActionAttackStatus.Performing;
                     }
                     break;
 
                 case ActionAttackStatus.Performing:
                     // Perform attack hit detection until the animation completes.
-                    if (mSecondsSinceStart < StartupSeconds + AttackSeconds)
+                    if (_elapsedTime < StartupSeconds + AttackSeconds)
                     {
                         // Perform attack hit detection
-                        DrawHitBox(actor, (float)mSecondsSinceStart);
-                        mSecondsSinceStart += deltaTime;
+                        DoHitDetection(self, _elapsedTime);
+                        _elapsedTime += deltaTime;
                     }
                     else
                     {
-                        // Disable the weapon sprite now that the attack has finished
-                        if (weaponGameObject != null)
-                        {
-                            weaponGameObject.Active = false;
-                        }
+                        // Disable the weapon sprite now that the attack has finished.
+                        _weapon.Active = false;
 
-                        mAttackStatus = ActionAttackStatus.Finished;
+                        _state = ActionAttackStatus.Finished;
                     }
                     break;
 
@@ -147,14 +147,17 @@ namespace DungeonCrawler.Actions
         /// <summary>
         /// Draws a hit box for the game
         /// </summary>
-        private void DrawHitBox(LocomotionComponent actor, float elapsedSeconds)
+        private void DoHitDetection(GameObject self, TimeSpan time)
         {
             // Calculate progress of weapon attack animation as a value in the range [0, 1).
-            const float AnimationStartTime = StartupSeconds;
-            const float AnimationFinishTime = StartupSeconds + AttackSeconds;
+            var AnimationStartTime = StartupSeconds;
+            var AnimationFinishTime = StartupSeconds + AttackSeconds;
 
             var animationPosition = MathHelper.Clamp(
-                MathHelper.NormalizeToZeroOneRange(elapsedSeconds, AnimationStartTime, AnimationFinishTime),
+                MathHelper.NormalizeToZeroOneRange(
+                    (float)time.TotalSeconds,
+                    (float)AnimationStartTime.TotalSeconds,
+                    (float)AnimationFinishTime.TotalSeconds),
                 0.0f,
                 1.0f);
 
@@ -163,45 +166,79 @@ namespace DungeonCrawler.Actions
             var startAngle = MathHelper.DegreeToRadian(AttackAngleDegreesStart);
             var endAngle = MathHelper.DegreeToRadian(AttackAngleDegreesEnd);
 
-            var actorRotationRad = actor.Owner.Transform.WorldRotation;
+            var actorRotationRad = self.Transform.WorldRotation;
             var interpolatedRad = Interpolation.Lerp(startAngle, endAngle, animationPosition);
             var finalRad = MathHelper.NormalizeAngleTwoPi(interpolatedRad + actorRotationRad);
             var radians = finalRad;
-
+            
             // Generate weapon hitbox.
             var bounds = new BoundingArea(
-                actor.Owner.Transform.WorldPosition + new Vector2(WeaponOffsetX, WeaponOffsetY),    // Top left.
-                new SizeF(WeaponWidth, WeaponHeight),                                               // Size.
-                radians,                                                                            // Rotation.
-                new Vector2(WeaponPivotX, WeaponPivotY));                                           // Rotation pivot.
+                self.Transform.WorldPosition + new Vector2(WeaponOffsetX, WeaponOffsetY), // Top left.
+                new SizeF(WeaponWidth, WeaponHeight),                                 // Size.
+                radians,                                                              // Rotation.
+                new Vector2(WeaponPivotX, WeaponPivotY));                             // Rotation pivot.
 
-            // Draw the bounding area for visualization testing.
-            Globals.Debug.DrawBoundingArea(
-                bounds,
-                Microsoft.Xna.Framework.Color.HotPink);
+            DrawWeaponDamageArea(self, bounds);
 
             // Now find all objects touching the hitbox.
             //  TODO: Find only enemies or are tagged enemy.
-            //  TODO: Add bounding region to spatial index query.
-            //  TODO: Remove cast from IScene -> Scene once Core/Engine are merged and once IGameObject/IGameScene
-            //        interfaces are removed.
-            var physics = actor.Owner.Get<PhysicsComponent>();
+            //  TODO: Add bounding region (rather than just bounding rect) to spatial index query.
+            var physics = self.Get<PhysicsComponent>();
             var bbrect = new BoundingRect(bounds.AxisAlignedMinPoint, bounds.AxisAlignedMaxPoint);
-            var go = (GameObject) actor.Owner;
-            var scene = (GameScene) go.Scene;
+            var scene = self.Scene;
 
             foreach (var result in scene.Physics.SpatialIndex.Query(bbrect, physics))
             {
-#if DEBUG
-                if (Globals.Settings.DrawWeaponHitDebug)
+                // Apply damage to any game object in the blast zone.
+                //  TODO: Use a damage component to calculate damage reductions and whatnot.
+                var otherDamaage = result.Owner.TryGet<DamageComponent>();
+
+                if (otherDamaage != null)
                 {
-                    Globals.Debug.DrawFilledRect(
-                        new RectF(result.WorldBounds.MinPoint, result.WorldBounds.MaxPoint),
-                        Microsoft.Xna.Framework.Color.Red);
+                    // TODO: Get damage value from weapon component.
+                    otherDamaage.TakeIncomingDamage(25.0f);
                 }
+
+#if DEBUG
+                // TODO: Move this into damage component.
+                // Draw hit visualization  in debug mode.
+                var hitbox = new RectF(result.WorldBounds.MinPoint, result.WorldBounds.MaxPoint);
+                DrawWeaponAttackedBox(self, hitbox);
 #endif
             }
 
+        }
+
+        /// <summary>
+        ///  Draw area that weapon will deal damage.
+        /// </summary>
+        private void DrawWeaponDamageArea(GameObject self, BoundingArea damageArea)
+        {
+            // Need to get the camera to convert from world space to camera space for debugging.
+            var camera = self.Scene.MainCamera;
+            var positionInCameraSpace = camera.WorldToScreen(damageArea.WorldPosition);
+
+            var oldWorldPosition = damageArea.WorldPosition;
+            damageArea.WorldPosition = positionInCameraSpace;
+
+            // Draw the bounding area for visualization testing.
+            Globals.Debug.DrawBoundingArea(
+                damageArea,
+                Microsoft.Xna.Framework.Color.HotPink);
+
+            // REAPPLY
+            damageArea.WorldPosition = oldWorldPosition;
+        }
+
+        private void DrawWeaponAttackedBox(GameObject self, RectF hitbox)
+        {
+            // Need to get the camera to convert from world space to camera space for debugging.
+            var camera = self.Scene.MainCamera;
+            hitbox  = camera.WorldToScreen(hitbox);
+
+            Globals.Debug.DrawFilledRect(
+                hitbox,
+                Microsoft.Xna.Framework.Color.Red);
         }
     }
 }

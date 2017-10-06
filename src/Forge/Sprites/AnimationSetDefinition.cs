@@ -48,7 +48,9 @@ namespace Forge.Sprites
 
                 if (animation == null)
                 {
-                    throw new ArgumentException("Animation list contains a null animation defintion", "animationList");
+                    throw new ArgumentException(
+                        "Animation list contains a null animation defintion",
+                        nameof(animationList));
                 }
 
                 mAnimations.Add(animation.Name, animation);
@@ -68,7 +70,7 @@ namespace Forge.Sprites
 
                 if (!mAnimations.TryGetValue(animationName, out definition))
                 {
-                    throw new AnimationNotFoundException("animationName");
+                    throw new AnimationNotFoundException(nameof(animationName));
                 }
 
                 return definition;
@@ -86,7 +88,7 @@ namespace Forge.Sprites
 
             if (!mAnimations.TryGetValue(animationName, out definition))
             {
-                throw new AnimationNotFoundException("animationName");
+                throw new AnimationNotFoundException(nameof(animationName));
             }
 
             return definition;

@@ -17,7 +17,7 @@ using System;
 using Forge.Sprites;
 using Forge.GameObjects;
 using Forge.Physics;
-using Forge.Actors;
+using Forge.Gameplay;
 
 namespace DungeonCrawler.Actions
 {
@@ -32,14 +32,14 @@ namespace DungeonCrawler.Actions
     }
 
     /// <summary>
-    ///  Actor cast spell.
+    ///  Action to cast a magic spell.
     /// </summary>
-    public class ActionCastSpell : IActorAction
+    public class ActionCastSpell : IGameplayAction
     {
-        private const double AnimationSeconds = 0.2;
+        private static readonly TimeSpan AnimationSpellCastTime = TimeSpan.FromSeconds(0.2);
 
-        private double mAnimationSecondsPlayed = 0.0f;
-        private CastSpellState mState = CastSpellState.NotStarted;
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
+        private CastSpellState _state = CastSpellState.NotStarted;
 
         /// <summary>
         ///  Constructor
@@ -48,52 +48,37 @@ namespace DungeonCrawler.Actions
         {
         }
 
-        /// <summary>
-        ///  If the action has completed.
-        /// </summary>
-        public bool IsFinished
+        /// <inheritdoc />
+        public bool IsFinished { get => _state == CastSpellState.Finished; }
+
+        /// <inheritdoc />
+        public bool CanMove { get => false; }
+
+        /// <inheritdoc />
+        public void Start(GameObject self)
         {
-            get
-            {
-                return mState == CastSpellState.Finished;
-            }
         }
 
-        /// <summary>
-        ///  If the action allows actor movement.
-        /// </summary>
-        public bool CanMove
+        /// <inheritdoc />
+        public void Update(GameObject self, TimeSpan currentTime, TimeSpan deltaTime)
         {
-            get
-            {
-                return false;
-            }
-        }
+            var locomotion = self.Get<LocomotionComponent>();
+            var direction = self.Transform.Forward;
 
-        /// <summary>
-        ///  Update the actor with the current state of our action.
-        /// </summary>
-        /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
-        {
-            var actor = actorGameObject.Get<LocomotionComponent>();
-            var direction = actorGameObject.Transform.Forward;
+            var sprite = self.Get<SpriteComponent>();
 
-            var sprite = actorGameObject.Get<SpriteComponent>();
-            var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
-
-            switch (mState)
+            switch (_state)
             {
                 case CastSpellState.NotStarted:
-                    mAnimationSecondsPlayed = 0.0f;
-                    mState = CastSpellState.Performing;
+                    _elapsedTime = TimeSpan.Zero;
+                    _state = CastSpellState.Performing;
                     sprite.PlayAnimation("Spell");
                     break;
 
                 case CastSpellState.Performing:
-                    if (mAnimationSecondsPlayed < AnimationSeconds)
+                    if (_elapsedTime < AnimationSpellCastTime)
                     {
-                        mState = CastSpellState.Finished;
+                        _state = CastSpellState.Finished;
                     }
                     break;
 

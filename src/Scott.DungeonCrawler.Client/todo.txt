@@ -1,16 +1,28 @@
-Very important
-====================
-
-- Remove IGameObject
-- Merge Core and Engine
- - Only spawn enemies if the area is clear (check collision).
-
-Future
-================================================
+Build
+------------------------------------------------
+ * Client building to wrong directory:
+   - should be: 
+   - but is: build\DungeonCrawler.Client\x86\Debug
+ * Asset copy script is using the wrong variable because its not copying to new (wrong) dir.
 
 Combat
 ------------------------------------------------
-* Melee
+* Melee does damage
+* Bow firing + spawn arrow -> refire support (keep firing without letting up)
+  * Fix animation to include putting pack
+  * Add single shot animation (pull out, fire, put back)
+  * Add multiple shot animation
+* Spell casting
+* Health and death system
+
+Systems
+------------------------------------------------
+Add events to sprite animation files and rewrite melee/bow/spell to use events rather than hardcode
+the frames
+
+Gameplay
+------------------------------------------------
+ * Only spawn enemies if the area is clear (check collision).
 
 Levels and Data Loading
 ------------------------------------------------

@@ -15,22 +15,21 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Forge.Settings
+namespace DungeonCrawler
 {
     /// <summary>
-    ///  Runtime game settings.
-    ///  TODO: This doens't need to exist in custom namespace.
+    ///  List of bindable input actions.
     /// </summary>
-    public class ForgeSettings
+    public enum InputAction
     {
-        public bool DrawCollisionDebug { get; set; } = true;
-        public bool DrawPhysicsDebug { get; set; } = true;
-        public bool DrawSpriteDebug { get; set; } = false;
-        public bool DrawTransformDebug { get; set; } = true;
-        public bool DrawWeaponHitDebug { get; set; } = true;
+        ExitGame,
+        PrintDebugInfo,
+        Move,
+        MoveCamera,
+        MeleeAttack,
+        RangedAttack,
+        CastSpell
     }
 }

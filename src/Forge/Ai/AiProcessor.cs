@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 using System;
-using Forge.Actors;
 using Forge.Physics;
 using Forge.GameObjects;
 
@@ -76,7 +75,7 @@ namespace Forge.Ai
         /// </summary>
         private void PerformIdleUpdate(
             AiComponent ai,
-            IGameObject gameObject,
+            GameObject gameObject,
             TimeSpan currentTime,
             TimeSpan deltaTime)
         {
@@ -106,7 +105,7 @@ namespace Forge.Ai
         /// </summary>
         private void PerformMovingUpdate(
             AiComponent ai,
-            IGameObject gameObject,
+            GameObject gameObject,
             TimeSpan currentTime,
             TimeSpan deltaTime)
         {

@@ -230,5 +230,13 @@ namespace Forge.GameObjects
                 currentChild = currentChild.NextSibling;
             }
         }
+
+        /// <summary>
+        ///  Get human readable summary of transform.
+        /// </summary>
+        public override string ToString()
+        {
+            return $"worldpos = {mWorldPosition}, worldrot = {mWorldRotation}";
+        }
     }
 }

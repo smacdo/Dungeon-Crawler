@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2014 Scott MacDonald
+ * Copyright 2012-2017 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 using System;
 using Forge;
-using Forge.Actors;
+using Forge.Gameplay;
 using Forge.Sprites;
 using Forge.GameObjects;
 using Forge.Physics;
@@ -33,14 +33,14 @@ namespace DungeonCrawler.Actions
     }
 
     /// <summary>
-    ///  Action performed when an actor dies.
+    ///  Action to die.
     /// </summary>
-    public class ActionDeath : IActorAction
+    public class ActionDeath : IGameplayAction
     {
-        private const float AnimationSeconds = 0.2f;
+        private static readonly TimeSpan DeathAnimationTime = TimeSpan.FromSeconds(0.2);
 
-        private double mAnimationSecondsPlayed = 0.0f;
-        private DeathAnimationState mState = DeathAnimationState.NotStarted;
+        private TimeSpan _timeElapsed = TimeSpan.Zero;
+        private DeathAnimationState _state = DeathAnimationState.NotStarted;
 
         /// <summary>
         ///  Constructor
@@ -49,52 +49,37 @@ namespace DungeonCrawler.Actions
         {
         }
 
-        /// <summary>
-        ///  If the action has completed.
-        /// </summary>
-        public bool IsFinished
+        /// <inheritdoc />
+        public bool IsFinished { get => _state == DeathAnimationState.Finished; }
+
+        /// <inheritdoc />
+        public bool CanMove { get => false; }
+
+        /// <inheritdoc />
+        public void Start(GameObject self)
         {
-            get
-            {
-                return mState == DeathAnimationState.Finished;
-            }
         }
 
-        /// <summary>
-        ///  If the action allows actor movement.
-        /// </summary>
-        public bool CanMove
+        /// <inheritdoc />
+        public void Update(GameObject self, TimeSpan currentTime, TimeSpan deltaTime)
         {
-            get
-            {
-                return false;
-            }
-        }
+            var actor = self.Get<LocomotionComponent>();
+            var direction = self.Transform.Forward;
 
-        /// <summary>
-        ///  Update the actor with the current state of our action.
-        /// </summary>
-        /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
-        {
-            var actor = actorGameObject.Get<LocomotionComponent>();
-            var direction = actorGameObject.Transform.Forward;
+            var sprite = self.Get<SpriteComponent>();
 
-            var sprite = actorGameObject.Get<SpriteComponent>();
-            var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
-
-            switch (mState)
+            switch (_state)
             {
                 case DeathAnimationState.NotStarted:
-                    mAnimationSecondsPlayed = 0.0f;
-                    mState = DeathAnimationState.Performing;
+                    _timeElapsed = TimeSpan.Zero;
+                    _state = DeathAnimationState.Performing;
                     sprite.PlayAnimation("Hurt");
                     break;
 
                 case DeathAnimationState.Performing:
-                    if (mAnimationSecondsPlayed < AnimationSeconds)
+                    if (_timeElapsed < DeathAnimationTime)
                     {
-                        mState = DeathAnimationState.Finished;
+                        _state = DeathAnimationState.Finished;
                     }
                     break;
 

@@ -20,6 +20,7 @@ using Forge.Content;
 using Forge.Sprites;
 using System.Threading.Tasks;
 using Forge.Physics;
+using DungeonCrawler.Components;
 
 namespace DungeonCrawler.Blueprints
 {
@@ -60,7 +61,8 @@ namespace DungeonCrawler.Blueprints
             sprite.RotationRenderMethod = SpriteRotationRenderMethod.FourWay;
 
             // Spawn new actor and AI brain.
-            scene.Actors.Create(self);
+            scene.Locomotors.Create(self);
+            scene.Actions.Create(self);
             scene.AI.Create(self);
 
             // Set up collision information.
@@ -76,6 +78,10 @@ namespace DungeonCrawler.Blueprints
 
             // TODO: Randomize direction.
             self.Get<SpriteComponent>().PlayAnimation("Walk", AnimationEndingAction.Loop);
+
+            // Configure health and damages.
+            self.Add(new HealthComponent(20, 0, 20));
+            self.Add(new DamageComponent());
 
             return self;
         }

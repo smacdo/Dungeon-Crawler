@@ -26,7 +26,7 @@ namespace Forge.GameObjects
         where TComponent : class, IComponent, new()
     {
         void Add(TComponent component);
-        TComponent Create(IGameObject gameObject);
+        TComponent Create(GameObject gameObject);
 
         bool Remove(TComponent component);
 
@@ -83,11 +83,11 @@ namespace Forge.GameObjects
         ///  Adds the game object to this object processor for future updates.
         /// </summary>
         /// <param name="gameObject">The game object to track.</param>
-        public TComponent Create(IGameObject gameObject)
+        public TComponent Create(GameObject gameObject)
         {
             if (gameObject == null)
             {
-                throw new ArgumentNullException("gameObject");
+                throw new ArgumentNullException(nameof(gameObject));
             }
 
             // Instantiate the component, and add it to the game object.
@@ -119,9 +119,9 @@ namespace Forge.GameObjects
         /// </summary>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-        protected virtual TComponent CreateComponent(IGameObject gameObject)
+        protected virtual TComponent CreateComponent(GameObject gameObject)
         {
-            return new TComponent {Owner = gameObject};
+            return new TComponent();
         }
 
         /// <summary>

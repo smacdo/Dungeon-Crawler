@@ -24,7 +24,7 @@ namespace Forge.Physics
     /// </summary>
     public class PhysicsComponent : Component
     {
-        public delegate void CollisionCallback(IGameObject other);
+        public delegate void CollisionCallback(GameObject other);
 
         /// <summary>
         ///  Get or set the object's desired position in world space.
@@ -102,7 +102,7 @@ namespace Forge.Physics
         ///  Raise a collision event with another game object.
         /// </summary>
         /// <param name="other"></param>
-        internal void RaiseOnCollisionEvent(IGameObject other)
+        internal void RaiseOnCollisionEvent(GameObject other)
         {
             OnCollision?.Invoke(other);
         }

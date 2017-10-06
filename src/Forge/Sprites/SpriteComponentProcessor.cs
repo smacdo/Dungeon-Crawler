@@ -243,7 +243,7 @@ namespace Forge.Sprites
 
 #if DEBUG
                 // Draw collison information.
-                if (Globals.Settings.DrawPhysicsDebug)
+                if (Globals.Settings.DrawPhysicsDebug && component.Owner.Contains<Physics.PhysicsComponent>())
                 {
                     var physics = component.Owner.Get<Physics.PhysicsComponent>();
 

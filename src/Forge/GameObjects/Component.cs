@@ -18,6 +18,16 @@ using System;
 namespace Forge.GameObjects
 {
     /// <summary>
+    ///  Set how a component is updated by the simulation.
+    /// </summary>
+    public enum ComponentSimUpdateType
+    {
+        None,           /// Component does not need simulation updating.
+        Processor,      /// Component is updated via a component processor.
+        Owner           /// Component is manually updated by its owner.
+    }
+
+    /// <summary>
     ///  Interface for components that can be attached to game objects.
     /// </summary>
     public interface IComponent : IDisposable
@@ -33,7 +43,7 @@ namespace Forge.GameObjects
         /// <summary>
         ///  Get or set the game object that owns this component.
         /// </summary>
-        IGameObject Owner { get; set; }
+        GameObject Owner { get; set; }
     }
 
     /// <summary>
@@ -47,7 +57,7 @@ namespace Forge.GameObjects
     {
         private bool mDisposed = false;
         private bool mActive = true;
-        private IGameObject mOwner;
+        private GameObject mOwner;
         private IComponentDestroyedCallback mDestroyCallback;
 
         /// <summary>
@@ -89,7 +99,7 @@ namespace Forge.GameObjects
         /// <summary>
         /// The game object that owns this components
         /// </summary>
-        public IGameObject Owner
+        public GameObject Owner
         {
             get
             {
@@ -140,14 +150,11 @@ namespace Forge.GameObjects
         /// <returns></returns>
         public override string ToString()
         {
-            var ownerId = "null";
+            var typeName = GetType().Name;
+            var isActive = Active ? "active" : "inactive";
+            var hasOwner = Owner == null ? "unowned" : "owned";
 
-            if (Owner != null)
-            {
-                ownerId = Owner.Id.ToString();
-            }
-
-            return String.Format("<Component name: {0}, owner: {1}>", GetType().Name, ownerId);
+            return $"{typeName} ({isActive}, {hasOwner})";
         }
     }
 }

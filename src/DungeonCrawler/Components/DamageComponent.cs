@@ -15,14 +15,38 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Forge.GameObjects;
 
-namespace Forge
+namespace DungeonCrawler.Components
 {
-    public interface IGameScene
+    /// <summary>
+    ///  Allows a game object to take damage.
+    /// </summary>
+    public class DamageComponent : Component
     {
+
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        public DamageComponent()
+        {
+        }
+        
+        public float TakeIncomingDamage(float damage)
+        {
+            // TODO: Handle invincibility frames.
+            // TODO: Animate invincbility frames.
+
+            // Apply damage to object.
+            var health = Owner.TryGet<HealthComponent>();
+
+            if (health != null)
+            {
+                health.ModifyHealth(-damage);
+            }
+
+            return damage;
+        }
     }
 }

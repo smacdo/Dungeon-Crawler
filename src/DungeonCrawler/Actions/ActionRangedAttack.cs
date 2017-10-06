@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 using System;
-using Forge.Actors;
+using Forge.Gameplay;
 using Forge.Sprites;
 using Forge.GameObjects;
 using Forge.Physics;
+using DungeonCrawler.Components;
 
 namespace DungeonCrawler.Actions
 {
@@ -28,12 +29,18 @@ namespace DungeonCrawler.Actions
         Finished
     }
 
-    public class ActionRangedAttack : IActorAction
+    /// <summary>
+    ///  Action to perform a ranged attack.
+    /// </summary>
+    public class ActionRangedAttack : IGameplayAction
     {
-        private const double AnimationSeconds = 0.2;
+        private static readonly TimeSpan AnimationRangedAttackTime = TimeSpan.FromSeconds(1.0);
+        private const string AttackAnimationName = "Attack";
 
-        private double mAnimationSecondsPlayed = 0.0f;
-        private RangedAttackState mState = RangedAttackState.NotStarted;
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
+        private RangedAttackState _state = RangedAttackState.NotStarted;
+
+        private GameObject _weapon = null;
 
         /// <summary>
         ///  Constructor
@@ -42,56 +49,58 @@ namespace DungeonCrawler.Actions
         {
         }
 
-        /// <summary>
-        ///  If the action has completed.
-        /// </summary>
-        public bool IsFinished
+        /// <inheritdoc />
+        public bool IsFinished { get => _state == RangedAttackState.Finished; }
+
+        /// <inheritdoc />
+        public bool CanMove { get => false; }
+
+        /// <inheritdoc />
+        public void Start(GameObject self)
         {
-            get
-            {
-                return mState == RangedAttackState.Finished;
-            }
+            // Get the melee weapon from the game actor's primary weapon slot.
+            //  TODO: Handle offhand weapons.
+            //  TODO: Handle failures.
+            //  TODO: Get weapon info from a weapon component.
+            var equipment = self.Get<EquipmentComponent>();
+            _weapon = equipment.PrimaryHand ?? throw new InvalidOperationException("Weapon not found");
         }
 
-        /// <summary>
-        ///  If the action allows actor movement.
-        /// </summary>
-        public bool CanMove
+        /// <inheritdoc />
+        public void Update(GameObject self, TimeSpan currentTime, TimeSpan deltaTime)
         {
-            get
-            {
-                return false;
-            }
-        }
+            var actor = self.Get<LocomotionComponent>();
+            var direction = self.Transform.Forward;
 
-        /// <summary>
-        ///  Update the actor with the current state of our action.
-        /// </summary>
-        /// <param name="gameTime">Current simulation time</param>
-        public void Update(IGameObject actorGameObject, double currentTime, double deltaTime)
-        {
-            var actor = actorGameObject.Get<LocomotionComponent>();
-            var direction = actorGameObject.Transform.Forward;
+            var sprite = self.Get<SpriteComponent>();
+            var weaponSprite = _weapon.Get<SpriteComponent>();
 
-            var sprite = actorGameObject.Get<SpriteComponent>();
-            var waitTimeSpan = TimeSpan.FromSeconds(AnimationSeconds);
-
-            switch (mState)
+            switch (_state)
             {
                 case RangedAttackState.NotStarted:
-                    mAnimationSecondsPlayed = 0.0f;
-                    mState = RangedAttackState.Performing;
+                    _elapsedTime = TimeSpan.Zero;
+                    _state = RangedAttackState.Performing;
+
+                    _weapon.Active = true;
+                    weaponSprite.PlayAnimation(AttackAnimationName);
+
                     sprite.PlayAnimation("Bow");
                     break;
 
                 case RangedAttackState.Performing:
-                    if (mAnimationSecondsPlayed < AnimationSeconds)
+                    if (_elapsedTime >= AnimationRangedAttackTime)
                     {
-                        mState = RangedAttackState.Finished;
+                        _weapon.Active = false;
+                        _state = RangedAttackState.Finished;
+                    }
+                    else
+                    {
+                        _elapsedTime += deltaTime;
                     }
                     break;
 
                 case RangedAttackState.Finished:
+                    
                     break;
             }
         }

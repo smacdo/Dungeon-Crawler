@@ -32,7 +32,8 @@ namespace DungeonCrawler.Blueprints
         {
             Blueprints[BlueprintNames.Player] = new PlayerBlueprint();
             Blueprints[BlueprintNames.Skeleton] = new SkeletonEnemyBlueprint();
-            Blueprints[BlueprintNames.Sword] = new SwordBlueprint();        // TODO: Rename melee weapon.
+            Blueprints[BlueprintNames.Sword] = new SwordBlueprint();
+            Blueprints[BlueprintNames.Bow] = new BowBlueprint();
         }
     }
 
@@ -44,5 +45,6 @@ namespace DungeonCrawler.Blueprints
         public static string Player { get { return "Player"; } }
         public static string Skeleton { get { return "Skeleton"; } }
         public static string Sword { get { return "Sword"; } }
+        public static string Bow { get { return "Bow"; } }
     }
 }

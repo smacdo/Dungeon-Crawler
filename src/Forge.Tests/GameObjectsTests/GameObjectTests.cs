@@ -67,6 +67,18 @@ namespace Forge.Tests.GameObjectsTests
 
         [TestMethod]
         [TestCategory("Forge/GameObjects/GameObject")]
+        public void AddReturnsInstanceOfAddedComponetn()
+        {
+            var go = new GameObject();
+            var a = new TestComponentA();
+            var b = new TestComponentB();
+
+            Assert.AreSame(a, go.Add(a));
+            Assert.AreSame(b, go.Add(b));
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/GameObjects/GameObject")]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddNullComponentThrowsException()
         {
@@ -123,6 +135,33 @@ namespace Forge.Tests.GameObjectsTests
             go.Remove(typeof(TestComponentB));
             Assert.IsNull(go.TryGet<TestComponentA>());
             Assert.IsNull(go.TryGet<TestComponentB>());
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/GameObjects/GameObject")]
+        public void Add_Assigns_Component_Owner()
+        {
+            var go = new GameObject();
+            var a = new TestComponentA();
+
+            Assert.IsNull(a.Owner);
+
+            go.Add(a);
+            Assert.AreSame(go, a.Owner);
+        }
+
+        [TestMethod]
+        [TestCategory("Forge/GameObjects/GameObject")]
+        [ExpectedException(typeof(CannotChangeComponentOwnerException))]
+        public void Add_Throws_Exception_If_Component_Has_Another_Owner()
+        {
+            var prevGameObject = new GameObject();
+            var a = prevGameObject.Add(new TestComponentA());
+
+            Assert.AreSame(prevGameObject, a.Owner);
+
+            var newGameObject = new GameObject();
+            newGameObject.Add(a);
         }
 
         [TestMethod]
@@ -652,7 +691,7 @@ namespace Forge.Tests.GameObjectsTests
                 throw new NotImplementedException();
             }
 
-            public IGameObject Owner { get; set; }
+            public GameObject Owner { get; set; }
 
             public bool Active
             {
@@ -687,7 +726,7 @@ namespace Forge.Tests.GameObjectsTests
                 throw new NotImplementedException();
             }
 
-            public IGameObject Owner { get; set; }
+            public GameObject Owner { get; set; }
 
             public bool Active
             {

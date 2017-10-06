@@ -24,8 +24,20 @@ using Forge.GameObjects;
 namespace Forge.Physics
 {
     /// <summary>
-    ///  Responsible for performing basic locomotion such as moving an object toward a target.
+    ///  The locomotor is the "doer" component for a game object. It is responsible for moving a game object,
+    ///  and performing actions on behalf of a game object.
     /// </summary>
+    /// <remarks>
+    ///  Movement and performing action seem like two separate responsibilities that should be in two different
+    ///  components, and you would be right. The problem is that movement and actions are deeply linked, and
+    ///  moving them into two classes who create an interlinked mess. Consider for example these scenarios:
+    ///  
+    ///  1. Can I perform this action while I am moving?
+    ///  2. Should the action be cancelled when I move? Or should I not move when an action is performed?
+    ///  3. I want to perform an action when I get to a target position.
+    ///  4. etc
+    ///  
+    /// </remarks>
     public class LocomotionComponent : Component
     {
         public Vector2 RequestedMovement { get; set; }

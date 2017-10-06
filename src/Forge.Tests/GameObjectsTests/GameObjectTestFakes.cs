@@ -37,7 +37,7 @@ namespace Forge.Tests.GameObjectsTests
         }
     }
 
-    public class TestGameObject : IGameObject
+    public class TestGameObject : GameObject
     {
         private Guid mId;
 
@@ -46,7 +46,7 @@ namespace Forge.Tests.GameObjectsTests
             mId = id ?? Guid.NewGuid();
         }
 
-        public void Add<T>(T component) where T : IComponent
+        public T Add<T>(T component) where T : IComponent
         {
             throw new NotImplementedException();
         }
@@ -98,7 +98,7 @@ namespace Forge.Tests.GameObjectsTests
             get { throw new NotImplementedException(); }
         }
 
-        public IGameObject Parent
+        public GameObject Parent
         {
             get
             {
@@ -110,7 +110,7 @@ namespace Forge.Tests.GameObjectsTests
             }
         }
 
-        public IGameObject FirstChild
+        public GameObject FirstChild
         {
             get
             {
@@ -118,7 +118,7 @@ namespace Forge.Tests.GameObjectsTests
             }
         }
 
-        public IGameObject NextSibling
+        public GameObject NextSibling
         {
             get
             {
@@ -152,7 +152,7 @@ namespace Forge.Tests.GameObjectsTests
             throw new NotImplementedException();
         }
 
-        public IGameObject FindChildByName(string name)
+        public GameObject FindChildByName(string name)
         {
             throw new NotImplementedException();
         }

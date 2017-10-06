@@ -56,6 +56,11 @@ namespace Forge.Graphics
             {
                 throw new InvalidOperationException("Graphics device service not registered");
             }
+
+            if (inputStream == null)
+            {
+                throw new ArgumentNullException(nameof(inputStream));
+            }
             
             // TODO: FromStream is (probably) not async ready. Read the texture into a memory buffer that is
             // async awaitable, and then pass that stream to FromStream. Also use using to try to immediately
