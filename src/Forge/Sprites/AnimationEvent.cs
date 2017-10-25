@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Scott.Forge.Sprites
+namespace Forge.Sprites
 {
     /// <summary>
     ///  A data driven event that occurs when animating a sprite. An event has a name and an optional list of named

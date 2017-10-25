@@ -159,7 +159,8 @@ namespace Forge.Sprites
         /// <param name="sprite">Sprite to fire events for.</param>
         private void FireEventsForCurrentAnimationFrame(SpriteComponent sprite)
         {
-            var events = sprite.CurrentAnimation.GetEvents(sprite.Direction, sprite.AnimationFrameIndex);
+            var direction = DirectionNameHelper.FromRotationRadians(sprite.Owner.Transform.WorldRotation);
+            var events = sprite.CurrentAnimation.GetEvents(direction, sprite.AnimationFrameIndex);
             var eventCount = events?.Length ?? 0;
 
             for (int i = 0; i < eventCount; i++)
