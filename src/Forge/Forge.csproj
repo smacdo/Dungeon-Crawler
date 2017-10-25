@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>Scott MacDonald</Authors>
+    <Company>Squirrel Glitter</Company>
+    <Product>Forge Engine</Product>
+    <Description>2d top down game engine</Description>
+    <Copyright>2017 Scott MacDonald</Copyright>
+    <PackageProjectUrl>http://smacdo.com/projects/forge</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/smacdo/Dungeon-Crawler</RepositoryUrl>
+    <PackageReleaseNotes>In heavy development, not ready for third party use</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\temp\$(MSBuildProjectName)\$(Platform)\$(Configuration)</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\temp\$(MSBuildProjectName)\$(Platform)\$(Configuration)</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.6.0.1625" />
+  </ItemGroup>
+</Project>

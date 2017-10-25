@@ -4,9 +4,6 @@ Very important
 - Remove IGameObject
 - Merge Core and Engine
  - Only spawn enemies if the area is clear (check collision).
- - Remove actor "facing" direction and instead use Rotation. Need to change weapon code to handle this!
-   - Adjust how sprite selects animation direction with respect to transform rotation. Should use Right/Left in most
-     cases rather than Up/Down.
 
 Future
 ================================================

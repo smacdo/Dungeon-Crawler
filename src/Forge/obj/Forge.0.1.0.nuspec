@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Forge</id>
+    <version>0.1.0</version>
+    <authors>Scott MacDonald</authors>
+    <owners>Scott MacDonald</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>http://smacdo.com/projects/forge</projectUrl>
+    <description>2d top down game engine</description>
+    <releaseNotes>In heavy development, not ready for third party use</releaseNotes>
+    <copyright>2017 Scott MacDonald</copyright>
+    <repository url="https://github.com/smacdo/Dungeon-Crawler" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="MonoGame.Framework.WindowsDX" version="3.6.0.1625" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\smacd\Source\Repos\Dungeon-Crawler2\build\Forge\AnyCPU\Debug\netstandard2.0\Forge.dll" target="lib\netstandard2.0\Forge.dll" />
+  </files>
+</package>

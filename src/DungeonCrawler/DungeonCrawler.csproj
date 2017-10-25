@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>Scott MacDonald</Authors>
+    <Company>Squirrel Glitter</Company>
+    <Product>Dungeon Crawler</Product>
+    <Description>Gameplay code for Dungeon Crawler game</Description>
+    <Copyright>2017 Scott MacDonald</Copyright>
+    <PackageLicenseUrl />
+    <PackageProjectUrl>http://smacdo.com/projects/dungeoncrawler</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/smacdo/Dungeon-Crawler</RepositoryUrl>
+    <PackageReleaseNotes>Preview only, in heavy development</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\temp\$(MSBuildProjectName)\$(Platform)\$(Configuration)</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\..\build\temp\$(MSBuildProjectName)\$(Platform)\$(Configuration)</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.6.0.1625" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Forge\Forge.csproj" />
+  </ItemGroup>
+
+</Project>

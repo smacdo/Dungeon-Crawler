@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scott.Forge.Sprites;
+using Forge.Sprites;
 
-namespace Scott.Forge.Tests.Sprites
+namespace Forge.Tests.Sprites
 {
     [TestClass]
     public class AnimationDefinitionTests
