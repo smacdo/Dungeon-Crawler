@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Scott.Forge.GameObjects;
 
 namespace Scott.Forge.Sprites
@@ -26,8 +24,6 @@ namespace Scott.Forge.Sprites
     /// </summary>
     public class SpriteComponent : Component
     {
-        public delegate void AnimationCompletedDelegate();
-
         private SpriteDefinition[] mSprites;
         private RectF[] mSpriteRects;
 
@@ -79,7 +75,12 @@ namespace Scott.Forge.Sprites
         /// <summary>
         ///  Event notification for when sprite completes an animation.
         /// </summary>
-        public event AnimationCompletedDelegate AnimationCompleted;
+        public EventHandler<AnimationCompletedEventArgs> AnimationCompleted;
+
+        /// <summary>
+        ///  Notification when a data driven animation event is fired.
+        /// </summary>
+        public EventHandler<AnimationEvent> AnimationEventFired;
 
         /// <summary>
         ///  Get or set the current animation frame index.
@@ -244,17 +245,6 @@ namespace Scott.Forge.Sprites
         {
             PlayAnimation(baseAnimationName, direction, AnimationEndingAction.Loop);
         }
-        
-        /// <summary>
-        ///  Call animation completed event.
-        /// </summary>
-        internal void NotifyAnimationComplete()
-        {
-            if (AnimationCompleted != null)
-            {
-                AnimationCompleted();
-            }
-        }
 
         internal struct AnimationRequest
         {
@@ -262,5 +252,16 @@ namespace Scott.Forge.Sprites
             public DirectionName Direction;
             public AnimationEndingAction EndingAction;
         }
+    }
+
+    /// <summary>
+    ///  Animation completed argument details.
+    /// </summary>
+    public struct AnimationCompletedEventArgs
+    {
+        /// <summary>
+        ///  Get or set the name of the animation that completed.
+        /// </summary>
+        public string AnimationName;
     }
 }

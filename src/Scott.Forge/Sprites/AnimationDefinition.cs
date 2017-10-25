@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
 
 namespace Scott.Forge.Sprites
 {
@@ -35,8 +34,8 @@ namespace Scott.Forge.Sprites
         /// </summary>
         /// <param name="name">Name of the animation</param>
         /// <param name="frameSeconds">Amount of time in seconds display each frame</param>
-        /// <param name="atlasPositions">Upper left corner position of sprite in texture atlas.</param>
-        public AnimationDefinition(string name, float frameSeconds, Vector2[,] atlasPositions)
+        /// <param name="atlasPositions">List of sprite frames organized by direction.</param>
+        public AnimationDefinition(string name, float frameSeconds, SpriteFrame[,] frames)
         {
             // Assign properties if arguments are valid.
             if (string.IsNullOrWhiteSpace(name))
@@ -53,12 +52,12 @@ namespace Scott.Forge.Sprites
 
             FrameSeconds = frameSeconds;
 
-            if (atlasPositions == null)
+            if (frames == null)
             {
-                throw new ArgumentNullException(nameof(atlasPositions));
+                throw new ArgumentNullException(nameof(frames));
             }
 
-            FrameCount = atlasPositions.GetLength(1);
+            FrameCount = frames.GetLength(1);
 
             if (FrameCount < 1)
             {
@@ -67,28 +66,28 @@ namespace Scott.Forge.Sprites
 
             // Copy the frames atlas offset array. If only one direction is provided, duplicate the frames for the
             // missing directions.
-            Frames = new Vector2[Constants.DirectionCount, FrameCount];
+            _frames = new SpriteFrame[Constants.DirectionCount, FrameCount];
 
-            int sourceDirectionCount = atlasPositions.GetLength(0);
+            int sourceDirectionCount = frames.GetLength(0);
             
             if (sourceDirectionCount == Constants.DirectionCount)
             {
-                Array.Copy(atlasPositions, Frames, atlasPositions.Length);
+                Array.Copy(frames, _frames, frames.Length);
             }
             else if (sourceDirectionCount == 1)
             {
                 // Populate missing directions with frames from first direction.                
-                for (int i = 0; i < Constants.DirectionCount; i++)
+                for (var i = 0; i < Constants.DirectionCount; i++)
                 {
-                    for (int j = 0; j < FrameCount; j++)
+                    for (var j = 0; j < FrameCount; j++)
                     {
-                        Frames[i, j] = atlasPositions[0,j];
+                        _frames[i, j] = frames[0,j];
                     }
                 }
             }
             else
             {
-                throw new ArgumentException("Must have either 1 or 4 directions defined", nameof(atlasPositions));
+                throw new ArgumentException("Must have either 1 or 4 directions defined", nameof(frames));
             }
         }
 
@@ -99,32 +98,59 @@ namespace Scott.Forge.Sprites
         ///  A list of animation directions. Each direction contains a list of (X,Y) values that specify the offset for
         ///  each sprite frame in the animation. Each direction is assumed to have the same number of sprite frames.
         /// </summary>
-        public readonly Vector2[,] Frames;
+        private SpriteFrame[,] _frames;
 
         /// <summary>
         ///  Get the number of frames in an animation.
         /// </summary>
-        public int FrameCount { get; private set; }
+        public int FrameCount { get; }
 
         /// <summary>
         ///  Get the amount of time to play each frame in the animation.
         /// </summary>
-        public float FrameSeconds { get; private set; }     // TODO: Use TimeSpan.
+        public float FrameSeconds { get; }     // TODO: Use TimeSpan.
 
         /// <summary>
         /// Get the name of the animation.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
-        ///  Get the requested animated sprite frame.
+        ///  Get the upper left corner of a sprite for a frame in a given direction.
         /// </summary>
         /// <param name="direction">Sprite direction.</param>
-        /// <param name="frame">Frame animation index.</param>
-        /// <returns>Sprite frame atlas.</returns>
+        /// <param name="frame">Frame index.</param>
+        /// <returns>Sprite atlas top left.</returns>
         public Vector2 GetAtlasPosition(DirectionName direction, int frame)
         {
-            return Frames[(int) direction, frame];
+            return _frames[(int) direction, frame].AtlasPosition;
         }
+
+        /// <summary>
+        ///  Get events associated with a frame in a given direction.
+        /// </summary>
+        /// <param name="direction">Sprite direction.</param>
+        /// <param name="frame">Frame index.</param>
+        /// <returns>Animation events (possibly null).</returns>
+        public AnimationEvent[] GetEvents(DirectionName direction, int frame)
+        {
+            return _frames[(int)direction, frame].Events;
+        }
+    }
+    
+    /// <summary>
+    ///  A single frame of animation in a sprite.
+    /// </summary>
+    public struct SpriteFrame
+    {
+        /// <summary>
+        ///  The upper left corner position of sprite in texture atlas
+        /// </summary>
+        public Vector2 AtlasPosition;
+
+        /// <summary>
+        ///  A list (possibly null) of events associated with this sprite frame.
+        /// </summary>
+        public AnimationEvent[] Events;
     }
 }

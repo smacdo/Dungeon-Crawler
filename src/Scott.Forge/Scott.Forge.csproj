@@ -96,6 +96,7 @@
     <Compile Include="IGameScene.cs" />
     <Compile Include="Sprites\AnimatedSpriteDefinition.cs" />
     <Compile Include="Sprites\AnimatedSpriteXmlReader.cs" />
+    <Compile Include="Sprites\AnimationEvent.cs" />
     <Compile Include="Support\PriorityQueue.cs" />
     <Compile Include="Tilemaps\Grid.cs" />
     <Compile Include="Tilemaps\GridPathfinder.cs" />

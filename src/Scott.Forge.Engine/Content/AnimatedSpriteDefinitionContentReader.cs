@@ -30,7 +30,7 @@ namespace Scott.Forge.Sprites
     [ContentReader(typeof(AnimatedSpriteDefinition), ".sprite")]
     public class AnimatedSpriteDefinitionContentReader : IContentReader<AnimatedSpriteDefinition>
     {
-        private string mAssetPath;
+        private string _assetPath;
 
         /// <summary>
         ///  Read an animated sprite from XML and convert it into an AnimatedSpriteDefinition object.
@@ -55,7 +55,7 @@ namespace Scott.Forge.Sprites
                 throw new ArgumentNullException(nameof(assetPath));
             }
 
-            mAssetPath = assetPath;
+            _assetPath = assetPath;
 
             if (content == null)
             {
@@ -73,7 +73,7 @@ namespace Scott.Forge.Sprites
             {
                 throw new ContentLoadException(
                     "Error when reading sprite animation definition. Is this a valid XML document?",
-                    mAssetPath,
+                    _assetPath,
                     e);
             }
 
@@ -113,12 +113,27 @@ namespace Scott.Forge.Sprites
         /// <returns>Parsed SpriteDefinition object.</returns>
         private async Task<SpriteDefinition> ImportSpriteDefinition(XmlNode spriteNode, IContentManager content)
         {
-            // What is the name of this sprite?
-            var spriteName = spriteNode.Attributes["name"]?.Value;
+            // Get the name of the sprite. For files with only one sprite the name is the stream name, otherwise the
+            // name should be specified as an attribute in the name.
+            var spriteName = spriteNode.Attributes["name"]?.Value ?? _assetPath;
 
             if (string.IsNullOrWhiteSpace(spriteName))
             {
-                throw new ContentLoadException("Sprite name missing or invalid", mAssetPath);
+                throw new ContentLoadException("Sprite name missing or invalid", _assetPath);
+            }
+
+            // Get the sprite width and height.
+            int spriteWidth = 0;
+            int spriteHeight = 0;
+
+            try
+            {
+                spriteWidth = Convert.ToInt32(spriteNode.Attributes["width"]?.Value);
+                spriteHeight = Convert.ToInt32(spriteNode.Attributes["height"]?.Value);
+            }
+            catch (FormatException e)
+            {
+                throw new ContentLoadException("Sprite width or height missing or invalid", _assetPath, e);
             }
 
             // Get information on the texture atlas used for this sprite.
@@ -126,14 +141,14 @@ namespace Scott.Forge.Sprites
 
             if (atlasNode == null)
             {
-                throw new ContentLoadException("Texture atlas element missing", mAssetPath);
+                throw new ContentLoadException("Texture atlas element missing", _assetPath);
             }
 
             var atlasPath = atlasNode.Attributes["ref"]?.Value;
 
             if (string.IsNullOrWhiteSpace(atlasPath))
             {
-                throw new ContentLoadException("Texture atlas path missing or invalid", mAssetPath);
+                throw new ContentLoadException("Texture atlas path missing or invalid", _assetPath);
             }
             
             // Find the sprite atlas x/y offset.
@@ -149,32 +164,10 @@ namespace Scott.Forge.Sprites
             }
             catch (FormatException e)
             {
-                throw new ContentLoadException("Sprite width or height missing or invalid", mAssetPath, e);
+                throw new ContentLoadException("Sprite width or height missing or invalid", _assetPath, e);
             }
 
-            // Get the sprite width and height.
-            var sizeNode = spriteNode.SelectSingleNode("size");
-
-            if (sizeNode == null)
-            {
-                throw new ContentLoadException("Sprite size element missing", mAssetPath);
-            }
-
-            int spriteWidth = 0;
-            int spriteHeight = 0;
-
-            try
-            {
-                spriteWidth = Convert.ToInt32(sizeNode.Attributes["width"]?.Value);
-                spriteHeight = Convert.ToInt32(sizeNode.Attributes["height"]?.Value);
-            }
-            catch (FormatException e)
-            {
-                throw new ContentLoadException("Sprite width or height missing or invalid", mAssetPath, e);
-            }
-            
             // Grab the texture atlas.
-            //  TODO: Do this async.
             var atlas = await content.Load<Texture2D>(atlasPath);
 
             // All done.
@@ -221,7 +214,7 @@ namespace Scott.Forge.Sprites
 
             if (string.IsNullOrWhiteSpace(animationName))
             {
-                throw new ContentLoadException("Animation name missing or invalid", mAssetPath);
+                throw new ContentLoadException("Animation name missing or invalid", _assetPath);
             }
 
             // Get amount of time each frame should be displayed for.
@@ -233,7 +226,7 @@ namespace Scott.Forge.Sprites
             }
             catch (FormatException e)
             {
-                throw new ContentLoadException("Invalid frame animation time", mAssetPath, e);
+                throw new ContentLoadException("Invalid frame animation time", _assetPath, e);
             }
             
             // There needs to be at least one frameset specified.
@@ -242,7 +235,7 @@ namespace Scott.Forge.Sprites
 
             if (frameGroupCount < 1)
             {
-                throw new ContentLoadException("Animation must have at least one frame group", mAssetPath);
+                throw new ContentLoadException("Animation must have at least one frame group", _assetPath);
             }
 
             // Count the number of frames in the animation. Each direction must have the same number of frames so
@@ -251,12 +244,12 @@ namespace Scott.Forge.Sprites
 
             if (frameCount < 1)
             {
-                throw new ContentLoadException("Animation must have at least one frame", mAssetPath);
+                throw new ContentLoadException("Animation must have at least one frame", _assetPath);
             }
 
             // Read the animation frame groups and write them into an multi-dimensional array that holds frames for
             // each animation direction.
-            var animationFrames = new Vector2[frameGroupCount, frameCount];
+            var frames = new SpriteFrame[frameGroupCount, frameCount];
 
             foreach (XmlNode groupNode in frameGroups)
             {
@@ -267,20 +260,7 @@ namespace Scott.Forge.Sprites
                 {
                     foreach (XmlNode frameNode in groupNode.SelectNodes("frame"))
                     {
-                        try
-                        {
-                            var x = Convert.ToInt32(frameNode.Attributes["x"].Value);
-                            var y = Convert.ToInt32(frameNode.Attributes["y"].Value);
-
-                            animationFrames[0, frameIndex++] = new Vector2(x, y);
-                        }
-                        catch (FormatException e)
-                        {
-                            throw new ContentLoadException(
-                                "Invalid x or y value for animation frame",
-                                mAssetPath,
-                                e);
-                        }
+                        frames[0, frameIndex++] = ReadAnimationFrame(frameNode);
                     }
                 }
                 else
@@ -289,26 +269,97 @@ namespace Scott.Forge.Sprites
 
                     foreach (XmlNode frameNode in groupNode.SelectNodes("frame"))
                     {
-                        try
-                        {
-                            var x = Convert.ToInt32(frameNode.Attributes["x"].Value);
-                            var y = Convert.ToInt32(frameNode.Attributes["y"].Value);
-
-                            animationFrames[(int)direction, frameIndex++] = new Vector2(x, y);
-                        }
-                        catch (ContentLoadException e)
-                        {
-                            throw new ContentLoadException(
-                                "Invalid x or y value for animation frame",
-                                mAssetPath,
-                                e);
-                        }
+                        frames[(int)direction, frameIndex++] = ReadAnimationFrame(frameNode);
                     }
                 }
             }
 
             // Add the animation to the sprite object
-            return new AnimationDefinition( animationName, frameTime, animationFrames );
+            return new AnimationDefinition( animationName, frameTime, frames );
+        }
+
+        /// <summary>
+        ///  Read a frame element.
+        /// </summary>
+        /// <param name="frameNode">XML element representing the animation frame.</param>
+        /// <returns>Frame data.</returns>
+        private SpriteFrame ReadAnimationFrame(XmlNode frameNode)
+        {
+            try
+            {
+                // Get atlas top left position.
+                var x = Convert.ToInt32(frameNode.Attributes["x"].Value);
+                var y = Convert.ToInt32(frameNode.Attributes["y"].Value);
+
+                // Get events associated with this frame.
+                AnimationEvent[] events = null;
+                var eventNodes = frameNode.SelectNodes("event");
+
+                if (eventNodes.Count > 0)
+                {
+                    events = new AnimationEvent[eventNodes.Count];
+                }
+                
+                for (int i = 0; i < eventNodes.Count; i++)
+                {
+                    events[i] = ReadAnimationFrameEvent(eventNodes[i]);
+                }
+
+                return new SpriteFrame()
+                {
+                    AtlasPosition = new Vector2(x, y),
+                    Events = events
+                };
+            }
+            catch (FormatException e)
+            {
+                throw new ContentLoadException(
+                    "Invalid x or y value for animation frame",
+                    _assetPath,
+                    e);
+            }
+        }
+
+        /// <summary>
+        ///  Read an event element inside of a frame.
+        /// </summary>
+        /// <param name="eventNode">XML element representing the event.</param>
+        /// <returns>Frame data.</returns>
+        private AnimationEvent ReadAnimationFrameEvent(XmlNode eventNode)
+        {
+            // Read the event name.
+            var eventName = eventNode.Attributes["name"].Value;
+            
+            if (string.IsNullOrWhiteSpace(eventName))
+            {
+                throw new ContentLoadException("Animation event name missing or invalid", _assetPath);
+            }
+
+            // Check for presence of arguments.
+            Dictionary<string, string> args = null;
+            var argNodes = eventNode.SelectNodes("arg");
+
+            if (argNodes.Count > 0)
+            {
+                args = new Dictionary<string, string>(argNodes.Count);
+            }
+
+            foreach (XmlNode argNode in argNodes)
+            {
+                var argName = argNode.Attributes["name"].Value;
+                var argValue = argNode.InnerText;
+
+                if (string.IsNullOrEmpty(argName))
+                {
+                    throw new ContentLoadException("Animation event arg name missing or invalid", _assetPath);
+                }
+
+                args[argName] = argValue ?? throw new ContentLoadException(
+                    "Animation event arg value missing or invalid", _assetPath);
+            }
+
+            // Return event.
+            return new AnimationEvent(eventName, args);
         }
     }
 }

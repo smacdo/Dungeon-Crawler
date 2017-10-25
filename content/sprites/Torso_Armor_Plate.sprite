@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sprite name="Torso_Armor_Plate">
+<sprite name="Torso_Armor_Plate" width="64" height="64">
   <atlas ref="sprites/atlases/Torso_Armor_Plate.png" x="128" y="0" />
-  <size width="64" height="64" />
-  <originOffset x="0" y="0" />
   
   <animation name="Idle" frameTime="0.1">
     <frames direction="North">

@@ -37,18 +37,8 @@ namespace Scott.Forge.Sprites
             SpriteDefinition spriteDefinition,
             AnimationSetDefinition animationDefinitions)
         {
-            if (spriteDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(spriteDefinition));
-            }
-
-            if (animationDefinitions == null)
-            {
-                throw new ArgumentNullException(nameof(animationDefinitions));
-            }
-
-            Sprite = spriteDefinition;
-            Animations = animationDefinitions;
+            Sprite = spriteDefinition ?? throw new ArgumentNullException(nameof(spriteDefinition));
+            Animations = animationDefinitions ?? throw new ArgumentNullException(nameof(animationDefinitions));
         }
 
         /// <summary>

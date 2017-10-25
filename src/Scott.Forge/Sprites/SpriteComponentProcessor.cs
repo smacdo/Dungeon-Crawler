@@ -101,6 +101,12 @@ namespace Scott.Forge.Sprites
 
                 UpdateSpriteTextureAtlasPosition(sprite, atlasPosition);
 
+                // Raise events associated with the next animation frame (so long as the animation didn't stop).
+                if (!animationCompleted)
+                {
+                    FireEventsForCurrentAnimationFrame(sprite);
+                }
+
                 // Update the time when this animation frame was first displayed
                 sprite.AnimationFrameSecondsActive -= sprite.CurrentAnimation.FrameSeconds;
             }
@@ -108,8 +114,13 @@ namespace Scott.Forge.Sprites
             // Reset animation state if the current animation has completed.
             if (animationCompleted)
             {
+                var animationName = sprite.CurrentAnimation.Name;
+
                 sprite.CurrentAnimation = null;
-                sprite.NotifyAnimationComplete();
+                sprite.AnimationCompleted?.Invoke(sprite, new AnimationCompletedEventArgs()
+                {
+                    AnimationName = animationName
+                });
             }
         }
 
@@ -132,10 +143,10 @@ namespace Scott.Forge.Sprites
             var animation = sprite.Animations.Get(request.Name);
             var directionInt = (int)request.Direction;
 
-            if (animation.Frames.GetLength(0) <= directionInt)
+            /*if (animation.Frames.GetLength(0) <= directionInt)
             {
                 throw new AnimationDirectionNotFoundException(request.Name, request.Direction);
-            }
+            }*/
 
             // Update state of the sprite component to start playing animation.
             sprite.CurrentAnimation = animation;
@@ -153,6 +164,25 @@ namespace Scott.Forge.Sprites
                     sprite.AnimationFrameIndex);
 
             UpdateSpriteTextureAtlasPosition(sprite, atlasPosition);
+
+            // Fire any events associated with the initial frame.
+            FireEventsForCurrentAnimationFrame(sprite);
+        }
+
+        /// <summary>
+        ///  Fires any events associated with the sprite's current animation frame. This should be called immediately
+        ///  after switching to a new frame.
+        /// </summary>
+        /// <param name="sprite">Sprite to fire events for.</param>
+        private void FireEventsForCurrentAnimationFrame(SpriteComponent sprite)
+        {
+            var events = sprite.CurrentAnimation.GetEvents(sprite.Direction, sprite.AnimationFrameIndex);
+            var eventCount = events?.Length ?? 0;
+
+            for (int i = 0; i < eventCount; i++)
+            {
+                sprite.AnimationEventFired?.Invoke(sprite, events[i]);
+            }
         }
 
         /// <summary>
