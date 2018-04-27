@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Forge\Forge.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Math\" />
+  </ItemGroup>
+
 </Project>

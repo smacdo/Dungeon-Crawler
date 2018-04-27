@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Forge.Spatial;
 
 namespace DungeonCrawler.WorldGeneration
 {
@@ -49,7 +50,7 @@ namespace DungeonCrawler.WorldGeneration
             mTileSet = tileSet;
 
             mTileMap = new TileMap(mTileSet, Grid);
-            mTileMap.Grid.Fill((Grid<Tile> g, int x, int y) => { return new Tile(voidTile.Id); });
+            mTileMap.Grid.Fill((IReadOnlyGrid<Tile> g, int x, int y) => { return new Tile(voidTile.Id); });
         }
 
         /// <summary>

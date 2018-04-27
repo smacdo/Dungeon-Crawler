@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Forge.Random;
 using Forge.Tilemaps;
 using Forge;
+using Forge.Spatial;
 
 namespace DungeonCrawler.WorldGeneration
 {
@@ -93,12 +94,12 @@ namespace DungeonCrawler.WorldGeneration
             return new RoomLayout(tiles, safeCenter);
         }
 
-        private Tile SetFloor(Grid<Tile> grid, int x, int y)
+        private Tile SetFloor(IReadOnlyGrid<Tile> grid, int x, int y)
         {
             return new Tile(FloorTile.Id);
         }
 
-        private Tile SetWall(Grid<Tile> grid, int x, int y)
+        private Tile SetWall(IReadOnlyGrid<Tile> grid, int x, int y)
         {
             var t = new Tile(WallTile.Id);
             t.SetImpassable();

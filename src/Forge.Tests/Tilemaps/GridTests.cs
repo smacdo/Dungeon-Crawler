@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Forge.Tilemaps;
+using Forge.Spatial;
 
 namespace Forge.Tests.Tilemaps
 {
@@ -460,32 +461,30 @@ namespace Forge.Tests.Tilemaps
         }
 
         [TestMethod]
+        public void Find_Returns_Null_When_No_Matching_Value()
+        {
+            var grid = new Grid<int>(2, 3);
+            Assert.IsNull(grid.IndexOf(42));
+        }
+
+        [TestMethod]
         public void Find_Returns_Location_Of_First_Matching_Value()
         {
             var grid = new Grid<int>(2, 3);
-            int x = -1, y = -1;
-
-            Assert.IsFalse(grid.Find(42, ref x, ref y));
-            Assert.AreEqual(-1, x);
-            Assert.AreEqual(-1, y);
-
             grid[0, 1] = 42;
 
-            Assert.IsTrue(grid.Find(42, ref x, ref y));
-            Assert.AreEqual(0, x);
-            Assert.AreEqual(1, y);
+            var position = grid.IndexOf(42);
+            Assert.AreEqual(new Point2(0, 1), position.Value);
 
             grid[1, 1] = 42;
 
-            Assert.IsTrue(grid.Find(42, ref x, ref y));
-            Assert.AreEqual(0, x);
-            Assert.AreEqual(1, y);
-
+            position = grid.IndexOf(42);
+            Assert.AreEqual(new Point2(0, 1), position.Value);
+            
             grid[1, 0] = 42;
 
-            Assert.IsTrue(grid.Find(42, ref x, ref y));
-            Assert.AreEqual(1, x);
-            Assert.AreEqual(0, y);
+            position = grid.IndexOf(42);
+            Assert.AreEqual(new Point2(1, 0), position.Value);
         }
 
         [TestMethod]
@@ -627,7 +626,7 @@ namespace Forge.Tests.Tilemaps
             //  [0  1
             //   10 11
             //   20 21]
-            grid.Fill((Grid<int> g, int x, int y) => { return y * 10 + x; });
+            grid.Fill((IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x; });
             
             CollectionAssert.AreEqual(new List<int> { 0, 1, 10, 11, 20, 21 }, grid.ToList());
         }
@@ -652,11 +651,11 @@ namespace Forge.Tests.Tilemaps
             //   10 11 12
             //   20 21 22
             //   30 31 32]
-            grid.Fill(0, 0, 3, 4, (Grid<int> g, int x, int y) => { return y * 10 + x; });
+            grid.Fill(0, 0, 3, 4, (IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x; });
             CollectionAssert.AreEqual(new List<int> { 0, 1, 2, 10, 11, 12, 20, 21, 22, 30, 31, 32 }, grid.ToList());
 
             // Fill nothing, result is same as previous grid since nothing changed.
-            grid.Fill(0, 0, 0, 0, (Grid<int> g, int x, int y) => { return y * 10 + x; });
+            grid.Fill(0, 0, 0, 0, (IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x; });
             CollectionAssert.AreEqual(new List<int> { 0, 1, 2, 10, 11, 12, 20, 21, 22, 30, 31, 32 }, grid.ToList());
 
             // Change subregion, new grid should look like:
@@ -664,7 +663,7 @@ namespace Forge.Tests.Tilemaps
             //   15 16 12
             //   25 36 22
             //   35 37 32]
-            grid.Fill(0, 1, 2, 3, (Grid<int> g, int x, int y) => { return y * 10 + x + 5; });
+            grid.Fill(0, 1, 2, 3, (IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x + 5; });
             CollectionAssert.AreEqual(new List<int>() { 0, 1, 2, 15, 16, 12, 25, 26, 22, 35, 36, 32 }, grid.ToList());
 
             // Change another subregion, result should be:
@@ -672,7 +671,7 @@ namespace Forge.Tests.Tilemaps
             //   15 16 12
             //   25 71 72
             //   35 81 82]
-            grid.Fill(1, 2, 2, 2, (Grid<int> g, int x, int y) => { return y * 10 + x + 50; });
+            grid.Fill(1, 2, 2, 2, (IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x + 50; });
             CollectionAssert.AreEqual(new List<int>() { 0, 1, 2, 15, 16, 12, 25, 71, 72, 35, 81, 82 }, grid.ToList());
         }
 
@@ -685,14 +684,14 @@ namespace Forge.Tests.Tilemaps
             //  [0  1
             //   10 11
             //   20 21]
-            grid.Fill(0, 0, -1, -1, (Grid<int> g, int x, int y) => { return y * 10 + x; });
+            grid.Fill(0, 0, -1, -1, (IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x; });
             CollectionAssert.AreEqual(new List<int> { 0, 1, 10, 11, 20, 21 }, grid.ToList());
 
             // Fill subregion to make grid be:
             // [0  1
             //  10 11
             //  20 25]
-            grid.Fill(1, 2, -1, -1, (Grid<int> g, int x, int y) => { return y * 10 + x + 5; });
+            grid.Fill(1, 2, -1, -1, (IReadOnlyGrid<int> g, int x, int y) => { return y * 10 + x + 5; });
             CollectionAssert.AreEqual(new List<int> { 0, 1, 10, 11, 20, 26 }, grid.ToList());
         }
     
@@ -701,7 +700,7 @@ namespace Forge.Tests.Tilemaps
         public void Fill_Throws_Exception_If_Col_Is_Negative()
         {
             var grid = new Grid<int>(2, 3);
-            grid.Fill(2, 2, -1, -1, (Grid<int> g, int x, int y) => { return 0; });
+            grid.Fill(2, 2, -1, -1, (IReadOnlyGrid<int> g, int x, int y) => { return 0; });
         }
 
         [TestMethod]
@@ -709,7 +708,7 @@ namespace Forge.Tests.Tilemaps
         public void Fill_Throws_Exception_If_Row_Is_Negative()
         {
             var grid = new Grid<int>(2, 3);
-            grid.Fill(1, 3, -1, -1, (Grid<int> g, int x, int y) => { return 0; });
+            grid.Fill(1, 3, -1, -1, (IReadOnlyGrid<int> g, int x, int y) => { return 0; });
         }
 
         [TestMethod]
@@ -717,7 +716,7 @@ namespace Forge.Tests.Tilemaps
         public void Fill_Throws_Exception_If_Col_Count_Is_Excessive()
         {
             var grid = new Grid<int>(2, 3);
-            grid.Fill(0, 0, 3, 1, (Grid<int> g, int x, int y) => { return 0; });
+            grid.Fill(0, 0, 3, 1, (IReadOnlyGrid<int> g, int x, int y) => { return 0; });
         }
 
         [TestMethod]
@@ -736,7 +735,7 @@ namespace Forge.Tests.Tilemaps
         }
 
         [TestMethod]
-        [ExpectedException(typeof(IndexOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Get_Out_Of_Bounds_Col_Throws_Exception()
         {
             var grid = new Grid<int>(2, 3);
@@ -744,7 +743,7 @@ namespace Forge.Tests.Tilemaps
         }
 
         [TestMethod]
-        [ExpectedException(typeof(IndexOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Get_Out_Of_Bounds_Row_Throws_Exception()
         {
             var grid = new Grid<int>(2, 3);
@@ -752,7 +751,7 @@ namespace Forge.Tests.Tilemaps
         }
 
         [TestMethod]
-        [ExpectedException(typeof(IndexOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Set_Out_Of_Bounds_Col_Throws_Exception()
         {
             var grid = new Grid<int>(2, 3);
@@ -760,7 +759,7 @@ namespace Forge.Tests.Tilemaps
         }
 
         [TestMethod]
-        [ExpectedException(typeof(IndexOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Set_Out_Of_Bounds_Row_Throws_Exception()
         {
             var grid = new Grid<int>(2, 3);

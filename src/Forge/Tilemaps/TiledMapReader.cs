@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
 using Forge.Content;
+using Forge.Spatial;
 
 namespace Forge.Engine.Content
 {

@@ -16,6 +16,7 @@
 using Forge.Support;
 using System;
 using System.Collections.Generic;
+using Forge.Spatial;
 
 namespace Forge.Tilemaps
 {

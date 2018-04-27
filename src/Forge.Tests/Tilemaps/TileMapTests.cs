@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Forge.Graphics;
 using Forge.Tilemaps;
+using Forge.Spatial;
 
 namespace Forge.Tests.Tilemaps
 {

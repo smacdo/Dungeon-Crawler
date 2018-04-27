@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Forge.Tilemaps;
 using System.Collections.Generic;
 using Forge;
+using Forge.Spatial;
 
 namespace Forge.Tests.Tilemaps
 {
@@ -288,7 +289,7 @@ namespace Forge.Tests.Tilemaps
 
             if (values == null)
             {
-                grid.Fill((Grid<int> g, int x, int y) => { return 0; });
+                grid.Fill((IReadOnlyGrid<int> g, int x, int y) => { return 0; });
             }
             else
             {

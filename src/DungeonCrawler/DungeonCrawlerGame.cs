@@ -44,7 +44,7 @@ namespace DungeonCrawler
         private GameObject mPlayer;
 
         private bool mEnemySpawningEnabled = true;
-        private bool mKeepSpawningEnemies = false;
+        //private bool mKeepSpawningEnemies = false;
         private Random mWorldRandom = new Random();
 
         private IGameRenderer mRenderer;
