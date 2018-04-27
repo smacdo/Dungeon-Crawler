@@ -19,18 +19,6 @@ namespace Forge.Tests
         }
 
         [TestMethod]
-        public void Copy_Constructors_Sets_X_Y_Properties()
-        {
-            var a = new Point2(new Point2(5, 7));
-            Assert.AreEqual(5, a.X);
-            Assert.AreEqual(7, a.Y);
-
-            var b = new Point2(new Point2(-3, 6));
-            Assert.AreEqual(-3, b.X);
-            Assert.AreEqual(6, b.Y);
-        }
-
-        [TestMethod]
         public void Zero_Static_Property_Has_Zero_For_X_Y()
         {
             var a = Point2.Zero;
@@ -81,9 +69,45 @@ namespace Forge.Tests
         }
 
         [TestMethod]
-        public void Compare_To_Compares_Ascending_Order_First_Y_Then_X()
+        public void Compare_To_Is_Zero_When_Points_Equal()
         {
-            // TODO: Finish.
+            var a = new Point2(4, 1);
+            var b = new Point2(4, 1);
+
+            Assert.AreEqual(0, a.CompareTo(b));
+            Assert.AreEqual(0, ((IComparable)a).CompareTo(b));
+        }
+
+        [TestMethod]
+        public void Compare_To_Sorts_On_Y_If_Y_Values_Different()
+        {
+            var a = new Point2(3, 1);
+
+            Assert.AreEqual(1, a.CompareTo(new Point2(-2, 1)));
+            Assert.AreEqual(1, ((IComparable)a).CompareTo(new Point2(-2, 1)));
+
+            Assert.AreEqual(-1, a.CompareTo(new Point2(4, 1)));
+            Assert.AreEqual(-1, ((IComparable)a).CompareTo(new Point2(4, 1)));
+        }
+
+        [TestMethod]
+        public void Compare_To_Sorts_On_X_If_Y_Values_Different()
+        {
+            var a = new Point2(3, 1);
+
+            Assert.AreEqual(1, a.CompareTo(new Point2(3, 0)));
+            Assert.AreEqual(1, ((IComparable)a).CompareTo(new Point2(3, 0)));
+
+            Assert.AreEqual(-1, a.CompareTo(new Point2(3, 5)));
+            Assert.AreEqual(-1, ((IComparable)a).CompareTo(new Point2(3, 5)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Compare_To_Throws_Exception_If_Other_Object_Is_Different_Type()
+        {
+            var a = new Point2(0, 0);
+            Assert.AreEqual(1, ((IComparable)a).CompareTo(new object()));
         }
 
         [TestMethod]
@@ -114,6 +138,13 @@ namespace Forge.Tests
             Assert.IsTrue(a != d);
             Assert.IsFalse(a.Equals(d));
             Assert.IsFalse(a.Equals((object)d));
+        }
+
+        [TestMethod]
+        public void Equals_Throws_Exception_If_Other_Object_Is_Different_Type()
+        {
+            var a = new Point2(0, 0);
+            Assert.IsFalse(((object)a).Equals(new object()));
         }
 
         [TestMethod]
@@ -159,11 +190,28 @@ namespace Forge.Tests
             var a = new Point2(3, 5);
             var b = new Point2(-2, 1);
             
-            Assert.AreEqual(new Point2(-3, -5), -a);
             Assert.AreEqual(new Point2(-3, -5), Point2.Negate(a));
-            
-            Assert.AreEqual(new Point2(2, -1), -b);
             Assert.AreEqual(new Point2(2, -1), Point2.Negate(b));
+        }
+
+        [TestMethod]
+        public void Unary_Positive_Operator_Does_Not_Change_Value()
+        {
+            var a = new Point2(3, 5);
+            var b = new Point2(-2, 1);
+
+            Assert.AreEqual(new Point2(3, 5), +a);
+            Assert.AreEqual(new Point2(-2, 1), +b);
+        }
+
+        [TestMethod]
+        public void Unary_Negative_Inverts_X_And_Y()
+        {
+            var a = new Point2(3, 5);
+            var b = new Point2(-2, 1);
+
+            Assert.AreEqual(new Point2(-3, -5), -a);
+            Assert.AreEqual(new Point2(2, -1), -b);
         }
 
         [TestMethod]
@@ -239,7 +287,7 @@ namespace Forge.Tests
         }
 
         [TestMethod]
-        public void Can_Calculate_Distance()
+        public void Distance_Returns_Euclidean_Distance_Between_Two_Points()
         {
             var a = new Point2(0, 0);
             var b = new Point2[] { new Point2(0, 4), new Point2(4, 0), new Point2(-4, 0), new Point2(3, 4) };
@@ -252,7 +300,7 @@ namespace Forge.Tests
         }
 
         [TestMethod]
-        public void Can_Calculate_Distance_Squared()
+        public void Distance_Squared_Returns_Euclidean_Distance_Between_Two_Points_Without_Square_Root()
         {
             var a = new Point2(0, 0);
             var b = new Point2[] { new Point2(0, 4), new Point2(4, 0), new Point2(-4, 0), new Point2(3, 4) };
@@ -265,7 +313,7 @@ namespace Forge.Tests
         }
 
         [TestMethod]
-        public void Point_Min_Takes_Minimum_Values_For_Each_Component()
+        public void Min_Takes_Minimum_Values_For_Each_Component()
         {
             var a = new Point2(2, 3);
             var b = new Point2(1, 5);

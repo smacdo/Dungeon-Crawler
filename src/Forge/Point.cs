@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012-2017 Scott MacDonald
+ * Copyright 2012-2018 Scott MacDonald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ using System.Xml.Serialization;
 namespace Forge
 {
     /// <summary>
-    ///  A two dimensional Point with integer coordinates.
+    ///  A two dimensional point with integer coordinates.
     /// </summary>
     /// <remarks>
-    ///  Do not use this mutable struct when code (Especially collections like IDictionary) expects the hash code to
+    ///  Do not use this mutable struct when code (especially collections like IDictionary) expects the hash code to
     ///  remain immutable but the properties of the struct are modified.
     /// </remarks>
     [DataContract]
@@ -38,28 +38,18 @@ namespace Forge
         private static readonly Point2 PointZero  = new Point2(0, 0);
         
         /// <summary>
-        ///  Initializes a new instance of the Point structure.
+        ///  Initializes a new instance of the Point2 structure.
         /// </summary>
-        /// <param name="x">The x offset of the new Point.</param>
-        /// <param name="y">The y offset of the new Point.</param>
+        /// <param name="x">X coordinate.</param>
+        /// <param name="y">Y coordinate.</param>
         public Point2(int x, int y)
         {
             X = x;
             Y = y;
         }
-
+        
         /// <summary>
-        ///  Initializes a new instance of the Point structure.
-        /// </summary>
-        /// <param name="other">A Point to copy values from.</param>
-        public Point2(Point2 other)
-        {
-            X = other.X;
-            Y = other.Y;
-        }
-
-        /// <summary>
-        ///  Get a unit Point that points down.
+        ///  Get a unit point that points down.
         /// </summary>
         public static Point2 Down
         {
@@ -67,7 +57,7 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Get a unit Point that points left.
+        ///  Get a unit point that points left.
         /// </summary>
         public static Point2 Left
         {
@@ -75,7 +65,7 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Get a Point that has X and Y set to one.
+        ///  Get a point that has X and Y set to one.
         /// </summary>
         public static Point2 One
         {
@@ -83,7 +73,7 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Get a unit Point that points right.
+        ///  Get a unit point that points right.
         /// </summary>
         public static Point2 Right
         {
@@ -91,7 +81,7 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Get a unit Point that points up.
+        ///  Get a unit point that points up.
         /// </summary>
         public static Point2 Up
         {
@@ -99,7 +89,7 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Get a Point that has X and Y set to zero.
+        ///  Get a point that has X and Y set to zero.
         /// </summary>
         public static Point2 Zero
         {
@@ -121,7 +111,7 @@ namespace Forge
         public int Y { get; set; }
 
         /// <summary>
-        ///  Get if the X and Y of this Point are both zero.
+        ///  Check if the X and Y of this point are both zero.
         /// </summary>
         public bool IsZero
         {
@@ -129,13 +119,15 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Compare this Point to another Point.
+        ///  Compare this point to another point.
         /// </summary>
-        /// <returns>-1 if this point is smaller, 1 if larger and 0 if they are equal. </returns>
+        /// <remarks>
+        ///  Performs a comparison in such a way as to order a set of points in row major order. This means that y
+        ///  should be sorted first so points with the same Y value are grouped together.
+        /// </remarks>
+        /// <returns>-1 if this point is smaller, 1 if larger and 0 if they are equal.</returns>
         public int CompareTo(Point2 other)
         {
-            // Perform comparison in such a way to order a set of points in row major order. This means that y should
-            // be sorted first so that points with the same Y value are grouped together.
             if (Y < other.Y)
             {
                 return -1;
@@ -173,7 +165,7 @@ namespace Forge
             }
             else
             {
-                throw new ArgumentException("Cannot compare different types", nameof(obj)); 
+                throw new ArgumentException("Cannot compare objects of different types", nameof(obj)); 
             }
         }
 
@@ -221,18 +213,18 @@ namespace Forge
         }
 
         /// <summary>
-        ///  Return a negated version of this Point.
+        ///  Return a point with the x and y values multiplied by -1.
         /// </summary>
-        /// <returns>A Point with the X and Y components negated.</returns>
+        /// <returns>A point with the X and Y components negated.</returns>
         public Point2 Negated()
         {
             return new Point2(-X, -Y);
         }
 
         /// <summary>
-        ///  Returns a string that represents this Point.
+        ///  Get a string version of this point.
         /// </summary>
-        /// <returns>A string that represents this Point.</returns>
+        /// <returns>A string that represents this point.</returns>
         public override string ToString()
         {
             return string.Format("{0}, {1}", X, Y);
