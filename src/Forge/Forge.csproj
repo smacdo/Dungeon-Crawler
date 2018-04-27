@@ -25,14 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Spatial\IGridEnumerator.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Spatial\IReadOnlyGridEnumerator.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.6.0.1625" />
   </ItemGroup>
 </Project>
