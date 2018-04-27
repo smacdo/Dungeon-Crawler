@@ -29,7 +29,39 @@ namespace Forge.Tests.Support
         {
             var q = new PriorityQueue<char, int>(-1);
         }
-        
+
+        [TestMethod]
+        public void Create_With_Copy_Constructor_Copies_Elements()
+        {
+            var a = new PriorityQueue<char, int>(1);
+            a.Add('x', 42);
+
+            var b = new PriorityQueue<char, int>(a);
+            Assert.AreEqual('x', b.Peek());
+        }
+
+        [TestMethod]
+        public void Copy_Constructor_Deep_Copies_Heap_Array()
+        {
+            var a = new PriorityQueue<char, int>(1);
+            a.Add('x', 42);
+
+            var b = new PriorityQueue<char, int>(a);
+            Assert.AreEqual('x', b.Peek());
+
+            a.Add('y', 40);
+
+            Assert.AreEqual('y', a.Peek());
+            Assert.AreEqual('x', b.Peek());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Copy_Constructor_Throws_Exception_If_Other_Is_Null()
+        {
+            var a = new PriorityQueue<char, int>(null);
+        }
+
         [TestMethod]
         public void Count_Reflects_Number_Of_Items_In_Queue()
         {

@@ -1,18 +1,18 @@
-﻿/*
- * Copyright 2017 Scott MacDonald
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+﻿/// <copyright>
+/// Copyright 2017-2018 Scott MacDonald
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+/// http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// </copyright>
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,15 +32,13 @@ namespace Forge.Support
     /// <typeparam name="TValue">Type of item stored in priority queue.</typeparam>
     [DataContract]
     [DebuggerDisplay("Count = {Count}")]
-    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public class PriorityQueue<TValue, TScore> : IEnumerable<TValue> where TScore : IComparable<TScore>
     {
         private const int DefaultCapacity = 15; // Full binary tree of height 4.
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         [DataMember(Name = "Heap", IsRequired = true, Order = 0)]
-        private HeapNode[] mHeap;
+        private HeapNode[] _heap;
 
         /// <summary>
         ///  Initialize a new instance of the priority queue class.
@@ -58,10 +56,10 @@ namespace Forge.Support
         {
             if (capacity < 0)
             {
-                throw new ArgumentException("Capacity cannot be less than zero", nameof(capacity));
+                throw new ArgumentException("Capacity is less than zero", nameof(capacity));
             }
 
-            mHeap = new HeapNode[capacity];
+            _heap = new HeapNode[capacity];
         }
         
         /// <summary>
@@ -78,8 +76,8 @@ namespace Forge.Support
                 throw new ArgumentNullException(nameof(other));
             }
 
-            mHeap = new HeapNode[other.Capacity];
-            Array.Copy(other.mHeap, mHeap, other.Count);
+            _heap = new HeapNode[other.Capacity];
+            Array.Copy(other._heap, _heap, other.Count);
 
             Count = other.Count;
         }
@@ -87,7 +85,7 @@ namespace Forge.Support
         /// <summary>
         ///  Get the queue's current capacity.
         /// </summary>
-        public int Capacity { [DebuggerStepThrough] get { return mHeap.Length; } }
+        public int Capacity { [DebuggerStepThrough] get { return _heap.Length; } }
         
         /// <summary>
         ///  Get a count of the number of items in the priority queue.
@@ -167,7 +165,7 @@ namespace Forge.Support
         {
             if (clearHeapValues)
             {
-                Array.Clear(mHeap, 0, Count);
+                Array.Clear(_heap, 0, Count);
             }
 
             Count = 0;
@@ -204,7 +202,7 @@ namespace Forge.Support
 
             for (int i = 0; i < Count; i++)
             {
-                array[arrayIndex + i] = mHeap[i].Value;
+                array[arrayIndex + i] = _heap[i].Value;
             }
         }
 
@@ -227,7 +225,7 @@ namespace Forge.Support
 
             for (int i = 0; i < Count; i++)
             {
-                array[arrayIndex + i] = new Pair<TValue, TScore>(mHeap[i].Value, mHeap[i].Score);
+                array[arrayIndex + i] = new Pair<TValue, TScore>(_heap[i].Value, _heap[i].Score);
             }
         }
 
@@ -247,10 +245,10 @@ namespace Forge.Support
             }
 
             // Extract the smallest value from the heap.
-            var result = mHeap[0];
+            var result = _heap[0];
 
             // Replace the heap root with the last element from the heap, and then reduce the heap's size.
-            mHeap[0] = mHeap[Count - 1];
+            _heap[0] = _heap[Count - 1];
             Count -= 1;
 
             // Restore the heap's min ordering property by iteratively performing min-heapify until everything looks
@@ -283,7 +281,7 @@ namespace Forge.Support
                     throw new InvalidOperationException("Priority queue iterator was invalidated");
                 }
 
-                yield return mHeap[i].Value;
+                yield return _heap[i].Value;
             }
         }
 
@@ -330,10 +328,10 @@ namespace Forge.Support
 
             // Create a new heap and copy the old heap's items in.
             var newHeap = new HeapNode[newCapacity];
-            Array.Copy(mHeap, 0, newHeap, 0, Count);
+            Array.Copy(_heap, 0, newHeap, 0, Count);
 
             // Switch to the larger heap and discard the smaller one.
-            mHeap = newHeap;
+            _heap = newHeap;
         }
 
         /// <summary>
@@ -385,10 +383,10 @@ namespace Forge.Support
             // Locate the slot where this value should be placed. Start at a blank slot in the heap, and then
             // iteratively check and swap the parent node into the slot if it is smaller than the value to insert.
             // Once this property is no longer true, add the value to insert.
-            while (currentIndex > 0 && itemScore.CompareTo(mHeap[parentIndex].Score) < 0)
+            while (currentIndex > 0 && itemScore.CompareTo(_heap[parentIndex].Score) < 0)
             {
                 // Swap the parent value into the current slot.
-                mHeap[currentIndex] = mHeap[parentIndex];
+                _heap[currentIndex] = _heap[parentIndex];
 
                 // Move to the parent slot, and get its parent.
                 currentIndex = parentIndex;
@@ -396,7 +394,7 @@ namespace Forge.Support
             }
 
             // Insert the value at the correct location in the heap.
-            mHeap[currentIndex] = new HeapNode(itemValue, itemScore);
+            _heap[currentIndex] = new HeapNode(itemValue, itemScore);
 
             // Update the version to invalidate any active iterators.
             Version++;
@@ -427,21 +425,21 @@ namespace Forge.Support
                 int leftIndex = 2 * index + 1;
                 int rightIndex = 2 * index + 2;
 
-                if (leftIndex < Count && mHeap[leftIndex].Score.CompareTo(mHeap[smallestIndex].Score) < 0)
+                if (leftIndex < Count && _heap[leftIndex].Score.CompareTo(_heap[smallestIndex].Score) < 0)
                 {
                     smallestIndex = leftIndex;
                 }
 
-                if (rightIndex < Count && mHeap[rightIndex].Score.CompareTo(mHeap[smallestIndex].Score) < 0)
+                if (rightIndex < Count && _heap[rightIndex].Score.CompareTo(_heap[smallestIndex].Score) < 0)
                 {
                     smallestIndex = rightIndex;
                 }
 
                 if (smallestIndex != index)
                 {
-                    var swapTemp = mHeap[index];
-                    mHeap[index] = mHeap[smallestIndex];
-                    mHeap[smallestIndex] = swapTemp;
+                    var swapTemp = _heap[index];
+                    _heap[index] = _heap[smallestIndex];
+                    _heap[smallestIndex] = swapTemp;
 
                     index = smallestIndex;
                 }
@@ -474,13 +472,13 @@ namespace Forge.Support
 
             for (int readIndex = 0; readIndex < Count; ++readIndex)
             {
-                if (comparer.Equals(item, mHeap[readIndex].Value))
+                if (comparer.Equals(item, _heap[readIndex].Value))
                 {
                     itemsRemoved++;
                 }
                 else
                 {
-                    mHeap[writeIndex++] = mHeap[readIndex];
+                    _heap[writeIndex++] = _heap[readIndex];
                 }
             }
 
@@ -504,7 +502,7 @@ namespace Forge.Support
                 throw new InvalidOperationException("No items in priority queue");
             }
 
-            return mHeap[0].Value;
+            return _heap[0].Value;
         }
 
         /// <summary>
@@ -522,9 +520,9 @@ namespace Forge.Support
 
             for (int currentIndex = 0; currentIndex < Count && !didFind; ++currentIndex)
             {
-                if (comparer.Equals(item, mHeap[currentIndex].Value))
+                if (comparer.Equals(item, _heap[currentIndex].Value))
                 {
-                    score = mHeap[currentIndex].Score;
+                    score = _heap[currentIndex].Score;
                     didFind = true;
                 }
             }
