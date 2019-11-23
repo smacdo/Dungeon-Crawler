@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Forge.GameObjects
 {
@@ -30,28 +27,13 @@ namespace Forge.GameObjects
     /// </remarks>
     public class TransformComponent : Component
     {
-        /// <summary>
-        ///  Offset from local origin.
-        /// </summary>
         private Vector2 mLocalPosition = Vector2.Zero;
-
-        /// <summary>
-        ///  Offset from world origin. Calculate as parent.WorldPosition + this.LocalPosition.
-        /// </summary>
         private Vector2 mWorldPosition = Vector2.Zero;
 
         private float mLocalRotation = 0.0f;
         private float mWorldRotation = 0.0f;
-
-        // Cached from mWorldRotation.
+        
         private Vector2 mWorldForward = new Vector2(1.0f, 0.0f);        
-
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        public TransformComponent()
-        {
-        }
 
         /// <summary>
         ///  Get a unit vector from the transform oriented toward the -X axis.
@@ -69,6 +51,11 @@ namespace Forge.GameObjects
         public Vector2 Left { get { return new Vector2(mWorldForward.Y, -mWorldForward.X); } }
 
         /// <summary>
+        ///  Get a vector that is 90 degrees right of the forward vector.
+        /// </summary>
+        public Vector2 Right { get { return new Vector2(-mWorldForward.Y, mWorldForward.X); } }
+
+        /// <summary>
         ///  Get or set the position of this transform relative to the parent.
         /// </summary>
         public Vector2 LocalPosition
@@ -80,51 +67,6 @@ namespace Forge.GameObjects
                 {
                     mLocalPosition = value;
                     RegenerateWorldTransform();
-                }
-            }
-        }
-
-        /// <summary>
-        ///  Get or set the rotation of this transform relative to the parent.
-        /// </summary>
-        public float LocalRotation
-        {
-            get { return mLocalRotation; }
-            set
-            {
-                if (mLocalRotation != value)
-                {
-                    mLocalRotation = MathHelper.NormalizeAngleTwoPi(value);
-                    RegenerateWorldTransform();
-                }
-            }
-        }
-
-        /// <summary>
-        ///  Get a vector that is 90 degrees right of the forward vector.
-        /// </summary>
-        public Vector2 Right { get { return new Vector2(-mWorldForward.Y, mWorldForward.X); } }
-
-        /// <summary>
-        ///  Get or set the world rotation in radians.
-        ///  (Relative rotation not supported yet!!).
-        /// </summary>
-        public float WorldRotation
-        {
-            get { return mWorldRotation; }
-            set
-            {
-                if (!mWorldRotation.Equals(value))
-                {
-                    if (Owner != null && Owner.Parent != null)
-                    {
-                        // TODO: Implement relative rotation.
-                        LocalRotation = value;
-                    }
-                    else
-                    {
-                        LocalRotation = value;
-                    }
                 }
             }
         }
@@ -152,13 +94,42 @@ namespace Forge.GameObjects
         }
 
         /// <summary>
-        ///  Move the transform in the requested distance, relative to the transform's current
-        ///  rotation.
+        ///  Get or set the rotation of this transform relative to the parent.
         /// </summary>
-        /// <param name="distance">Distance to move.</param>
-        public void Translate( Vector2 distance )
+        public float LocalRotation
         {
-            throw new NotImplementedException();
+            get { return mLocalRotation; }
+            set
+            {
+                if (mLocalRotation != value)
+                {
+                    mLocalRotation = value;
+                    RegenerateWorldTransform();
+                }
+            }
+        }
+
+        /// <summary>
+        ///  Get or set the world rotation in radians.
+        ///  (Relative rotation not supported yet!!).
+        /// </summary>
+        public float WorldRotation
+        {
+            get { return mWorldRotation; }
+            set
+            {
+                if (!mWorldRotation.Equals(value))
+                {
+                    if (Owner != null && Owner.Parent != null)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        LocalRotation = value;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -167,6 +138,11 @@ namespace Forge.GameObjects
         /// <param name="direction">Local space direction.</param>
         /// <returns>World space direction vector</returns>
         public Vector2 TransformDirection( Vector2 direction )
+        {
+            throw new NotImplementedException();
+        }
+
+        public Vector2 InverseTransformDirection(Vector2 direction)
         {
             throw new NotImplementedException();
         }
@@ -181,12 +157,28 @@ namespace Forge.GameObjects
             throw new NotImplementedException();
         }
 
+        public Vector2 InverseTransformPosition(Vector2 position)
+        {
+            throw new NotImplementedException();
+        }
+
+        // Rotate transform to make forward point at position.
+        public void LookAt(Vector2 position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RotateAround(Vector2 position, float angleInRadians)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///  Called when game object owner's parent is changed.
         /// </summary>
         /// <param name="newParent">The new parent.</param>
         /// <param name="oldParent">The old parent.</param>
-        public void OnParentChanged(GameObject newParent, GameObject oldParent)
+        internal void OnParentChanged(GameObject newParent, GameObject oldParent)
         {
             RegenerateWorldTransform();
         }
@@ -195,12 +187,12 @@ namespace Forge.GameObjects
         ///  Method will recaculate world position, rotation and scale after a local position, rotation or scale change
         ///  has happened.
         /// </summary>
-        void RegenerateWorldTransform()
+        private void RegenerateWorldTransform()
         {
             if (Owner == null)
             {
                 mWorldPosition = mLocalPosition;
-                mWorldRotation = mLocalRotation;
+                mWorldRotation = MathHelper.NormalizeAngleTwoPi(mLocalRotation);
             }
             else
             {
@@ -214,12 +206,12 @@ namespace Forge.GameObjects
         /// <summary>
         ///  Recursively invalidate and recalculate transforms of children.
         /// </summary>
-        void RecalculateChildTransforms(Vector2 parentPosition, float parentRotation)
+        private void RecalculateChildTransforms(Vector2 parentPosition, float parentRotation)
         {
             // Recreate world transformations.
             mWorldPosition = parentPosition + MathHelper.Rotate(mLocalPosition, parentRotation);
             mWorldRotation = MathHelper.NormalizeAngleTwoPi(parentRotation + mLocalRotation);
-            mWorldForward = MathHelper.Rotate(new Forge.Vector2(1, 0), mWorldRotation);    // TODO: Do this faster.
+            mWorldForward = MathHelper.Rotate(new Vector2(1, 0), mWorldRotation);    // TODO: Do this faster.
 
             // Propogate transform to children.
             var currentChild = Owner.FirstChild;
@@ -236,7 +228,15 @@ namespace Forge.GameObjects
         /// </summary>
         public override string ToString()
         {
-            return $"worldpos = {mWorldPosition}, worldrot = {mWorldRotation}";
+            var worldRotationDegrees = MathHelper.RadianToDegree(mWorldRotation);
+            var localRotationDegrees = MathHelper.RadianToDegree(mLocalRotation); 
+
+            return string.Format(
+                "World p = {0}, r = {1} (Local p = {2}, r = {3})",
+                mWorldPosition,
+                worldRotationDegrees,
+                mLocalPosition,
+                localRotationDegrees);
         }
     }
 }
